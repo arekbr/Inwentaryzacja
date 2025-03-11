@@ -7,33 +7,69 @@
     <x>0</x>
     <y>0</y>
     <width>1353</width>
-    <height>300</height>
+    <height>618</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QTableView" name="tableView">
+  <widget class="QTableView" name="itemList_tableView">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>20</x>
      <y>90</y>
-     <width>1341</width>
+     <width>1321</width>
      <height>192</height>
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="itemList_pushButton_new">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>30</y>
+     <x>350</x>
+     <y>330</y>
      <width>87</width>
      <height>26</height>
     </rect>
    </property>
    <property name="text">
     <string>Nowy</string>
+   </property>
+  </widget>
+  <widget class="QGraphicsView" name="itemList_graphicsView">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>330</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="itemList_pushButton_edit">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>330</y>
+     <width>87</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Edycja</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="itemList_pushButton_end">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>410</y>
+     <width>87</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Koniec</string>
    </property>
   </widget>
  </widget>
