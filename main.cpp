@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
     itemList w;
     w.show();
     return a.exec();
