@@ -153,6 +153,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         ui->itemList_graphicsView->setScene(nullptr);
         delete scene;
     }
+    //
 }
 
 void itemList::refreshList()
