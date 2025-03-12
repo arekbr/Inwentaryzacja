@@ -1,28 +1,29 @@
 #ifndef PHOTOITEM_H
 #define PHOTOITEM_H
 
-#include <QGraphicsItem>
-#include <QPixmap>
+#include <QGraphicsPixmapItem>
+#include <QObject>
+#include <QGraphicsRectItem>
 
-class PhotoItem : public QGraphicsItem
-{
+class PhotoItem : public QObject, public QGraphicsPixmapItem {
+    Q_OBJECT
 public:
     explicit PhotoItem(QGraphicsItem *parent = nullptr);
-    explicit PhotoItem(const QPixmap &pixmap, QGraphicsItem *parent = nullptr); // Poprawny konstruktor
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    ~PhotoItem();
 
-    QPixmap pixmap() const { return m_pixmap; }
+    void setSelected(bool selected); // Nowa metoda do ustawiania stanu zaznaczenia
 
 protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 signals:
     void clicked(PhotoItem *item);
 
 private:
-    QPixmap m_pixmap;
+    bool m_pressed;
+    bool m_selected;
+    QGraphicsRectItem *m_frame; // Ramka wokół zdjęcia
+    void updateFrame(); // Deklaracja metody updateFrame
 };
 
 #endif // PHOTOITEM_H
