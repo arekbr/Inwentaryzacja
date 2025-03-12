@@ -11,12 +11,14 @@
 #include <QDebug>
 #include <QItemSelectionModel>
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QApplication>
 
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::itemList)
+    ui(new Ui::itemList),
+    m_currentRecordId(-1) // Inicjalizacja zmiennej
 {
     ui->setupUi(this);
 
@@ -69,7 +71,7 @@ void itemList::onNewButtonClicked()
     addWindow->setAttribute(Qt::WA_DeleteOnClose);
     addWindow->setEditMode(false); // false = tryb dodawania
     addWindow->show();
-    connect(addWindow, &MainWindow::recordSaved, this, &itemList::refreshList); // Połączenie sygnału
+    connect(addWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved); // Podłączamy do nowego slotu
 }
 
 void itemList::onEditButtonClicked()
@@ -83,18 +85,24 @@ void itemList::onEditButtonClicked()
     // Zakładamy, że kolumna 0 zawiera identyfikator rekordu
     QModelIndex index = selectionModel->selectedRows().first();
     int recordId = model->data(model->index(index.row(), 0)).toInt();
+    m_currentRecordId = recordId; // Zapisz aktualny rekord
 
     // Otwieramy MainWindow w trybie edycji
     MainWindow *editWindow = new MainWindow(this); // Ustawiamy itemList jako parent
     editWindow->setAttribute(Qt::WA_DeleteOnClose);
     editWindow->setEditMode(true, recordId);
     editWindow->show();
-    connect(editWindow, &MainWindow::recordSaved, this, &itemList::refreshList); // Połączenie sygnału
+    connect(editWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved); // Podłączamy do nowego slotu
 }
 
 void itemList::onEndButtonClicked()
 {
     qApp->quit();
+}
+
+void itemList::onRecordSaved(int recordId)
+{
+    refreshList(recordId); // Przekazujemy ID do refreshList
 }
 
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
@@ -103,61 +111,92 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     // Jeśli nie ma zaznaczenia – czyścimy QGraphicsView
     if (selected.indexes().isEmpty()) {
         ui->itemList_graphicsView->setScene(nullptr);
+        m_currentRecordId = -1;
         return;
     }
 
     // Pobierz ID rekordu z pierwszej kolumny (id w tabeli eksponaty)
     QModelIndex index = selected.indexes().first();
     int row = index.row();
-    int recordId = model->data(model->index(row, 0)).toInt();
+    m_currentRecordId = model->data(model->index(row, 0)).toInt(); // Zaktualizuj bieżące ID
 
-    // Pobierz zdjęcie z tabeli photos
+    // Pobierz wszystkie zdjęcia z tabeli photos dla danego rekordu
     QSqlQuery query(QSqlDatabase::database("default_connection"));
-    query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id LIMIT 1");
-    query.bindValue(":id", recordId);
+    query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
+    query.bindValue(":id", m_currentRecordId);
     if (!query.exec()) {
-        qDebug() << "Błąd pobierania zdjęcia:" << query.lastError().text();
+        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
         ui->itemList_graphicsView->setScene(nullptr);
         return;
     }
 
+    // Utwórz nową scenę graficzną
     QGraphicsScene *scene = new QGraphicsScene(this);
-    if (query.next()) {
+    const int thumbnailSize = 80; // Rozmiar miniatur (kwadrat 80x80 pikseli)
+    int x = 5; // Początkowa pozycja X z marginesem
+    int y = 5; // Początkowa pozycja Y z marginesem
+    const int spacing = 5; // Odstęp między miniaturami
+
+    while (query.next()) {
         QByteArray imageData = query.value("photo").toByteArray();
         QPixmap pixmap;
         if (!pixmap.loadFromData(imageData)) {
-            qDebug() << "Nie można załadować zdjęcia z danych BLOB dla rekordu" << recordId;
-            ui->itemList_graphicsView->setScene(nullptr);
-            delete scene;
-            return;
+            qDebug() << "Nie można załadować zdjęcia z danych BLOB dla rekordu" << m_currentRecordId;
+            continue;
         }
 
-        // Pobieramy rozmiar widżetu QGraphicsView
-        QSize viewSize = ui->itemList_graphicsView->size();
-        // Odejmujemy marginesy (np. 10 pikseli), aby obraz nie dotykał krawędzi
-        int targetWidth = viewSize.width() - 10;
-        int targetHeight = viewSize.height() - 10;
+        // Skaluj obraz do rozmiaru miniatury, zachowując proporcje
+        QPixmap scaledPixmap = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-        // Skalujemy obraz, zachowując proporcje (Aspect Ratio)
-        QPixmap scaledPixmap = pixmap.scaled(targetWidth, targetHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        // Dodaj miniaturę do sceny
+        QGraphicsPixmapItem *item = scene->addPixmap(scaledPixmap);
+        item->setPos(x, y);
 
-        // Centrujemy obraz w scenie
-        scene->addPixmap(scaledPixmap);
-        scene->setSceneRect(0, 0, scaledPixmap.width(), scaledPixmap.height());
+        // Aktualizuj pozycję dla następnej miniatury
+        x += thumbnailSize + spacing;
+        if (x + thumbnailSize > ui->itemList_graphicsView->width() - 10) {
+            x = 5;
+            y += thumbnailSize + spacing;
+        }
+    }
+
+    // Ustaw scenę w widżecie
+    if (!scene->items().isEmpty()) {
+        scene->setSceneRect(0, 0, ui->itemList_graphicsView->width() - 10, y + thumbnailSize + 5);
         ui->itemList_graphicsView->setScene(scene);
-
-        // Dopasowujemy widok, aby obraz był w pełni widoczny
         ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
     } else {
-        // Jeśli nie ma zdjęcia, czyścimy widok
         ui->itemList_graphicsView->setScene(nullptr);
         delete scene;
     }
 }
 
-void itemList::refreshList()
+void itemList::refreshList(int recordId)
 {
+    // Zapisz aktualne ID rekordu, jeśli nie podano nowego
+    if (recordId == -1 && m_currentRecordId != -1) {
+        recordId = m_currentRecordId;
+    }
+
     // Odświeżenie danych w modelu
     model->select();
     ui->itemList_tableView->resizeColumnsToContents();
+
+    // Ustaw fokus na rekordzie o podanym ID
+    if (recordId != -1) {
+        for (int row = 0; row < model->rowCount(); ++row) {
+            QModelIndex index = model->index(row, 0); // Kolumna 0 to id
+            if (model->data(index).toInt() == recordId) {
+                QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
+                selectionModel->clearSelection();
+                selectionModel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                m_currentRecordId = recordId; // Zaktualizuj bieżące ID
+                // Ręcznie wywołaj odświeżenie zdjęć
+                QItemSelection selected;
+                selected.select(model->index(row, 0), model->index(row, model->columnCount() - 1));
+                onTableViewSelectionChanged(selected, QItemSelection());
+                break;
+            }
+        }
+    }
 }

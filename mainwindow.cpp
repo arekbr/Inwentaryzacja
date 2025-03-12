@@ -9,12 +9,14 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QBuffer>
+#include "photoitem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     m_editMode(false),
-    m_recordId(-1)
+    m_recordId(-1),
+    m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
 
@@ -63,6 +65,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
+    connect(ui->New_item_removePhoto, &QPushButton::clicked, this, &MainWindow::onRemovePhotoClicked);
+
+    // Wyłącz automatyczne skalowanie widoku
+    ui->graphicsView->setTransform(QTransform());
 }
 
 MainWindow::~MainWindow()
@@ -105,6 +111,10 @@ void MainWindow::setEditMode(bool edit, int recordId)
             combo->setCurrentIndex(-1);
             combo->setEditable(false);
         }
+
+        // W trybie dodawania czyścimy widok zdjęć
+        ui->graphicsView->setScene(nullptr);
+        m_selectedPhotoIndex = -1;
     }
 }
 
@@ -152,24 +162,101 @@ void MainWindow::loadRecord(int recordId)
         if (storagePlaceIndex != -1)
             ui->New_item_storagePlace->setCurrentIndex(storagePlaceIndex);
 
-        // Załaduj obraz z tabeli photos (jeśli istnieje)
-        QSqlQuery photoQuery(db);
-        photoQuery.prepare("SELECT photo FROM photos WHERE eksponat_id = :id LIMIT 1");
-        photoQuery.bindValue(":id", recordId);
-        if (photoQuery.exec() && photoQuery.next()) {
-            QByteArray imageData = photoQuery.value("photo").toByteArray();
-            QPixmap pixmap;
-            pixmap.loadFromData(imageData);
-            if (!pixmap.isNull()) {
-                QGraphicsScene *scene = new QGraphicsScene(this);
-                scene->addPixmap(pixmap);
-                ui->graphicsView->setScene(scene);
-            }
-        } else {
-            ui->graphicsView->setScene(nullptr);
-        }
+        // Załaduj zdjęcia do graphicsView
+        loadPhotos(recordId);
     } else {
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o id %1").arg(recordId));
+    }
+}
+
+void MainWindow::loadPhotos(int recordId)
+{
+    // Pobierz wszystkie zdjęcia z tabeli photos dla danego rekordu
+    QSqlQuery query(db);
+    query.prepare("SELECT id, photo FROM photos WHERE eksponat_id = :id");
+    query.bindValue(":id", recordId);
+    if (!query.exec()) {
+        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
+        ui->graphicsView->setScene(nullptr);
+        return;
+    }
+
+    // Utwórz nową scenę graficzną
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    const int thumbnailSize = 80; // Rozmiar miniatur (kwadrat 80x80 pikseli)
+    int x = 5; // Początkowa pozycja X z marginesem
+    int y = 5; // Początkowa pozycja Y z marginesem
+    const int spacing = 5; // Odstęp między miniaturami
+
+    int index = 0;
+    while (query.next()) {
+        QByteArray imageData = query.value("photo").toByteArray();
+        QPixmap pixmap;
+        if (!pixmap.loadFromData(imageData)) {
+            qDebug() << "Nie można załadować zdjęcia z danych BLOB dla rekordu" << recordId;
+            continue;
+        }
+
+        // Skaluj obraz do rozmiaru miniatury, zachowując proporcje
+        QPixmap scaledPixmap = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+        // Utwórz niestandardowy PhotoItem
+        PhotoItem *item = new PhotoItem();
+        item->setPixmap(scaledPixmap);
+        item->setData(0, query.value("id").toInt()); // Przechowujemy ID zdjęcia
+        item->setData(1, index); // Przechowujemy indeks w siatce
+        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        item->setPos(x, y);
+        scene->addItem(item);
+
+        // Aktualizuj pozycję dla następnej miniatury
+        x += thumbnailSize + spacing;
+        if (x + thumbnailSize > ui->graphicsView->width() - 10) {
+            x = 5;
+            y += thumbnailSize + spacing;
+        }
+        index++;
+    }
+
+    // Ustaw scenę w widżecie
+    if (!scene->items().isEmpty()) {
+        // Ustaw rozmiar sceny na podstawie liczby miniatur
+        scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbnailSize + 5);
+        ui->graphicsView->setScene(scene);
+
+        // Resetuj transformację widoku, aby uniknąć przeskalowania
+        ui->graphicsView->resetTransform();
+
+        // Ustaw minimalny zoom, aby miniatury nie były zbyt małe
+        qreal scaleFactor = qMin(
+            (ui->graphicsView->width() - 10.0) / scene->width(),
+            (ui->graphicsView->height() - 10.0) / scene->height()
+            );
+        if (scaleFactor < 1.0) {
+            scaleFactor = 1.0; // Nie zmniejszamy miniatur poniżej ich naturalnego rozmiaru
+        }
+        ui->graphicsView->scale(scaleFactor, scaleFactor);
+
+        // Odznacz wszystkie zdjęcia po załadowaniu (jeśli nie było wcześniej zaznaczenia)
+        if (m_selectedPhotoIndex == -1) {
+            QList<QGraphicsItem*> items = scene->items();
+            for (QGraphicsItem *item : items) {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(item)) {
+                    photoItem->setSelected(false);
+                }
+            }
+        } else {
+            // Przywróć poprzednie zaznaczenie, jeśli istnieje
+            QList<QGraphicsItem*> items = scene->items();
+            if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex])) {
+                    photoItem->setSelected(true);
+                }
+            }
+        }
+    } else {
+        ui->graphicsView->setScene(nullptr);
+        delete scene;
     }
 }
 
@@ -220,7 +307,7 @@ void MainWindow::onSaveClicked()
         newRecordId = m_recordId; // W trybie edycji używamy istniejącego ID
     }
 
-    emit recordSaved(); // Emitujemy sygnał po udanym zapisie
+    emit recordSaved(newRecordId); // Emitujemy sygnał z ID zapisanej pozycji
     QMessageBox::information(this, tr("Sukces"), tr("Operacja zapisu zakończona powodzeniem."));
     close(); // Zamykamy okno formularza po zapisie
 }
@@ -275,6 +362,67 @@ void MainWindow::onAddPhotoClicked()
         }
     }
 
-    // Odśwież widok zdjęcia w formularzu (pobierz pierwsze zdjęcie)
-    loadRecord(m_recordId);
+    // Odśwież widok zdjęć w formularzu
+    loadPhotos(m_recordId);
+}
+
+void MainWindow::onRemovePhotoClicked()
+{
+    if (m_selectedPhotoIndex == -1) {
+        QMessageBox::warning(this, tr("Błąd"), tr("Najpierw wybierz zdjęcie do usunięcia."));
+        return;
+    }
+
+    // Pobierz ID wybranego zdjęcia z sceny
+    QGraphicsScene *scene = ui->graphicsView->scene();
+    if (!scene) {
+        QMessageBox::warning(this, tr("Błąd"), tr("Brak zdjęć do usunięcia."));
+        return;
+    }
+
+    QList<QGraphicsItem*> items = scene->items();
+    if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
+        PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]);
+        if (selectedItem) {
+            int photoId = selectedItem->data(0).toInt();
+
+            // Potwierdzenie usunięcia
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, tr("Potwierdzenie"),
+                                          tr("Czy na pewno chcesz usunąć wybrane zdjęcie?"),
+                                          QMessageBox::Yes | QMessageBox::No);
+            if (reply == QMessageBox::Yes) {
+                QSqlQuery query(db);
+                query.prepare("DELETE FROM photos WHERE id = :id");
+                query.bindValue(":id", photoId);
+                if (!query.exec()) {
+                    qDebug() << "Błąd usuwania zdjęcia:" << query.lastError().text();
+                    QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć zdjęcia:\n%1")
+                                                                .arg(query.lastError().text()));
+                } else {
+                    qDebug() << "Zdjęcie o id" << photoId << "zostało usunięte.";
+                    loadPhotos(m_recordId); // Odśwież siatkę
+                }
+            }
+        }
+    }
+
+    m_selectedPhotoIndex = -1; // Resetuj wybrany indeks po operacji
+}
+
+void MainWindow::onPhotoClicked(PhotoItem *item)
+{
+    QGraphicsScene *scene = ui->graphicsView->scene();
+    if (!scene) return;
+
+    QList<QGraphicsItem*> items = scene->items();
+    for (int i = 0; i < items.size(); ++i) {
+        if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[i])) {
+            photoItem->setSelected(items[i] == item);
+            if (items[i] == item) {
+                m_selectedPhotoIndex = i;
+            }
+        }
+    }
+    qDebug() << "Wybrane zdjęcie o indeksie:" << m_selectedPhotoIndex;
 }

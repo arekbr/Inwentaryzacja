@@ -22,11 +22,13 @@ private slots:
     void onEditButtonClicked();
     void onEndButtonClicked();
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void refreshList(); // Nowy slot do odświeżania listy
+    void refreshList(int recordId = -1);
+    void onRecordSaved(int recordId); // Nowy slot do pośredniczenia
 
 private:
     Ui::itemList *ui;
     QSqlTableModel *model;
+    int m_currentRecordId;
 };
 
 #endif // ITEMLIST_H

@@ -362,6 +362,19 @@
      <string>Ilość</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="New_item_removePhoto">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>130</y>
+      <width>87</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Usuń zdjęcie</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
