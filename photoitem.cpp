@@ -1,17 +1,20 @@
 #include "photoitem.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPen>
 
-PhotoItem::PhotoItem(QGraphicsItem *parent) : QGraphicsPixmapItem(parent), m_pressed(false), m_selected(false), m_frame(nullptr)
+PhotoItem::PhotoItem(QGraphicsItem *parent)
+    : QObject(nullptr),
+    QGraphicsPixmapItem(parent),
+    m_pressed(false),
+    m_selected(false),
+    m_frame(new QGraphicsRectItem(this))
 {
     setAcceptHoverEvents(false);
     setAcceptTouchEvents(false);
-
-    // Utwórz ramkę
-    m_frame = new QGraphicsRectItem(this);
-    m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki domyślnie
-    m_frame->setBrush(Qt::NoBrush);   // Brak wypełnienia
-    m_frame->setZValue(1);            // Ramka na wierzchu
+    m_frame->setPen(QPen(Qt::NoPen));
+    m_frame->setBrush(Qt::NoBrush);
+    m_frame->setZValue(1);
     updateFrame();
 }
 
@@ -40,9 +43,9 @@ void PhotoItem::setSelected(bool selected)
 void PhotoItem::updateFrame()
 {
     if (m_selected) {
-        m_frame->setRect(boundingRect().adjusted(-2, -2, 2, 2)); // Ramka o 2 piksele większa
-        m_frame->setPen(QPen(Qt::red, 2)); // Czerwona ramka, 2 piksele
+        m_frame->setRect(boundingRect().adjusted(-2, -2, 2, 2));
+        m_frame->setPen(QPen(Qt::red, 2));
     } else {
-        m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki
+        m_frame->setPen(QPen(Qt::NoPen));
     }
 }

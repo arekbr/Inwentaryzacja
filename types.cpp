@@ -6,17 +6,13 @@
 #include "mainwindow.h"
 
 typy::typy(QWidget *parent)
-    : QDialog(parent) // Zamiast QWidget
-    , ui(new Ui::typy)
-    , m_mainWindow(nullptr)
+    : QDialog(parent),
+    ui(new Ui::typy),
+    m_mainWindow(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
-
-    // Ustawiamy tytuł okna
     setWindowTitle(tr("Dodaj nowy typ"));
-
-    // Połączenie sygnału z slotem
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &typy::onSaveClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
@@ -38,7 +34,6 @@ void typy::onSaveClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa typu nie może być pusta."));
         return;
     }
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO types (name) VALUES (:name)");
     query.bindValue(":name", typeName);
@@ -47,7 +42,7 @@ void typy::onSaveClicked()
             m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());
             m_mainWindow->setEditMode(m_mainWindow->getEditMode(), m_mainWindow->getRecordId());
         }
-        accept(); // Zamyka dialog z sukcesem
+        accept();
     } else {
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać typu:\n%1").arg(query.lastError().text()));
     }

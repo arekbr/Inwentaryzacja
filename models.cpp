@@ -6,18 +6,14 @@
 #include "mainwindow.h"
 
 models::models(QWidget *parent)
-    : QDialog(parent) // Zamiast QWidget
-    , ui(new Ui::models)
-    , m_mainWindow(nullptr)
-    , m_vendorId(-1)
+    : QDialog(parent),
+    ui(new Ui::models),
+    m_mainWindow(nullptr),
+    m_vendorId(-1)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
-
-    // Ustawiamy tytuł okna
     setWindowTitle(tr("Dodaj nowy model"));
-
-    // Połączenie sygnału z slotem
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &models::onSaveClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
@@ -44,7 +40,6 @@ void models::onSaveClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa modelu nie może być pusta."));
         return;
     }
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO models (name, vendor_id) VALUES (:name, :vendor_id)");
     query.bindValue(":name", modelName);
@@ -54,7 +49,7 @@ void models::onSaveClicked()
             m_mainWindow->loadComboBoxData("models", m_mainWindow->getNewItemModelComboBox());
             m_mainWindow->setEditMode(m_mainWindow->getEditMode(), m_mainWindow->getRecordId());
         }
-        accept(); // Zamyka dialog z sukcesem
+        accept();
     } else {
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać modelu:\n%1").arg(query.lastError().text()));
     }

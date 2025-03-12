@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QSqlDatabase>
 #include <QComboBox>
-#include "photoitem.h" // Dodano, aby zdefiniować PhotoItem
+#include "photoitem.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,14 +20,15 @@ public:
     void setEditMode(bool edit, int recordId = -1);
     void loadComboBoxData(const QString &tableName, QComboBox *comboBox);
 
-    // Deklaracje metod dostępowych bez definicji inline
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
 
-    // Gettery dla m_editMode i m_recordId
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
+
+    // Dla uzupełniania słowników
+    void loadComboBoxDataForTable(const QString &tableName, QComboBox *comboBox);
 
 signals:
     void recordSaved(int recordId);
@@ -36,9 +37,9 @@ private slots:
     void onSaveClicked();
     void onCancelClicked();
     void onAddPhotoClicked();
+    void onRemovePhotoClicked();
     void loadRecord(int recordId);
     void loadPhotos(int recordId);
-    void onRemovePhotoClicked();
     void onPhotoClicked(PhotoItem *item);
     void onAddTypeClicked();
     void onAddVendorClicked();

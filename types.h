@@ -1,20 +1,18 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class typy;
 }
 
-class typy : public QDialog // Zamiast QWidget
+class typy : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit typy(QWidget *parent = nullptr);
     ~typy();

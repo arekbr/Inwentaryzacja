@@ -1,20 +1,18 @@
 #ifndef MODELS_H
 #define MODELS_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class models;
 }
 
-class models : public QDialog // Zamiast QWidget
+class models : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit models(QWidget *parent = nullptr);
     ~models();

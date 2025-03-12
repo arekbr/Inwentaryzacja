@@ -22,8 +22,8 @@ private slots:
     void onEditButtonClicked();
     void onEndButtonClicked();
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void onRecordSaved(int recordId);
     void refreshList(int recordId = -1);
-    void onRecordSaved(int recordId); // Nowy slot do pośredniczenia
 
 private:
     Ui::itemList *ui;
