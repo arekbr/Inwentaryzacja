@@ -28,7 +28,16 @@ itemList::itemList(QWidget *parent) :
         db = QSqlDatabase::database("default_connection");
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
+
+        #ifdef Q_OS_LINUX
         db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
+        #elif defined(Q_OS_MAC)
+        db.setDatabaseName("/Users/Arek/inwentaryzacja/muzeum.db");
+        #else
+        #error "System operacyjny nie jest obsługiwany"
+        #endif
+
+        // db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
         if (!db.open()) {
             QMessageBox::critical(this, tr("Błąd bazy danych"),
                                   tr("Nie udało się otworzyć bazy danych:\n%1")
