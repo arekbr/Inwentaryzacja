@@ -113,17 +113,13 @@ types.cpp
 #include "mainwindow.h"
 
 typy::typy(QWidget *parent)
-    : QDialog(parent) // Zamiast QWidget
-    , ui(new Ui::typy)
-    , m_mainWindow(nullptr)
+    : QDialog(parent),
+    ui(new Ui::typy),
+    m_mainWindow(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
-
-    // Ustawiamy tytuł okna
     setWindowTitle(tr("Dodaj nowy typ"));
-
-    // Połączenie sygnału z slotem
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &typy::onSaveClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
@@ -145,7 +141,6 @@ void typy::onSaveClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa typu nie może być pusta."));
         return;
     }
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO types (name) VALUES (:name)");
     query.bindValue(":name", typeName);
@@ -154,7 +149,7 @@ void typy::onSaveClicked()
             m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());
             m_mainWindow->setEditMode(m_mainWindow->getEditMode(), m_mainWindow->getRecordId());
         }
-        accept(); // Zamyka dialog z sukcesem
+        accept();
     } else {
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać typu:\n%1").arg(query.lastError().text()));
     }
@@ -273,7 +268,7 @@ mainwindow.h
 #include <QMainWindow>
 #include <QSqlDatabase>
 #include <QComboBox>
-#include "photoitem.h" // Dodano, aby zdefiniować PhotoItem
+#include "photoitem.h"
 
 namespace Ui {
 class MainWindow;
@@ -289,14 +284,15 @@ public:
     void setEditMode(bool edit, int recordId = -1);
     void loadComboBoxData(const QString &tableName, QComboBox *comboBox);
 
-    // Deklaracje metod dostępowych bez definicji inline
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
 
-    // Gettery dla m_editMode i m_recordId
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
+
+    // Dla uzupełniania słowników
+    void loadComboBoxDataForTable(const QString &tableName, QComboBox *comboBox);
 
 signals:
     void recordSaved(int recordId);
@@ -305,9 +301,9 @@ private slots:
     void onSaveClicked();
     void onCancelClicked();
     void onAddPhotoClicked();
+    void onRemovePhotoClicked();
     void loadRecord(int recordId);
     void loadPhotos(int recordId);
-    void onRemovePhotoClicked();
     void onPhotoClicked(PhotoItem *item);
     void onAddTypeClicked();
     void onAddVendorClicked();
@@ -327,20 +323,18 @@ types.h
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class typy;
 }
 
-class typy : public QDialog // Zamiast QWidget
+class typy : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit typy(QWidget *parent = nullptr);
     ~typy();
@@ -378,26 +372,23 @@ itemList.cpp
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::itemList),
-    m_currentRecordId(-1) // Inicjalizacja zmiennej
+    m_currentRecordId(-1)
 {
     ui->setupUi(this);
 
-    // Użycie domyślnego połączenia z bazą lub tworzenie nowego, jeśli nie istnieje
+    // Użycie domyślnego połączenia lub utworzenie nowego, jeśli nie istnieje
     QSqlDatabase db;
     if (QSqlDatabase::contains("default_connection")) {
         db = QSqlDatabase::database("default_connection");
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
-
-        #ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
         db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
-        #elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MAC)
         db.setDatabaseName("/Users/Arek/inwentaryzacja/muzeum.db");
-        #else
-        #error "System operacyjny nie jest obsługiwany"
-        #endif
-
-        // db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
+#else
+#error "System operacyjny nie jest obsługiwany"
+#endif
         if (!db.open()) {
             QMessageBox::critical(this, tr("Błąd bazy danych"),
                                   tr("Nie udało się otworzyć bazy danych:\n%1")
@@ -406,7 +397,7 @@ itemList::itemList(QWidget *parent) :
         }
     }
 
-    // Ustawienie modelu SQL do wyświetlania tabeli "eksponaty"
+    // Ustawienie modelu SQL dla tabeli "eksponaty"
     model = new QSqlTableModel(this, db);
     model->setTable("eksponaty");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -417,12 +408,12 @@ itemList::itemList(QWidget *parent) :
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    // Połączenie przycisków z odpowiednimi slotami
+    // Połączenie przycisków
     connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
 
-    // Reakcja na zmianę zaznaczenia w tabeli – wyświetlenie obrazu w QGraphicsView
+    // Reakcja na zmianę zaznaczenia w tabeli
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
@@ -435,33 +426,29 @@ itemList::~itemList()
 
 void itemList::onNewButtonClicked()
 {
-    // Otwieramy okno formularza w trybie dodawania
-    MainWindow *addWindow = new MainWindow(this); // Ustawiamy itemList jako parent
+    MainWindow *addWindow = new MainWindow(this);
     addWindow->setAttribute(Qt::WA_DeleteOnClose);
-    addWindow->setEditMode(false); // false = tryb dodawania
+    addWindow->setEditMode(false);
+    connect(addWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
     addWindow->show();
-    connect(addWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved); // Podłączamy do nowego slotu
 }
 
 void itemList::onEditButtonClicked()
 {
-    // Sprawdzamy, czy użytkownik zaznaczył rekord do edycji
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     if (!selectionModel->hasSelection()) {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do edycji."));
         return;
     }
-    // Zakładamy, że kolumna 0 zawiera identyfikator rekordu
     QModelIndex index = selectionModel->selectedRows().first();
     int recordId = model->data(model->index(index.row(), 0)).toInt();
-    m_currentRecordId = recordId; // Zapisz aktualny rekord
+    m_currentRecordId = recordId;
 
-    // Otwieramy MainWindow w trybie edycji
-    MainWindow *editWindow = new MainWindow(this); // Ustawiamy itemList jako parent
+    MainWindow *editWindow = new MainWindow(this);
     editWindow->setAttribute(Qt::WA_DeleteOnClose);
     editWindow->setEditMode(true, recordId);
+    connect(editWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
     editWindow->show();
-    connect(editWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved); // Podłączamy do nowego slotu
 }
 
 void itemList::onEndButtonClicked()
@@ -471,25 +458,22 @@ void itemList::onEndButtonClicked()
 
 void itemList::onRecordSaved(int recordId)
 {
-    refreshList(recordId); // Przekazujemy ID do refreshList
+    refreshList(recordId);
 }
 
-void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
-    Q_UNUSED(deselected);
-    // Jeśli nie ma zaznaczenia – czyścimy QGraphicsView
     if (selected.indexes().isEmpty()) {
         ui->itemList_graphicsView->setScene(nullptr);
         m_currentRecordId = -1;
         return;
     }
-
-    // Pobierz ID rekordu z pierwszej kolumny (id w tabeli eksponaty)
+    // Pobranie id rekordu z pierwszej kolumny
     QModelIndex index = selected.indexes().first();
     int row = index.row();
-    m_currentRecordId = model->data(model->index(row, 0)).toInt(); // Zaktualizuj bieżące ID
+    m_currentRecordId = model->data(model->index(row, 0)).toInt();
 
-    // Pobierz wszystkie zdjęcia z tabeli photos dla danego rekordu
+    // Ładowanie zdjęć
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
@@ -499,37 +483,26 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         return;
     }
 
-    // Utwórz nową scenę graficzną
     QGraphicsScene *scene = new QGraphicsScene(this);
-    const int thumbnailSize = 80; // Rozmiar miniatur (kwadrat 80x80 pikseli)
-    int x = 5; // Początkowa pozycja X z marginesem
-    int y = 5; // Początkowa pozycja Y z marginesem
-    const int spacing = 5; // Odstęp między miniaturami
-
+    const int thumbnailSize = 80;
+    const int spacing = 5;
+    int x = 5, y = 5;
     while (query.next()) {
         QByteArray imageData = query.value("photo").toByteArray();
         QPixmap pixmap;
         if (!pixmap.loadFromData(imageData)) {
-            qDebug() << "Nie można załadować zdjęcia z danych BLOB dla rekordu" << m_currentRecordId;
+            qDebug() << "Nie można załadować zdjęcia BLOB.";
             continue;
         }
-
-        // Skaluj obraz do rozmiaru miniatury, zachowując proporcje
-        QPixmap scaledPixmap = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-        // Dodaj miniaturę do sceny
-        QGraphicsPixmapItem *item = scene->addPixmap(scaledPixmap);
+        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QGraphicsPixmapItem *item = scene->addPixmap(scaled);
         item->setPos(x, y);
-
-        // Aktualizuj pozycję dla następnej miniatury
         x += thumbnailSize + spacing;
         if (x + thumbnailSize > ui->itemList_graphicsView->width() - 10) {
             x = 5;
             y += thumbnailSize + spacing;
         }
     }
-
-    // Ustaw scenę w widżecie
     if (!scene->items().isEmpty()) {
         scene->setSceneRect(0, 0, ui->itemList_graphicsView->width() - 10, y + thumbnailSize + 5);
         ui->itemList_graphicsView->setScene(scene);
@@ -542,25 +515,18 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
 void itemList::refreshList(int recordId)
 {
-    // Zapisz aktualne ID rekordu, jeśli nie podano nowego
-    if (recordId == -1 && m_currentRecordId != -1) {
-        recordId = m_currentRecordId;
-    }
-
-    // Odświeżenie danych w modelu
     model->select();
     ui->itemList_tableView->resizeColumnsToContents();
 
-    // Ustaw fokus na rekordzie o podanym ID
     if (recordId != -1) {
         for (int row = 0; row < model->rowCount(); ++row) {
-            QModelIndex index = model->index(row, 0); // Kolumna 0 to id
-            if (model->data(index).toInt() == recordId) {
-                QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
-                selectionModel->clearSelection();
-                selectionModel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                m_currentRecordId = recordId; // Zaktualizuj bieżące ID
-                // Ręcznie wywołaj odświeżenie zdjęć
+            QModelIndex idx = model->index(row, 0);
+            if (model->data(idx).toInt() == recordId) {
+                QItemSelectionModel *sel = ui->itemList_tableView->selectionModel();
+                sel->clearSelection();
+                sel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                m_currentRecordId = recordId;
+                // Opcjonalnie – wywołanie odświeżenia zdjęć
                 QItemSelection selected;
                 selected.select(model->index(row, 0), model->index(row, model->columnCount() - 1));
                 onTableViewSelectionChanged(selected, QItemSelection());
@@ -584,7 +550,7 @@ public:
     explicit PhotoItem(QGraphicsItem *parent = nullptr);
     ~PhotoItem();
 
-    void setSelected(bool selected); // Nowa metoda do ustawiania stanu zaznaczenia
+    void setSelected(bool selected);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -595,8 +561,8 @@ signals:
 private:
     bool m_pressed;
     bool m_selected;
-    QGraphicsRectItem *m_frame; // Ramka wokół zdjęcia
-    void updateFrame(); // Deklaracja metody updateFrame
+    QGraphicsRectItem *m_frame;
+    void updateFrame();
 };
 
 #endif // PHOTOITEM_H
@@ -711,20 +677,18 @@ vendors.h
 #ifndef VENDORS_H
 #define VENDORS_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class vendors;
 }
 
-class vendors : public QDialog // Zamiast QWidget
+class vendors : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit vendors(QWidget *parent = nullptr);
     ~vendors();
@@ -1256,8 +1220,14 @@ mainwindow.cpp
 #include <QSqlError>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDebug>
+#include <QDate>
+#include <qglobal.h>
 
-// Definicje metod dostępowych
+///////////////////////
+// Metody dostępowe //
+///////////////////////
+
 QComboBox* MainWindow::getNewItemTypeComboBox() const
 {
     return ui->New_item_type;
@@ -1273,36 +1243,10 @@ QComboBox* MainWindow::getNewItemVendorComboBox() const
     return ui->New_item_vendor;
 }
 
-// Metody otwierające dialogi (jedna definicja każdej metody z modalnością)
-void MainWindow::onAddTypeClicked()
-{
-    typy *typeDialog = new typy(this); // Rodzic ustawiony na this
-    typeDialog->setMainWindow(this);
-    typeDialog->exec(); // Wyświetla dialog modalny i blokuje MainWindow do zamknięcia
-    delete typeDialog;  // Usuwamy dialog po zamknięciu
-}
+///////////////////////
+// Konstruktor, destruktor, inicjalizacja //
+///////////////////////
 
-void MainWindow::onAddVendorClicked()
-{
-    vendors *vendorDialog = new vendors(this); // Rodzic ustawiony na this
-    vendorDialog->setMainWindow(this);
-    vendorDialog->exec(); // Wyświetla dialog modalny
-    delete vendorDialog;  // Usuwamy dialog po zamknięciu
-}
-
-void MainWindow::onAddModelClicked()
-{
-    models *modelDialog = new models(this); // Rodzic ustawiony na this
-    modelDialog->setMainWindow(this);
-    int vendorId = ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData().toInt() : -1;
-    if (vendorId != -1) {
-        modelDialog->setVendorId(vendorId);
-    }
-    modelDialog->exec(); // Wyświetla dialog modalny
-    delete modelDialog;  // Usuwamy dialog po zamknięciu
-}
-
-// Reszta kodu
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -1325,14 +1269,14 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
         if (!db.open()) {
             QMessageBox::critical(this, tr("Błąd bazy danych"),
-                                  tr("Nie udało się otworzyć bazy danych:\n%1").arg(db.lastError().text()));
+                                  tr("Nie udało się otworzyć bazy:\n%1").arg(db.lastError().text()));
             return;
         }
     } else {
         db = QSqlDatabase::database("default_connection");
     }
 
-    // Dynamiczne ładowanie danych do QComboBoxów
+    // Ładowanie danych do ComboBoxów przy użyciu funkcji loadComboBoxData
     loadComboBoxData("types", ui->New_item_type);
     loadComboBoxData("vendors", ui->New_item_vendor);
     loadComboBoxData("models", ui->New_item_model);
@@ -1348,7 +1292,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
     connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
 
-    // Wyłącz automatyczne skalowanie widoku
     ui->graphicsView->setTransform(QTransform());
 }
 
@@ -1359,41 +1302,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setEditMode(bool edit, int recordId)
-{
-    m_editMode = edit;
-    m_recordId = recordId;
-    if (m_editMode && m_recordId != -1) {
-        loadRecord(m_recordId);
-    } else {
-        // Tryb dodawania – czyścimy wszystkie pola
-        ui->New_item_name->clear();
-        ui->New_item_serialNumber->clear();
-        ui->New_item_partNumber->clear();
-        ui->New_item_revision->clear();
-        ui->New_item_value->clear();
-        ui->New_item_description->clear();
-        ui->New_item_ProductionDate->setDate(QDate::currentDate());
-
-        QList<QComboBox*> comboBoxes = {
-            ui->New_item_type,
-            ui->New_item_vendor,
-            ui->New_item_model,
-            ui->New_item_status,
-            ui->New_item_storagePlace
-        };
-
-        for (QComboBox* combo : comboBoxes) {
-            combo->setEditable(true);
-            combo->clearEditText();
-            combo->setCurrentIndex(-1);
-            combo->setEditable(false);
-        }
-
-        ui->graphicsView->setScene(nullptr);
-        m_selectedPhotoIndex = -1;
-    }
-}
+///////////////////////
+// Funkcje pomocnicze //
+///////////////////////
 
 void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
 {
@@ -1408,11 +1319,59 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
     }
 }
 
+///////////////////////
+// Tryb edycji/dodawania //
+///////////////////////
+
+void MainWindow::setEditMode(bool edit, int recordId)
+{
+    m_editMode = edit;
+    m_recordId = recordId;
+    if (m_editMode && m_recordId != -1) {
+        loadRecord(m_recordId);
+    } else {
+        // Tryb dodawania – czyszczenie pól
+        ui->New_item_name->clear();
+        ui->New_item_serialNumber->clear();
+        ui->New_item_partNumber->clear();
+        ui->New_item_revision->clear();
+        ui->New_item_value->clear();
+        ui->New_item_description->clear();
+        ui->New_item_ProductionDate->setDate(QDate::currentDate());
+
+        QList<QComboBox*> combos = {
+            ui->New_item_type,
+            ui->New_item_vendor,
+            ui->New_item_model,
+            ui->New_item_status,
+            ui->New_item_storagePlace
+        };
+        for (QComboBox* combo : combos) {
+            // Czyszczenie – ustawienie indeksu na -1
+            combo->setEditable(true);
+            combo->clearEditText();
+            combo->setCurrentIndex(-1);
+            combo->setEditable(false);
+        }
+        ui->graphicsView->setScene(nullptr);
+        m_selectedPhotoIndex = -1;
+    }
+}
+
+///////////////////////
+// Ładowanie rekordu i zdjęć //
+///////////////////////
+
 void MainWindow::loadRecord(int recordId)
 {
     QSqlQuery query(db);
-    query.prepare("SELECT name, serial_number, part_number, revision, production_year, status_id, type_id, vendor_id, model_id, storage_place_id, description, value, image_path "
-                  "FROM eksponaty WHERE id = :id");
+    query.prepare(R"(
+        SELECT name, serial_number, part_number, revision, production_year,
+               status_id, type_id, vendor_id, model_id, storage_place_id,
+               description, value, image_path
+        FROM eksponaty
+        WHERE id = :id
+    )");
     query.bindValue(":id", recordId);
     if (query.exec() && query.next()) {
         ui->New_item_name->setText(query.value("name").toString());
@@ -1425,26 +1384,12 @@ void MainWindow::loadRecord(int recordId)
         int prodYear = query.value("production_year").toInt();
         ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
-        int type_id = query.value("type_id").toInt();
-        int vendor_id = query.value("vendor_id").toInt();
-        int model_id = query.value("model_id").toInt();
-        int status_id = query.value("status_id").toInt();
-        int storage_place_id = query.value("storage_place_id").toInt();
-
-        int typeIndex = ui->New_item_type->findData(type_id);
-        if (typeIndex != -1) ui->New_item_type->setCurrentIndex(typeIndex);
-
-        int vendorIndex = ui->New_item_vendor->findData(vendor_id);
-        if (vendorIndex != -1) ui->New_item_vendor->setCurrentIndex(vendorIndex);
-
-        int modelIndex = ui->New_item_model->findData(model_id);
-        if (modelIndex != -1) ui->New_item_model->setCurrentIndex(modelIndex);
-
-        int statusIndex = ui->New_item_status->findData(status_id);
-        if (statusIndex != -1) ui->New_item_status->setCurrentIndex(statusIndex);
-
-        int storagePlaceIndex = ui->New_item_storagePlace->findData(storage_place_id);
-        if (storagePlaceIndex != -1) ui->New_item_storagePlace->setCurrentIndex(storagePlaceIndex);
+        // Ustawienie ComboBoxów przy użyciu findData()
+        ui->New_item_type->setCurrentIndex(ui->New_item_type->findData(query.value("type_id")));
+        ui->New_item_vendor->setCurrentIndex(ui->New_item_vendor->findData(query.value("vendor_id")));
+        ui->New_item_model->setCurrentIndex(ui->New_item_model->findData(query.value("model_id")));
+        ui->New_item_status->setCurrentIndex(ui->New_item_status->findData(query.value("status_id")));
+        ui->New_item_storagePlace->setCurrentIndex(ui->New_item_storagePlace->findData(query.value("storage_place_id")));
 
         loadPhotos(recordId);
     } else {
@@ -1462,40 +1407,32 @@ void MainWindow::loadPhotos(int recordId)
         ui->graphicsView->setScene(nullptr);
         return;
     }
-
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int thumbnailSize = 80;
-    int x = 5, y = 5;
     const int spacing = 5;
-
-    int index = 0;
+    int x = 5, y = 5, index = 0;
     while (query.next()) {
         QByteArray imageData = query.value("photo").toByteArray();
         QPixmap pixmap;
         if (!pixmap.loadFromData(imageData)) {
-            qDebug() << "Nie można załadować zdjęcia z danych BLOB dla rekordu" << recordId;
+            qDebug() << "Nie można załadować zdjęcia BLOB dla rekordu" << recordId;
             continue;
         }
-
-        QPixmap scaledPixmap = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
+        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         PhotoItem *item = new PhotoItem();
-        item->setPixmap(scaledPixmap);
+        item->setPixmap(scaled);
         item->setData(0, query.value("id").toInt());
         item->setData(1, index);
         connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
         item->setPos(x, y);
-
         scene->addItem(item);
-
         x += thumbnailSize + spacing;
         if (x + thumbnailSize > ui->graphicsView->width() - 10) {
             x = 5;
             y += thumbnailSize + spacing;
         }
-        index++;
+        ++index;
     }
-
     if (!scene->items().isEmpty()) {
         scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbnailSize + 5);
         ui->graphicsView->setScene(scene);
@@ -1504,18 +1441,16 @@ void MainWindow::loadPhotos(int recordId)
                                  (ui->graphicsView->height() - 10.0) / scene->height());
         if (scaleFactor < 1.0) scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
-
         if (m_selectedPhotoIndex == -1) {
-            for (QGraphicsItem *item : scene->items()) {
-                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(item)) {
+            for (QGraphicsItem *itm : scene->items()) {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(itm))
                     photoItem->setSelected(false);
-                }
             }
         } else {
-            if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < scene->items().size()) {
-                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(scene->items()[m_selectedPhotoIndex])) {
+            QList<QGraphicsItem*> items = scene->items();
+            if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]))
                     photoItem->setSelected(true);
-                }
             }
         }
     } else {
@@ -1524,32 +1459,46 @@ void MainWindow::loadPhotos(int recordId)
     }
 }
 
+///////////////////////
+// Obsługa zapisu, anulowania, zdjęć //
+///////////////////////
+
 void MainWindow::onSaveClicked()
 {
     QSqlQuery query(db);
     int newRecordId = -1;
     if (!m_editMode) {
-        query.prepare("INSERT INTO eksponaty (name, serial_number, part_number, revision, production_year, status_id, type_id, vendor_id, model_id, storage_place_id, description, value, image_path) "
-                      "VALUES (:name, :serial_number, :part_number, :revision, :production_year, :status_id, :type_id, :vendor_id, :model_id, :storage_place_id, :description, :value, :image_path)");
+        query.prepare(R"(
+            INSERT INTO eksponaty
+            (name, serial_number, part_number, revision, production_year, status_id,
+             type_id, vendor_id, model_id, storage_place_id, description, value, image_path)
+            VALUES
+            (:name, :serial_number, :part_number, :revision, :production_year, :status_id,
+             :type_id, :vendor_id, :model_id, :storage_place_id, :description, :value, :image_path)
+        )");
     } else {
-        query.prepare("UPDATE eksponaty SET name = :name, serial_number = :serial_number, part_number = :part_number, revision = :revision, "
-                      "production_year = :production_year, status_id = :status_id, type_id = :type_id, vendor_id = :vendor_id, model_id = :model_id, "
-                      "storage_place_id = :storage_place_id, description = :description, value = :value, image_path = :image_path "
-                      "WHERE id = :id");
+        query.prepare(R"(
+            UPDATE eksponaty
+            SET name = :name, serial_number = :serial_number, part_number = :part_number, revision = :revision,
+                production_year = :production_year, status_id = :status_id, type_id = :type_id,
+                vendor_id = :vendor_id, model_id = :model_id, storage_place_id = :storage_place_id,
+                description = :description, value = :value, image_path = :image_path
+            WHERE id = :id
+        )");
         query.bindValue(":id", m_recordId);
     }
 
-    query.bindValue(":name", ui->New_item_name->text().isEmpty() ? QVariant(QMetaType(QMetaType::QString)) : ui->New_item_name->text());
-    query.bindValue(":serial_number", ui->New_item_serialNumber->text().isEmpty() ? QVariant(QMetaType(QMetaType::QString)) : ui->New_item_serialNumber->text());
-    query.bindValue(":part_number", ui->New_item_partNumber->text().isEmpty() ? QVariant(QMetaType(QMetaType::QString)) : ui->New_item_partNumber->text());
-    query.bindValue(":revision", ui->New_item_revision->text().isEmpty() ? QVariant(QMetaType(QMetaType::QString)) : ui->New_item_revision->text());
+    query.bindValue(":name", ui->New_item_name->text());
+    query.bindValue(":serial_number", ui->New_item_serialNumber->text());
+    query.bindValue(":part_number", ui->New_item_partNumber->text());
+    query.bindValue(":revision", ui->New_item_revision->text());
     query.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
     query.bindValue(":status_id", ui->New_item_status->currentData().isValid() ? ui->New_item_status->currentData() : 1);
     query.bindValue(":type_id", ui->New_item_type->currentData().isValid() ? ui->New_item_type->currentData() : 1);
     query.bindValue(":vendor_id", ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData() : 1);
     query.bindValue(":model_id", ui->New_item_model->currentData().isValid() ? ui->New_item_model->currentData() : 1);
     query.bindValue(":storage_place_id", ui->New_item_storagePlace->currentData().isValid() ? ui->New_item_storagePlace->currentData() : 1);
-    query.bindValue(":description", ui->New_item_description->toPlainText().isEmpty() ? QVariant(QMetaType(QMetaType::QString)) : ui->New_item_description->toPlainText());
+    query.bindValue(":description", ui->New_item_description->toPlainText());
     query.bindValue(":value", ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
     query.bindValue(":image_path", "");
 
@@ -1583,40 +1532,32 @@ void MainWindow::onAddPhotoClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Najpierw zapisz rekord, aby dodać zdjęcie."));
         return;
     }
-
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                           tr("Wybierz zdjęcia"),
                                                           QString(),
                                                           tr("Images (*.jpg *.jpeg *.png)"));
-    if (fileNames.isEmpty()) {
-        return;
-    }
+    if (fileNames.isEmpty()) return;
 
     QSqlQuery query(db);
-    for (int i = 0; i < fileNames.size(); ++i) {
-        const QString &fileName = fileNames.at(i);
+    for (const QString &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
             continue;
         }
-
         QByteArray imageData = file.readAll();
         file.close();
 
         query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
         query.bindValue(":eksponat_id", m_recordId);
         query.bindValue(":photo", imageData);
-
         if (!query.exec()) {
-            qDebug() << "Błąd zapisu zdjęcia:" << query.lastError().text();
             QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zapisać zdjęcia:\n%1")
                                                         .arg(query.lastError().text()));
         } else {
             qDebug() << "Zdjęcie zapisane dla rekordu" << m_recordId;
         }
     }
-
     loadPhotos(m_recordId);
 }
 
@@ -1626,19 +1567,16 @@ void MainWindow::onRemovePhotoClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Najpierw wybierz zdjęcie do usunięcia."));
         return;
     }
-
     QGraphicsScene *scene = ui->graphicsView->scene();
     if (!scene) {
         QMessageBox::warning(this, tr("Błąd"), tr("Brak zdjęć do usunięcia."));
         return;
     }
-
     QList<QGraphicsItem*> items = scene->items();
     if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
         PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]);
         if (selectedItem) {
             int photoId = selectedItem->data(0).toInt();
-
             QMessageBox::StandardButton reply;
             reply = QMessageBox::question(this, tr("Potwierdzenie"),
                                           tr("Czy na pewno chcesz usunąć wybrane zdjęcie?"),
@@ -1648,17 +1586,14 @@ void MainWindow::onRemovePhotoClicked()
                 query.prepare("DELETE FROM photos WHERE id = :id");
                 query.bindValue(":id", photoId);
                 if (!query.exec()) {
-                    qDebug() << "Błąd usuwania zdjęcia:" << query.lastError().text();
                     QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć zdjęcia:\n%1")
                                                                 .arg(query.lastError().text()));
                 } else {
-                    qDebug() << "Zdjęcie o id" << photoId << "zostało usunięte.";
                     loadPhotos(m_recordId);
                 }
             }
         }
     }
-
     m_selectedPhotoIndex = -1;
 }
 
@@ -1666,17 +1601,47 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
 {
     QGraphicsScene *scene = ui->graphicsView->scene();
     if (!scene) return;
-
     QList<QGraphicsItem*> items = scene->items();
     for (int i = 0; i < items.size(); ++i) {
         if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[i])) {
             photoItem->setSelected(items[i] == item);
-            if (items[i] == item) {
+            if (items[i] == item)
                 m_selectedPhotoIndex = i;
-            }
         }
     }
     qDebug() << "Wybrane zdjęcie o indeksie:" << m_selectedPhotoIndex;
+}
+
+///////////////////////
+// Dialogi słowników //
+///////////////////////
+
+void MainWindow::onAddTypeClicked()
+{
+    typy *typeDialog = new typy(this);
+    typeDialog->setMainWindow(this);
+    typeDialog->exec();
+    delete typeDialog;
+}
+
+void MainWindow::onAddVendorClicked()
+{
+    vendors *vendorDialog = new vendors(this);
+    vendorDialog->setMainWindow(this);
+    vendorDialog->exec();
+    delete vendorDialog;
+}
+
+void MainWindow::onAddModelClicked()
+{
+    models *modelDialog = new models(this);
+    modelDialog->setMainWindow(this);
+    int vendorId = ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData().toInt() : -1;
+    if (vendorId != -1) {
+        modelDialog->setVendorId(vendorId);
+    }
+    modelDialog->exec();
+    delete modelDialog;
 }
 
 vendors.cpp
@@ -1688,17 +1653,13 @@ vendors.cpp
 #include "mainwindow.h"
 
 vendors::vendors(QWidget *parent)
-    : QDialog(parent) // Zamiast QWidget
-    , ui(new Ui::vendors)
-    , m_mainWindow(nullptr)
+    : QDialog(parent),
+    ui(new Ui::vendors),
+    m_mainWindow(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
-
-    // Ustawiamy tytuł okna
     setWindowTitle(tr("Dodaj nowego producenta"));
-
-    // Połączenie sygnału z slotem
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &vendors::onSaveClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
@@ -1720,7 +1681,6 @@ void vendors::onSaveClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa producenta nie może być pusta."));
         return;
     }
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO vendors (name) VALUES (:name)");
     query.bindValue(":name", vendorName);
@@ -1729,7 +1689,7 @@ void vendors::onSaveClicked()
             m_mainWindow->loadComboBoxData("vendors", m_mainWindow->getNewItemVendorComboBox());
             m_mainWindow->setEditMode(m_mainWindow->getEditMode(), m_mainWindow->getRecordId());
         }
-        accept(); // Zamyka dialog z sukcesem
+        accept();
     } else {
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać producenta:\n%1").arg(query.lastError().text()));
     }
@@ -1760,8 +1720,8 @@ private slots:
     void onEditButtonClicked();
     void onEndButtonClicked();
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void onRecordSaved(int recordId);
     void refreshList(int recordId = -1);
-    void onRecordSaved(int recordId); // Nowy slot do pośredniczenia
 
 private:
     Ui::itemList *ui;
@@ -1780,18 +1740,14 @@ models.cpp
 #include "mainwindow.h"
 
 models::models(QWidget *parent)
-    : QDialog(parent) // Zamiast QWidget
-    , ui(new Ui::models)
-    , m_mainWindow(nullptr)
-    , m_vendorId(-1)
+    : QDialog(parent),
+    ui(new Ui::models),
+    m_mainWindow(nullptr),
+    m_vendorId(-1)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
-
-    // Ustawiamy tytuł okna
     setWindowTitle(tr("Dodaj nowy model"));
-
-    // Połączenie sygnału z slotem
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &models::onSaveClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
@@ -1818,7 +1774,6 @@ void models::onSaveClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa modelu nie może być pusta."));
         return;
     }
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO models (name, vendor_id) VALUES (:name, :vendor_id)");
     query.bindValue(":name", modelName);
@@ -1828,7 +1783,7 @@ void models::onSaveClicked()
             m_mainWindow->loadComboBoxData("models", m_mainWindow->getNewItemModelComboBox());
             m_mainWindow->setEditMode(m_mainWindow->getEditMode(), m_mainWindow->getRecordId());
         }
-        accept(); // Zamyka dialog z sukcesem
+        accept();
     } else {
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać modelu:\n%1").arg(query.lastError().text()));
     }
@@ -1838,17 +1793,20 @@ photoitem.cpp
 #include "photoitem.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QPen>
 
-PhotoItem::PhotoItem(QGraphicsItem *parent) : QGraphicsPixmapItem(parent), m_pressed(false), m_selected(false), m_frame(nullptr)
+PhotoItem::PhotoItem(QGraphicsItem *parent)
+    : QObject(nullptr),
+    QGraphicsPixmapItem(parent),
+    m_pressed(false),
+    m_selected(false),
+    m_frame(new QGraphicsRectItem(this))
 {
     setAcceptHoverEvents(false);
     setAcceptTouchEvents(false);
-
-    // Utwórz ramkę
-    m_frame = new QGraphicsRectItem(this);
-    m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki domyślnie
-    m_frame->setBrush(Qt::NoBrush);   // Brak wypełnienia
-    m_frame->setZValue(1);            // Ramka na wierzchu
+    m_frame->setPen(QPen(Qt::NoPen));
+    m_frame->setBrush(Qt::NoBrush);
+    m_frame->setZValue(1);
     updateFrame();
 }
 
@@ -1877,10 +1835,10 @@ void PhotoItem::setSelected(bool selected)
 void PhotoItem::updateFrame()
 {
     if (m_selected) {
-        m_frame->setRect(boundingRect().adjusted(-2, -2, 2, 2)); // Ramka o 2 piksele większa
-        m_frame->setPen(QPen(Qt::red, 2)); // Czerwona ramka, 2 piksele
+        m_frame->setRect(boundingRect().adjusted(-2, -2, 2, 2));
+        m_frame->setPen(QPen(Qt::red, 2));
     } else {
-        m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki
+        m_frame->setPen(QPen(Qt::NoPen));
     }
 }
 
@@ -1888,20 +1846,18 @@ models.h
 #ifndef MODELS_H
 #define MODELS_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class models;
 }
 
-class models : public QDialog // Zamiast QWidget
+class models : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit models(QWidget *parent = nullptr);
     ~models();
@@ -1923,13 +1879,10 @@ private:
 Inwentaryzacja.pro
 QT       += core gui sql widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# Uncomment, aby wymusić kompilację bez przestarzałych API
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 SOURCES += \
     itemList.cpp \
@@ -1970,9 +1923,6 @@ main.cpp
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-#include <QMainWindow>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QDebug>
 
 int main(int argc, char *argv[])
