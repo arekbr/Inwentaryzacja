@@ -1,20 +1,18 @@
 #ifndef VENDORS_H
 #define VENDORS_H
 
-#include <QDialog> // Zamiast QWidget
+#include <QDialog>
 #include <QSqlDatabase>
 
-// Deklaracja wstępna klasy MainWindow
 class MainWindow;
 
 namespace Ui {
 class vendors;
 }
 
-class vendors : public QDialog // Zamiast QWidget
+class vendors : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit vendors(QWidget *parent = nullptr);
     ~vendors();

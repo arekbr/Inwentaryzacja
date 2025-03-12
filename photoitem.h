@@ -11,7 +11,7 @@ public:
     explicit PhotoItem(QGraphicsItem *parent = nullptr);
     ~PhotoItem();
 
-    void setSelected(bool selected); // Nowa metoda do ustawiania stanu zaznaczenia
+    void setSelected(bool selected);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -22,8 +22,8 @@ signals:
 private:
     bool m_pressed;
     bool m_selected;
-    QGraphicsRectItem *m_frame; // Ramka wokół zdjęcia
-    void updateFrame(); // Deklaracja metody updateFrame
+    QGraphicsRectItem *m_frame;
+    void updateFrame();
 };
 
 #endif // PHOTOITEM_H

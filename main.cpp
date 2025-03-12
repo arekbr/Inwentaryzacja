@@ -2,9 +2,6 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-#include <QMainWindow>
-#include <QFileDialog>
-#include <QMessageBox>
 #include <QDebug>
 
 int main(int argc, char *argv[])
