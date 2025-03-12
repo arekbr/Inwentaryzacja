@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
+#include "photoitem.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,24 +15,27 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    // Ustawienie trybu edycji: edit = true – edycja, false – dodawanie nowego rekordu
-    // recordId – identyfikator rekordu do edycji (dla trybu edycji)
     void setEditMode(bool edit, int recordId = -1);
 
 signals:
-    void recordSaved(); // Sygnał informujący o zapisaniu rekordu
+    void recordSaved(int recordId);
 
 private slots:
     void onSaveClicked();
     void onCancelClicked();
-    void onAddPhotoClicked(); // Nowy slot dla przycisku "Dodaj zdjęcia"
+    void onAddPhotoClicked();
     void loadRecord(int recordId);
+    void loadPhotos(int recordId);
+    void onRemovePhotoClicked();
+    void onPhotoClicked(PhotoItem *item);
 
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db;
     bool m_editMode;
     int m_recordId;
+    int m_selectedPhotoIndex;
+    QGraphicsScene *m_photoScene; // Dodajemy scenę dla graphicsView
 };
 
 #endif // MAINWINDOW_H
