@@ -1,43 +1,48 @@
 #include "photoitem.h"
+#include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 
-PhotoItem::PhotoItem(QGraphicsItem *parent)
-    : QGraphicsItem(parent), m_pixmap()
+PhotoItem::PhotoItem(QGraphicsItem *parent) : QGraphicsPixmapItem(parent), m_pressed(false), m_selected(false), m_frame(nullptr)
 {
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setAcceptHoverEvents(false);
+    setAcceptTouchEvents(false);
+
+    // Utwórz ramkę
+    m_frame = new QGraphicsRectItem(this);
+    m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki domyślnie
+    m_frame->setBrush(Qt::NoBrush);   // Brak wypełnienia
+    m_frame->setZValue(1);            // Ramka na wierzchu
+    updateFrame();
 }
 
-PhotoItem::PhotoItem(const QPixmap &pixmap, QGraphicsItem *parent)
-    : QGraphicsItem(parent), m_pixmap(pixmap)
+PhotoItem::~PhotoItem()
 {
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-}
-
-QRectF PhotoItem::boundingRect() const
-{
-    return m_pixmap.isNull() ? QRectF() : QRectF(0, 0, m_pixmap.width(), m_pixmap.height());
-}
-
-void PhotoItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-    if (!m_pixmap.isNull()) {
-        painter->drawPixmap(0, 0, m_pixmap);
-    }
-}
-
-QVariant PhotoItem::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == QGraphicsItem::ItemSelectedHasChanged) {
-        update();
-    }
-    return QGraphicsItem::itemChange(change, value);
+    delete m_frame;
 }
 
 void PhotoItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit clicked(this); // Emitujemy sygnał, gdy klikniemy na PhotoItem
-    QGraphicsItem::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton) {
+        m_pressed = true;
+        emit clicked(this);
+        event->accept();
+    } else {
+        QGraphicsPixmapItem::mousePressEvent(event);
+    }
+}
+
+void PhotoItem::setSelected(bool selected)
+{
+    m_selected = selected;
+    updateFrame();
+}
+
+void PhotoItem::updateFrame()
+{
+    if (m_selected) {
+        m_frame->setRect(boundingRect().adjusted(-2, -2, 2, 2)); // Ramka o 2 piksele większa
+        m_frame->setPen(QPen(Qt::red, 2)); // Czerwona ramka, 2 piksele
+    } else {
+        m_frame->setPen(QPen(Qt::NoPen)); // Brak ramki
+    }
 }
