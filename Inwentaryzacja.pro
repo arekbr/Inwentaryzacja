@@ -13,6 +13,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     models.cpp \
+    photoitem.cpp \
     types.cpp \
     vendors.cpp
 
@@ -20,6 +21,7 @@ HEADERS += \
     itemList.h \
     mainwindow.h \
     models.h \
+    photoitem.h \
     types.h \
     vendors.h
 
