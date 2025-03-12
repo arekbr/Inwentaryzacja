@@ -47,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Ustawienie połączenia z bazą SQLite
     if (!QSqlDatabase::contains("default_connection")) {
         db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
-
 #ifdef Q_OS_LINUX
         db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
 #elif defined(Q_OS_MAC)
@@ -64,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
         db = QSqlDatabase::database("default_connection");
     }
 
-    // Ładowanie danych do ComboBoxów przy użyciu funkcji loadComboBoxData
+    // Ładowanie danych do ComboBoxów
     loadComboBoxData("types", ui->New_item_type);
     loadComboBoxData("vendors", ui->New_item_vendor);
     loadComboBoxData("models", ui->New_item_model);
@@ -115,7 +114,7 @@ void MainWindow::setEditMode(bool edit, int recordId)
 {
     m_editMode = edit;
     m_recordId = recordId;
-    if (m_editMode && m_recordId != -1) {
+    if (m_editMode && (m_recordId != -1)) {
         loadRecord(m_recordId);
     } else {
         // Tryb dodawania – czyszczenie pól
@@ -135,7 +134,6 @@ void MainWindow::setEditMode(bool edit, int recordId)
             ui->New_item_storagePlace
         };
         for (QComboBox* combo : combos) {
-            // Czyszczenie – ustawienie indeksu na -1
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
@@ -172,7 +170,6 @@ void MainWindow::loadRecord(int recordId)
         int prodYear = query.value("production_year").toInt();
         ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
-        // Ustawienie ComboBoxów przy użyciu findData()
         ui->New_item_type->setCurrentIndex(ui->New_item_type->findData(query.value("type_id")));
         ui->New_item_vendor->setCurrentIndex(ui->New_item_vendor->findData(query.value("vendor_id")));
         ui->New_item_model->setCurrentIndex(ui->New_item_model->findData(query.value("model_id")));
@@ -275,7 +272,6 @@ void MainWindow::onSaveClicked()
         )");
         query.bindValue(":id", m_recordId);
     }
-
     query.bindValue(":name", ui->New_item_name->text());
     query.bindValue(":serial_number", ui->New_item_serialNumber->text());
     query.bindValue(":part_number", ui->New_item_partNumber->text());
@@ -296,14 +292,12 @@ void MainWindow::onSaveClicked()
                                                     .arg(query.lastError().text()));
         return;
     }
-
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
     } else {
         newRecordId = m_recordId;
     }
-
     emit recordSaved(newRecordId);
     QMessageBox::information(this, tr("Sukces"), tr("Operacja zapisu zakończona powodzeniem."));
     close();
@@ -325,7 +319,6 @@ void MainWindow::onAddPhotoClicked()
                                                           QString(),
                                                           tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty()) return;
-
     QSqlQuery query(db);
     for (const QString &fileName : fileNames) {
         QFile file(fileName);
@@ -335,7 +328,6 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray imageData = file.readAll();
         file.close();
-
         query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
         query.bindValue(":eksponat_id", m_recordId);
         query.bindValue(":photo", imageData);

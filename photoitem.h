@@ -10,7 +10,6 @@ class PhotoItem : public QObject, public QGraphicsPixmapItem {
 public:
     explicit PhotoItem(QGraphicsItem *parent = nullptr);
     ~PhotoItem();
-
     void setSelected(bool selected);
 
 protected:
