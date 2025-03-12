@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1029</width>
-    <height>958</height>
+    <width>1639</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="New_item_PushButton_OK">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>330</y>
+      <x>1340</x>
+      <y>510</y>
       <width>100</width>
       <height>32</height>
      </rect>
@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="New_item_PushButton_Cancel">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>320</y>
+      <x>1480</x>
+      <y>510</y>
       <width>100</width>
       <height>32</height>
      </rect>
@@ -133,8 +133,8 @@
    <widget class="QPlainTextEdit" name="New_item_description">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>360</y>
+      <x>920</x>
+      <y>370</y>
       <width>104</width>
       <height>71</height>
      </rect>
@@ -260,8 +260,8 @@
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>340</y>
+      <x>930</x>
+      <y>350</y>
       <width>58</width>
       <height>16</height>
      </rect>
@@ -273,8 +273,8 @@
    <widget class="QPushButton" name="New_item_addPhoto">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>60</y>
+      <x>1150</x>
+      <y>30</y>
       <width>100</width>
       <height>32</height>
      </rect>
@@ -286,7 +286,7 @@
    <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
-      <x>610</x>
+      <x>1280</x>
       <y>30</y>
       <width>256</width>
       <height>192</height>
@@ -296,8 +296,8 @@
    <widget class="QLineEdit" name="New_item_partNumber">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>50</y>
+      <x>900</x>
+      <y>60</y>
       <width>113</width>
       <height>26</height>
      </rect>
@@ -306,8 +306,8 @@
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>20</y>
+      <x>900</x>
+      <y>30</y>
       <width>91</width>
       <height>18</height>
      </rect>
@@ -319,8 +319,8 @@
    <widget class="QLineEdit" name="New_item_revision">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>140</y>
+      <x>890</x>
+      <y>150</y>
       <width>113</width>
       <height>26</height>
      </rect>
@@ -329,8 +329,8 @@
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>110</y>
+      <x>890</x>
+      <y>120</y>
       <width>66</width>
       <height>18</height>
      </rect>
@@ -342,8 +342,8 @@
    <widget class="QLineEdit" name="New_item_value">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>230</y>
+      <x>900</x>
+      <y>240</y>
       <width>113</width>
       <height>26</height>
      </rect>
@@ -352,8 +352,8 @@
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>200</y>
+      <x>900</x>
+      <y>210</y>
       <width>66</width>
       <height>18</height>
      </rect>
@@ -365,14 +365,53 @@
    <widget class="QPushButton" name="New_item_removePhoto">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>130</y>
+      <x>1160</x>
+      <y>80</y>
       <width>87</width>
       <height>26</height>
      </rect>
     </property>
     <property name="text">
      <string>Usuń zdjęcie</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="New_item_addType">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>140</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Dodaj</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="New_item_addVendor">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>210</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Dodaj</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="New_item_addModel">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>270</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Dodaj</string>
     </property>
    </widget>
   </widget>
