@@ -19,9 +19,14 @@ public:
     void setMainWindow(MainWindow *mainWindow);
 
 private slots:
-    void onSaveClicked();
+    void onAddClicked();
+    void onEditClicked();
+    void onDeleteClicked();
+    void onOkClicked();  // Slot dla przycisku OK – odświeża pole producenta i zamyka okno
 
 private:
+    void refreshList();
+
     Ui::vendors *ui;
     MainWindow *m_mainWindow;
     QSqlDatabase m_db;
