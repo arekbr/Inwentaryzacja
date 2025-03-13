@@ -72,6 +72,19 @@
     <string>Koniec</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="itemList_pushButton_delete">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>330</y>
+     <width>87</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>kasuj</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
