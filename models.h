@@ -20,9 +20,14 @@ public:
     void setVendorId(int vendorId);
 
 private slots:
-    void onSaveClicked();
+    void onAddClicked();
+    void onEditClicked();
+    void onDeleteClicked();
+    void onOkClicked();  // Slot dla przycisku OK – odświeża pole modeli i zamyka okno
 
 private:
+    void refreshList();
+
     Ui::models *ui;
     MainWindow *m_mainWindow;
     QSqlDatabase m_db;
