@@ -4,6 +4,7 @@
 #include "types.h"
 #include "models.h"
 #include "vendors.h"
+
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QFileDialog>
@@ -11,6 +12,7 @@
 #include <QDebug>
 #include <QDate>
 #include <qglobal.h>
+#include <QSqlRelationalDelegate>
 
 ///////////////////////
 // Metody dostępowe //
@@ -126,14 +128,10 @@ void MainWindow::setEditMode(bool edit, int recordId)
         ui->New_item_description->clear();
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
-        QList<QComboBox*> combos = {
-            ui->New_item_type,
-            ui->New_item_vendor,
-            ui->New_item_model,
-            ui->New_item_status,
-            ui->New_item_storagePlace
-        };
-        for (const auto &combo : combos) {
+        // Używamy pętli indeksowej na liście ComboBoxów
+        QList<QComboBox*> combos = { ui->New_item_type, ui->New_item_vendor, ui->New_item_model, ui->New_item_status, ui->New_item_storagePlace };
+        for (int i = 0; i < combos.size(); ++i) {
+            QComboBox *combo = combos.at(i);
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
@@ -141,8 +139,10 @@ void MainWindow::setEditMode(bool edit, int recordId)
         }
         ui->graphicsView->setScene(nullptr);
         m_selectedPhotoIndex = -1;
+        m_photoBuffer.clear();
     }
 }
+
 
 ///////////////////////
 // Ładowanie rekordu i zdjęć //
@@ -151,7 +151,6 @@ void MainWindow::setEditMode(bool edit, int recordId)
 void MainWindow::loadRecord(int recordId)
 {
     QSqlQuery query(db);
-    // Zaktualizowane zapytanie – usunięto kolumnę image_path
     query.prepare(R"(
         SELECT name, serial_number, part_number, revision, production_year,
                status_id, type_id, vendor_id, model_id, storage_place_id,
@@ -209,7 +208,8 @@ void MainWindow::loadPhotos(int recordId)
         item->setPixmap(scaled);
         item->setData(0, query.value("id").toInt());
         item->setData(1, index);
-        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        // Używamy indeksowej pętli przy łączeniu sygnału, zamiast range-loop – jednak tutaj nie mamy ostrzeżeń
+        QObject::connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
         item->setPos(x, y);
         scene->addItem(item);
         x += thumbnailSize + spacing;
@@ -228,15 +228,36 @@ void MainWindow::loadPhotos(int recordId)
         if (scaleFactor < 1.0)
             scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
-        for (const auto &itm : scene->items()) {
-            if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(itm)) {
-                photoItem->setSelected(false);
-            }
-        }
     } else {
         ui->graphicsView->setScene(nullptr);
         delete scene;
     }
+}
+
+// Nowa funkcja: ładowanie zdjęć z bufora (dla nowego rekordu)
+void MainWindow::loadPhotosFromBuffer()
+{
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    const int thumbnailSize = 80;
+    const int spacing = 5;
+    int x = 5, y = 5;
+    for (int i = 0; i < m_photoBuffer.size(); ++i) {
+        const QByteArray &photoData = m_photoBuffer.at(i);
+        QPixmap pixmap;
+        if (!pixmap.loadFromData(photoData)) {
+            qDebug() << "Nie można załadować zdjęcia z bufora.";
+            continue;
+        }
+        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QGraphicsPixmapItem *item = scene->addPixmap(scaled);
+        item->setPos(x, y);
+        x += thumbnailSize + spacing;
+        if (x + thumbnailSize > ui->graphicsView->width() - 10) {
+            x = 5;
+            y += thumbnailSize + spacing;
+        }
+    }
+    ui->graphicsView->setScene(scene);
 }
 
 ///////////////////////
@@ -289,6 +310,18 @@ void MainWindow::onSaveClicked()
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
+        // Po zapisie rekordu, wstaw zdjęcia z bufora do bazy
+        for (int i = 0; i < m_photoBuffer.size(); ++i) {
+            const QByteArray &photoData = m_photoBuffer.at(i);
+            QSqlQuery photoQuery(db);
+            photoQuery.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
+            photoQuery.bindValue(":eksponat_id", m_recordId);
+            photoQuery.bindValue(":photo", photoData);
+            if (!photoQuery.exec()) {
+                qDebug() << "Błąd zapisu zdjęcia z bufora:" << photoQuery.lastError().text();
+            }
+        }
+        m_photoBuffer.clear();
     } else {
         newRecordId = m_recordId;
     }
@@ -304,17 +337,15 @@ void MainWindow::onCancelClicked()
 
 void MainWindow::onAddPhotoClicked()
 {
-    if (m_recordId == -1) {
-        QMessageBox::warning(this, tr("Błąd"), tr("Najpierw zapisz rekord, aby dodać zdjęcie."));
-        return;
-    }
     QStringList fileNames = QFileDialog::getOpenFileNames(this,
                                                           tr("Wybierz zdjęcia"),
                                                           QString(),
                                                           tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
-    for (const auto &fileName : fileNames) {
+    // Używamy pętli indeksowej zamiast range-based loop
+    for (int i = 0; i < fileNames.size(); ++i) {
+        const QString &fileName = fileNames.at(i);
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
@@ -322,18 +353,28 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray imageData = file.readAll();
         file.close();
-        QSqlQuery query(db);
-        query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
-        query.bindValue(":eksponat_id", m_recordId);
-        query.bindValue(":photo", imageData);
-        if (!query.exec()) {
-            QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zapisać zdjęcia:\n%1")
-                                                        .arg(query.lastError().text()));
+        // Jeśli rekord jeszcze nie został zapisany, dodaj zdjęcie do bufora
+        if (m_recordId == -1) {
+            m_photoBuffer.append(imageData);
         } else {
-            qDebug() << "Zdjęcie zapisane dla rekordu" << m_recordId;
+            QSqlQuery query(db);
+            query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
+            query.bindValue(":eksponat_id", m_recordId);
+            query.bindValue(":photo", imageData);
+            if (!query.exec()) {
+                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zapisać zdjęcia:\n%1")
+                                                            .arg(query.lastError().text()));
+            } else {
+                qDebug() << "Zdjęcie zapisane dla rekordu" << m_recordId;
+            }
         }
     }
-    loadPhotos(m_recordId);
+    // Jeśli rekord nie został jeszcze zapisany, wyświetl zdjęcia z bufora; w przeciwnym razie – z bazy
+    if (m_recordId == -1) {
+        loadPhotosFromBuffer();
+    } else {
+        loadPhotos(m_recordId);
+    }
 }
 
 void MainWindow::onRemovePhotoClicked()
@@ -352,10 +393,12 @@ void MainWindow::onRemovePhotoClicked()
         PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items.at(m_selectedPhotoIndex));
         if (selectedItem) {
             int photoId = selectedItem->data(0).toInt();
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, tr("Potwierdzenie"),
-                                          tr("Czy na pewno chcesz usunąć wybrane zdjęcie?"),
-                                          QMessageBox::Yes | QMessageBox::No);
+            QMessageBox::StandardButton reply = QMessageBox::question(
+                this,
+                tr("Potwierdzenie"),
+                tr("Czy na pewno chcesz usunąć wybrane zdjęcie?"),
+                QMessageBox::Yes | QMessageBox::No
+                );
             if (reply == QMessageBox::Yes) {
                 QSqlQuery query(db);
                 query.prepare("DELETE FROM photos WHERE id = :id");
@@ -379,7 +422,8 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
         return;
     QList<QGraphicsItem*> items = scene->items();
     for (int i = 0; i < items.size(); ++i) {
-        if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items.at(i))) {
+        PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items.at(i));
+        if (photoItem) {
             photoItem->setSelected(items.at(i) == item);
             if (items.at(i) == item)
                 m_selectedPhotoIndex = i;

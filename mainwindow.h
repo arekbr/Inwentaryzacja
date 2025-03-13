@@ -5,13 +5,13 @@
 #include <QSqlDatabase>
 #include <QComboBox>
 #include "photoitem.h"
+#include <QList>
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
@@ -46,11 +46,14 @@ private slots:
     void onAddModelClicked();
 
 private:
+    void loadPhotosFromBuffer(); // nowa funkcja pomocnicza do wyświetlania zdjęć z bufora
+
     Ui::MainWindow *ui;
     QSqlDatabase db;
     bool m_editMode;
     int m_recordId;
     int m_selectedPhotoIndex;
+    QList<QByteArray> m_photoBuffer; // bufor na zdjęcia dodane przed zapisem rekordu
 };
 
 #endif // MAINWINDOW_H
