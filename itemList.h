@@ -21,6 +21,7 @@ private slots:
     void onNewButtonClicked();
     void onEditButtonClicked();
     void onEndButtonClicked();
+    void onDeleteButtonClicked();  // <<< Dodany slot kasowania
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void onRecordSaved(int recordId);
     void refreshList(int recordId = -1);

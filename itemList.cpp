@@ -49,17 +49,34 @@ itemList::itemList(QWidget *parent) :
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
 
+    // Ustawienie przyjaznych nagłówków dla użytkownika
+    // Kolumna indeks 0 (ID) oraz 13 (image_path) nie są potrzebne
+    model->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
+    model->setHeaderData(2, Qt::Horizontal, tr("Typ"));
+    model->setHeaderData(3, Qt::Horizontal, tr("Producent"));
+    model->setHeaderData(4, Qt::Horizontal, tr("Model"));
+    model->setHeaderData(5, Qt::Horizontal, tr("Numer seryjny"));
+    model->setHeaderData(6, Qt::Horizontal, tr("Part number"));
+    model->setHeaderData(7, Qt::Horizontal, tr("Revision"));
+    model->setHeaderData(8, Qt::Horizontal, tr("Rok produkcji"));
+    model->setHeaderData(9, Qt::Horizontal, tr("Status"));
+    model->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
+    model->setHeaderData(11, Qt::Horizontal, tr("Opis"));
+    model->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
+    // Kolumna 0 (ID) i 13 (image_path) ukrywamy:
     ui->itemList_tableView->setModel(model);
     ui->itemList_tableView->resizeColumnsToContents();
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->itemList_tableView->hideColumn(0);
+    ui->itemList_tableView->hideColumn(13);
 
     // Połączenie przycisków
     connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
+    connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
 
-    // Reakcja na zmianę zaznaczenia w tabeli
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
@@ -96,6 +113,46 @@ void itemList::onEditButtonClicked()
     editWindow->show();
 }
 
+void itemList::onDeleteButtonClicked()
+{
+    QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
+    if (!selModel->hasSelection()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do usunięcia."));
+        return;
+    }
+
+    // Pobierz pierwszy zaznaczony wiersz
+    QModelIndexList selected = selModel->selectedRows();
+    if (selected.isEmpty())
+        return;
+
+    int row = selected.first().row();
+    // Zakładamy, że kolumna 0 zawiera ID rekordu
+    int recordId = model->data(model->index(row, 0)).toInt();
+
+    // Potwierdzenie usunięcia
+    QMessageBox::StandardButton btn = QMessageBox::question(
+        this,
+        tr("Potwierdzenie"),
+        tr("Czy na pewno chcesz usunąć rekord o ID %1?").arg(recordId),
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (btn == QMessageBox::Yes) {
+        QSqlQuery query(QSqlDatabase::database("default_connection"));
+        query.prepare("DELETE FROM eksponaty WHERE id = :id");
+        query.bindValue(":id", recordId);
+        if (!query.exec()) {
+            QMessageBox::critical(this, tr("Błąd"),
+                                  tr("Nie udało się usunąć rekordu:\n%1")
+                                      .arg(query.lastError().text()));
+        } else {
+            refreshList();  // Odśwież widok po usunięciu
+            QMessageBox::information(this, tr("Sukces"), tr("Rekord został usunięty."));
+        }
+    }
+}
+
 void itemList::onEndButtonClicked()
 {
     qApp->quit();
@@ -117,7 +174,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int row = index.row();
     m_currentRecordId = model->data(model->index(row, 0)).toInt();
 
-    // Ładowanie zdjęć
+    // Ładowanie zdjęć (kod pozostaje bez zmian)
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
@@ -168,9 +225,6 @@ void itemList::refreshList(int recordId)
                 sel->clearSelection();
                 sel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
                 m_currentRecordId = recordId;
-                QItemSelection selected;
-                selected.select(model->index(row, 0), model->index(row, model->columnCount() - 1));
-                onTableViewSelectionChanged(selected, QItemSelection());
                 break;
             }
         }
