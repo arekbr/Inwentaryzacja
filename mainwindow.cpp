@@ -151,10 +151,11 @@ void MainWindow::setEditMode(bool edit, int recordId)
 void MainWindow::loadRecord(int recordId)
 {
     QSqlQuery query(db);
+    // Zaktualizowane zapytanie – usunięto kolumnę image_path
     query.prepare(R"(
         SELECT name, serial_number, part_number, revision, production_year,
                status_id, type_id, vendor_id, model_id, storage_place_id,
-               description, value, image_path
+               description, value
         FROM eksponaty
         WHERE id = :id
     )");
@@ -170,6 +171,7 @@ void MainWindow::loadRecord(int recordId)
         int prodYear = query.value("production_year").toInt();
         ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
+        // Ustawienie ComboBoxów na podstawie pobranych wartości (relacje obsługiwane przez QSqlRelationalTableModel)
         ui->New_item_type->setCurrentIndex(ui->New_item_type->findData(query.value("type_id")));
         ui->New_item_vendor->setCurrentIndex(ui->New_item_vendor->findData(query.value("vendor_id")));
         ui->New_item_model->setCurrentIndex(ui->New_item_model->findData(query.value("model_id")));
@@ -181,6 +183,7 @@ void MainWindow::loadRecord(int recordId)
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o id %1").arg(recordId));
     }
 }
+
 
 void MainWindow::loadPhotos(int recordId)
 {
@@ -253,13 +256,14 @@ void MainWindow::onSaveClicked()
     QSqlQuery query(db);
     int newRecordId = -1;
     if (!m_editMode) {
+        // Przyjmujemy, że tabela eksponaty nie zawiera kolumny image_path
         query.prepare(R"(
             INSERT INTO eksponaty
             (name, serial_number, part_number, revision, production_year, status_id,
-             type_id, vendor_id, model_id, storage_place_id, description, value, image_path)
+             type_id, vendor_id, model_id, storage_place_id, description, value)
             VALUES
             (:name, :serial_number, :part_number, :revision, :production_year, :status_id,
-             :type_id, :vendor_id, :model_id, :storage_place_id, :description, :value, :image_path)
+             :type_id, :vendor_id, :model_id, :storage_place_id, :description, :value)
         )");
     } else {
         query.prepare(R"(
@@ -267,11 +271,12 @@ void MainWindow::onSaveClicked()
             SET name = :name, serial_number = :serial_number, part_number = :part_number, revision = :revision,
                 production_year = :production_year, status_id = :status_id, type_id = :type_id,
                 vendor_id = :vendor_id, model_id = :model_id, storage_place_id = :storage_place_id,
-                description = :description, value = :value, image_path = :image_path
+                description = :description, value = :value
             WHERE id = :id
         )");
         query.bindValue(":id", m_recordId);
     }
+
     query.bindValue(":name", ui->New_item_name->text());
     query.bindValue(":serial_number", ui->New_item_serialNumber->text());
     query.bindValue(":part_number", ui->New_item_partNumber->text());
@@ -284,7 +289,6 @@ void MainWindow::onSaveClicked()
     query.bindValue(":storage_place_id", ui->New_item_storagePlace->currentData().isValid() ? ui->New_item_storagePlace->currentData() : 1);
     query.bindValue(":description", ui->New_item_description->toPlainText());
     query.bindValue(":value", ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
-    query.bindValue(":image_path", "");
 
     if (!query.exec()) {
         qDebug() << "Błąd zapisu:" << query.lastError().text();
@@ -292,16 +296,19 @@ void MainWindow::onSaveClicked()
                                                     .arg(query.lastError().text()));
         return;
     }
+
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
     } else {
         newRecordId = m_recordId;
     }
+
     emit recordSaved(newRecordId);
     QMessageBox::information(this, tr("Sukces"), tr("Operacja zapisu zakończona powodzeniem."));
     close();
 }
+
 
 void MainWindow::onCancelClicked()
 {
