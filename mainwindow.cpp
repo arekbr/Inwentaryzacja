@@ -133,7 +133,7 @@ void MainWindow::setEditMode(bool edit, int recordId)
             ui->New_item_status,
             ui->New_item_storagePlace
         };
-        for (QComboBox* combo : combos) {
+        for (const auto &combo : combos) {
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
@@ -171,7 +171,6 @@ void MainWindow::loadRecord(int recordId)
         int prodYear = query.value("production_year").toInt();
         ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
-        // Ustawienie ComboBoxów na podstawie pobranych wartości (relacje obsługiwane przez QSqlRelationalTableModel)
         ui->New_item_type->setCurrentIndex(ui->New_item_type->findData(query.value("type_id")));
         ui->New_item_vendor->setCurrentIndex(ui->New_item_vendor->findData(query.value("vendor_id")));
         ui->New_item_model->setCurrentIndex(ui->New_item_model->findData(query.value("model_id")));
@@ -183,7 +182,6 @@ void MainWindow::loadRecord(int recordId)
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o id %1").arg(recordId));
     }
 }
-
 
 void MainWindow::loadPhotos(int recordId)
 {
@@ -227,18 +225,12 @@ void MainWindow::loadPhotos(int recordId)
         ui->graphicsView->resetTransform();
         qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
                                  (ui->graphicsView->height() - 10.0) / scene->height());
-        if (scaleFactor < 1.0) scaleFactor = 1.0;
+        if (scaleFactor < 1.0)
+            scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
-        if (m_selectedPhotoIndex == -1) {
-            for (QGraphicsItem *itm : scene->items()) {
-                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(itm))
-                    photoItem->setSelected(false);
-            }
-        } else {
-            QList<QGraphicsItem*> items = scene->items();
-            if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
-                if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]))
-                    photoItem->setSelected(true);
+        for (const auto &itm : scene->items()) {
+            if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(itm)) {
+                photoItem->setSelected(false);
             }
         }
     } else {
@@ -256,7 +248,6 @@ void MainWindow::onSaveClicked()
     QSqlQuery query(db);
     int newRecordId = -1;
     if (!m_editMode) {
-        // Przyjmujemy, że tabela eksponaty nie zawiera kolumny image_path
         query.prepare(R"(
             INSERT INTO eksponaty
             (name, serial_number, part_number, revision, production_year, status_id,
@@ -276,7 +267,6 @@ void MainWindow::onSaveClicked()
         )");
         query.bindValue(":id", m_recordId);
     }
-
     query.bindValue(":name", ui->New_item_name->text());
     query.bindValue(":serial_number", ui->New_item_serialNumber->text());
     query.bindValue(":part_number", ui->New_item_partNumber->text());
@@ -296,19 +286,16 @@ void MainWindow::onSaveClicked()
                                                     .arg(query.lastError().text()));
         return;
     }
-
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
     } else {
         newRecordId = m_recordId;
     }
-
     emit recordSaved(newRecordId);
     QMessageBox::information(this, tr("Sukces"), tr("Operacja zapisu zakończona powodzeniem."));
     close();
 }
-
 
 void MainWindow::onCancelClicked()
 {
@@ -325,9 +312,9 @@ void MainWindow::onAddPhotoClicked()
                                                           tr("Wybierz zdjęcia"),
                                                           QString(),
                                                           tr("Images (*.jpg *.jpeg *.png)"));
-    if (fileNames.isEmpty()) return;
-    QSqlQuery query(db);
-    for (const QString &fileName : fileNames) {
+    if (fileNames.isEmpty())
+        return;
+    for (const auto &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
@@ -335,6 +322,7 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray imageData = file.readAll();
         file.close();
+        QSqlQuery query(db);
         query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
         query.bindValue(":eksponat_id", m_recordId);
         query.bindValue(":photo", imageData);
@@ -361,7 +349,7 @@ void MainWindow::onRemovePhotoClicked()
     }
     QList<QGraphicsItem*> items = scene->items();
     if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
-        PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]);
+        PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items.at(m_selectedPhotoIndex));
         if (selectedItem) {
             int photoId = selectedItem->data(0).toInt();
             QMessageBox::StandardButton reply;
@@ -387,12 +375,13 @@ void MainWindow::onRemovePhotoClicked()
 void MainWindow::onPhotoClicked(PhotoItem *item)
 {
     QGraphicsScene *scene = ui->graphicsView->scene();
-    if (!scene) return;
+    if (!scene)
+        return;
     QList<QGraphicsItem*> items = scene->items();
     for (int i = 0; i < items.size(); ++i) {
-        if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items[i])) {
-            photoItem->setSelected(items[i] == item);
-            if (items[i] == item)
+        if (PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items.at(i))) {
+            photoItem->setSelected(items.at(i) == item);
+            if (items.at(i) == item)
                 m_selectedPhotoIndex = i;
         }
     }
