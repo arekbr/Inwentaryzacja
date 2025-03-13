@@ -9,7 +9,7 @@ if [ -f "$OUTPUT_FILE" ]; then
 fi
 
 # Znajdź wszystkie pliki z podanymi rozszerzeniami w bieżącym katalogu
-for file in $(find . -maxdepth 1 -type f \( -name "*.pro" -o -name "*.cpp" -o -name "*.ui" -o -name "*.h" \))
+for file in $(find . -maxdepth 1 -type f \( -name "*.pro" -o -name "*.cpp" -o -name "*.ui" -o -name "*.h" -o -name "*.sql" \))
 do
     # Pomiń katalogi i pliki wynikowe
     if [ -f "$file" ]; then
