@@ -3,7 +3,9 @@
 #include "mainwindow.h"
 
 #include <QSqlDatabase>
-#include <QSqlTableModel>
+#include <QSqlRelationalTableModel>
+#include <QSqlRelation>
+#include <QSqlRelationalDelegate>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
@@ -24,9 +26,9 @@ itemList::itemList(QWidget *parent) :
 
     // Użycie domyślnego połączenia lub utworzenie nowego, jeśli nie istnieje
     QSqlDatabase db;
-    if (QSqlDatabase::contains("default_connection"))
+    if (QSqlDatabase::contains("default_connection")) {
         db = QSqlDatabase::database("default_connection");
-    else {
+    } else {
         db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
 #ifdef Q_OS_LINUX
         db.setDatabaseName("/home/arekbr/inwentaryzacja/muzeum.db");
@@ -43,40 +45,62 @@ itemList::itemList(QWidget *parent) :
         }
     }
 
-    // Ustawienie modelu SQL dla tabeli "eksponaty"
-    model = new QSqlTableModel(this, db);
-    model->setTable("eksponaty");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
+    // Ustawienie modelu relacyjnego dla tabeli "eksponaty"
+    QSqlRelationalTableModel *relModel = new QSqlRelationalTableModel(this, db);
+    relModel->setTable("eksponaty");
+    relModel->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
 
-    // Ustawienie przyjaznych nagłówków dla użytkownika
-    // Kolumna indeks 0 (ID) oraz 13 (image_path) nie są potrzebne
-    model->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
-    model->setHeaderData(2, Qt::Horizontal, tr("Typ"));
-    model->setHeaderData(3, Qt::Horizontal, tr("Producent"));
-    model->setHeaderData(4, Qt::Horizontal, tr("Model"));
-    model->setHeaderData(5, Qt::Horizontal, tr("Numer seryjny"));
-    model->setHeaderData(6, Qt::Horizontal, tr("Part number"));
-    model->setHeaderData(7, Qt::Horizontal, tr("Revision"));
-    model->setHeaderData(8, Qt::Horizontal, tr("Rok produkcji"));
-    model->setHeaderData(9, Qt::Horizontal, tr("Status"));
-    model->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
-    model->setHeaderData(11, Qt::Horizontal, tr("Opis"));
-    model->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
-    // Kolumna 0 (ID) i 13 (image_path) ukrywamy:
+    // Definicje relacji (zgodnie z indeksami kolumn w tabeli 'eksponaty'):
+    // 2 -> type_id       -> tabela "types"          -> kolumna "name"
+    // 3 -> vendor_id     -> tabela "vendors"        -> kolumna "name"
+    // 4 -> model_id      -> tabela "models"         -> kolumna "name"
+    // 9 -> status_id     -> tabela "statuses"       -> kolumna "name"
+    // 10 -> storage_place_id -> tabela "storage_places" -> kolumna "name"
+    relModel->setRelation(2, QSqlRelation("types", "id", "name"));
+    relModel->setRelation(3, QSqlRelation("vendors", "id", "name"));
+    relModel->setRelation(4, QSqlRelation("models", "id", "name"));
+    relModel->setRelation(9, QSqlRelation("statuses", "id", "name"));
+    relModel->setRelation(10, QSqlRelation("storage_places", "id", "name"));
+
+    relModel->select();
+
+    // Ustawienie przyjaznych nagłówków kolumn
+    relModel->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
+    relModel->setHeaderData(2, Qt::Horizontal, tr("Typ"));
+    relModel->setHeaderData(3, Qt::Horizontal, tr("Producent"));
+    relModel->setHeaderData(4, Qt::Horizontal, tr("Model"));
+    relModel->setHeaderData(5, Qt::Horizontal, tr("Numer seryjny"));
+    relModel->setHeaderData(6, Qt::Horizontal, tr("Part number"));
+    relModel->setHeaderData(7, Qt::Horizontal, tr("Revision"));
+    relModel->setHeaderData(8, Qt::Horizontal, tr("Rok produkcji"));
+    relModel->setHeaderData(9, Qt::Horizontal, tr("Status"));
+    relModel->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
+    relModel->setHeaderData(11, Qt::Horizontal, tr("Opis"));
+    relModel->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
+
+    // Ustawienie delegata relacyjnego, aby wyświetlać nazwy zamiast ID
+    ui->itemList_tableView->setItemDelegate(new QSqlRelationalDelegate(ui->itemList_tableView));
+
+    // Przypisanie modelu do zmiennej składowej klasy itemList
+    model = relModel;
+
+    // Konfiguracja widoku
     ui->itemList_tableView->setModel(model);
     ui->itemList_tableView->resizeColumnsToContents();
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    // Ukrycie kolumn, które nie mają być widoczne dla użytkownika (0 = id, 13 = image_path)
     ui->itemList_tableView->hideColumn(0);
     ui->itemList_tableView->hideColumn(13);
 
     // Połączenie przycisków
-    connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
-    connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
-    connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
+    connect(ui->itemList_pushButton_new,    &QPushButton::clicked, this, &itemList::onNewButtonClicked);
+    connect(ui->itemList_pushButton_edit,   &QPushButton::clicked, this, &itemList::onEditButtonClicked);
+    connect(ui->itemList_pushButton_end,    &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
 
+    // Reakcja na zmianę zaznaczenia w tabeli
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
@@ -106,6 +130,7 @@ void itemList::onEditButtonClicked()
     QModelIndex index = selectionModel->selectedRows().first();
     int recordId = model->data(model->index(index.row(), 0)).toInt();
     m_currentRecordId = recordId;
+
     MainWindow *editWindow = new MainWindow(this);
     editWindow->setAttribute(Qt::WA_DeleteOnClose);
     editWindow->setEditMode(true, recordId);
@@ -120,17 +145,13 @@ void itemList::onDeleteButtonClicked()
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do usunięcia."));
         return;
     }
-
-    // Pobierz pierwszy zaznaczony wiersz
     QModelIndexList selected = selModel->selectedRows();
     if (selected.isEmpty())
         return;
 
     int row = selected.first().row();
-    // Zakładamy, że kolumna 0 zawiera ID rekordu
     int recordId = model->data(model->index(row, 0)).toInt();
 
-    // Potwierdzenie usunięcia
     QMessageBox::StandardButton btn = QMessageBox::question(
         this,
         tr("Potwierdzenie"),
@@ -147,7 +168,7 @@ void itemList::onDeleteButtonClicked()
                                   tr("Nie udało się usunąć rekordu:\n%1")
                                       .arg(query.lastError().text()));
         } else {
-            refreshList();  // Odśwież widok po usunięciu
+            model->select();  // Odświeżenie listy po usunięciu
             QMessageBox::information(this, tr("Sukces"), tr("Rekord został usunięty."));
         }
     }
@@ -174,7 +195,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int row = index.row();
     m_currentRecordId = model->data(model->index(row, 0)).toInt();
 
-    // Ładowanie zdjęć (kod pozostaje bez zmian)
+    // Wczytywanie zdjęć z tabeli "photos"
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
@@ -217,6 +238,7 @@ void itemList::refreshList(int recordId)
 {
     model->select();
     ui->itemList_tableView->resizeColumnsToContents();
+
     if (recordId != -1) {
         for (int row = 0; row < model->rowCount(); ++row) {
             QModelIndex idx = model->index(row, 0);

@@ -3,8 +3,7 @@
 
 #include <QWidget>
 #include <QItemSelection>
-
-class QSqlTableModel;
+#include <QSqlRelationalTableModel>  // Dodaj ten include
 
 namespace Ui {
 class itemList;
@@ -21,14 +20,14 @@ private slots:
     void onNewButtonClicked();
     void onEditButtonClicked();
     void onEndButtonClicked();
-    void onDeleteButtonClicked();  // <<< Dodany slot kasowania
+    void onDeleteButtonClicked();
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void onRecordSaved(int recordId);
     void refreshList(int recordId = -1);
 
 private:
     Ui::itemList *ui;
-    QSqlTableModel *model;
+    QSqlRelationalTableModel *model;  // <<< Zmieniony typ
     int m_currentRecordId;
 };
 
