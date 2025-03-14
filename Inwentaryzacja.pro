@@ -41,4 +41,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     README.md \
-    createTable.sql
+    createTable.sql \
+    database_example_record.sql
