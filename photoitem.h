@@ -14,9 +14,13 @@ public:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override; // NOWE: Obsługa najechania
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override; // NOWE: Obsługa opuszczenia
 
 signals:
     void clicked(PhotoItem *item);
+    void hovered(PhotoItem *item);   // NOWY sygnał
+    void unhovered(PhotoItem *item); // NOWY sygnał
 
 private:
     bool m_pressed;
