@@ -89,6 +89,7 @@ itemList::itemList(QWidget *parent) :
     ui->itemList_tableView->resizeColumnsToContents();
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // Ukrycie kolumn, które nie mają być widoczne dla użytkownika (0 = id, 13 = image_path)
     ui->itemList_tableView->hideColumn(0);
