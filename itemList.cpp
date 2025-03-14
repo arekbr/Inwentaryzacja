@@ -17,8 +17,8 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QApplication>
-#include <QGuiApplication> // Dla QGuiApplication::primaryScreen()
-#include <QScreen>         // Dla QScreen
+#include <QGuiApplication>
+#include <QScreen>
 
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
@@ -54,12 +54,7 @@ itemList::itemList(QWidget *parent) :
     relModel->setTable("eksponaty");
     relModel->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
 
-    // Definicje relacji (zgodnie z indeksami kolumn w tabeli 'eksponaty'):
-    // 2 -> type_id       -> tabela "types"          -> kolumna "name"
-    // 3 -> vendor_id     -> tabela "vendors"        -> kolumna "name"
-    // 4 -> model_id      -> tabela "models"         -> kolumna "name"
-    // 9 -> status_id     -> tabela "statuses"       -> kolumna "name"
-    // 10 -> storage_place_id -> tabela "storage_places" -> kolumna "name"
+    // Definicje relacji (zgodnie z indeksami kolumn w tabeli 'eksponaty')
     relModel->setRelation(2, QSqlRelation("types", "id", "name"));
     relModel->setRelation(3, QSqlRelation("vendors", "id", "name"));
     relModel->setRelation(4, QSqlRelation("models", "id", "name"));
@@ -82,10 +77,10 @@ itemList::itemList(QWidget *parent) :
     relModel->setHeaderData(11, Qt::Horizontal, tr("Opis"));
     relModel->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
 
-    // Ustawienie delegata relacyjnego, aby wyświetlać nazwy zamiast ID
+    // Ustawienie delegata relacyjnego
     ui->itemList_tableView->setItemDelegate(new QSqlRelationalDelegate(ui->itemList_tableView));
 
-    // Przypisanie modelu do zmiennej składowej klasy itemList
+    // Przypisanie modelu
     model = relModel;
 
     // Konfiguracja widoku
@@ -95,17 +90,17 @@ itemList::itemList(QWidget *parent) :
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // Ukrycie kolumn, które nie mają być widoczne dla użytkownika (0 = id, 13 = image_path)
+    // Ukrycie kolumn
     ui->itemList_tableView->hideColumn(0);
     ui->itemList_tableView->hideColumn(13);
 
     // Połączenie przycisków
-    connect(ui->itemList_pushButton_new,    &QPushButton::clicked, this, &itemList::onNewButtonClicked);
-    connect(ui->itemList_pushButton_edit,   &QPushButton::clicked, this, &itemList::onEditButtonClicked);
-    connect(ui->itemList_pushButton_end,    &QPushButton::clicked, this, &itemList::onEndButtonClicked);
+    connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
+    connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
+    connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
 
-    // Reakcja na zmianę zaznaczenia w tabeli
+    // Reakcja na zmianę zaznaczenia
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
@@ -177,14 +172,14 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
             Qt::SmoothTransformation
             );
 
-        // Użyj PhotoItem zamiast QGraphicsPixmapItem
+        // Użyj PhotoItem
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
-        item->setData(0, QVariant(original)); // Przechowaj oryginalny QPixmap dla podglądu
+        item->setData(0, QVariant(original));
         item->setPos(x, y);
         scene->addItem(item);
 
-        // Połącz sygnały hovered i unhovered
+        // Połącz sygnały
         connect(item, &PhotoItem::hovered, this, &itemList::onPhotoHovered);
         connect(item, &PhotoItem::unhovered, this, &itemList::onPhotoUnhovered);
 
@@ -210,20 +205,33 @@ void itemList::onPhotoHovered(PhotoItem *item)
         m_previewWindow = nullptr;
     }
 
-    // Pobierz oryginalny QPixmap zapisany w danych itemu
+    // Pobierz oryginalny QPixmap
     QPixmap originalPixmap = item->data(0).value<QPixmap>();
     if (originalPixmap.isNull()) {
         return;
     }
 
-    // Oblicz pozycję miniatury w globalnych współrzędnych
-    QPointF scenePos = item->scenePos();
-    QPoint viewPos = ui->itemList_graphicsView->mapToGlobal(
-        ui->itemList_graphicsView->mapFromScene(scenePos)
-        ); // Usunięto toPoint(), ponieważ mapToGlobal zwraca QPoint
+    // Pobierz geometrię ekranu
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        qDebug() << "Nie można uzyskać informacji o ekranie.";
+        return;
+    }
+    QRect screenGeometry = screen->availableGeometry();
+    int screenCenterX = screenGeometry.center().x();
+    int screenCenterY = screenGeometry.center().y();
 
-    // Utwórz okno podglądu
-    m_previewWindow = new QWidget(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    // Skaluj zdjęcie do maksymalnie 80% ekranu
+    int maxWidth = screenGeometry.width() * 0.8;
+    int maxHeight = screenGeometry.height() * 0.8;
+    QPixmap scaledPixmap = originalPixmap.scaled(
+        maxWidth, maxHeight,
+        Qt::KeepAspectRatio,
+        Qt::SmoothTransformation
+        );
+
+    // Utwórz niezależne okno podglądu
+    m_previewWindow = new QWidget(nullptr, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
     m_previewWindow->setStyleSheet(
         "background-color: rgba(0, 0, 0, 200); border-radius: 10px;"
@@ -231,44 +239,20 @@ void itemList::onPhotoHovered(PhotoItem *item)
 
     QLabel *imageLabel = new QLabel(m_previewWindow);
     imageLabel->setStyleSheet("background: transparent;");
-
-    // Oblicz maksymalny rozmiar podglądu (np. 80% szerokości/wysokości ekranu)
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (!screen) {
-        qDebug() << "Nie można uzyskać informacji o ekranie.";
-        return;
-    }
-    QRect screenGeometry = screen->availableGeometry();
-    int maxWidth = screenGeometry.width() * 0.8;
-    int maxHeight = screenGeometry.height() * 0.8;
-
-    QPixmap scaledPixmap = originalPixmap.scaled(
-        maxWidth, maxHeight,
-        Qt::KeepAspectRatio,
-        Qt::SmoothTransformation
-        );
     imageLabel->setPixmap(scaledPixmap);
 
     // Ustaw rozmiar okna podglądu
     m_previewWindow->setFixedSize(scaledPixmap.width() + 20, scaledPixmap.height() + 20);
     imageLabel->setGeometry(10, 10, scaledPixmap.width(), scaledPixmap.height());
 
-    // Pozycjonowanie okna podglądu (np. obok miniatury, ale upewnij się, że mieści się na ekranie)
-    int posX = viewPos.x() + item->pixmap().width() + 10; // Po prawej stronie miniatury
-    int posY = viewPos.y();
+    // Wyśrodkuj okno na ekranie
+    int windowX = screenCenterX - (m_previewWindow->width() / 2);
+    int windowY = screenCenterY - (m_previewWindow->height() / 2);
+    m_previewWindow->move(windowX, windowY);
 
-    // Sprawdź, czy okno mieści się na ekranie
-    if (posX + m_previewWindow->width() > screenGeometry.right()) {
-        posX = viewPos.x() - m_previewWindow->width() - 10; // Po lewej stronie, jeśli nie mieści się po prawej
-    }
-    if (posY + m_previewWindow->height() > screenGeometry.bottom()) {
-        posY = screenGeometry.bottom() - m_previewWindow->height();
-    }
-    if (posY < screenGeometry.top()) {
-        posY = screenGeometry.top();
-    }
-
-    m_previewWindow->move(posX, posY);
+    // Ustaw okno na najwyższej warstwie
+    m_previewWindow->raise();
+    m_previewWindow->activateWindow();
     m_previewWindow->show();
 }
 
@@ -338,7 +322,7 @@ void itemList::onDeleteButtonClicked()
                                   tr("Nie udało się usunąć rekordu:\n%1")
                                       .arg(query.lastError().text()));
         } else {
-            model->select();  // Odświeżenie listy po usunięciu
+            model->select();
             QMessageBox::information(this, tr("Sukces"), tr("Rekord został usunięty."));
         }
     }
