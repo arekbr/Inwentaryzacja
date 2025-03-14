@@ -11,80 +11,126 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Lista przedmiotów</string>
   </property>
-  <widget class="QTableView" name="itemList_tableView">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>90</y>
-     <width>1321</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="itemList_pushButton_new">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>330</y>
-     <width>87</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Nowy</string>
-   </property>
-  </widget>
-  <widget class="QGraphicsView" name="itemList_graphicsView">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>330</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="itemList_pushButton_edit">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>330</y>
-     <width>87</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Edycja</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="itemList_pushButton_end">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>410</y>
-     <width>87</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Koniec</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="itemList_pushButton_delete">
-   <property name="geometry">
-    <rect>
-     <x>580</x>
-     <y>330</y>
-     <width>87</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>kasuj</string>
-   </property>
-  </widget>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #F5F5F5;
+}
+
+QLabel {
+    color: #333333;
+    font-weight: bold;
+}
+
+QTableView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+QTableView QHeaderView::section {
+    background-color: #E0E0E0;
+    color: #333333;
+    padding: 5px;
+    border: 1px solid #CCCCCC;
+}
+
+QGraphicsView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+}
+
+QPushButton {
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+QPushButton#itemList_pushButton_new {
+    background-color: #4CAF50;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_edit {
+    background-color: #2196F3; /* Niebieski dla edycji */
+    color: white;
+}
+
+QPushButton#itemList_pushButton_delete {
+    background-color: #F44336; /* Czerwony dla kasowania */
+    color: white;
+}
+
+QPushButton#itemList_pushButton_end {
+    background-color: #B0BEC5;
+    color: white;
+}
+
+QPushButton:hover {
+    opacity: 0.8;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QLabel" name="headerLabel">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Lista przedmiotów</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="itemList_tableView"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottomLayout">
+     <item>
+      <widget class="QGraphicsView" name="itemList_graphicsView"/>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="buttonsLayout">
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_new">
+         <property name="text">
+          <string>Nowy</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_edit">
+         <property name="text">
+          <string>Edycja</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_delete">
+         <property name="text">
+          <string>Kasuj</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_end">
+         <property name="text">
+          <string>Koniec</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
