@@ -205,34 +205,63 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         ui->itemList_graphicsView->setScene(nullptr);
         return;
     }
-    QGraphicsScene *scene = new QGraphicsScene(this);
-    const int thumbnailSize = 80;
-    const int spacing = 5;
-    int x = 5, y = 5;
+
+    // Pobierz wymiary QGraphicsView
+    int viewWidth = ui->itemList_graphicsView->viewport()->width() - 10; // Margines 5px z każdej strony
+    int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
+
+    QList<QPixmap> pixmaps;
     while (query.next()) {
         QByteArray imageData = query.value("photo").toByteArray();
         QPixmap pixmap;
-        if (!pixmap.loadFromData(imageData)) {
+        if (pixmap.loadFromData(imageData)) {
+            pixmaps.append(pixmap);
+        } else {
             qDebug() << "Nie można załadować zdjęcia BLOB.";
-            continue;
         }
-        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+
+    if (pixmaps.isEmpty()) {
+        ui->itemList_graphicsView->setScene(nullptr);
+        return;
+    }
+
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    const int spacing = 5; // Odstęp między zdjęciami
+    int photoCount = pixmaps.size();
+
+    // Oblicz optymalny rozmiar miniatur
+    int cols = qMax(1, qMin(qCeil(qSqrt(photoCount)), viewWidth / 100)); // Maksymalnie 100px na kolumnę jako punkt startowy
+    int rows = (photoCount + cols - 1) / cols; // Zaokrąglenie w górę liczby wierszy
+    int maxThumbnailWidth = (viewWidth - (cols - 1) * spacing) / cols;
+    int maxThumbnailHeight = (viewHeight - (rows - 1) * spacing) / rows;
+
+    int x = 5, y = 5;
+    for (int i = 0; i < photoCount; ++i) {
+        QPixmap original = pixmaps[i];
+        QPixmap scaled = original.scaled(
+            maxThumbnailWidth, maxThumbnailHeight,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation
+            );
+
         QGraphicsPixmapItem *item = scene->addPixmap(scaled);
         item->setPos(x, y);
-        x += thumbnailSize + spacing;
-        if (x + thumbnailSize > ui->itemList_graphicsView->width() - 10) {
+
+        // Przejdź do nowej linii po wypełnieniu kolumn
+        x += scaled.width() + spacing;
+        if ((i + 1) % cols == 0) {
             x = 5;
-            y += thumbnailSize + spacing;
+            y += scaled.height() + spacing;
         }
     }
-    if (!scene->items().isEmpty()) {
-        scene->setSceneRect(0, 0, ui->itemList_graphicsView->width() - 10, y + thumbnailSize + 5);
-        ui->itemList_graphicsView->setScene(scene);
-        ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
-    } else {
-        ui->itemList_graphicsView->setScene(nullptr);
-        delete scene;
-    }
+
+    // Ustaw scenę i dostosuj widok
+    int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
+    int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
+    scene->setSceneRect(0, 0, totalWidth, totalHeight);
+    ui->itemList_graphicsView->setScene(scene);
+    ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void itemList::refreshList(int recordId)
