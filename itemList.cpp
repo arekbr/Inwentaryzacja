@@ -1,6 +1,7 @@
 #include "itemList.h"
 #include "ui_itemList.h"
 #include "mainwindow.h"
+#include "photoitem.h"
 
 #include <QSqlDatabase>
 #include <QSqlRelationalTableModel>
@@ -16,11 +17,14 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QApplication>
+#include <QGuiApplication> // Dla QGuiApplication::primaryScreen()
+#include <QScreen>         // Dla QScreen
 
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::itemList),
-    m_currentRecordId(-1)
+    m_currentRecordId(-1),
+    m_previewWindow(nullptr)
 {
     ui->setupUi(this);
 
@@ -109,7 +113,172 @@ itemList::itemList(QWidget *parent) :
 
 itemList::~itemList()
 {
+    delete m_previewWindow;
     delete ui;
+}
+
+void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
+{
+    if (selected.indexes().isEmpty()) {
+        ui->itemList_graphicsView->setScene(nullptr);
+        m_currentRecordId = -1;
+        return;
+    }
+    QModelIndex index = selected.indexes().first();
+    int row = index.row();
+    m_currentRecordId = model->data(model->index(row, 0)).toInt();
+
+    // Wczytywanie zdjęć z tabeli "photos"
+    QSqlQuery query(QSqlDatabase::database("default_connection"));
+    query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
+    query.bindValue(":id", m_currentRecordId);
+    if (!query.exec()) {
+        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
+        ui->itemList_graphicsView->setScene(nullptr);
+        return;
+    }
+
+    // Pobierz wymiary QGraphicsView
+    int viewWidth = ui->itemList_graphicsView->viewport()->width() - 10;
+    int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
+
+    QList<QPixmap> pixmaps;
+    while (query.next()) {
+        QByteArray imageData = query.value("photo").toByteArray();
+        QPixmap pixmap;
+        if (pixmap.loadFromData(imageData)) {
+            pixmaps.append(pixmap);
+        } else {
+            qDebug() << "Nie można załadować zdjęcia BLOB.";
+        }
+    }
+
+    if (pixmaps.isEmpty()) {
+        ui->itemList_graphicsView->setScene(nullptr);
+        return;
+    }
+
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    const int spacing = 5;
+    int photoCount = pixmaps.size();
+
+    // Oblicz optymalny rozmiar miniatur
+    int cols = qMax(1, qMin(qCeil(qSqrt(photoCount)), viewWidth / 100));
+    int rows = (photoCount + cols - 1) / cols;
+    int maxThumbnailWidth = (viewWidth - (cols - 1) * spacing) / cols;
+    int maxThumbnailHeight = (viewHeight - (rows - 1) * spacing) / rows;
+
+    int x = 5, y = 5;
+    for (int i = 0; i < photoCount; ++i) {
+        QPixmap original = pixmaps[i];
+        QPixmap scaled = original.scaled(
+            maxThumbnailWidth, maxThumbnailHeight,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation
+            );
+
+        // Użyj PhotoItem zamiast QGraphicsPixmapItem
+        PhotoItem *item = new PhotoItem();
+        item->setPixmap(scaled);
+        item->setData(0, QVariant(original)); // Przechowaj oryginalny QPixmap dla podglądu
+        item->setPos(x, y);
+        scene->addItem(item);
+
+        // Połącz sygnały hovered i unhovered
+        connect(item, &PhotoItem::hovered, this, &itemList::onPhotoHovered);
+        connect(item, &PhotoItem::unhovered, this, &itemList::onPhotoUnhovered);
+
+        x += scaled.width() + spacing;
+        if ((i + 1) % cols == 0) {
+            x = 5;
+            y += scaled.height() + spacing;
+        }
+    }
+
+    // Ustaw scenę i dostosuj widok
+    int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
+    int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
+    scene->setSceneRect(0, 0, totalWidth, totalHeight);
+    ui->itemList_graphicsView->setScene(scene);
+    ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void itemList::onPhotoHovered(PhotoItem *item)
+{
+    if (m_previewWindow) {
+        m_previewWindow->close();
+        m_previewWindow = nullptr;
+    }
+
+    // Pobierz oryginalny QPixmap zapisany w danych itemu
+    QPixmap originalPixmap = item->data(0).value<QPixmap>();
+    if (originalPixmap.isNull()) {
+        return;
+    }
+
+    // Oblicz pozycję miniatury w globalnych współrzędnych
+    QPointF scenePos = item->scenePos();
+    QPoint viewPos = ui->itemList_graphicsView->mapToGlobal(
+        ui->itemList_graphicsView->mapFromScene(scenePos)
+        ); // Usunięto toPoint(), ponieważ mapToGlobal zwraca QPoint
+
+    // Utwórz okno podglądu
+    m_previewWindow = new QWidget(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
+    m_previewWindow->setStyleSheet(
+        "background-color: rgba(0, 0, 0, 200); border-radius: 10px;"
+        );
+
+    QLabel *imageLabel = new QLabel(m_previewWindow);
+    imageLabel->setStyleSheet("background: transparent;");
+
+    // Oblicz maksymalny rozmiar podglądu (np. 80% szerokości/wysokości ekranu)
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (!screen) {
+        qDebug() << "Nie można uzyskać informacji o ekranie.";
+        return;
+    }
+    QRect screenGeometry = screen->availableGeometry();
+    int maxWidth = screenGeometry.width() * 0.8;
+    int maxHeight = screenGeometry.height() * 0.8;
+
+    QPixmap scaledPixmap = originalPixmap.scaled(
+        maxWidth, maxHeight,
+        Qt::KeepAspectRatio,
+        Qt::SmoothTransformation
+        );
+    imageLabel->setPixmap(scaledPixmap);
+
+    // Ustaw rozmiar okna podglądu
+    m_previewWindow->setFixedSize(scaledPixmap.width() + 20, scaledPixmap.height() + 20);
+    imageLabel->setGeometry(10, 10, scaledPixmap.width(), scaledPixmap.height());
+
+    // Pozycjonowanie okna podglądu (np. obok miniatury, ale upewnij się, że mieści się na ekranie)
+    int posX = viewPos.x() + item->pixmap().width() + 10; // Po prawej stronie miniatury
+    int posY = viewPos.y();
+
+    // Sprawdź, czy okno mieści się na ekranie
+    if (posX + m_previewWindow->width() > screenGeometry.right()) {
+        posX = viewPos.x() - m_previewWindow->width() - 10; // Po lewej stronie, jeśli nie mieści się po prawej
+    }
+    if (posY + m_previewWindow->height() > screenGeometry.bottom()) {
+        posY = screenGeometry.bottom() - m_previewWindow->height();
+    }
+    if (posY < screenGeometry.top()) {
+        posY = screenGeometry.top();
+    }
+
+    m_previewWindow->move(posX, posY);
+    m_previewWindow->show();
+}
+
+void itemList::onPhotoUnhovered(PhotoItem *item)
+{
+    Q_UNUSED(item);
+    if (m_previewWindow) {
+        m_previewWindow->close();
+        m_previewWindow = nullptr;
+    }
 }
 
 void itemList::onNewButtonClicked()
@@ -183,85 +352,6 @@ void itemList::onEndButtonClicked()
 void itemList::onRecordSaved(int recordId)
 {
     refreshList(recordId);
-}
-
-void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
-{
-    if (selected.indexes().isEmpty()) {
-        ui->itemList_graphicsView->setScene(nullptr);
-        m_currentRecordId = -1;
-        return;
-    }
-    QModelIndex index = selected.indexes().first();
-    int row = index.row();
-    m_currentRecordId = model->data(model->index(row, 0)).toInt();
-
-    // Wczytywanie zdjęć z tabeli "photos"
-    QSqlQuery query(QSqlDatabase::database("default_connection"));
-    query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
-    query.bindValue(":id", m_currentRecordId);
-    if (!query.exec()) {
-        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
-        ui->itemList_graphicsView->setScene(nullptr);
-        return;
-    }
-
-    // Pobierz wymiary QGraphicsView
-    int viewWidth = ui->itemList_graphicsView->viewport()->width() - 10; // Margines 5px z każdej strony
-    int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
-
-    QList<QPixmap> pixmaps;
-    while (query.next()) {
-        QByteArray imageData = query.value("photo").toByteArray();
-        QPixmap pixmap;
-        if (pixmap.loadFromData(imageData)) {
-            pixmaps.append(pixmap);
-        } else {
-            qDebug() << "Nie można załadować zdjęcia BLOB.";
-        }
-    }
-
-    if (pixmaps.isEmpty()) {
-        ui->itemList_graphicsView->setScene(nullptr);
-        return;
-    }
-
-    QGraphicsScene *scene = new QGraphicsScene(this);
-    const int spacing = 5; // Odstęp między zdjęciami
-    int photoCount = pixmaps.size();
-
-    // Oblicz optymalny rozmiar miniatur
-    int cols = qMax(1, qMin(qCeil(qSqrt(photoCount)), viewWidth / 100)); // Maksymalnie 100px na kolumnę jako punkt startowy
-    int rows = (photoCount + cols - 1) / cols; // Zaokrąglenie w górę liczby wierszy
-    int maxThumbnailWidth = (viewWidth - (cols - 1) * spacing) / cols;
-    int maxThumbnailHeight = (viewHeight - (rows - 1) * spacing) / rows;
-
-    int x = 5, y = 5;
-    for (int i = 0; i < photoCount; ++i) {
-        QPixmap original = pixmaps[i];
-        QPixmap scaled = original.scaled(
-            maxThumbnailWidth, maxThumbnailHeight,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
-            );
-
-        QGraphicsPixmapItem *item = scene->addPixmap(scaled);
-        item->setPos(x, y);
-
-        // Przejdź do nowej linii po wypełnieniu kolumn
-        x += scaled.width() + spacing;
-        if ((i + 1) % cols == 0) {
-            x = 5;
-            y += scaled.height() + spacing;
-        }
-    }
-
-    // Ustaw scenę i dostosuj widok
-    int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
-    int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
-    scene->setSceneRect(0, 0, totalWidth, totalHeight);
-    ui->itemList_graphicsView->setScene(scene);
-    ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void itemList::refreshList(int recordId)
