@@ -11,6 +11,8 @@ SOURCES += \
     mainwindow.cpp \
     models.cpp \
     photoitem.cpp \
+    status.cpp \
+    storage.cpp \
     types.cpp \
     vendors.cpp
 
@@ -19,6 +21,8 @@ HEADERS += \
     mainwindow.h \
     models.h \
     photoitem.h \
+    status.h \
+    storage.h \
     types.h \
     vendors.h
 
