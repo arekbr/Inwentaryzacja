@@ -456,10 +456,7 @@ void MainWindow::onAddVendorClicked()
 void MainWindow::onAddModelClicked()
 {
     models *modelDialog = new models(this);
-    int vendorId = ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData().toInt() : -1;
-    if (vendorId != -1) {
-        modelDialog->setVendorId(vendorId);
-    }
+    modelDialog->setMainWindow(this);
     modelDialog->exec();
     delete modelDialog;
 }
