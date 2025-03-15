@@ -27,9 +27,6 @@ public:
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
 
-    // Dla uzupełniania słowników
-    void loadComboBoxDataForTable(const QString &tableName, QComboBox *comboBox);
-
 signals:
     void recordSaved(int recordId);
 
@@ -46,14 +43,14 @@ private slots:
     void onAddModelClicked();
 
 private:
-    void loadPhotosFromBuffer(); // nowa funkcja pomocnicza do wyświetlania zdjęć z bufora
+    void loadPhotosFromBuffer();
 
     Ui::MainWindow *ui;
     QSqlDatabase db;
     bool m_editMode;
     int m_recordId;
     int m_selectedPhotoIndex;
-    QList<QByteArray> m_photoBuffer; // bufor na zdjęcia dodane przed zapisem rekordu
+    QList<QByteArray> m_photoBuffer;
 };
 
 #endif // MAINWINDOW_H

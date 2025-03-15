@@ -11,8 +11,11 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDate>
-#include <qglobal.h>
+#include <QIntValidator>
 #include <QSqlRelationalDelegate>
+#include <QGuiApplication>
+#include <QScreen>
+#include <memory>
 
 ///////////////////////
 // Metody dostępowe //
@@ -45,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
+    // Ustawienie walidatora dla pola "Ilość"
+    ui->New_item_value->setValidator(new QIntValidator(0, 1000000, this));
 
     // Ustawienie połączenia z bazą SQLite
     if (!QSqlDatabase::contains("default_connection")) {
@@ -128,21 +133,21 @@ void MainWindow::setEditMode(bool edit, int recordId)
         ui->New_item_description->clear();
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
-        // Używamy pętli indeksowej na liście ComboBoxów
         QList<QComboBox*> combos = { ui->New_item_type, ui->New_item_vendor, ui->New_item_model, ui->New_item_status, ui->New_item_storagePlace };
-        for (int i = 0; i < combos.size(); ++i) {
-            QComboBox *combo = combos.at(i);
+        for (QComboBox *combo : combos) {
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
             combo->setEditable(false);
         }
-        ui->graphicsView->setScene(nullptr);
+        if (ui->graphicsView->scene()) {
+            delete ui->graphicsView->scene();
+            ui->graphicsView->setScene(nullptr);
+        }
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
     }
 }
-
 
 ///////////////////////
 // Ładowanie rekordu i zdjęć //
@@ -189,13 +194,22 @@ void MainWindow::loadPhotos(int recordId)
     query.bindValue(":id", recordId);
     if (!query.exec()) {
         qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
-        ui->graphicsView->setScene(nullptr);
+        if (ui->graphicsView->scene()) {
+            delete ui->graphicsView->scene();
+            ui->graphicsView->setScene(nullptr);
+        }
         return;
     }
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    // Usuwamy poprzednią scenę, jeśli istnieje
+    if (ui->graphicsView->scene()) {
+        delete ui->graphicsView->scene();
+        ui->graphicsView->setScene(nullptr);
+    }
+    auto scene = std::make_unique<QGraphicsScene>(this);
     const int thumbnailSize = 80;
     const int spacing = 5;
-    int x = 5, y = 5, index = 0;
+    int x = 5, y = 5;
+    int index = 0;
     while (query.next()) {
         QByteArray imageData = query.value("photo").toByteArray();
         QPixmap pixmap;
@@ -208,8 +222,7 @@ void MainWindow::loadPhotos(int recordId)
         item->setPixmap(scaled);
         item->setData(0, query.value("id").toInt());
         item->setData(1, index);
-        // Używamy indeksowej pętli przy łączeniu sygnału, zamiast range-loop – jednak tutaj nie mamy ostrzeżeń
-        QObject::connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
         item->setPos(x, y);
         scene->addItem(item);
         x += thumbnailSize + spacing;
@@ -221,28 +234,33 @@ void MainWindow::loadPhotos(int recordId)
     }
     if (!scene->items().isEmpty()) {
         scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbnailSize + 5);
-        ui->graphicsView->setScene(scene);
+        ui->graphicsView->setScene(scene.release());
         ui->graphicsView->resetTransform();
-        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
-                                 (ui->graphicsView->height() - 10.0) / scene->height());
+        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / ui->graphicsView->scene()->width(),
+                                 (ui->graphicsView->height() - 10.0) / ui->graphicsView->scene()->height());
         if (scaleFactor < 1.0)
             scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
     } else {
-        ui->graphicsView->setScene(nullptr);
-        delete scene;
+        if (ui->graphicsView->scene()) {
+            delete ui->graphicsView->scene();
+            ui->graphicsView->setScene(nullptr);
+        }
     }
 }
 
-// Nowa funkcja: ładowanie zdjęć z bufora (dla nowego rekordu)
 void MainWindow::loadPhotosFromBuffer()
 {
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    // Usuwamy poprzednią scenę, jeśli istnieje
+    if (ui->graphicsView->scene()) {
+        delete ui->graphicsView->scene();
+        ui->graphicsView->setScene(nullptr);
+    }
+    auto scene = std::make_unique<QGraphicsScene>(this);
     const int thumbnailSize = 80;
     const int spacing = 5;
     int x = 5, y = 5;
-    for (int i = 0; i < m_photoBuffer.size(); ++i) {
-        const QByteArray &photoData = m_photoBuffer.at(i);
+    for (const QByteArray &photoData : m_photoBuffer) {
         QPixmap pixmap;
         if (!pixmap.loadFromData(photoData)) {
             qDebug() << "Nie można załadować zdjęcia z bufora.";
@@ -257,7 +275,7 @@ void MainWindow::loadPhotosFromBuffer()
             y += thumbnailSize + spacing;
         }
     }
-    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setScene(scene.release());
 }
 
 ///////////////////////
@@ -310,16 +328,21 @@ void MainWindow::onSaveClicked()
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
-        // Po zapisie rekordu, wstaw zdjęcia z bufora do bazy
-        for (int i = 0; i < m_photoBuffer.size(); ++i) {
-            const QByteArray &photoData = m_photoBuffer.at(i);
-            QSqlQuery photoQuery(db);
-            photoQuery.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
-            photoQuery.bindValue(":eksponat_id", m_recordId);
-            photoQuery.bindValue(":photo", photoData);
-            if (!photoQuery.exec()) {
-                qDebug() << "Błąd zapisu zdjęcia z bufora:" << photoQuery.lastError().text();
+        // Grupowanie operacji dodawania zdjęć w transakcję
+        if (db.transaction()) {
+            for (const QByteArray &photoData : m_photoBuffer) {
+                QSqlQuery photoQuery(db);
+                photoQuery.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
+                photoQuery.bindValue(":eksponat_id", m_recordId);
+                photoQuery.bindValue(":photo", photoData);
+                if (!photoQuery.exec()){
+                    qDebug() << "Błąd zapisu zdjęcia z bufora:" << photoQuery.lastError().text();
+                    db.rollback();
+                    m_photoBuffer.clear();
+                    return;
+                }
             }
+            db.commit();
         }
         m_photoBuffer.clear();
     } else {
@@ -343,9 +366,7 @@ void MainWindow::onAddPhotoClicked()
                                                           tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
-    // Używamy pętli indeksowej zamiast range-based loop
-    for (int i = 0; i < fileNames.size(); ++i) {
-        const QString &fileName = fileNames.at(i);
+    for (const QString &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
@@ -353,7 +374,6 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray imageData = file.readAll();
         file.close();
-        // Jeśli rekord jeszcze nie został zapisany, dodaj zdjęcie do bufora
         if (m_recordId == -1) {
             m_photoBuffer.append(imageData);
         } else {
@@ -369,7 +389,6 @@ void MainWindow::onAddPhotoClicked()
             }
         }
     }
-    // Jeśli rekord nie został jeszcze zapisany, wyświetl zdjęcia z bufora; w przeciwnym razie – z bazy
     if (m_recordId == -1) {
         loadPhotosFromBuffer();
     } else {
@@ -390,7 +409,8 @@ void MainWindow::onRemovePhotoClicked()
     }
     QList<QGraphicsItem*> items = scene->items();
     if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
-        PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items.at(m_selectedPhotoIndex));
+        // Używamy qgraphicsitem_cast zamiast dynamic_cast
+        PhotoItem *selectedItem = qgraphicsitem_cast<PhotoItem*>(items.at(m_selectedPhotoIndex));
         if (selectedItem) {
             int photoId = selectedItem->data(0).toInt();
             QMessageBox::StandardButton reply = QMessageBox::question(
@@ -422,7 +442,7 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
         return;
     QList<QGraphicsItem*> items = scene->items();
     for (int i = 0; i < items.size(); ++i) {
-        PhotoItem *photoItem = dynamic_cast<PhotoItem*>(items.at(i));
+        PhotoItem *photoItem = qgraphicsitem_cast<PhotoItem*>(items.at(i));
         if (photoItem) {
             photoItem->setSelected(items.at(i) == item);
             if (items.at(i) == item)
