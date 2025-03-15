@@ -4,9 +4,10 @@
 #include <QWidget>
 #include <QItemSelection>
 #include <QSqlRelationalTableModel>
-#include <QLabel> // Dodane dla QLabel w oknie podglądu
+#include <QLabel>
+#include <QSettings>
 
-class PhotoItem; // Deklaracja zapowiadająca klasy PhotoItem
+class PhotoItem;
 
 namespace Ui {
 class itemList;
@@ -27,14 +28,18 @@ private slots:
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void onRecordSaved(int recordId);
     void refreshList(int recordId = -1);
-    void onPhotoHovered(PhotoItem *item);   // NOWY slot: Najechanie na zdjęcie
-    void onPhotoUnhovered(PhotoItem *item); // NOWY slot: Opuszczenie zdjęcia
+    void onPhotoHovered(PhotoItem *item);
+    void onPhotoUnhovered(PhotoItem *item);
 
 private:
+    bool verifyDatabaseSchema(QSqlDatabase &db);
+    void createDatabaseSchema(QSqlDatabase &db);
+    void insertSampleData(QSqlDatabase &db);
+
     Ui::itemList *ui;
     QSqlRelationalTableModel *model;
     int m_currentRecordId;
-    QWidget *m_previewWindow; // NOWE: Okno podglądu powiększonego zdjęcia
+    QWidget *m_previewWindow;
 };
 
 #endif // ITEMLIST_H
