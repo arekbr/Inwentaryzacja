@@ -30,6 +30,7 @@ QLineEdit, QComboBox, QDateEdit, QPlainTextEdit {
     padding: 5px;
     background-color: #FFFFFF;
     color: #000000; /* Upewniamy się, że tekst jest czarny */
+    min-width: 200px; /* Dodana minimalna szerokość dla spójności */
 }
 
 QComboBox QAbstractItemView {
@@ -61,6 +62,17 @@ QPushButton#New_item_PushButton_OK {
 QPushButton#New_item_PushButton_Cancel {
     background-color: #B0BEC5;
     color: white;
+}
+
+QPushButton#New_item_addType,
+QPushButton#New_item_addVendor,
+QPushButton#New_item_addModel,
+QPushButton#New_item_addStatus,
+QPushButton#New_item_addStoragePlace {
+    background-color: #2196F3; /* Niebieski dla przycisków "+" */
+    color: white;
+    min-width: 30px;
+    max-width: 30px;
 }
 
 QPushButton:hover {
