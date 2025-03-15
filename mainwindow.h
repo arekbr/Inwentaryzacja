@@ -23,6 +23,8 @@ public:
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
+    QComboBox* getNewItemStatusComboBox() const;         // Dodane – dostęp do pola status
+    QComboBox* getNewItemStoragePlaceComboBox() const;    // Dodane – dostęp do pola miejsca przechowywania
 
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
@@ -41,6 +43,8 @@ private slots:
     void onAddTypeClicked();
     void onAddVendorClicked();
     void onAddModelClicked();
+    void onAddStatusClicked();          // Nowy slot – dodawanie statusu
+    void onAddStoragePlaceClicked();    // Nowy slot – dodawanie miejsca przechowywania
 
 private:
     void loadPhotosFromBuffer();

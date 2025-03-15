@@ -4,6 +4,8 @@
 #include "types.h"
 #include "models.h"
 #include "vendors.h"
+#include "status.h"        // Dodane – obsługa statusów
+#include "storage.h"       // Dodane – obsługa miejsc przechowywania
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -12,9 +14,16 @@
 #include <QDebug>
 #include <QDate>
 #include <QSqlRelationalDelegate>
+#include <QInputDialog>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QDir>
+#include <QSettings>
 
 ///////////////////////
-// Metody dostępowe //
+// Metody dostępowe  //
 ///////////////////////
 
 QComboBox* MainWindow::getNewItemTypeComboBox() const
@@ -30,6 +39,16 @@ QComboBox* MainWindow::getNewItemModelComboBox() const
 QComboBox* MainWindow::getNewItemVendorComboBox() const
 {
     return ui->New_item_vendor;
+}
+
+QComboBox* MainWindow::getNewItemStatusComboBox() const
+{
+    return ui->New_item_status;
+}
+
+QComboBox* MainWindow::getNewItemStoragePlaceComboBox() const
+{
+    return ui->New_item_storagePlace;
 }
 
 ///////////////////////
@@ -60,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
 
-    // Podłączenie przycisków
+    // Podłączenie przycisków głównych
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
@@ -68,6 +87,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_addType, &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
     connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
     connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
+    // Nowe połączenia dla przycisków status i miejsce przechowywania
+    connect(ui->New_item_addStatus, &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
+    connect(ui->New_item_addStoragePlace, &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
 
     ui->graphicsView->setTransform(QTransform());
 }
@@ -116,10 +138,8 @@ void MainWindow::setEditMode(bool edit, int recordId)
         ui->New_item_description->clear();
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
-        // Używamy pętli indeksowej na liście ComboBoxów
         QList<QComboBox*> combos = { ui->New_item_type, ui->New_item_vendor, ui->New_item_model, ui->New_item_status, ui->New_item_storagePlace };
-        for (int i = 0; i < combos.size(); ++i) {
-            QComboBox *combo = combos.at(i);
+        for (QComboBox *combo : combos) {
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
@@ -195,7 +215,7 @@ void MainWindow::loadPhotos(int recordId)
         item->setPixmap(scaled);
         item->setData(0, query.value("id").toInt());
         item->setData(1, index);
-        QObject::connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
         item->setPos(x, y);
         scene->addItem(item);
         x += thumbnailSize + spacing;
@@ -328,8 +348,7 @@ void MainWindow::onAddPhotoClicked()
                                                           tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
-    for (int i = 0; i < fileNames.size(); ++i) {
-        const QString &fileName = fileNames.at(i);
+    for (const QString &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
@@ -443,4 +462,20 @@ void MainWindow::onAddModelClicked()
     }
     modelDialog->exec();
     delete modelDialog;
+}
+
+void MainWindow::onAddStatusClicked()
+{
+    status *statusDialog = new status(this);
+    statusDialog->setMainWindow(this);
+    statusDialog->exec();
+    delete statusDialog;
+}
+
+void MainWindow::onAddStoragePlaceClicked()
+{
+    storage *storageDialog = new storage(this);
+    storageDialog->setMainWindow(this);
+    storageDialog->exec();
+    delete storageDialog;
 }
