@@ -26,6 +26,8 @@ FORMS += \
     itemList.ui \
     mainwindow.ui \
     models.ui \
+    status.ui \
+    storage.ui \
     types.ui \
     vendors.ui
 
