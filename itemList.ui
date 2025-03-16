@@ -60,6 +60,11 @@ QPushButton#itemList_pushButton_edit {
     color: white;
 }
 
+QPushButton#itemList_pushButton_clone {
+    background-color: #B00EC5;
+    color: white;
+}
+
 QPushButton#itemList_pushButton_delete {
     background-color: #F44336; /* Czerwony dla kasowania */
     color: white;
@@ -109,6 +114,13 @@ QPushButton:hover {
         <widget class="QPushButton" name="itemList_pushButton_edit">
          <property name="text">
           <string>Edycja</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_clone">
+         <property name="text">
+          <string>Klonuj</string>
          </property>
         </widget>
        </item>
