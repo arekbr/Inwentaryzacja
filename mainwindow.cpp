@@ -343,10 +343,11 @@ void MainWindow::onCancelClicked()
 
 void MainWindow::onAddPhotoClicked()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this,
-                                                          tr("Wybierz zdjęcia"),
-                                                          QString(),
-                                                          tr("Images (*.jpg *.jpeg *.png)"));
+    // Poprawka: użycie stałej zmiennej, aby uniknąć kopiowania kontenera
+    const QStringList fileNames = QFileDialog::getOpenFileNames(this,
+                                                                tr("Wybierz zdjęcia"),
+                                                                QString(),
+                                                                tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
     for (const QString &fileName : fileNames) {
