@@ -23,11 +23,12 @@ public:
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
-    QComboBox* getNewItemStatusComboBox() const;         // Dodane – dostęp do pola status
-    QComboBox* getNewItemStoragePlaceComboBox() const;    // Dodane – dostęp do pola miejsca przechowywania
+    QComboBox* getNewItemStatusComboBox() const;
+    QComboBox* getNewItemStoragePlaceComboBox() const;
 
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
+    void setCloneMode(int recordId);
 
 signals:
     void recordSaved(int recordId);
@@ -43,8 +44,8 @@ private slots:
     void onAddTypeClicked();
     void onAddVendorClicked();
     void onAddModelClicked();
-    void onAddStatusClicked();          // Nowy slot – dodawanie statusu
-    void onAddStoragePlaceClicked();    // Nowy slot – dodawanie miejsca przechowywania
+    void onAddStatusClicked();
+    void onAddStoragePlaceClicked();
 
 private:
     void loadPhotosFromBuffer();

@@ -4,8 +4,8 @@
 #include "types.h"
 #include "models.h"
 #include "vendors.h"
-#include "status.h"        // Dodane – obsługa statusów
-#include "storage.h"       // Dodane – obsługa miejsc przechowywania
+#include "status.h"
+#include "storage.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -64,7 +64,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Używamy istniejącego połączenia
     db = QSqlDatabase::database("default_connection");
     if (!db.isOpen()) {
         QMessageBox::critical(this, tr("Błąd bazy danych"),
@@ -72,14 +71,12 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-    // Ładowanie danych do ComboBoxów
     loadComboBoxData("types", ui->New_item_type);
     loadComboBoxData("vendors", ui->New_item_vendor);
     loadComboBoxData("models", ui->New_item_model);
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
 
-    // Podłączenie przycisków głównych
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
@@ -87,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_addType, &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
     connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
     connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
-    // Nowe połączenia dla przycisków status i miejsce przechowywania
     connect(ui->New_item_addStatus, &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
     connect(ui->New_item_addStoragePlace, &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
 
@@ -129,7 +125,6 @@ void MainWindow::setEditMode(bool edit, int recordId)
     if (m_editMode && (m_recordId != -1)) {
         loadRecord(m_recordId);
     } else {
-        // Tryb dodawania – czyszczenie pól
         ui->New_item_name->clear();
         ui->New_item_serialNumber->clear();
         ui->New_item_partNumber->clear();
@@ -149,6 +144,13 @@ void MainWindow::setEditMode(bool edit, int recordId)
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
     }
+}
+
+void MainWindow::setCloneMode(int recordId)
+{
+    m_editMode = false;
+    loadRecord(recordId);
+    m_recordId = -1;
 }
 
 ///////////////////////
@@ -315,7 +317,6 @@ void MainWindow::onSaveClicked()
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
-        // Po zapisie rekordu, wstaw zdjęcia z bufora do bazy
         for (int i = 0; i < m_photoBuffer.size(); ++i) {
             const QByteArray &photoData = m_photoBuffer.at(i);
             QSqlQuery photoQuery(db);

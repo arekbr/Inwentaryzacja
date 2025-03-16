@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QSettings>
 #include <QFile>
+#include <QtMath>
 
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
@@ -49,7 +50,6 @@ itemList::itemList(QWidget *parent) :
     if (!QSqlDatabase::contains("default_connection")) {
         qDebug() << "itemList: Tworzenie nowego połączenia z bazą";
 
-        // Sprawdzenie zapisanej ścieżki
         if (!savedDbPath.isEmpty() && QFile::exists(savedDbPath)) {
             selectedPath = savedDbPath;
             qDebug() << "itemList: Próba użycia zapisanej ścieżki:" << selectedPath;
@@ -64,15 +64,13 @@ itemList::itemList(QWidget *parent) :
                 qDebug() << "itemList: Zapisana baza istnieje, ale jest nieprawidłowa lub nie można jej otworzyć:" << db.lastError().text();
                 db.close();
                 QSqlDatabase::removeDatabase("default_connection");
-                selectedPath.clear(); // Wymagany nowy wybór
+                selectedPath.clear();
             }
         }
 
-        // Jeśli nie udało się otworzyć zapisanej bazy lub nie ma zapisanej ścieżki
         if (!dbOpened) {
             QFileDialog::Options options = QFileDialog::DontConfirmOverwrite;
 #if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-            // Dla wszystkich systemów: getSaveFileName z DontConfirmOverwrite
             selectedPath = QFileDialog::getSaveFileName(
                 this,
                 tr("Wybierz lub utwórz bazę danych"),
@@ -81,8 +79,7 @@ itemList::itemList(QWidget *parent) :
                 nullptr,
                 options
                 );
-#else \
-    // Fallback dla nieznanych systemów (teoretycznie niepotrzebne, ale dla kompletności)
+#else
             selectedPath = QFileDialog::getSaveFileName(
                 this,
                 tr("Wybierz lub utwórz bazę danych"),
@@ -144,8 +141,6 @@ itemList::itemList(QWidget *parent) :
                     qDebug() << "itemList: Wstawiono przykładowe dane";
                 }
             }
-
-            // Zapisz ścieżkę po pomyślnym otwarciu lub utworzeniu
             settings.setValue("database_path", selectedPath);
             qDebug() << "itemList: Ścieżka zapisana w QSettings:" << selectedPath;
         }
@@ -160,7 +155,6 @@ itemList::itemList(QWidget *parent) :
         }
     }
 
-    // Ustawienie modelu relacyjnego
     qDebug() << "itemList: Inicjalizacja modelu relacyjnego";
     QSqlRelationalTableModel *relModel = new QSqlRelationalTableModel(this, db);
     relModel->setTable("eksponaty");
@@ -204,6 +198,7 @@ itemList::itemList(QWidget *parent) :
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
+    connect(ui->itemList_pushButton_clone, &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
 
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
@@ -212,8 +207,8 @@ itemList::itemList(QWidget *parent) :
     qDebug() << "itemList: Konstruktor zakończony";
 }
 
-// Reszta metod (destruktor, verifyDatabaseSchema, createDatabaseSchema, insertSampleData itp.) pozostaje bez zmian
-// Reszta metod (destruktor, verifyDatabaseSchema, createDatabaseSchema, insertSampleData itp.) pozostaje bez zmian
+// Reszta metod pozostaje bez zmian
+
 itemList::~itemList()
 {
     delete m_previewWindow;
@@ -331,7 +326,6 @@ void itemList::insertSampleData(QSqlDatabase &db)
     }
 }
 
-// Reszta metod pozostaje bez zmian (pominięta dla zwięzłości)
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.indexes().isEmpty()) {
@@ -562,4 +556,21 @@ void itemList::refreshList(int recordId)
             }
         }
     }
+}
+
+void itemList::onCloneButtonClicked()
+{
+    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
+    if (!selectionModel->hasSelection()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
+        return;
+    }
+    QModelIndex index = selectionModel->selectedRows().first();
+    int recordId = model->data(model->index(index.row(), 0)).toInt();
+
+    MainWindow *cloneWindow = new MainWindow(this);
+    cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
+    cloneWindow->setCloneMode(recordId);
+    connect(cloneWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    cloneWindow->show();
 }

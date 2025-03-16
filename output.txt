@@ -281,6 +281,43 @@ storage.ui
  <resources/>
  <connections/>
 </ui>
+status.h
+#ifndef STATUS_H
+#define STATUS_H
+
+#include <QDialog>
+#include <QSqlDatabase>
+
+class MainWindow;
+
+namespace Ui {
+class status;
+}
+
+class status : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit status(QWidget *parent = nullptr);
+    ~status();
+    void setMainWindow(MainWindow *mainWindow);
+
+private slots:
+    void onAddClicked();
+    void onEditClicked();
+    void onDeleteClicked();
+    void onOkClicked(); // Slot dla przycisku OK – odświeża pole statusów w głównym oknie
+
+private:
+    void refreshList();
+
+    Ui::status *ui;
+    MainWindow *m_mainWindow;
+    QSqlDatabase m_db;
+};
+
+#endif // STATUS_H
+
 status.ui
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
@@ -880,7 +917,7 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
                "type_id INTEGER NOT NULL,"
                "vendor_id INTEGER NOT NULL,"
                "model_id INTEGER NOT NULL,"
-               "serial_number TEXT UNIQUE,"
+               "serial_number TEXT,"
                "part_number TEXT,"
                "revision TEXT,"
                "production_year INTEGER CHECK(production_year BETWEEN 1900 AND 2100),"
@@ -1336,6 +1373,43 @@ private:
 
 #endif // PHOTOITEM_H
 
+storage.h
+#ifndef STORAGE_H
+#define STORAGE_H
+
+#include <QDialog>
+#include <QSqlDatabase>
+
+class MainWindow;
+
+namespace Ui {
+class storage;
+}
+
+class storage : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit storage(QWidget *parent = nullptr);
+    ~storage();
+    void setMainWindow(MainWindow *mainWindow);
+
+private slots:
+    void onAddClicked();
+    void onEditClicked();
+    void onDeleteClicked();
+    void onOkClicked();
+
+private:
+    void refreshList();
+
+    Ui::storage *ui;
+    MainWindow *m_mainWindow;
+    QSqlDatabase m_db;
+};
+
+#endif // STORAGE_H
+
 main.cpp
 #include "itemList.h"
 #include <QApplication>
@@ -1541,6 +1615,11 @@ QPushButton#itemList_pushButton_edit {
     color: white;
 }
 
+QPushButton#itemList_pushButton_clone {
+    background-color: #B00EC5;
+    color: white;
+}
+
 QPushButton#itemList_pushButton_delete {
     background-color: #F44336; /* Czerwony dla kasowania */
     color: white;
@@ -1594,6 +1673,13 @@ QPushButton:hover {
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="itemList_pushButton_clone">
+         <property name="text">
+          <string>Klonuj</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="itemList_pushButton_delete">
          <property name="text">
           <string>Kasuj</string>
@@ -1631,6 +1717,8 @@ SOURCES += \
     mainwindow.cpp \
     models.cpp \
     photoitem.cpp \
+    status.cpp \
+    storage.cpp \
     types.cpp \
     vendors.cpp
 
@@ -1639,6 +1727,8 @@ HEADERS += \
     mainwindow.h \
     models.h \
     photoitem.h \
+    status.h \
+    storage.h \
     types.h \
     vendors.h
 
@@ -2278,6 +2368,8 @@ mainwindow.cpp
 #include "types.h"
 #include "models.h"
 #include "vendors.h"
+#include "status.h"        // Dodane – obsługa statusów
+#include "storage.h"       // Dodane – obsługa miejsc przechowywania
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -2286,9 +2378,16 @@ mainwindow.cpp
 #include <QDebug>
 #include <QDate>
 #include <QSqlRelationalDelegate>
+#include <QInputDialog>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QDir>
+#include <QSettings>
 
 ///////////////////////
-// Metody dostępowe //
+// Metody dostępowe  //
 ///////////////////////
 
 QComboBox* MainWindow::getNewItemTypeComboBox() const
@@ -2304,6 +2403,16 @@ QComboBox* MainWindow::getNewItemModelComboBox() const
 QComboBox* MainWindow::getNewItemVendorComboBox() const
 {
     return ui->New_item_vendor;
+}
+
+QComboBox* MainWindow::getNewItemStatusComboBox() const
+{
+    return ui->New_item_status;
+}
+
+QComboBox* MainWindow::getNewItemStoragePlaceComboBox() const
+{
+    return ui->New_item_storagePlace;
 }
 
 ///////////////////////
@@ -2334,7 +2443,7 @@ MainWindow::MainWindow(QWidget *parent) :
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
 
-    // Podłączenie przycisków
+    // Podłączenie przycisków głównych
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
@@ -2342,6 +2451,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_addType, &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
     connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
     connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
+    // Nowe połączenia dla przycisków status i miejsce przechowywania
+    connect(ui->New_item_addStatus, &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
+    connect(ui->New_item_addStoragePlace, &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
 
     ui->graphicsView->setTransform(QTransform());
 }
@@ -2390,10 +2502,8 @@ void MainWindow::setEditMode(bool edit, int recordId)
         ui->New_item_description->clear();
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
-        // Używamy pętli indeksowej na liście ComboBoxów
         QList<QComboBox*> combos = { ui->New_item_type, ui->New_item_vendor, ui->New_item_model, ui->New_item_status, ui->New_item_storagePlace };
-        for (int i = 0; i < combos.size(); ++i) {
-            QComboBox *combo = combos.at(i);
+        for (QComboBox *combo : combos) {
             combo->setEditable(true);
             combo->clearEditText();
             combo->setCurrentIndex(-1);
@@ -2469,7 +2579,7 @@ void MainWindow::loadPhotos(int recordId)
         item->setPixmap(scaled);
         item->setData(0, query.value("id").toInt());
         item->setData(1, index);
-        QObject::connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
         item->setPos(x, y);
         scene->addItem(item);
         x += thumbnailSize + spacing;
@@ -2602,8 +2712,7 @@ void MainWindow::onAddPhotoClicked()
                                                           tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
-    for (int i = 0; i < fileNames.size(); ++i) {
-        const QString &fileName = fileNames.at(i);
+    for (const QString &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć pliku:" << fileName;
@@ -2711,12 +2820,25 @@ void MainWindow::onAddVendorClicked()
 void MainWindow::onAddModelClicked()
 {
     models *modelDialog = new models(this);
-    int vendorId = ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData().toInt() : -1;
-    if (vendorId != -1) {
-        modelDialog->setVendorId(vendorId);
-    }
+    modelDialog->setMainWindow(this);
     modelDialog->exec();
     delete modelDialog;
+}
+
+void MainWindow::onAddStatusClicked()
+{
+    status *statusDialog = new status(this);
+    statusDialog->setMainWindow(this);
+    statusDialog->exec();
+    delete statusDialog;
+}
+
+void MainWindow::onAddStoragePlaceClicked()
+{
+    storage *storageDialog = new storage(this);
+    storageDialog->setMainWindow(this);
+    storageDialog->exec();
+    delete storageDialog;
 }
 
 mainwindow.h
@@ -2745,6 +2867,8 @@ public:
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
+    QComboBox* getNewItemStatusComboBox() const;         // Dodane – dostęp do pola status
+    QComboBox* getNewItemStoragePlaceComboBox() const;    // Dodane – dostęp do pola miejsca przechowywania
 
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
@@ -2763,6 +2887,8 @@ private slots:
     void onAddTypeClicked();
     void onAddVendorClicked();
     void onAddModelClicked();
+    void onAddStatusClicked();          // Nowy slot – dodawanie statusu
+    void onAddStoragePlaceClicked();    // Nowy slot – dodawanie miejsca przechowywania
 
 private:
     void loadPhotosFromBuffer();
@@ -2945,6 +3071,135 @@ void typy::onOkClicked()
     // Po kliknięciu OK odświeżamy pole TYP w głównym oknie (jeśli główne okno jest ustawione)
     if(m_mainWindow) {
         m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());
+    }
+    accept();
+}
+
+status.cpp
+#include "status.h"
+#include "ui_status.h"
+#include <QMessageBox>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlQueryModel>
+#include <QInputDialog>
+#include "mainwindow.h"
+
+status::status(QWidget *parent)
+    : QDialog(parent),
+    ui(new Ui::status),
+    m_mainWindow(nullptr)
+{
+    ui->setupUi(this);
+    m_db = QSqlDatabase::database("default_connection");
+    setWindowTitle(tr("Zarządzanie statusami"));
+
+    connect(ui->pushButton_add, &QPushButton::clicked, this, &status::onAddClicked);
+    connect(ui->pushButton_edit, &QPushButton::clicked, this, &status::onEditClicked);
+    connect(ui->pushButton_delete, &QPushButton::clicked, this, &status::onDeleteClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &status::onOkClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    refreshList();
+}
+
+status::~status()
+{
+    delete ui;
+}
+
+void status::setMainWindow(MainWindow *mainWindow)
+{
+    m_mainWindow = mainWindow;
+}
+
+void status::refreshList()
+{
+    QSqlQueryModel *queryModel = new QSqlQueryModel(this);
+    queryModel->setQuery("SELECT name FROM statuses ORDER BY name ASC", m_db);
+    if(queryModel->lastError().isValid()){
+        QMessageBox::critical(this, tr("Błąd"), tr("Błąd pobierania danych: %1")
+                                                    .arg(queryModel->lastError().text()));
+        return;
+    }
+    ui->listView->setModel(queryModel);
+    ui->listView->setModelColumn(0);
+}
+
+void status::onAddClicked()
+{
+    QString newStatus = ui->lineEdit->text().trimmed();
+    if(newStatus.isEmpty()){
+        QMessageBox::warning(this, tr("Błąd"), tr("Nazwa statusu nie może być pusta."));
+        return;
+    }
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO statuses (name) VALUES (:name)");
+    query.bindValue(":name", newStatus);
+    if(!query.exec()){
+        QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać statusu:\n%1")
+                                                    .arg(query.lastError().text()));
+    }
+    refreshList();
+    ui->lineEdit->clear();
+}
+
+void status::onEditClicked()
+{
+    QModelIndex index = ui->listView->currentIndex();
+    if(!index.isValid()){
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać status do edycji."));
+        return;
+    }
+    QString currentName = index.data(Qt::DisplayRole).toString();
+    bool ok;
+    QString newName = QInputDialog::getText(this, tr("Edytuj status"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
+    if(ok && !newName.trimmed().isEmpty()){
+        QSqlQuery query(m_db);
+        query.prepare("SELECT id FROM statuses WHERE name = :name");
+        query.bindValue(":name", currentName);
+        if(query.exec() && query.next()){
+            int id = query.value(0).toInt();
+            QSqlQuery updateQuery(m_db);
+            updateQuery.prepare("UPDATE statuses SET name = :newName WHERE id = :id");
+            updateQuery.bindValue(":newName", newName.trimmed());
+            updateQuery.bindValue(":id", id);
+            if(!updateQuery.exec()){
+                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zaktualizować statusu:\n%1")
+                                                            .arg(updateQuery.lastError().text()));
+            }
+        }
+    }
+    refreshList();
+}
+
+void status::onDeleteClicked()
+{
+    QModelIndex index = ui->listView->currentIndex();
+    if(!index.isValid()){
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać status do usunięcia."));
+        return;
+    }
+    QString statusName = index.data(Qt::DisplayRole).toString();
+    int ret = QMessageBox::question(this, tr("Potwierdzenie"),
+                                    tr("Czy na pewno chcesz usunąć status: %1?").arg(statusName),
+                                    QMessageBox::Yes | QMessageBox::No);
+    if(ret == QMessageBox::Yes){
+        QSqlQuery query(m_db);
+        query.prepare("DELETE FROM statuses WHERE name = :name");
+        query.bindValue(":name", statusName);
+        if(!query.exec()){
+            QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć statusu:\n%1")
+                                                        .arg(query.lastError().text()));
+        }
+    }
+    refreshList();
+}
+
+void status::onOkClicked()
+{
+    if(m_mainWindow) {
+        m_mainWindow->loadComboBoxData("statuses", m_mainWindow->getNewItemStatusComboBox());
     }
     accept();
 }
