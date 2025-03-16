@@ -248,7 +248,7 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
                "type_id INTEGER NOT NULL,"
                "vendor_id INTEGER NOT NULL,"
                "model_id INTEGER NOT NULL,"
-               "serial_number TEXT UNIQUE,"
+               "serial_number TEXT,"
                "part_number TEXT,"
                "revision TEXT,"
                "production_year INTEGER CHECK(production_year BETWEEN 1900 AND 2100),"
