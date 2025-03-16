@@ -30,6 +30,7 @@ private slots:
     void refreshList(int recordId = -1);
     void onPhotoHovered(PhotoItem *item);
     void onPhotoUnhovered(PhotoItem *item);
+    void onCloneButtonClicked();
 
 private:
     bool verifyDatabaseSchema(QSqlDatabase &db);
