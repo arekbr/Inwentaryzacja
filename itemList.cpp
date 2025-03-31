@@ -36,7 +36,7 @@ itemList::itemList(QWidget *parent) :
 
     // Ustawienie domyślnej ścieżki
     QDir homeDir = QDir::home();
-    QString defaultDbPath = homeDir.filePath("inwentaryzacja/muzeum.db");
+    QString defaultDbPath = homeDir.filePath("remote_sqlite/muzeum.db");
     qDebug() << "itemList: Domyślna ścieżka bazy:" << defaultDbPath;
 
     QSqlDatabase db;
@@ -236,6 +236,7 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     qDebug() << "itemList: Tworzenie schematu bazy";
     QSqlQuery query(db);
     query.exec("PRAGMA foreign_keys = ON;");
+    query.exec("PRAGMA journal_mode=WAL;"); // Włącz WAL
 
     query.exec("CREATE TABLE eksponaty ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
