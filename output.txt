@@ -692,6 +692,7 @@ itemList.cpp
 #include <QDir>
 #include <QSettings>
 #include <QFile>
+#include <QtMath>
 
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
@@ -718,7 +719,6 @@ itemList::itemList(QWidget *parent) :
     if (!QSqlDatabase::contains("default_connection")) {
         qDebug() << "itemList: Tworzenie nowego połączenia z bazą";
 
-        // Sprawdzenie zapisanej ścieżki
         if (!savedDbPath.isEmpty() && QFile::exists(savedDbPath)) {
             selectedPath = savedDbPath;
             qDebug() << "itemList: Próba użycia zapisanej ścieżki:" << selectedPath;
@@ -733,15 +733,13 @@ itemList::itemList(QWidget *parent) :
                 qDebug() << "itemList: Zapisana baza istnieje, ale jest nieprawidłowa lub nie można jej otworzyć:" << db.lastError().text();
                 db.close();
                 QSqlDatabase::removeDatabase("default_connection");
-                selectedPath.clear(); // Wymagany nowy wybór
+                selectedPath.clear();
             }
         }
 
-        // Jeśli nie udało się otworzyć zapisanej bazy lub nie ma zapisanej ścieżki
         if (!dbOpened) {
             QFileDialog::Options options = QFileDialog::DontConfirmOverwrite;
 #if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-            // Dla wszystkich systemów: getSaveFileName z DontConfirmOverwrite
             selectedPath = QFileDialog::getSaveFileName(
                 this,
                 tr("Wybierz lub utwórz bazę danych"),
@@ -750,8 +748,7 @@ itemList::itemList(QWidget *parent) :
                 nullptr,
                 options
                 );
-#else \
-    // Fallback dla nieznanych systemów (teoretycznie niepotrzebne, ale dla kompletności)
+#else
             selectedPath = QFileDialog::getSaveFileName(
                 this,
                 tr("Wybierz lub utwórz bazę danych"),
@@ -813,8 +810,6 @@ itemList::itemList(QWidget *parent) :
                     qDebug() << "itemList: Wstawiono przykładowe dane";
                 }
             }
-
-            // Zapisz ścieżkę po pomyślnym otwarciu lub utworzeniu
             settings.setValue("database_path", selectedPath);
             qDebug() << "itemList: Ścieżka zapisana w QSettings:" << selectedPath;
         }
@@ -829,7 +824,6 @@ itemList::itemList(QWidget *parent) :
         }
     }
 
-    // Ustawienie modelu relacyjnego
     qDebug() << "itemList: Inicjalizacja modelu relacyjnego";
     QSqlRelationalTableModel *relModel = new QSqlRelationalTableModel(this, db);
     relModel->setTable("eksponaty");
@@ -873,6 +867,7 @@ itemList::itemList(QWidget *parent) :
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
+    connect(ui->itemList_pushButton_clone, &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
 
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
@@ -881,8 +876,8 @@ itemList::itemList(QWidget *parent) :
     qDebug() << "itemList: Konstruktor zakończony";
 }
 
-// Reszta metod (destruktor, verifyDatabaseSchema, createDatabaseSchema, insertSampleData itp.) pozostaje bez zmian
-// Reszta metod (destruktor, verifyDatabaseSchema, createDatabaseSchema, insertSampleData itp.) pozostaje bez zmian
+// Reszta metod pozostaje bez zmian
+
 itemList::~itemList()
 {
     delete m_previewWindow;
@@ -1000,7 +995,6 @@ void itemList::insertSampleData(QSqlDatabase &db)
     }
 }
 
-// Reszta metod pozostaje bez zmian (pominięta dla zwięzłości)
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.indexes().isEmpty()) {
@@ -1231,6 +1225,23 @@ void itemList::refreshList(int recordId)
             }
         }
     }
+}
+
+void itemList::onCloneButtonClicked()
+{
+    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
+    if (!selectionModel->hasSelection()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
+        return;
+    }
+    QModelIndex index = selectionModel->selectedRows().first();
+    int recordId = model->data(model->index(index.row(), 0)).toInt();
+
+    MainWindow *cloneWindow = new MainWindow(this);
+    cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
+    cloneWindow->setCloneMode(recordId);
+    connect(cloneWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    cloneWindow->show();
 }
 
 vendors.ui
@@ -1538,6 +1549,7 @@ private slots:
     void refreshList(int recordId = -1);
     void onPhotoHovered(PhotoItem *item);
     void onPhotoUnhovered(PhotoItem *item);
+    void onCloneButtonClicked();
 
 private:
     bool verifyDatabaseSchema(QSqlDatabase &db);
@@ -2368,8 +2380,8 @@ mainwindow.cpp
 #include "types.h"
 #include "models.h"
 #include "vendors.h"
-#include "status.h"        // Dodane – obsługa statusów
-#include "storage.h"       // Dodane – obsługa miejsc przechowywania
+#include "status.h"
+#include "storage.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -2428,7 +2440,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Używamy istniejącego połączenia
     db = QSqlDatabase::database("default_connection");
     if (!db.isOpen()) {
         QMessageBox::critical(this, tr("Błąd bazy danych"),
@@ -2436,14 +2447,12 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-    // Ładowanie danych do ComboBoxów
     loadComboBoxData("types", ui->New_item_type);
     loadComboBoxData("vendors", ui->New_item_vendor);
     loadComboBoxData("models", ui->New_item_model);
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
 
-    // Podłączenie przycisków głównych
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
     connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
@@ -2451,7 +2460,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->New_item_addType, &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
     connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
     connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
-    // Nowe połączenia dla przycisków status i miejsce przechowywania
     connect(ui->New_item_addStatus, &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
     connect(ui->New_item_addStoragePlace, &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
 
@@ -2493,7 +2501,6 @@ void MainWindow::setEditMode(bool edit, int recordId)
     if (m_editMode && (m_recordId != -1)) {
         loadRecord(m_recordId);
     } else {
-        // Tryb dodawania – czyszczenie pól
         ui->New_item_name->clear();
         ui->New_item_serialNumber->clear();
         ui->New_item_partNumber->clear();
@@ -2513,6 +2520,13 @@ void MainWindow::setEditMode(bool edit, int recordId)
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
     }
+}
+
+void MainWindow::setCloneMode(int recordId)
+{
+    m_editMode = false;
+    loadRecord(recordId);
+    m_recordId = -1;
 }
 
 ///////////////////////
@@ -2679,7 +2693,6 @@ void MainWindow::onSaveClicked()
     if (!m_editMode) {
         newRecordId = query.lastInsertId().toInt();
         m_recordId = newRecordId;
-        // Po zapisie rekordu, wstaw zdjęcia z bufora do bazy
         for (int i = 0; i < m_photoBuffer.size(); ++i) {
             const QByteArray &photoData = m_photoBuffer.at(i);
             QSqlQuery photoQuery(db);
@@ -2706,10 +2719,11 @@ void MainWindow::onCancelClicked()
 
 void MainWindow::onAddPhotoClicked()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this,
-                                                          tr("Wybierz zdjęcia"),
-                                                          QString(),
-                                                          tr("Images (*.jpg *.jpeg *.png)"));
+    // Poprawka: użycie stałej zmiennej, aby uniknąć kopiowania kontenera
+    const QStringList fileNames = QFileDialog::getOpenFileNames(this,
+                                                                tr("Wybierz zdjęcia"),
+                                                                QString(),
+                                                                tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
     for (const QString &fileName : fileNames) {
@@ -2867,11 +2881,12 @@ public:
     QComboBox* getNewItemTypeComboBox() const;
     QComboBox* getNewItemModelComboBox() const;
     QComboBox* getNewItemVendorComboBox() const;
-    QComboBox* getNewItemStatusComboBox() const;         // Dodane – dostęp do pola status
-    QComboBox* getNewItemStoragePlaceComboBox() const;    // Dodane – dostęp do pola miejsca przechowywania
+    QComboBox* getNewItemStatusComboBox() const;
+    QComboBox* getNewItemStoragePlaceComboBox() const;
 
     bool getEditMode() const { return m_editMode; }
     int getRecordId() const { return m_recordId; }
+    void setCloneMode(int recordId);
 
 signals:
     void recordSaved(int recordId);
@@ -2887,8 +2902,8 @@ private slots:
     void onAddTypeClicked();
     void onAddVendorClicked();
     void onAddModelClicked();
-    void onAddStatusClicked();          // Nowy slot – dodawanie statusu
-    void onAddStoragePlaceClicked();    // Nowy slot – dodawanie miejsca przechowywania
+    void onAddStatusClicked();
+    void onAddStoragePlaceClicked();
 
 private:
     void loadPhotosFromBuffer();
