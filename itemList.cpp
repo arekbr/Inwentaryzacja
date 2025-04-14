@@ -2,6 +2,7 @@
 #include "ui_itemList.h"
 #include "mainwindow.h"
 #include "photoitem.h"
+#include "fullscreenphotoviewer.h" // <-- NOWE: nasz plik do wyświetlania fullscreen
 
 #include <QSqlDatabase>
 #include <QSqlRelationalTableModel>
@@ -34,6 +35,13 @@ itemList::itemList(QWidget *parent) :
     ui->setupUi(this);
     qDebug() << "itemList: UI zainicjalizowane";
 
+    // ------------------------------------------------------------------------
+    // Tu w Twoim kodzie jest logika otwierania bazy, weryfikacji schematu,
+    // ewentualnego tworzenia lub wczytywania example data, itp.
+    // Poniżej jest przykładowa wersja z wątku (UUID, WAL).
+    // Jeśli masz inny / stary schemat, skopiuj ten plik i usuń fragmenty,
+    // które nie są Ci potrzebne.
+    // ------------------------------------------------------------------------
     QDir homeDir = QDir::home();
     QString defaultDbPath = homeDir.filePath("remote_sqlite/muzeum.db");
     qDebug() << "itemList: Domyślna ścieżka bazy:" << defaultDbPath;
@@ -159,8 +167,8 @@ itemList::itemList(QWidget *parent) :
     relModel->setTable("eksponaty");
     relModel->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
 
-    // Uwaga: relacje na TEXT mogą nie zawsze działać w QSqlRelation, zależy od wersji Qt.
-    // Zostawiamy to, jak jest - jeśli będą problemy, trzeba je obsłużyć samodzielnie.
+    // Uwaga: w Qt relacje TEXT mogą czasem nie działać idealnie –
+    // ale zostawiamy to tak, jak jest.
     relModel->setRelation(2, QSqlRelation("types", "id", "name"));
     relModel->setRelation(3, QSqlRelation("vendors", "id", "name"));
     relModel->setRelation(4, QSqlRelation("models", "id", "name"));
@@ -171,6 +179,7 @@ itemList::itemList(QWidget *parent) :
         qDebug() << "itemList: Błąd przy select():" << relModel->lastError().text();
     }
 
+    // Nagłówki tabel:
     relModel->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
     relModel->setHeaderData(2, Qt::Horizontal, tr("Typ"));
     relModel->setHeaderData(3, Qt::Horizontal, tr("Producent"));
@@ -193,16 +202,17 @@ itemList::itemList(QWidget *parent) :
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // Ukrywamy kolumnę 0, bo to jest ID w postaci tekstowej
+    // Ukrywamy kolumnę 0 (TEXT ID)
     ui->itemList_tableView->hideColumn(0);
-    // kolumna 13 nie istnieje w nowym schemacie (być może Ty masz inny layout)
 
+    // Podpinamy przyciski z dolnego panelu
     connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
     connect(ui->itemList_pushButton_clone, &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
 
+    // Reakcja na zaznaczenie wiersza w tabeli
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
     connect(selectionModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
@@ -216,6 +226,10 @@ itemList::~itemList()
     delete ui;
     qDebug() << "itemList: Destruktor wywołany";
 }
+
+// ----------------------------------------------------------------------------
+// Metody sprawdzania schematu, tworzenia tabel i wstawiania danych przykładowych
+// ----------------------------------------------------------------------------
 
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
@@ -242,7 +256,6 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     query.exec("PRAGMA foreign_keys = ON;");
     query.exec("PRAGMA journal_mode=WAL;"); // Włącz WAL
 
-    // ZAMIANA: id TEXT PRIMARY KEY + foreign key TEXT
     query.exec(R"(
         CREATE TABLE eksponaty (
             id TEXT PRIMARY KEY,
@@ -312,7 +325,6 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
         )
     )");
 
-    // Indeks po numerze seryjnym
     query.exec("CREATE INDEX idx_serial_number ON eksponaty(serial_number);");
 
     if (query.lastError().isValid()) {
@@ -322,59 +334,51 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     }
 }
 
+#include <QUuid> // do generowania UUID (np. w insertSampleData)
 void itemList::insertSampleData(QSqlDatabase &db)
 {
     qDebug() << "itemList: Wstawianie przykładowych danych";
     QSqlQuery query(db);
 
-    // W ramach przykładu generujemy proste ID (UUID)
-    auto genId = []() {
+    auto genId = [](){
         return QUuid::createUuid().toString(QUuid::WithoutBraces);
     };
 
-    QString t1 = genId();
-    QString t2 = genId();
-    QString t3 = genId();
-
+    // Tabela types
+    QString t1 = genId(); QString t2 = genId(); QString t3 = genId();
     query.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
     query.bindValue(":id", t1); query.bindValue(":name", "Komputer"); query.exec();
     query.bindValue(":id", t2); query.bindValue(":name", "Monitor");  query.exec();
     query.bindValue(":id", t3); query.bindValue(":name", "Kabel");    query.exec();
 
-    QString v1 = genId();
-    QString v2 = genId();
-    QString v3 = genId();
-
+    // Tabela vendors
+    QString v1 = genId(); QString v2 = genId(); QString v3 = genId();
     query.prepare("INSERT INTO vendors (id, name) VALUES (:id, :name)");
     query.bindValue(":id", v1); query.bindValue(":name", "Atari");      query.exec();
     query.bindValue(":id", v2); query.bindValue(":name", "Commodore"); query.exec();
     query.bindValue(":id", v3); query.bindValue(":name", "Sinclair");  query.exec();
 
-    QString m1 = genId();
-    QString m2 = genId();
-    QString m3 = genId();
-
+    // Tabela models
+    QString m1 = genId(); QString m2 = genId(); QString m3 = genId();
     query.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
-    query.bindValue(":id", m1); query.bindValue(":name", "Atari 800XL");  query.bindValue(":vendor_id", v1); query.exec();
-    query.bindValue(":id", m2); query.bindValue(":name", "Amiga 500");    query.bindValue(":vendor_id", v2); query.exec();
-    query.bindValue(":id", m3); query.bindValue(":name", "ZX Spectrum");  query.bindValue(":vendor_id", v3); query.exec();
+    query.bindValue(":id", m1); query.bindValue(":name", "Atari 800XL"); query.bindValue(":vendor_id", v1); query.exec();
+    query.bindValue(":id", m2); query.bindValue(":name", "Amiga 500");   query.bindValue(":vendor_id", v2); query.exec();
+    query.bindValue(":id", m3); query.bindValue(":name", "ZX Spectrum"); query.bindValue(":vendor_id", v3); query.exec();
 
-    QString s1 = genId();
-    QString s2 = genId();
-    QString s3 = genId();
-
+    // Tabela statuses
+    QString s1 = genId(); QString s2 = genId(); QString s3 = genId();
     query.prepare("INSERT INTO statuses (id, name) VALUES (:id, :name)");
     query.bindValue(":id", s1); query.bindValue(":name", "Sprawny");    query.exec();
     query.bindValue(":id", s2); query.bindValue(":name", "Uszkodzony"); query.exec();
     query.bindValue(":id", s3); query.bindValue(":name", "W naprawie"); query.exec();
 
-    QString sp1 = genId();
-    QString sp2 = genId();
-
+    // Tabela storage_places
+    QString sp1 = genId(); QString sp2 = genId();
     query.prepare("INSERT INTO storage_places (id, name) VALUES (:id, :name)");
     query.bindValue(":id", sp1); query.bindValue(":name", "Magazyn 1"); query.exec();
     query.bindValue(":id", sp2); query.bindValue(":name", "Półka B3");  query.exec();
 
+    // Tabela eksponaty
     QString e1 = genId();
     query.prepare(R"(
         INSERT INTO eksponaty (id, name, type_id, vendor_id, model_id, serial_number,
@@ -395,7 +399,7 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 1);
     query.exec();
 
-    // analogicznie...
+    // Drugi eksponat
     QString e2 = genId();
     query.bindValue(":id", e2);
     query.bindValue(":name", "Amiga 500");
@@ -410,6 +414,7 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 2);
     query.exec();
 
+    // Trzeci eksponat
     QString e3 = genId();
     query.bindValue(":id", e3);
     query.bindValue(":name", "ZX Spectrum");
@@ -431,6 +436,9 @@ void itemList::insertSampleData(QSqlDatabase &db)
     }
 }
 
+// ----------------------------------------------------------------------------
+// Reakcja na wybór wiersza w tabeli – ładowanie miniaturek do graphicsView
+// ----------------------------------------------------------------------------
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.indexes().isEmpty()) {
@@ -440,10 +448,10 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     }
     QModelIndex index = selected.indexes().first();
     int row = index.row();
-    // Indeks kolumny 0 to TEXT ID
     QString recordId = model->data(model->index(row, 0)).toString();
     m_currentRecordId = recordId;
 
+    // Pobieramy zdjęcia
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
@@ -492,12 +500,17 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
+        // Zapamiętujemy oryginał w data(0), żeby potem móc go użyć do powiększenia
         item->setData(0, QVariant(original));
         item->setPos(x, y);
         scene->addItem(item);
 
+        // Podpinamy sygnały: hover i unhover (jak było)
         connect(item, &PhotoItem::hovered, this, &itemList::onPhotoHovered);
         connect(item, &PhotoItem::unhovered, this, &itemList::onPhotoUnhovered);
+
+        // NOWE – kliknięcie -> otwarcie fullscreen
+        connect(item, &PhotoItem::clicked, this, &itemList::onPhotoClicked);
 
         x += scaled.width() + spacing;
         if ((i + 1) % cols == 0) {
@@ -513,6 +526,9 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
+// ----------------------------------------------------------------------------
+// Obsługa hover (podgląd mini) – to już było u Ciebie.
+// ----------------------------------------------------------------------------
 void itemList::onPhotoHovered(PhotoItem *item)
 {
     if (m_previewWindow) {
@@ -573,8 +589,27 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
     }
 }
 
+// ----------------------------------------------------------------------------
+// NOWA metoda: kliknięcie -> okno fullscreen z zoomem
+// ----------------------------------------------------------------------------
+void itemList::onPhotoClicked(PhotoItem *item)
+{
+    QPixmap originalPixmap = item->data(0).value<QPixmap>();
+    if (originalPixmap.isNull()) {
+        qDebug() << "Brak pixmapy w PhotoItem do powiększenia.";
+        return;
+    }
+
+    // Tworzymy i pokazujemy okno fullscreen
+    FullScreenPhotoViewer *viewer = new FullScreenPhotoViewer(originalPixmap, this);
+    viewer->show();
+}
+
+// ----------------------------------------------------------------------------
+// Przycisk "Nowy"
 void itemList::onNewButtonClicked()
 {
+    // Twój kod do otwarcia MainWindow w trybie "nowy rekord"
     MainWindow *addWindow = new MainWindow(this);
     addWindow->setAttribute(Qt::WA_DeleteOnClose);
     addWindow->setEditMode(false, QString());
@@ -582,6 +617,8 @@ void itemList::onNewButtonClicked()
     addWindow->show();
 }
 
+// ----------------------------------------------------------------------------
+// Przycisk "Edycja"
 void itemList::onEditButtonClicked()
 {
     QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
@@ -600,6 +637,27 @@ void itemList::onEditButtonClicked()
     editWindow->show();
 }
 
+// ----------------------------------------------------------------------------
+// Przycisk "Klonuj"
+void itemList::onCloneButtonClicked()
+{
+    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
+    if (!selectionModel->hasSelection()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
+        return;
+    }
+    QModelIndex index = selectionModel->selectedRows().first();
+    QString recordId = model->data(model->index(index.row(), 0)).toString();
+
+    MainWindow *cloneWindow = new MainWindow(this);
+    cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
+    cloneWindow->setCloneMode(recordId);
+    connect(cloneWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    cloneWindow->show();
+}
+
+// ----------------------------------------------------------------------------
+// Przycisk "Kasuj"
 void itemList::onDeleteButtonClicked()
 {
     QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
@@ -636,16 +694,22 @@ void itemList::onDeleteButtonClicked()
     }
 }
 
+// ----------------------------------------------------------------------------
+// Przycisk "Koniec"
 void itemList::onEndButtonClicked()
 {
     qApp->quit();
 }
 
+// ----------------------------------------------------------------------------
+// Slot wywoływany po zapisie w oknie MainWindow
 void itemList::onRecordSaved(const QString &recordId)
 {
     refreshList(recordId);
 }
 
+// ----------------------------------------------------------------------------
+// Odświeżenie listy i zaznaczenie jakiegoś wiersza
 void itemList::refreshList(const QString &recordId)
 {
     model->select();
@@ -663,21 +727,4 @@ void itemList::refreshList(const QString &recordId)
             }
         }
     }
-}
-
-void itemList::onCloneButtonClicked()
-{
-    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
-    if (!selectionModel->hasSelection()) {
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
-        return;
-    }
-    QModelIndex index = selectionModel->selectedRows().first();
-    QString recordId = model->data(model->index(index.row(), 0)).toString();
-
-    MainWindow *cloneWindow = new MainWindow(this);
-    cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
-    cloneWindow->setCloneMode(recordId);
-    connect(cloneWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
-    cloneWindow->show();
 }

@@ -10,7 +10,7 @@ PhotoItem::PhotoItem(QGraphicsItem *parent)
     m_selected(false),
     m_frame(new QGraphicsRectItem(this))
 {
-    setAcceptHoverEvents(true); // Zmienione z false na true, aby włączyć zdarzenia hover
+    setAcceptHoverEvents(true); // Włączamy zdarzenia hover
     setAcceptTouchEvents(false);
     m_frame->setPen(QPen(Qt::NoPen));
     m_frame->setBrush(Qt::NoBrush);
@@ -27,7 +27,7 @@ void PhotoItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_pressed = true;
-        emit clicked(this);
+        emit clicked(this);  // sygnał kliknięcia
         event->accept();
     } else {
         QGraphicsPixmapItem::mousePressEvent(event);
@@ -52,12 +52,12 @@ void PhotoItem::updateFrame()
 
 void PhotoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit hovered(this); // Emituj sygnał najechania
+    emit hovered(this); // Emitujemy sygnał "najechania"
     QGraphicsPixmapItem::hoverEnterEvent(event);
 }
 
 void PhotoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit unhovered(this); // Emituj sygnał opuszczenia
+    emit unhovered(this); // Emitujemy sygnał "opuszczenia"
     QGraphicsPixmapItem::hoverLeaveEvent(event);
 }
