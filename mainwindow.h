@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include "photoitem.h"
 #include <QList>
+#include <QUuid>  // do generowania UUID
 
 namespace Ui {
 class MainWindow;
@@ -17,7 +18,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void setEditMode(bool edit, int recordId = -1);
+    void setEditMode(bool edit, const QString &recordId = QString());
     void loadComboBoxData(const QString &tableName, QComboBox *comboBox);
 
     QComboBox* getNewItemTypeComboBox() const;
@@ -27,19 +28,20 @@ public:
     QComboBox* getNewItemStoragePlaceComboBox() const;
 
     bool getEditMode() const { return m_editMode; }
-    int getRecordId() const { return m_recordId; }
-    void setCloneMode(int recordId);
+    QString getRecordId() const { return m_recordId; }
+
+    void setCloneMode(const QString &recordId);
 
 signals:
-    void recordSaved(int recordId);
+    void recordSaved(const QString &recordId);
 
 private slots:
     void onSaveClicked();
     void onCancelClicked();
     void onAddPhotoClicked();
     void onRemovePhotoClicked();
-    void loadRecord(int recordId);
-    void loadPhotos(int recordId);
+    void loadRecord(const QString &recordId);
+    void loadPhotos(const QString &recordId);
     void onPhotoClicked(PhotoItem *item);
     void onAddTypeClicked();
     void onAddVendorClicked();
@@ -53,7 +55,7 @@ private:
     Ui::MainWindow *ui;
     QSqlDatabase db;
     bool m_editMode;
-    int m_recordId;
+    QString m_recordId;  // ZMIANA: dawniej int
     int m_selectedPhotoIndex;
     QList<QByteArray> m_photoBuffer;
 };

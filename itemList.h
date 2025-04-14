@@ -26,8 +26,8 @@ private slots:
     void onEndButtonClicked();
     void onDeleteButtonClicked();
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void onRecordSaved(int recordId);
-    void refreshList(int recordId = -1);
+    void onRecordSaved(const QString &recordId);
+    void refreshList(const QString &recordId = QString());
     void onPhotoHovered(PhotoItem *item);
     void onPhotoUnhovered(PhotoItem *item);
     void onCloneButtonClicked();
@@ -39,7 +39,7 @@ private:
 
     Ui::itemList *ui;
     QSqlRelationalTableModel *model;
-    int m_currentRecordId;
+    QString m_currentRecordId; // ZMIANA: było int
     QWidget *m_previewWindow;
 };
 

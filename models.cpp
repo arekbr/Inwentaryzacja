@@ -11,13 +11,13 @@ models::models(QWidget *parent)
     : QDialog(parent),
     ui(new Ui::models),
     m_mainWindow(nullptr),
-    m_vendorId(-1)
+    m_vendorId(QString()) // Pusty string jako "brak ID"
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
     setWindowTitle(tr("Zarządzanie modelami sprzętu"));
 
-    // Połączenie przycisków (przyciski Dodaj, Edytuj, Skasuj w widoku, a przycisk OK w QDialogButtonBox)
+    // Połączenie przycisków
     connect(ui->pushButton_add, &QPushButton::clicked, this, &models::onAddClicked);
     connect(ui->pushButton_edit, &QPushButton::clicked, this, &models::onEditClicked);
     connect(ui->pushButton_delete, &QPushButton::clicked, this, &models::onDeleteClicked);
@@ -37,14 +37,14 @@ void models::setMainWindow(MainWindow *mainWindow)
     m_mainWindow = mainWindow;
 }
 
-void models::setVendorId(int vendorId)
+void models::setVendorId(const QString &vendorId)
 {
     m_vendorId = vendorId;
 }
 
 void models::refreshList()
 {
-    // Pobieramy tylko kolumnę z nazwami modeli, aby QListView pokazywał same nazwy
+    // Pobieramy tylko kolumnę z nazwami modeli
     QSqlQueryModel *queryModel = new QSqlQueryModel(this);
     queryModel->setQuery("SELECT name FROM models ORDER BY name ASC", m_db);
     if (queryModel->lastError().isValid()) {
@@ -63,12 +63,22 @@ void models::onAddClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa modelu nie może być pusta."));
         return;
     }
+    // Generujemy UUID dla nowego modelu
+    QString modelId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO models (name, vendor_id) VALUES (:name, :vendor_id)");
+    query.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
+    query.bindValue(":id", modelId);
+    QString vendorId;
+    if (!m_vendorId.isEmpty()) {
+        vendorId = m_vendorId;
+    } else if (m_mainWindow) {
+        // Zamiast .toInt() -> .toString()
+        vendorId = m_mainWindow->getNewItemVendorComboBox()->currentData().toString();
+    }
     query.bindValue(":name", newModel);
-    int vendorId = (m_vendorId != -1) ? m_vendorId :
-                       (m_mainWindow ? m_mainWindow->getNewItemVendorComboBox()->currentData().toInt() : -1);
-    query.bindValue(":vendor_id", vendorId);
+    query.bindValue(":vendor_id", vendorId.isEmpty() ? QString("unknown_vendor_uuid") : vendorId);
+
     if(!query.exec()){
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać modelu:\n%1")
                                                       .arg(query.lastError().text()));
@@ -88,11 +98,12 @@ void models::onEditClicked()
     bool ok;
     QString newName = QInputDialog::getText(this, tr("Edytuj model"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
     if(ok && !newName.trimmed().isEmpty()){
+        // Najpierw pobieramy ID (TEXT) danego modelu
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM models WHERE name = :name");
         query.bindValue(":name", currentName);
         if(query.exec() && query.next()){
-            int id = query.value(0).toInt();
+            QString id = query.value(0).toString();
             QSqlQuery updateQuery(m_db);
             updateQuery.prepare("UPDATE models SET name = :newName WHERE id = :id");
             updateQuery.bindValue(":newName", newName.trimmed());

@@ -6,6 +6,7 @@
 #include <QSqlQueryModel>
 #include <QInputDialog>
 #include "mainwindow.h"
+#include <QUuid> // dodane
 
 vendors::vendors(QWidget *parent)
     : QDialog(parent),
@@ -16,11 +17,10 @@ vendors::vendors(QWidget *parent)
     m_db = QSqlDatabase::database("default_connection");
     setWindowTitle(tr("Zarządzanie producentami"));
 
-    // Połączenie przycisków z odpowiednimi slotami
+    // Połączenie przycisków
     connect(ui->pushButton_add, &QPushButton::clicked, this, &vendors::onAddClicked);
     connect(ui->pushButton_edit, &QPushButton::clicked, this, &vendors::onEditClicked);
     connect(ui->pushButton_delete, &QPushButton::clicked, this, &vendors::onDeleteClicked);
-    // QDialogButtonBox – OK: onOkClicked, Cancel: reject
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &vendors::onOkClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
@@ -39,7 +39,6 @@ void vendors::setMainWindow(MainWindow *mainWindow)
 
 void vendors::refreshList()
 {
-    // Pobieramy tylko kolumnę z nazwami producentów
     QSqlQueryModel *queryModel = new QSqlQueryModel(this);
     queryModel->setQuery("SELECT name FROM vendors ORDER BY name ASC", m_db);
     if (queryModel->lastError().isValid()) {
@@ -58,8 +57,12 @@ void vendors::onAddClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa producenta nie może być pusta."));
         return;
     }
+    // Generujemy UUID
+    QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO vendors (name) VALUES (:name)");
+    query.prepare("INSERT INTO vendors (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", newId);
     query.bindValue(":name", newVendor);
     if(!query.exec()){
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać producenta:\n%1")
@@ -76,23 +79,25 @@ void vendors::onEditClicked()
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać producenta do edycji."));
         return;
     }
-    // Pobieramy aktualną nazwę
     QString currentName = index.data(Qt::DisplayRole).toString();
     bool ok;
-    QString newName = QInputDialog::getText(this, tr("Edytuj producenta"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
+    QString newName = QInputDialog::getText(this, tr("Edytuj producenta"), tr("Nowa nazwa:"),
+                                            QLineEdit::Normal, currentName, &ok);
     if(ok && !newName.trimmed().isEmpty()){
+        // Odczytujemy ID
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM vendors WHERE name = :name");
         query.bindValue(":name", currentName);
         if(query.exec() && query.next()){
-            int id = query.value(0).toInt();
+            QString id = query.value(0).toString();
             QSqlQuery updateQuery(m_db);
             updateQuery.prepare("UPDATE vendors SET name = :newName WHERE id = :id");
             updateQuery.bindValue(":newName", newName.trimmed());
             updateQuery.bindValue(":id", id);
             if(!updateQuery.exec()){
-                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zaktualizować producenta:\n%1")
-                                                            .arg(updateQuery.lastError().text()));
+                QMessageBox::critical(this, tr("Błąd"),
+                                      tr("Nie udało się zaktualizować producenta:\n%1")
+                                          .arg(updateQuery.lastError().text()));
             }
         }
     }
@@ -124,7 +129,6 @@ void vendors::onDeleteClicked()
 
 void vendors::onOkClicked()
 {
-    // Po kliknięciu OK odśwież pole producenta w głównym oknie (jeśli ustawiono główne okno)
     if(m_mainWindow) {
         m_mainWindow->loadComboBoxData("vendors", m_mainWindow->getNewItemVendorComboBox());
     }

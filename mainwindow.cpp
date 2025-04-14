@@ -21,6 +21,7 @@
 #include <QGraphicsPixmapItem>
 #include <QDir>
 #include <QSettings>
+#include <QUuid>   // ważne dla QUuid::createUuid()
 
 ///////////////////////
 // Metody dostępowe  //
@@ -52,14 +53,14 @@ QComboBox* MainWindow::getNewItemStoragePlaceComboBox() const
 }
 
 ///////////////////////
-// Konstruktor, destruktor, inicjalizacja //
+// Konstruktor, destruktor
 ///////////////////////
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     m_editMode(false),
-    m_recordId(-1),
+    m_recordId(QString()),   // pusty string
     m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
@@ -107,7 +108,9 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
     QSqlQuery query(db);
     if (query.exec(QString("SELECT id, name FROM %1").arg(tableName))) {
         while (query.next()) {
-            comboBox->addItem(query.value("name").toString(), query.value("id").toInt());
+            // Wstawiamy data jako tekst (QString)
+            comboBox->addItem(query.value("name").toString(),
+                              query.value("id").toString());
         }
     } else {
         qDebug() << "Błąd ładowania danych dla" << tableName << ":" << query.lastError().text();
@@ -115,14 +118,14 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
 }
 
 ///////////////////////
-// Tryb edycji/dodawania //
+// Tryb edycji/dodawania
 ///////////////////////
 
-void MainWindow::setEditMode(bool edit, int recordId)
+void MainWindow::setEditMode(bool edit, const QString &recordId)
 {
     m_editMode = edit;
     m_recordId = recordId;
-    if (m_editMode && (m_recordId != -1)) {
+    if (m_editMode && !m_recordId.isEmpty()) {
         loadRecord(m_recordId);
     } else {
         ui->New_item_name->clear();
@@ -133,7 +136,13 @@ void MainWindow::setEditMode(bool edit, int recordId)
         ui->New_item_description->clear();
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
-        QList<QComboBox*> combos = { ui->New_item_type, ui->New_item_vendor, ui->New_item_model, ui->New_item_status, ui->New_item_storagePlace };
+        QList<QComboBox*> combos = {
+            ui->New_item_type,
+            ui->New_item_vendor,
+            ui->New_item_model,
+            ui->New_item_status,
+            ui->New_item_storagePlace
+        };
         for (QComboBox *combo : combos) {
             combo->setEditable(true);
             combo->clearEditText();
@@ -146,18 +155,18 @@ void MainWindow::setEditMode(bool edit, int recordId)
     }
 }
 
-void MainWindow::setCloneMode(int recordId)
+void MainWindow::setCloneMode(const QString &recordId)
 {
     m_editMode = false;
-    loadRecord(recordId);
-    m_recordId = -1;
+    loadRecord(recordId); // Załaduje dane do formularza
+    m_recordId.clear();   // Ale docelowo to będzie nowy rekord
 }
 
 ///////////////////////
-// Ładowanie rekordu i zdjęć //
+// Ładowanie rekordu
 ///////////////////////
 
-void MainWindow::loadRecord(int recordId)
+void MainWindow::loadRecord(const QString &recordId)
 {
     QSqlQuery query(db);
     query.prepare(R"(
@@ -179,11 +188,16 @@ void MainWindow::loadRecord(int recordId)
         int prodYear = query.value("production_year").toInt();
         ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
-        ui->New_item_type->setCurrentIndex(ui->New_item_type->findData(query.value("type_id")));
-        ui->New_item_vendor->setCurrentIndex(ui->New_item_vendor->findData(query.value("vendor_id")));
-        ui->New_item_model->setCurrentIndex(ui->New_item_model->findData(query.value("model_id")));
-        ui->New_item_status->setCurrentIndex(ui->New_item_status->findData(query.value("status_id")));
-        ui->New_item_storagePlace->setCurrentIndex(ui->New_item_storagePlace->findData(query.value("storage_place_id")));
+        ui->New_item_type->setCurrentIndex(
+            ui->New_item_type->findData(query.value("type_id").toString()));
+        ui->New_item_vendor->setCurrentIndex(
+            ui->New_item_vendor->findData(query.value("vendor_id").toString()));
+        ui->New_item_model->setCurrentIndex(
+            ui->New_item_model->findData(query.value("model_id").toString()));
+        ui->New_item_status->setCurrentIndex(
+            ui->New_item_status->findData(query.value("status_id").toString()));
+        ui->New_item_storagePlace->setCurrentIndex(
+            ui->New_item_storagePlace->findData(query.value("storage_place_id").toString()));
 
         loadPhotos(recordId);
     } else {
@@ -191,7 +205,7 @@ void MainWindow::loadRecord(int recordId)
     }
 }
 
-void MainWindow::loadPhotos(int recordId)
+void MainWindow::loadPhotos(const QString &recordId)
 {
     QSqlQuery query(db);
     query.prepare("SELECT id, photo FROM photos WHERE eksponat_id = :id");
@@ -212,14 +226,20 @@ void MainWindow::loadPhotos(int recordId)
             qDebug() << "Nie można załadować zdjęcia BLOB dla rekordu" << recordId;
             continue;
         }
-        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize,
+                                       Qt::KeepAspectRatio, Qt::SmoothTransformation);
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
-        item->setData(0, query.value("id").toInt());
+        // Zapisujemy ID zdjęcia w data(0)
+        item->setData(0, query.value("id").toString());
+        // data(1) – index w scenie
         item->setData(1, index);
+
         connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+
         item->setPos(x, y);
         scene->addItem(item);
+
         x += thumbnailSize + spacing;
         if (x + thumbnailSize > ui->graphicsView->width() - 10) {
             x = 5;
@@ -228,11 +248,16 @@ void MainWindow::loadPhotos(int recordId)
         ++index;
     }
     if (!scene->items().isEmpty()) {
-        scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbnailSize + 5);
+        scene->setSceneRect(0, 0,
+                            ui->graphicsView->width() - 10,
+                            y + thumbnailSize + 5);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->resetTransform();
-        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
-                                 (ui->graphicsView->height() - 10.0) / scene->height());
+
+        qreal scaleFactor = qMin(
+            (ui->graphicsView->width() - 10.0) / scene->width(),
+            (ui->graphicsView->height() - 10.0) / scene->height()
+            );
         if (scaleFactor < 1.0)
             scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
@@ -255,7 +280,8 @@ void MainWindow::loadPhotosFromBuffer()
             qDebug() << "Nie można załadować zdjęcia z bufora.";
             continue;
         }
-        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaled = pixmap.scaled(thumbnailSize, thumbnailSize,
+                                       Qt::KeepAspectRatio, Qt::SmoothTransformation);
         QGraphicsPixmapItem *item = scene->addPixmap(scaled);
         item->setPos(x, y);
         x += thumbnailSize + spacing;
@@ -268,45 +294,80 @@ void MainWindow::loadPhotosFromBuffer()
 }
 
 ///////////////////////
-// Obsługa zapisu, anulowania, zdjęć //
+// Obsługa zapisu, anulowania, zdjęć
 ///////////////////////
 
 void MainWindow::onSaveClicked()
 {
     QSqlQuery query(db);
-    int newRecordId = -1;
     if (!m_editMode) {
+        // Tryb nowego rekordu – generujemy nowy UUID
+        m_recordId = QUuid::createUuid().toString(QUuid::WithoutBraces);
         query.prepare(R"(
             INSERT INTO eksponaty
-            (name, serial_number, part_number, revision, production_year, status_id,
-             type_id, vendor_id, model_id, storage_place_id, description, value)
+            (id, name, serial_number, part_number, revision, production_year,
+             status_id, type_id, vendor_id, model_id, storage_place_id,
+             description, value)
             VALUES
-            (:name, :serial_number, :part_number, :revision, :production_year, :status_id,
-             :type_id, :vendor_id, :model_id, :storage_place_id, :description, :value)
+            (:id, :name, :serial_number, :part_number, :revision, :production_year,
+             :status_id, :type_id, :vendor_id, :model_id, :storage_place_id,
+             :description, :value)
         )");
+        query.bindValue(":id", m_recordId);
     } else {
+        // Edycja istniejącego rekordu
         query.prepare(R"(
             UPDATE eksponaty
-            SET name = :name, serial_number = :serial_number, part_number = :part_number, revision = :revision,
-                production_year = :production_year, status_id = :status_id, type_id = :type_id,
-                vendor_id = :vendor_id, model_id = :model_id, storage_place_id = :storage_place_id,
-                description = :description, value = :value
+            SET name = :name,
+                serial_number = :serial_number,
+                part_number   = :part_number,
+                revision      = :revision,
+                production_year = :production_year,
+                status_id     = :status_id,
+                type_id       = :type_id,
+                vendor_id     = :vendor_id,
+                model_id      = :model_id,
+                storage_place_id = :storage_place_id,
+                description   = :description,
+                value         = :value
             WHERE id = :id
         )");
         query.bindValue(":id", m_recordId);
     }
+
     query.bindValue(":name", ui->New_item_name->text());
     query.bindValue(":serial_number", ui->New_item_serialNumber->text());
     query.bindValue(":part_number", ui->New_item_partNumber->text());
     query.bindValue(":revision", ui->New_item_revision->text());
     query.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
-    query.bindValue(":status_id", ui->New_item_status->currentData().isValid() ? ui->New_item_status->currentData() : 1);
-    query.bindValue(":type_id", ui->New_item_type->currentData().isValid() ? ui->New_item_type->currentData() : 1);
-    query.bindValue(":vendor_id", ui->New_item_vendor->currentData().isValid() ? ui->New_item_vendor->currentData() : 1);
-    query.bindValue(":model_id", ui->New_item_model->currentData().isValid() ? ui->New_item_model->currentData() : 1);
-    query.bindValue(":storage_place_id", ui->New_item_storagePlace->currentData().isValid() ? ui->New_item_storagePlace->currentData() : 1);
+
+    // foreign keys: z combobox (QString) lub fallback
+    QString statusId = ui->New_item_status->currentData().toString();
+    if (statusId.isEmpty()) statusId = "unknown_status_uuid";
+
+    QString typeId = ui->New_item_type->currentData().toString();
+    if (typeId.isEmpty()) typeId = "unknown_type_uuid";
+
+    QString vendorId = ui->New_item_vendor->currentData().toString();
+    if (vendorId.isEmpty()) vendorId = "unknown_vendor_uuid";
+
+    QString modelId = ui->New_item_model->currentData().toString();
+    if (modelId.isEmpty()) modelId = "unknown_model_uuid";
+
+    QString storageId = ui->New_item_storagePlace->currentData().toString();
+    if (storageId.isEmpty()) storageId = "unknown_storage_uuid";
+
+    query.bindValue(":status_id",        statusId);
+    query.bindValue(":type_id",          typeId);
+    query.bindValue(":vendor_id",        vendorId);
+    query.bindValue(":model_id",         modelId);
+    query.bindValue(":storage_place_id", storageId);
+
     query.bindValue(":description", ui->New_item_description->toPlainText());
-    query.bindValue(":value", ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
+    query.bindValue(":value",
+                    ui->New_item_value->text().isEmpty()
+                        ? 0
+                        : ui->New_item_value->text().toInt());
 
     if (!query.exec()) {
         qDebug() << "Błąd zapisu:" << query.lastError().text();
@@ -314,13 +375,15 @@ void MainWindow::onSaveClicked()
                                                     .arg(query.lastError().text()));
         return;
     }
+
+    // Jeśli nowy rekord, wstawiamy zdjęcia z bufora
     if (!m_editMode) {
-        newRecordId = query.lastInsertId().toInt();
-        m_recordId = newRecordId;
         for (int i = 0; i < m_photoBuffer.size(); ++i) {
-            const QByteArray &photoData = m_photoBuffer.at(i);
+            QByteArray photoData = m_photoBuffer.at(i);
+            QString photoId = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery photoQuery(db);
-            photoQuery.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
+            photoQuery.prepare("INSERT INTO photos (id, eksponat_id, photo) VALUES (:id, :eksponat_id, :photo)");
+            photoQuery.bindValue(":id", photoId);
             photoQuery.bindValue(":eksponat_id", m_recordId);
             photoQuery.bindValue(":photo", photoData);
             if (!photoQuery.exec()) {
@@ -328,10 +391,8 @@ void MainWindow::onSaveClicked()
             }
         }
         m_photoBuffer.clear();
-    } else {
-        newRecordId = m_recordId;
     }
-    emit recordSaved(newRecordId);
+    emit recordSaved(m_recordId);
     QMessageBox::information(this, tr("Sukces"), tr("Operacja zapisu zakończona powodzeniem."));
     close();
 }
@@ -343,13 +404,13 @@ void MainWindow::onCancelClicked()
 
 void MainWindow::onAddPhotoClicked()
 {
-    // Poprawka: użycie stałej zmiennej, aby uniknąć kopiowania kontenera
-    const QStringList fileNames = QFileDialog::getOpenFileNames(this,
-                                                                tr("Wybierz zdjęcia"),
-                                                                QString(),
-                                                                tr("Images (*.jpg *.jpeg *.png)"));
+    QStringList fileNames = QFileDialog::getOpenFileNames(this,
+                                                          tr("Wybierz zdjęcia"),
+                                                          QString(),
+                                                          tr("Images (*.jpg *.jpeg *.png)"));
     if (fileNames.isEmpty())
         return;
+
     for (const QString &fileName : fileNames) {
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly)) {
@@ -358,22 +419,28 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray imageData = file.readAll();
         file.close();
-        if (m_recordId == -1) {
+
+        if (m_recordId.isEmpty()) {
+            // Nowy jeszcze nie wstawiony do bazy: buforujemy zdjęcia w RAM
             m_photoBuffer.append(imageData);
         } else {
+            // Rekord już istnieje w bazie – wstawiamy od razu
+            QString photoId = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery query(db);
-            query.prepare("INSERT INTO photos (eksponat_id, photo) VALUES (:eksponat_id, :photo)");
+            query.prepare("INSERT INTO photos (id, eksponat_id, photo) VALUES (:id, :eksponat_id, :photo)");
+            query.bindValue(":id", photoId);
             query.bindValue(":eksponat_id", m_recordId);
             query.bindValue(":photo", imageData);
             if (!query.exec()) {
-                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zapisać zdjęcia:\n%1")
-                                                            .arg(query.lastError().text()));
+                QMessageBox::critical(this, tr("Błąd"),
+                                      tr("Nie udało się zapisać zdjęcia:\n%1")
+                                          .arg(query.lastError().text()));
             } else {
                 qDebug() << "Zdjęcie zapisane dla rekordu" << m_recordId;
             }
         }
     }
-    if (m_recordId == -1) {
+    if (m_recordId.isEmpty()) {
         loadPhotosFromBuffer();
     } else {
         loadPhotos(m_recordId);
@@ -395,7 +462,7 @@ void MainWindow::onRemovePhotoClicked()
     if (m_selectedPhotoIndex >= 0 && m_selectedPhotoIndex < items.size()) {
         PhotoItem *selectedItem = dynamic_cast<PhotoItem*>(items.at(m_selectedPhotoIndex));
         if (selectedItem) {
-            int photoId = selectedItem->data(0).toInt();
+            QString photoId = selectedItem->data(0).toString();
             QMessageBox::StandardButton reply = QMessageBox::question(
                 this,
                 tr("Potwierdzenie"),
@@ -407,8 +474,9 @@ void MainWindow::onRemovePhotoClicked()
                 query.prepare("DELETE FROM photos WHERE id = :id");
                 query.bindValue(":id", photoId);
                 if (!query.exec()) {
-                    QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć zdjęcia:\n%1")
-                                                                .arg(query.lastError().text()));
+                    QMessageBox::critical(this, tr("Błąd"),
+                                          tr("Nie udało się usunąć zdjęcia:\n%1")
+                                              .arg(query.lastError().text()));
                 } else {
                     loadPhotos(m_recordId);
                 }
@@ -436,7 +504,7 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
 }
 
 ///////////////////////
-// Dialogi słowników //
+// Dialogi słowników
 ///////////////////////
 
 void MainWindow::onAddTypeClicked()

@@ -16,8 +16,9 @@ class models : public QDialog
 public:
     explicit models(QWidget *parent = nullptr);
     ~models();
+
     void setMainWindow(MainWindow *mainWindow);
-    void setVendorId(int vendorId);
+    void setVendorId(const QString &vendorId); // ZMIANA: był int
 
 private slots:
     void onAddClicked();
@@ -31,7 +32,7 @@ private:
     Ui::models *ui;
     MainWindow *m_mainWindow;
     QSqlDatabase m_db;
-    int m_vendorId;
+    QString m_vendorId; // ZMIANA: było int
 };
 
 #endif // MODELS_H
