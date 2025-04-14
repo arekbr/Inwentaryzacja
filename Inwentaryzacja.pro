@@ -6,6 +6,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 SOURCES += \
+    fullscreenphotoviewer.cpp \
     itemList.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     vendors.cpp
 
 HEADERS += \
+    fullscreenphotoviewer.h \
     itemList.h \
     mainwindow.h \
     models.h \
