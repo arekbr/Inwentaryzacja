@@ -48,4 +48,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     README.md \
     createTable.sql \
-    database_example_record.sql
+    database_example_record.sql \
+    migrate_to_uuid.sql

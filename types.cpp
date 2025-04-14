@@ -6,6 +6,7 @@
 #include <QSqlQueryModel>
 #include <QInputDialog>
 #include "mainwindow.h"
+#include <QUuid>
 
 typy::typy(QWidget *parent)
     : QDialog(parent),
@@ -16,11 +17,9 @@ typy::typy(QWidget *parent)
     m_db = QSqlDatabase::database("default_connection");
     setWindowTitle(tr("Zarządzanie typami sprzętu"));
 
-    // Połączenie przycisków z odpowiednimi slotami
     connect(ui->pushButton_add, &QPushButton::clicked, this, &typy::onAddClicked);
     connect(ui->pushButton_edit, &QPushButton::clicked, this, &typy::onEditClicked);
     connect(ui->pushButton_delete, &QPushButton::clicked, this, &typy::onDeleteClicked);
-    // Przyciski OK/Anuluj z QDialogButtonBox – OK wywołuje onOkClicked, Anuluj wywołuje reject
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &typy::onOkClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
@@ -39,7 +38,6 @@ void typy::setMainWindow(MainWindow *mainWindow)
 
 void typy::refreshList()
 {
-    // Używamy QSqlQueryModel, aby pobrać tylko kolumnę "name"
     QSqlQueryModel *queryModel = new QSqlQueryModel(this);
     queryModel->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
     if (queryModel->lastError().isValid()) {
@@ -48,7 +46,6 @@ void typy::refreshList()
         return;
     }
     ui->listView->setModel(queryModel);
-    // Ustawiamy, aby QListView pokazywał tylko kolumnę z nazwami
     ui->listView->setModelColumn(0);
 }
 
@@ -59,8 +56,12 @@ void typy::onAddClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa typu nie może być pusta."));
         return;
     }
+
+    QUuid::createUuid().toString(QUuid::WithoutBraces);
+
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO types (name) VALUES (:name)");
+    query.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", QUuid::createUuid().toString());
     query.bindValue(":name", newType);
     if(!query.exec()){
         QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać typu: %1")
@@ -77,7 +78,6 @@ void typy::onEditClicked()
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać typ do edycji."));
         return;
     }
-    // Pobieramy aktualną nazwę z listy
     QString currentName = index.data(Qt::DisplayRole).toString();
     bool ok;
     QString newName = QInputDialog::getText(this, tr("Edytuj typ"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
@@ -86,7 +86,7 @@ void typy::onEditClicked()
         query.prepare("SELECT id FROM types WHERE name = :name");
         query.bindValue(":name", currentName);
         if(query.exec() && query.next()){
-            int id = query.value(0).toInt();
+            QString id = query.value("id").toString();
             QSqlQuery updateQuery(m_db);
             updateQuery.prepare("UPDATE types SET name = :newName WHERE id = :id");
             updateQuery.bindValue(":newName", newName.trimmed());
@@ -125,7 +125,6 @@ void typy::onDeleteClicked()
 
 void typy::onOkClicked()
 {
-    // Po kliknięciu OK odświeżamy pole TYP w głównym oknie (jeśli główne okno jest ustawione)
     if(m_mainWindow) {
         m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());
     }

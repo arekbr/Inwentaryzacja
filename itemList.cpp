@@ -28,13 +28,12 @@
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::itemList),
-    m_currentRecordId(-1),
+    m_currentRecordId(QString()),
     m_previewWindow(nullptr)
 {
     ui->setupUi(this);
     qDebug() << "itemList: UI zainicjalizowane";
 
-    // Ustawienie domyślnej ścieżki
     QDir homeDir = QDir::home();
     QString defaultDbPath = homeDir.filePath("remote_sqlite/muzeum.db");
     qDebug() << "itemList: Domyślna ścieżka bazy:" << defaultDbPath;
@@ -160,6 +159,8 @@ itemList::itemList(QWidget *parent) :
     relModel->setTable("eksponaty");
     relModel->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
 
+    // Uwaga: relacje na TEXT mogą nie zawsze działać w QSqlRelation, zależy od wersji Qt.
+    // Zostawiamy to, jak jest - jeśli będą problemy, trzeba je obsłużyć samodzielnie.
     relModel->setRelation(2, QSqlRelation("types", "id", "name"));
     relModel->setRelation(3, QSqlRelation("vendors", "id", "name"));
     relModel->setRelation(4, QSqlRelation("models", "id", "name"));
@@ -191,8 +192,10 @@ itemList::itemList(QWidget *parent) :
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // Ukrywamy kolumnę 0, bo to jest ID w postaci tekstowej
     ui->itemList_tableView->hideColumn(0);
-    ui->itemList_tableView->hideColumn(13);
+    // kolumna 13 nie istnieje w nowym schemacie (być może Ty masz inny layout)
 
     connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
     connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
@@ -207,8 +210,6 @@ itemList::itemList(QWidget *parent) :
     qDebug() << "itemList: Konstruktor zakończony";
 }
 
-// Reszta metod pozostaje bez zmian
-
 itemList::~itemList()
 {
     delete m_previewWindow;
@@ -219,7 +220,10 @@ itemList::~itemList()
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
     qDebug() << "itemList: Weryfikacja schematu bazy";
-    QStringList requiredTables = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
+    QStringList requiredTables = {
+        "eksponaty", "types", "vendors", "models",
+        "statuses", "storage_places", "photos"
+    };
     QStringList tables = db.tables();
     for (const QString &table : requiredTables) {
         if (!tables.contains(table)) {
@@ -238,61 +242,77 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     query.exec("PRAGMA foreign_keys = ON;");
     query.exec("PRAGMA journal_mode=WAL;"); // Włącz WAL
 
-    query.exec("CREATE TABLE eksponaty ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT NOT NULL,"
-               "type_id INTEGER NOT NULL,"
-               "vendor_id INTEGER NOT NULL,"
-               "model_id INTEGER NOT NULL,"
-               "serial_number TEXT,"
-               "part_number TEXT,"
-               "revision TEXT,"
-               "production_year INTEGER CHECK(production_year BETWEEN 1900 AND 2100),"
-               "status_id INTEGER NOT NULL,"
-               "storage_place_id INTEGER NOT NULL,"
-               "description TEXT,"
-               "value INTEGER CHECK(value >= 0),"
-               "FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE RESTRICT ON UPDATE CASCADE,"
-               "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE RESTRICT ON UPDATE CASCADE,"
-               "FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT ON UPDATE CASCADE,"
-               "FOREIGN KEY (status_id) REFERENCES statuses(id) ON DELETE RESTRICT ON UPDATE CASCADE,"
-               "FOREIGN KEY (storage_place_id) REFERENCES storage_places(id) ON DELETE RESTRICT ON UPDATE CASCADE"
-               ")");
+    // ZAMIANA: id TEXT PRIMARY KEY + foreign key TEXT
+    query.exec(R"(
+        CREATE TABLE eksponaty (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            type_id TEXT NOT NULL,
+            vendor_id TEXT NOT NULL,
+            model_id TEXT NOT NULL,
+            serial_number TEXT,
+            part_number TEXT,
+            revision TEXT,
+            production_year INTEGER CHECK(production_year BETWEEN 1900 AND 2100),
+            status_id TEXT NOT NULL,
+            storage_place_id TEXT NOT NULL,
+            description TEXT,
+            value INTEGER CHECK(value >= 0),
+            FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+            FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+            FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+            FOREIGN KEY (status_id) REFERENCES statuses(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+            FOREIGN KEY (storage_place_id) REFERENCES storage_places(id) ON DELETE RESTRICT ON UPDATE CASCADE
+        )
+    )");
 
-    query.exec("CREATE TABLE types ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT UNIQUE NOT NULL"
-               ")");
+    query.exec(R"(
+        CREATE TABLE types (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL
+        )
+    )");
 
-    query.exec("CREATE TABLE vendors ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT UNIQUE NOT NULL"
-               ")");
+    query.exec(R"(
+        CREATE TABLE vendors (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL
+        )
+    )");
 
-    query.exec("CREATE TABLE models ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT UNIQUE NOT NULL,"
-               "vendor_id INTEGER NOT NULL,"
-               "FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE ON UPDATE CASCADE"
-               ")");
+    query.exec(R"(
+        CREATE TABLE models (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL,
+            vendor_id TEXT NOT NULL,
+            FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE ON UPDATE CASCADE
+        )
+    )");
 
-    query.exec("CREATE TABLE statuses ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT UNIQUE NOT NULL"
-               ")");
+    query.exec(R"(
+        CREATE TABLE statuses (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL
+        )
+    )");
 
-    query.exec("CREATE TABLE storage_places ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "name TEXT UNIQUE NOT NULL"
-               ")");
+    query.exec(R"(
+        CREATE TABLE storage_places (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL
+        )
+    )");
 
-    query.exec("CREATE TABLE photos ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               "eksponat_id INTEGER NOT NULL,"
-               "photo BLOB NOT NULL,"
-               "FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id) ON DELETE CASCADE ON UPDATE CASCADE"
-               ")");
+    query.exec(R"(
+        CREATE TABLE photos (
+            id TEXT PRIMARY KEY,
+            eksponat_id TEXT NOT NULL,
+            photo BLOB NOT NULL,
+            FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id) ON DELETE CASCADE ON UPDATE CASCADE
+        )
+    )");
 
+    // Indeks po numerze seryjnym
     query.exec("CREATE INDEX idx_serial_number ON eksponaty(serial_number);");
 
     if (query.lastError().isValid()) {
@@ -307,18 +327,102 @@ void itemList::insertSampleData(QSqlDatabase &db)
     qDebug() << "itemList: Wstawianie przykładowych danych";
     QSqlQuery query(db);
 
-    query.exec("INSERT INTO types (name) VALUES ('Komputer'), ('Monitor'), ('Kabel');");
-    query.exec("INSERT INTO vendors (name) VALUES ('Atari'), ('Commodore'), ('Sinclair');");
-    query.exec("INSERT INTO models (name, vendor_id) VALUES ('Atari 800XL', 1), ('Amiga 500', 2), ('ZX Spectrum', 3);");
-    query.exec("INSERT INTO statuses (name) VALUES ('Sprawny'), ('Uszkodzony'), ('W naprawie');");
-    query.exec("INSERT INTO storage_places (name) VALUES ('Magazyn 1'), ('Półka B3');");
+    // W ramach przykładu generujemy proste ID (UUID)
+    auto genId = []() {
+        return QUuid::createUuid().toString(QUuid::WithoutBraces);
+    };
 
-    query.exec("INSERT INTO eksponaty (name, type_id, vendor_id, model_id, serial_number, production_year, status_id, storage_place_id, description, value) "
-               "VALUES ('Atari 800XL', 1, 1, 1, 'AT800-001', 1983, 1, 1, 'Klasyczny komputer Atari', 1);");
-    query.exec("INSERT INTO eksponaty (name, type_id, vendor_id, model_id, serial_number, production_year, status_id, storage_place_id, description, value) "
-               "VALUES ('Amiga 500', 1, 2, 2, 'A500-1234', 1987, 1, 1, 'Klasyczny komputer Amiga', 2);");
-    query.exec("INSERT INTO eksponaty (name, type_id, vendor_id, model_id, serial_number, production_year, status_id, storage_place_id, description, value) "
-               "VALUES ('ZX Spectrum', 1, 3, 3, 'ZXS-4567', 1982, 2, 2, 'Kultowy komputer Sinclair', 1);");
+    QString t1 = genId();
+    QString t2 = genId();
+    QString t3 = genId();
+
+    query.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", t1); query.bindValue(":name", "Komputer"); query.exec();
+    query.bindValue(":id", t2); query.bindValue(":name", "Monitor");  query.exec();
+    query.bindValue(":id", t3); query.bindValue(":name", "Kabel");    query.exec();
+
+    QString v1 = genId();
+    QString v2 = genId();
+    QString v3 = genId();
+
+    query.prepare("INSERT INTO vendors (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", v1); query.bindValue(":name", "Atari");      query.exec();
+    query.bindValue(":id", v2); query.bindValue(":name", "Commodore"); query.exec();
+    query.bindValue(":id", v3); query.bindValue(":name", "Sinclair");  query.exec();
+
+    QString m1 = genId();
+    QString m2 = genId();
+    QString m3 = genId();
+
+    query.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
+    query.bindValue(":id", m1); query.bindValue(":name", "Atari 800XL");  query.bindValue(":vendor_id", v1); query.exec();
+    query.bindValue(":id", m2); query.bindValue(":name", "Amiga 500");    query.bindValue(":vendor_id", v2); query.exec();
+    query.bindValue(":id", m3); query.bindValue(":name", "ZX Spectrum");  query.bindValue(":vendor_id", v3); query.exec();
+
+    QString s1 = genId();
+    QString s2 = genId();
+    QString s3 = genId();
+
+    query.prepare("INSERT INTO statuses (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", s1); query.bindValue(":name", "Sprawny");    query.exec();
+    query.bindValue(":id", s2); query.bindValue(":name", "Uszkodzony"); query.exec();
+    query.bindValue(":id", s3); query.bindValue(":name", "W naprawie"); query.exec();
+
+    QString sp1 = genId();
+    QString sp2 = genId();
+
+    query.prepare("INSERT INTO storage_places (id, name) VALUES (:id, :name)");
+    query.bindValue(":id", sp1); query.bindValue(":name", "Magazyn 1"); query.exec();
+    query.bindValue(":id", sp2); query.bindValue(":name", "Półka B3");  query.exec();
+
+    QString e1 = genId();
+    query.prepare(R"(
+        INSERT INTO eksponaty (id, name, type_id, vendor_id, model_id, serial_number,
+            production_year, status_id, storage_place_id, description, value)
+        VALUES (:id, :name, :type_id, :vendor_id, :model_id, :serial, :year,
+                :status, :storage, :desc, :val)
+    )");
+    query.bindValue(":id", e1);
+    query.bindValue(":name", "Atari 800XL");
+    query.bindValue(":type_id", t1);
+    query.bindValue(":vendor_id", v1);
+    query.bindValue(":model_id", m1);
+    query.bindValue(":serial", "AT800-001");
+    query.bindValue(":year", 1983);
+    query.bindValue(":status", s1);
+    query.bindValue(":storage", sp1);
+    query.bindValue(":desc", "Klasyczny komputer Atari");
+    query.bindValue(":val", 1);
+    query.exec();
+
+    // analogicznie...
+    QString e2 = genId();
+    query.bindValue(":id", e2);
+    query.bindValue(":name", "Amiga 500");
+    query.bindValue(":type_id", t1);
+    query.bindValue(":vendor_id", v2);
+    query.bindValue(":model_id", m2);
+    query.bindValue(":serial", "A500-1234");
+    query.bindValue(":year", 1987);
+    query.bindValue(":status", s1);
+    query.bindValue(":storage", sp1);
+    query.bindValue(":desc", "Klasyczny komputer Amiga");
+    query.bindValue(":val", 2);
+    query.exec();
+
+    QString e3 = genId();
+    query.bindValue(":id", e3);
+    query.bindValue(":name", "ZX Spectrum");
+    query.bindValue(":type_id", t1);
+    query.bindValue(":vendor_id", v3);
+    query.bindValue(":model_id", m3);
+    query.bindValue(":serial", "ZXS-4567");
+    query.bindValue(":year", 1982);
+    query.bindValue(":status", s2);
+    query.bindValue(":storage", sp2);
+    query.bindValue(":desc", "Kultowy komputer Sinclair");
+    query.bindValue(":val", 1);
+    query.exec();
 
     if (query.lastError().isValid()) {
         qDebug() << "itemList: Błąd wstawiania danych przykładowych:" << query.lastError().text();
@@ -331,12 +435,14 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 {
     if (selected.indexes().isEmpty()) {
         ui->itemList_graphicsView->setScene(nullptr);
-        m_currentRecordId = -1;
+        m_currentRecordId.clear();
         return;
     }
     QModelIndex index = selected.indexes().first();
     int row = index.row();
-    m_currentRecordId = model->data(model->index(row, 0)).toInt();
+    // Indeks kolumny 0 to TEXT ID
+    QString recordId = model->data(model->index(row, 0)).toString();
+    m_currentRecordId = recordId;
 
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
@@ -471,7 +577,7 @@ void itemList::onNewButtonClicked()
 {
     MainWindow *addWindow = new MainWindow(this);
     addWindow->setAttribute(Qt::WA_DeleteOnClose);
-    addWindow->setEditMode(false);
+    addWindow->setEditMode(false, QString());
     connect(addWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
     addWindow->show();
 }
@@ -484,7 +590,7 @@ void itemList::onEditButtonClicked()
         return;
     }
     QModelIndex index = selectionModel->selectedRows().first();
-    int recordId = model->data(model->index(index.row(), 0)).toInt();
+    QString recordId = model->data(model->index(index.row(), 0)).toString();
     m_currentRecordId = recordId;
 
     MainWindow *editWindow = new MainWindow(this);
@@ -506,7 +612,7 @@ void itemList::onDeleteButtonClicked()
         return;
 
     int row = selected.first().row();
-    int recordId = model->data(model->index(row, 0)).toInt();
+    QString recordId = model->data(model->index(row, 0)).toString();
 
     QMessageBox::StandardButton btn = QMessageBox::question(
         this,
@@ -535,20 +641,20 @@ void itemList::onEndButtonClicked()
     qApp->quit();
 }
 
-void itemList::onRecordSaved(int recordId)
+void itemList::onRecordSaved(const QString &recordId)
 {
     refreshList(recordId);
 }
 
-void itemList::refreshList(int recordId)
+void itemList::refreshList(const QString &recordId)
 {
     model->select();
     ui->itemList_tableView->resizeColumnsToContents();
 
-    if (recordId != -1) {
+    if (!recordId.isEmpty()) {
         for (int row = 0; row < model->rowCount(); ++row) {
             QModelIndex idx = model->index(row, 0);
-            if (model->data(idx).toInt() == recordId) {
+            if (model->data(idx).toString() == recordId) {
                 QItemSelectionModel *sel = ui->itemList_tableView->selectionModel();
                 sel->clearSelection();
                 sel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
@@ -567,7 +673,7 @@ void itemList::onCloneButtonClicked()
         return;
     }
     QModelIndex index = selectionModel->selectedRows().first();
-    int recordId = model->data(model->index(index.row(), 0)).toInt();
+    QString recordId = model->data(model->index(index.row(), 0)).toString();
 
     MainWindow *cloneWindow = new MainWindow(this);
     cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
