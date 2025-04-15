@@ -7,8 +7,13 @@ QMAKE_TARGET_COMPANY = Stowarzyszenie Miłośników Oldschoolowych Komputerów S
 QMAKE_TARGET_PRODUCT = Inwentaryzacja
 QMAKE_TARGET_DESCRIPTION = Program do inwentaryzacji retro komputerów
 
+# Ikona aplikacji
+win32:RC_ICONS = images/icon.ico
+macx:ICON = images/icon.icns
+
 # Uncomment, aby wymusić kompilację bez przestarzałych API
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+QMAKE_POST_LINK += $$quote(/home/arekbr/projektyQT/Inwentaryzacja/set_icon.sh $$OUT_PWD/Inwentaryzacja /home/arekbr/projektyQT/Inwentaryzacja/images/icon.png)
 
 SOURCES += \
     DatabaseConfigDialog.cpp \
@@ -63,4 +68,8 @@ DISTFILES += \
     README.md \
     createTable.sql \
     database_example_record.sql \
-    migrate_to_uuid.sql
+    migrate_to_uuid.sql \
+    set_icon.sh
+
+RESOURCES += \
+    images/icon.qrc
