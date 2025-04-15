@@ -68,8 +68,15 @@ DISTFILES += \
     README.md \
     createTable.sql \
     database_example_record.sql \
+    images/256ikona.png \
+    images/icon.ico \
+    images/icon.png \
+    images/ikona.ico \
+    images/ikona256.ico \
+    images/ikona_mac.icns \
     migrate_to_uuid.sql \
     set_icon.sh
 
 RESOURCES += \
+    images/icon.qrc \
     images/icon.qrc
