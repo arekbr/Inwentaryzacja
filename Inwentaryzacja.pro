@@ -2,6 +2,11 @@ QT       += core gui sql widgets
 
 CONFIG += c++17
 
+VERSION = 1.1.0
+QMAKE_TARGET_COMPANY = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+QMAKE_TARGET_PRODUCT = Inwentaryzacja
+QMAKE_TARGET_DESCRIPTION = Program do inwentaryzacji retro komputerów
+
 # Uncomment, aby wymusić kompilację bez przestarzałych API
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
@@ -53,6 +58,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    CHANGELOG.md \
     Create_MySQL.sql \
     README.md \
     createTable.sql \
