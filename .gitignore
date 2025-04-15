@@ -3,3 +3,4 @@ build/
 *.dmg
 *.db
 *.DS_Store
+*.txt
