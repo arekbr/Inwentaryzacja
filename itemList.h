@@ -6,7 +6,7 @@
 #include <QSqlRelationalTableModel>
 #include <QLabel>
 #include <QSettings>
-#include "photoitem.h" // aby klasa PhotoItem była znana (sygnał clicked)
+#include "photoitem.h" // dla sygnałów hovered, clicked
 
 namespace Ui {
 class itemList;
@@ -25,20 +25,20 @@ private slots:
     void onEndButtonClicked();
     void onDeleteButtonClicked();
 
-    // Metoda wywoływana przy zaznaczeniu wiersza w QTableView
+    // Po zaznaczeniu wiersza w QTableView
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
-    // Slot wywoływany, gdy okno edycji/dodawania zapisze rekord
+    // Po zapisie rekordu w MainWindow:
     void onRecordSaved(const QString &recordId);
 
-    // Odświeżenie listy (modelu) i ewentualne zaznaczenie jakiegoś ID
+    // Odświeża model i (ew.) zaznacza wskazany rekord:
     void refreshList(const QString &recordId = QString());
 
-    // Obsługa najechania myszką na PhotoItem
+    // Obsługa hover:
     void onPhotoHovered(PhotoItem *item);
     void onPhotoUnhovered(PhotoItem *item);
 
-    // NOWY slot: obsługa kliknięcia w miniaturę
+    // Kliknięcie miniatury -> fullscreen
     void onPhotoClicked(PhotoItem *item);
 
     void onCloneButtonClicked();
@@ -51,7 +51,7 @@ private:
     Ui::itemList *ui;
     QSqlRelationalTableModel *model;
     QString m_currentRecordId;
-    QWidget *m_previewWindow; // do podglądu w hover
+    QWidget *m_previewWindow;
 };
 
 #endif // ITEMLIST_H

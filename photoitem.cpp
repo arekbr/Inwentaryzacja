@@ -2,6 +2,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QPen>
+#include <QUuid>
+
 
 PhotoItem::PhotoItem(QGraphicsItem *parent)
     : QObject(nullptr),
@@ -10,7 +12,7 @@ PhotoItem::PhotoItem(QGraphicsItem *parent)
     m_selected(false),
     m_frame(new QGraphicsRectItem(this))
 {
-    setAcceptHoverEvents(true); // Włączamy zdarzenia hover
+    setAcceptHoverEvents(true);
     setAcceptTouchEvents(false);
     m_frame->setPen(QPen(Qt::NoPen));
     m_frame->setBrush(Qt::NoBrush);
@@ -27,7 +29,7 @@ void PhotoItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         m_pressed = true;
-        emit clicked(this);  // sygnał kliknięcia
+        emit clicked(this);
         event->accept();
     } else {
         QGraphicsPixmapItem::mousePressEvent(event);
@@ -52,12 +54,12 @@ void PhotoItem::updateFrame()
 
 void PhotoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit hovered(this); // Emitujemy sygnał "najechania"
+    emit hovered(this);
     QGraphicsPixmapItem::hoverEnterEvent(event);
 }
 
 void PhotoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit unhovered(this); // Emitujemy sygnał "opuszczenia"
+    emit unhovered(this);
     QGraphicsPixmapItem::hoverLeaveEvent(event);
 }

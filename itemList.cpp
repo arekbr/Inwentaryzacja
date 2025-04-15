@@ -2,7 +2,7 @@
 #include "ui_itemList.h"
 #include "mainwindow.h"
 #include "photoitem.h"
-#include "fullscreenphotoviewer.h" // <-- NOWE: nasz plik do wyświetlania fullscreen
+#include "fullscreenphotoviewer.h"
 
 #include <QSqlDatabase>
 #include <QSqlRelationalTableModel>
@@ -25,366 +25,327 @@
 #include <QSettings>
 #include <QFile>
 #include <QtMath>
+#include <QUuid>
 
+/*bool ensureDatabaseExists(const QString &dbName, const QString &host, int port, const QString &user, const QString &pass)
+{
+    const QString connectionName = "mysql_admin_check";
+
+    if (QSqlDatabase::contains(connectionName))
+        QSqlDatabase::removeDatabase(connectionName);
+
+    QSqlDatabase adminDb = QSqlDatabase::addDatabase("QMYSQL", connectionName);
+    adminDb.setHostName(host);
+    adminDb.setPort(port);
+    adminDb.setUserName(user);
+    adminDb.setPassword(pass);
+    adminDb.setDatabaseName("mysql"); // systemowa baza zawsze istnieje
+    qDebug() << adminDb.drivers();
+
+
+
+    if (!adminDb.open()) {
+        qDebug() << "[MySQL] Błąd połączenia (admin):" << adminDb.lastError().text();
+        return false;
+    }
+
+    QSqlQuery q(adminDb);
+    if (!q.exec(QString("CREATE DATABASE IF NOT EXISTS `%1`").arg(dbName))) {
+        qDebug() << "[MySQL] Błąd CREATE DATABASE:" << q.lastError().text();
+        return false;
+    }
+
+    adminDb.close();
+    QSqlDatabase::removeDatabase(connectionName);
+    return true;
+}
+*/
 itemList::itemList(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::itemList),
     m_currentRecordId(QString()),
     m_previewWindow(nullptr)
 {
+  //  const QString mysqlHost = "127.0.0.1";
+  //  const int mysqlPort = 3306;
+  //  const QString mysqlUser = "root";
+  //  const QString mysqlPass = "123456";
+  //  const QString mysqlDb   = "inwentaryzacja";
+
+    // Upewniamy się, że baza istnieje
+  //  if (!ensureDatabaseExists(mysqlDb, mysqlHost, mysqlPort, mysqlUser, mysqlPass)) {
+  //      QMessageBox::critical(this, tr("Błąd krytyczny"), tr("Nie można utworzyć bazy danych '%1'.").arg(mysqlDb));
+  //      qApp->quit();
+  //      return;
+  //  }
     ui->setupUi(this);
-    qDebug() << "itemList: UI zainicjalizowane";
+    qDebug() << "itemList: Konstruktor start (MySQL)";
 
-    // ------------------------------------------------------------------------
-    // Tu w Twoim kodzie jest logika otwierania bazy, weryfikacji schematu,
-    // ewentualnego tworzenia lub wczytywania example data, itp.
-    // Poniżej jest przykładowa wersja z wątku (UUID, WAL).
-    // Jeśli masz inny / stary schemat, skopiuj ten plik i usuń fragmenty,
-    // które nie są Ci potrzebne.
-    // ------------------------------------------------------------------------
-    QDir homeDir = QDir::home();
-    QString defaultDbPath = homeDir.filePath("remote_sqlite/muzeum.db");
-    qDebug() << "itemList: Domyślna ścieżka bazy:" << defaultDbPath;
-
+    // Tworzymy połączenie do MySQL, jeśli nie istnieje
     QSqlDatabase db;
-    QSettings settings("Inwentaryzacja", "App");
-    QString savedDbPath = settings.value("database_path", "").toString();
-    qDebug() << "itemList: Zapisana ścieżka bazy:" << savedDbPath;
-
-    QString selectedPath;
-    bool dbOpened = false;
-
     if (!QSqlDatabase::contains("default_connection")) {
-        qDebug() << "itemList: Tworzenie nowego połączenia z bazą";
+        qDebug() << "itemList: Tworzenie połączenia do MySQL";
+        qDebug() << db.drivers();
 
-        if (!savedDbPath.isEmpty() && QFile::exists(savedDbPath)) {
-            selectedPath = savedDbPath;
-            qDebug() << "itemList: Próba użycia zapisanej ścieżki:" << selectedPath;
 
-            db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
-            db.setDatabaseName(selectedPath);
+        db = QSqlDatabase::addDatabase("QMYSQL", "default_connection");
 
-            if (db.open() && verifyDatabaseSchema(db)) {
-                qDebug() << "itemList: Zapisana baza otwarta i poprawna";
-                dbOpened = true;
-            } else {
-                qDebug() << "itemList: Zapisana baza istnieje, ale jest nieprawidłowa lub nie można jej otworzyć:" << db.lastError().text();
-                db.close();
-                QSqlDatabase::removeDatabase("default_connection");
-                selectedPath.clear();
-            }
+        // Tu wpisz swoje parametry
+        db.setHostName("IP SERWERA");       // Adres serwera MySQL
+        db.setDatabaseName("nazwa bazy");  // Nazwa bazy
+        db.setUserName("nazwa usera");             // Użytkownik
+        db.setPassword("haslo");         // Hasło
+        // db.setPort(3306); // domyślnie
+
+        if (!db.open()) {
+            qDebug() << "itemList: Błąd połączenia z MySQL:" << db.lastError().text();
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie można połączyć z MySQL:\n%1")
+                                      .arg(db.lastError().text()));
+            qApp->quit();
+            return;
+        } else {
+            qDebug() << "itemList: Połączenie z MySQL nawiązane.";
         }
 
-        if (!dbOpened) {
-            QFileDialog::Options options = QFileDialog::DontConfirmOverwrite;
-#if defined(Q_OS_LINUX) || defined(Q_OS_WIN) || defined(Q_OS_MACOS)
-            selectedPath = QFileDialog::getSaveFileName(
-                this,
-                tr("Wybierz lub utwórz bazę danych"),
-                defaultDbPath,
-                "SQLite DB (*.db)",
-                nullptr,
-                options
-                );
-#else
-            selectedPath = QFileDialog::getSaveFileName(
-                this,
-                tr("Wybierz lub utwórz bazę danych"),
-                defaultDbPath,
-                "SQLite DB (*.db)",
-                nullptr,
-                options
-                );
-#endif
-
-            if (selectedPath.isEmpty()) {
-                qDebug() << "itemList: Użytkownik nie wybrał ani nie podał nazwy bazy";
-                QMessageBox::critical(this, tr("Błąd"), tr("Nie wybrano bazy danych. Aplikacja zostanie zamknięta."));
-                qApp->quit();
-                return;
-            }
-            qDebug() << "itemList: Wybrana ścieżka:" << selectedPath;
-
-            db = QSqlDatabase::addDatabase("QSQLITE", "default_connection");
-            db.setDatabaseName(selectedPath);
-            qDebug() << "itemList: Ustawiono nazwę bazy:" << selectedPath;
-
-            if (QFile::exists(selectedPath)) {
-                qDebug() << "itemList: Baza istnieje, próba otwarcia";
-                if (!db.open()) {
-                    qDebug() << "itemList: Błąd otwarcia bazy:" << db.lastError().text();
-                    QMessageBox::critical(this, tr("Błąd"), tr("Nie można otworzyć bazy:\n%1").arg(db.lastError().text()));
-                    qApp->quit();
-                    return;
-                }
-                if (!verifyDatabaseSchema(db)) {
-                    qDebug() << "itemList: Nieprawidłowy schemat bazy";
-                    QMessageBox::critical(this, tr("Błąd"), tr("Wybrana baza danych ma nieprawidłowy schemat."));
-                    db.close();
-                    QSqlDatabase::removeDatabase("default_connection");
-                    qApp->quit();
-                    return;
-                }
-                qDebug() << "itemList: Schemat bazy zweryfikowany pozytywnie";
-            } else {
-                qDebug() << "itemList: Baza nie istnieje, tworzenie nowej";
-                if (!db.open()) {
-                    qDebug() << "itemList: Błąd tworzenia bazy:" << db.lastError().text();
-                    QMessageBox::critical(this, tr("Błąd"), tr("Nie można utworzyć bazy:\n%1").arg(db.lastError().text()));
-                    qApp->quit();
-                    return;
-                }
-                createDatabaseSchema(db);
-                qDebug() << "itemList: Schemat bazy utworzony";
-
-                QMessageBox::StandardButton reply = QMessageBox::question(
-                    this,
-                    tr("Przykładowe dane"),
-                    tr("Czy uzupełnić bazę przykładowymi rekordami?"),
-                    QMessageBox::Yes | QMessageBox::No
-                    );
-                if (reply == QMessageBox::Yes) {
-                    insertSampleData(db);
-                    qDebug() << "itemList: Wstawiono przykładowe dane";
-                }
-            }
-            settings.setValue("database_path", selectedPath);
-            qDebug() << "itemList: Ścieżka zapisana w QSettings:" << selectedPath;
+        // Sprawdźmy, czy tabele istnieją
+        if (!verifyDatabaseSchema(db)) {
+            qDebug() << "itemList: Tabele nie istnieją lub schemat nieprawidłowy -> tworzymy";
+            createDatabaseSchema(db);
+            insertSampleData(db);
         }
+
     } else {
+        // Korzystamy z już istniejącego "default_connection"
         db = QSqlDatabase::database("default_connection");
-        qDebug() << "itemList: Użycie istniejącego połączenia";
         if (!db.isOpen()) {
-            qDebug() << "itemList: Błąd - istniejące połączenie nie jest otwarte";
-            QMessageBox::critical(this, tr("Błąd"), tr("Brak połączenia z bazą danych."));
+            qDebug() << "itemList: Błąd - MySQL nie jest otwarte";
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Połączenie z MySQL jest zamknięte."));
             qApp->quit();
             return;
         }
     }
 
-    qDebug() << "itemList: Inicjalizacja modelu relacyjnego";
+    // Tworzymy model relacyjny
     QSqlRelationalTableModel *relModel = new QSqlRelationalTableModel(this, db);
     relModel->setTable("eksponaty");
     relModel->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
 
-    // Uwaga: w Qt relacje TEXT mogą czasem nie działać idealnie –
-    // ale zostawiamy to tak, jak jest.
-    relModel->setRelation(2, QSqlRelation("types", "id", "name"));
-    relModel->setRelation(3, QSqlRelation("vendors", "id", "name"));
-    relModel->setRelation(4, QSqlRelation("models", "id", "name"));
-    relModel->setRelation(9, QSqlRelation("statuses", "id", "name"));
-    relModel->setRelation(10, QSqlRelation("storage_places", "id", "name"));
+    // Ustawiamy relacje (klucze obce)
+    relModel->setRelation(2,  QSqlRelation("types",           "id", "name"));
+    relModel->setRelation(3,  QSqlRelation("vendors",         "id", "name"));
+    relModel->setRelation(4,  QSqlRelation("models",          "id", "name"));
+    relModel->setRelation(9,  QSqlRelation("statuses",        "id", "name"));
+    relModel->setRelation(10, QSqlRelation("storage_places",  "id", "name"));
 
     if (!relModel->select()) {
-        qDebug() << "itemList: Błąd przy select():" << relModel->lastError().text();
+        qDebug() << "itemList: Błąd select() w MySQL:" << relModel->lastError().text();
     }
 
-    // Nagłówki tabel:
-    relModel->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
-    relModel->setHeaderData(2, Qt::Horizontal, tr("Typ"));
-    relModel->setHeaderData(3, Qt::Horizontal, tr("Producent"));
-    relModel->setHeaderData(4, Qt::Horizontal, tr("Model"));
-    relModel->setHeaderData(5, Qt::Horizontal, tr("Numer seryjny"));
-    relModel->setHeaderData(6, Qt::Horizontal, tr("Part number"));
-    relModel->setHeaderData(7, Qt::Horizontal, tr("Revision"));
-    relModel->setHeaderData(8, Qt::Horizontal, tr("Rok produkcji"));
-    relModel->setHeaderData(9, Qt::Horizontal, tr("Status"));
+    // Nagłówki
+    relModel->setHeaderData(1,  Qt::Horizontal, tr("Nazwa"));
+    relModel->setHeaderData(2,  Qt::Horizontal, tr("Typ"));
+    relModel->setHeaderData(3,  Qt::Horizontal, tr("Producent"));
+    relModel->setHeaderData(4,  Qt::Horizontal, tr("Model"));
+    relModel->setHeaderData(5,  Qt::Horizontal, tr("Numer seryjny"));
+    relModel->setHeaderData(6,  Qt::Horizontal, tr("Part number"));
+    relModel->setHeaderData(7,  Qt::Horizontal, tr("Revision"));
+    relModel->setHeaderData(8,  Qt::Horizontal, tr("Rok produkcji"));
+    relModel->setHeaderData(9,  Qt::Horizontal, tr("Status"));
     relModel->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
     relModel->setHeaderData(11, Qt::Horizontal, tr("Opis"));
     relModel->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
 
-    ui->itemList_tableView->setItemDelegate(new QSqlRelationalDelegate(ui->itemList_tableView));
     model = relModel;
-
+    ui->itemList_tableView->setItemDelegate(new QSqlRelationalDelegate(ui->itemList_tableView));
     ui->itemList_tableView->setModel(model);
+
     ui->itemList_tableView->resizeColumnsToContents();
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // Ukrywamy kolumnę 0 (TEXT ID)
+    // Ukryj kolumnę 0 (id)
     ui->itemList_tableView->hideColumn(0);
 
-    // Podpinamy przyciski z dolnego panelu
-    connect(ui->itemList_pushButton_new, &QPushButton::clicked, this, &itemList::onNewButtonClicked);
-    connect(ui->itemList_pushButton_edit, &QPushButton::clicked, this, &itemList::onEditButtonClicked);
-    connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
+    // Podpinki przycisków
+    connect(ui->itemList_pushButton_new,    &QPushButton::clicked, this, &itemList::onNewButtonClicked);
+    connect(ui->itemList_pushButton_edit,   &QPushButton::clicked, this, &itemList::onEditButtonClicked);
+    connect(ui->itemList_pushButton_end,    &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
-    connect(ui->itemList_pushButton_clone, &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
+    connect(ui->itemList_pushButton_clone,  &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
 
-    // Reakcja na zaznaczenie wiersza w tabeli
-    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
-    connect(selectionModel, &QItemSelectionModel::selectionChanged,
+    // Reakcja na zaznaczenie wiersza
+    QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
+    connect(selModel, &QItemSelectionModel::selectionChanged,
             this, &itemList::onTableViewSelectionChanged);
 
-    qDebug() << "itemList: Konstruktor zakończony";
+    qDebug() << "itemList: Konstruktor done (MySQL).";
 }
 
 itemList::~itemList()
 {
     delete m_previewWindow;
     delete ui;
-    qDebug() << "itemList: Destruktor wywołany";
+    qDebug() << "itemList: Destruktor";
 }
 
 // ----------------------------------------------------------------------------
-// Metody sprawdzania schematu, tworzenia tabel i wstawiania danych przykładowych
+// verifyDatabaseSchema
 // ----------------------------------------------------------------------------
-
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
-    qDebug() << "itemList: Weryfikacja schematu bazy";
-    QStringList requiredTables = {
+    qDebug() << "itemList: verifyDatabaseSchema (MySQL)";
+    // sprawdź, czy wszystkie tabele tam są:
+    QStringList required = {
         "eksponaty", "types", "vendors", "models",
         "statuses", "storage_places", "photos"
     };
+
+    // QSqlDatabase::tables() w MySQL
     QStringList tables = db.tables();
-    for (const QString &table : requiredTables) {
-        if (!tables.contains(table)) {
-            qDebug() << "itemList: Brak tabeli:" << table;
+    for (const QString &t : required) {
+        if (!tables.contains(t, Qt::CaseInsensitive)) {
+            qDebug() << "Brak tabeli:" << t;
             return false;
         }
     }
-    qDebug() << "itemList: Schemat poprawny";
     return true;
 }
 
+// ----------------------------------------------------------------------------
+// createDatabaseSchema
+// ----------------------------------------------------------------------------
 void itemList::createDatabaseSchema(QSqlDatabase &db)
 {
-    qDebug() << "itemList: Tworzenie schematu bazy";
+    qDebug() << "itemList: Tworzenie schematu (MySQL)";
     QSqlQuery query(db);
-    query.exec("PRAGMA foreign_keys = ON;");
-    query.exec("PRAGMA journal_mode=WAL;"); // Włącz WAL
 
+    // W MySQL: tworzysz tabele, jeśli nie istnieją
+    // Używamy VARCHAR(36) dla UUID, LONGBLOB dla zdjęć
     query.exec(R"(
-        CREATE TABLE eksponaty (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS eksponaty (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT NOT NULL,
-            type_id TEXT NOT NULL,
-            vendor_id TEXT NOT NULL,
-            model_id TEXT NOT NULL,
+            type_id VARCHAR(36) NOT NULL,
+            vendor_id VARCHAR(36) NOT NULL,
+            model_id VARCHAR(36) NOT NULL,
             serial_number TEXT,
             part_number TEXT,
             revision TEXT,
-            production_year INTEGER CHECK(production_year BETWEEN 1900 AND 2100),
-            status_id TEXT NOT NULL,
-            storage_place_id TEXT NOT NULL,
+            production_year INT,
+            status_id VARCHAR(36) NOT NULL,
+            storage_place_id VARCHAR(36) NOT NULL,
             description TEXT,
-            value INTEGER CHECK(value >= 0),
-            FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-            FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-            FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-            FOREIGN KEY (status_id) REFERENCES statuses(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-            FOREIGN KEY (storage_place_id) REFERENCES storage_places(id) ON DELETE RESTRICT ON UPDATE CASCADE
+            value INT
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE types (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS types (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE vendors (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS vendors (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE models (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS models (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL,
-            vendor_id TEXT NOT NULL,
-            FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE ON UPDATE CASCADE
+            vendor_id VARCHAR(36) NOT NULL
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE statuses (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS statuses (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE storage_places (
-            id TEXT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS storage_places (
+            id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
     )");
 
     query.exec(R"(
-        CREATE TABLE photos (
-            id TEXT PRIMARY KEY,
-            eksponat_id TEXT NOT NULL,
-            photo BLOB NOT NULL,
-            FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id) ON DELETE CASCADE ON UPDATE CASCADE
+        CREATE TABLE IF NOT EXISTS photos (
+            id VARCHAR(36) PRIMARY KEY,
+            eksponat_id VARCHAR(36) NOT NULL,
+            photo LONGBLOB NOT NULL
         )
     )");
-
-    query.exec("CREATE INDEX idx_serial_number ON eksponaty(serial_number);");
 
     if (query.lastError().isValid()) {
-        qDebug() << "itemList: Błąd tworzenia schematu:" << query.lastError().text();
+        qDebug() << "itemList: createDatabaseSchema error:" << query.lastError().text();
     } else {
-        qDebug() << "itemList: Schemat utworzony pomyślnie";
+        qDebug() << "itemList: createDatabaseSchema OK (MySQL).";
     }
 }
 
-#include <QUuid> // do generowania UUID (np. w insertSampleData)
+// ----------------------------------------------------------------------------
+// insertSampleData
+// ----------------------------------------------------------------------------
 void itemList::insertSampleData(QSqlDatabase &db)
 {
-    qDebug() << "itemList: Wstawianie przykładowych danych";
+    qDebug() << "itemList: insertSampleData (MySQL)";
     QSqlQuery query(db);
 
-    auto genId = [](){
-        return QUuid::createUuid().toString(QUuid::WithoutBraces);
-    };
+    auto genId = [](){ return QUuid::createUuid().toString(QUuid::WithoutBraces); };
 
-    // Tabela types
-    QString t1 = genId(); QString t2 = genId(); QString t3 = genId();
-    query.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", t1); query.bindValue(":name", "Komputer"); query.exec();
-    query.bindValue(":id", t2); query.bindValue(":name", "Monitor");  query.exec();
-    query.bindValue(":id", t3); query.bindValue(":name", "Kabel");    query.exec();
+    // typy
+    QString t1 = genId(), t2 = genId(), t3 = genId();
+    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Komputer')").arg(t1));
+    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Monitor')").arg(t2));
+    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Kabel')").arg(t3));
 
-    // Tabela vendors
-    QString v1 = genId(); QString v2 = genId(); QString v3 = genId();
-    query.prepare("INSERT INTO vendors (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", v1); query.bindValue(":name", "Atari");      query.exec();
-    query.bindValue(":id", v2); query.bindValue(":name", "Commodore"); query.exec();
-    query.bindValue(":id", v3); query.bindValue(":name", "Sinclair");  query.exec();
+    // vendors
+    QString v1 = genId(), v2 = genId(), v3 = genId();
+    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Atari')").arg(v1));
+    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Commodore')").arg(v2));
+    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Sinclair')").arg(v3));
 
-    // Tabela models
-    QString m1 = genId(); QString m2 = genId(); QString m3 = genId();
-    query.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
-    query.bindValue(":id", m1); query.bindValue(":name", "Atari 800XL"); query.bindValue(":vendor_id", v1); query.exec();
-    query.bindValue(":id", m2); query.bindValue(":name", "Amiga 500");   query.bindValue(":vendor_id", v2); query.exec();
-    query.bindValue(":id", m3); query.bindValue(":name", "ZX Spectrum"); query.bindValue(":vendor_id", v3); query.exec();
+    // models
+    QString m1 = genId(), m2 = genId(), m3 = genId();
+    query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Atari 800XL','%2')")
+                   .arg(m1).arg(v1));
+    query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Amiga 500','%2')")
+                   .arg(m2).arg(v2));
+    query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','ZX Spectrum','%2')")
+                   .arg(m3).arg(v3));
 
-    // Tabela statuses
-    QString s1 = genId(); QString s2 = genId(); QString s3 = genId();
-    query.prepare("INSERT INTO statuses (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", s1); query.bindValue(":name", "Sprawny");    query.exec();
-    query.bindValue(":id", s2); query.bindValue(":name", "Uszkodzony"); query.exec();
-    query.bindValue(":id", s3); query.bindValue(":name", "W naprawie"); query.exec();
+    // statuses
+    QString s1 = genId(), s2 = genId(), s3 = genId();
+    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Sprawny')").arg(s1));
+    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Uszkodzony')").arg(s2));
+    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','W naprawie')").arg(s3));
 
-    // Tabela storage_places
-    QString sp1 = genId(); QString sp2 = genId();
-    query.prepare("INSERT INTO storage_places (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", sp1); query.bindValue(":name", "Magazyn 1"); query.exec();
-    query.bindValue(":id", sp2); query.bindValue(":name", "Półka B3");  query.exec();
+    // storage_places
+    QString sp1 = genId(), sp2 = genId();
+    query.exec(QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Magazyn 1')").arg(sp1));
+    query.exec(QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Półka B3')").arg(sp2));
 
-    // Tabela eksponaty
+    // eksponaty
     QString e1 = genId();
     query.prepare(R"(
-        INSERT INTO eksponaty (id, name, type_id, vendor_id, model_id, serial_number,
-            production_year, status_id, storage_place_id, description, value)
-        VALUES (:id, :name, :type_id, :vendor_id, :model_id, :serial, :year,
-                :status, :storage, :desc, :val)
+        INSERT IGNORE INTO eksponaty
+        (id, name, type_id, vendor_id, model_id, serial_number, production_year,
+         status_id, storage_place_id, description, value)
+        VALUES
+        (:id, :name, :type_id, :vendor_id, :model_id, :serial, :year,
+         :status, :storage, :desc, :val)
     )");
     query.bindValue(":id", e1);
     query.bindValue(":name", "Atari 800XL");
@@ -399,8 +360,15 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 1);
     query.exec();
 
-    // Drugi eksponat
     QString e2 = genId();
+    query.prepare(R"(
+        INSERT IGNORE INTO eksponaty
+        (id, name, type_id, vendor_id, model_id, serial_number, production_year,
+         status_id, storage_place_id, description, value)
+        VALUES
+        (:id, :name, :type_id, :vendor_id, :model_id, :serial, :year,
+         :status, :storage, :desc, :val)
+    )");
     query.bindValue(":id", e2);
     query.bindValue(":name", "Amiga 500");
     query.bindValue(":type_id", t1);
@@ -414,8 +382,15 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 2);
     query.exec();
 
-    // Trzeci eksponat
     QString e3 = genId();
+    query.prepare(R"(
+        INSERT IGNORE INTO eksponaty
+        (id, name, type_id, vendor_id, model_id, serial_number, production_year,
+         status_id, storage_place_id, description, value)
+        VALUES
+        (:id, :name, :type_id, :vendor_id, :model_id, :serial, :year,
+         :status, :storage, :desc, :val)
+    )");
     query.bindValue(":id", e3);
     query.bindValue(":name", "ZX Spectrum");
     query.bindValue(":type_id", t1);
@@ -430,14 +405,14 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.exec();
 
     if (query.lastError().isValid()) {
-        qDebug() << "itemList: Błąd wstawiania danych przykładowych:" << query.lastError().text();
+        qDebug() << "itemList: Błąd wstawiania danych (MySQL)" << query.lastError().text();
     } else {
-        qDebug() << "itemList: Dane przykładowe wstawione";
+        qDebug() << "itemList: Wstawiono dane przykładowe (MySQL)";
     }
 }
 
 // ----------------------------------------------------------------------------
-// Reakcja na wybór wiersza w tabeli – ładowanie miniaturek do graphicsView
+// Reakcja na zaznaczenie wiersza -> wczytanie zdjęć
 // ----------------------------------------------------------------------------
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
@@ -451,12 +426,12 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     QString recordId = model->data(model->index(row, 0)).toString();
     m_currentRecordId = recordId;
 
-    // Pobieramy zdjęcia
+    // Odczytujemy zdjęcia
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
     if (!query.exec()) {
-        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
+        qDebug() << "Błąd pobierania zdjęć (MySQL):" << query.lastError().text();
         ui->itemList_graphicsView->setScene(nullptr);
         return;
     }
@@ -466,12 +441,12 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
     QList<QPixmap> pixmaps;
     while (query.next()) {
-        QByteArray imageData = query.value("photo").toByteArray();
+        QByteArray imageData = query.value(0).toByteArray();
         QPixmap pixmap;
         if (pixmap.loadFromData(imageData)) {
             pixmaps.append(pixmap);
         } else {
-            qDebug() << "Nie można załadować zdjęcia BLOB.";
+            qDebug() << "Nie można załadować BLOB (MySQL).";
         }
     }
 
@@ -490,27 +465,21 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int maxThumbnailHeight = (viewHeight - (rows - 1) * spacing) / rows;
 
     int x = 5, y = 5;
-    for (int i = 0; i < photoCount; ++i) {
+    for (int i = 0; i < photoCount; i++) {
         QPixmap original = pixmaps[i];
         QPixmap scaled = original.scaled(
             maxThumbnailWidth, maxThumbnailHeight,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
+            Qt::KeepAspectRatio, Qt::SmoothTransformation
             );
-
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
-        // Zapamiętujemy oryginał w data(0), żeby potem móc go użyć do powiększenia
         item->setData(0, QVariant(original));
         item->setPos(x, y);
         scene->addItem(item);
 
-        // Podpinamy sygnały: hover i unhover (jak było)
-        connect(item, &PhotoItem::hovered, this, &itemList::onPhotoHovered);
+        connect(item, &PhotoItem::hovered,   this, &itemList::onPhotoHovered);
         connect(item, &PhotoItem::unhovered, this, &itemList::onPhotoUnhovered);
-
-        // NOWE – kliknięcie -> otwarcie fullscreen
-        connect(item, &PhotoItem::clicked, this, &itemList::onPhotoClicked);
+        connect(item, &PhotoItem::clicked,   this, &itemList::onPhotoClicked);
 
         x += scaled.width() + spacing;
         if ((i + 1) % cols == 0) {
@@ -519,7 +488,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         }
     }
 
-    int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
+    int totalWidth  = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
     int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
     scene->setSceneRect(0, 0, totalWidth, totalHeight);
     ui->itemList_graphicsView->setScene(scene);
@@ -527,7 +496,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 }
 
 // ----------------------------------------------------------------------------
-// Obsługa hover (podgląd mini) – to już było u Ciebie.
+// Hover podgląd mini
 // ----------------------------------------------------------------------------
 void itemList::onPhotoHovered(PhotoItem *item)
 {
@@ -537,39 +506,29 @@ void itemList::onPhotoHovered(PhotoItem *item)
     }
 
     QPixmap originalPixmap = item->data(0).value<QPixmap>();
-    if (originalPixmap.isNull()) {
-        return;
-    }
+    if (originalPixmap.isNull()) return;
 
     QScreen *screen = QGuiApplication::primaryScreen();
-    if (!screen) {
-        qDebug() << "Nie można uzyskać informacji o ekranie.";
-        return;
-    }
+    if (!screen) return;
+
     QRect screenGeometry = screen->availableGeometry();
     int screenCenterX = screenGeometry.center().x();
     int screenCenterY = screenGeometry.center().y();
 
     int maxWidth = screenGeometry.width() * 0.8;
     int maxHeight = screenGeometry.height() * 0.8;
-    QPixmap scaledPixmap = originalPixmap.scaled(
-        maxWidth, maxHeight,
-        Qt::KeepAspectRatio,
-        Qt::SmoothTransformation
-        );
+    QPixmap scaled = originalPixmap.scaled(maxWidth, maxHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     m_previewWindow = new QWidget(nullptr, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
-    m_previewWindow->setStyleSheet(
-        "background-color: rgba(0, 0, 0, 200); border-radius: 10px;"
-        );
+    m_previewWindow->setStyleSheet("background-color: rgba(0, 0, 0, 200); border-radius: 10px;");
 
     QLabel *imageLabel = new QLabel(m_previewWindow);
     imageLabel->setStyleSheet("background: transparent;");
-    imageLabel->setPixmap(scaledPixmap);
+    imageLabel->setPixmap(scaled);
 
-    m_previewWindow->setFixedSize(scaledPixmap.width() + 20, scaledPixmap.height() + 20);
-    imageLabel->setGeometry(10, 10, scaledPixmap.width(), scaledPixmap.height());
+    m_previewWindow->setFixedSize(scaled.width() + 20, scaled.height() + 20);
+    imageLabel->setGeometry(10, 10, scaled.width(), scaled.height());
 
     int windowX = screenCenterX - (m_previewWindow->width() / 2);
     int windowY = screenCenterY - (m_previewWindow->height() / 2);
@@ -590,26 +549,22 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
 }
 
 // ----------------------------------------------------------------------------
-// NOWA metoda: kliknięcie -> okno fullscreen z zoomem
+// Klik -> fullscreen
 // ----------------------------------------------------------------------------
 void itemList::onPhotoClicked(PhotoItem *item)
 {
-    QPixmap originalPixmap = item->data(0).value<QPixmap>();
-    if (originalPixmap.isNull()) {
-        qDebug() << "Brak pixmapy w PhotoItem do powiększenia.";
-        return;
-    }
+    QPixmap original = item->data(0).value<QPixmap>();
+    if (original.isNull()) return;
 
-    // Tworzymy i pokazujemy okno fullscreen
-    FullScreenPhotoViewer *viewer = new FullScreenPhotoViewer(originalPixmap, this);
+    FullScreenPhotoViewer *viewer = new FullScreenPhotoViewer(original, this);
     viewer->show();
 }
 
 // ----------------------------------------------------------------------------
-// Przycisk "Nowy"
+// Pozostałe sloty
+// ----------------------------------------------------------------------------
 void itemList::onNewButtonClicked()
 {
-    // Twój kod do otwarcia MainWindow w trybie "nowy rekord"
     MainWindow *addWindow = new MainWindow(this);
     addWindow->setAttribute(Qt::WA_DeleteOnClose);
     addWindow->setEditMode(false, QString());
@@ -617,16 +572,14 @@ void itemList::onNewButtonClicked()
     addWindow->show();
 }
 
-// ----------------------------------------------------------------------------
-// Przycisk "Edycja"
 void itemList::onEditButtonClicked()
 {
-    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
-    if (!selectionModel->hasSelection()) {
+    QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
+    if (!selModel->hasSelection()) {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do edycji."));
         return;
     }
-    QModelIndex index = selectionModel->selectedRows().first();
+    QModelIndex index = selModel->selectedRows().first();
     QString recordId = model->data(model->index(index.row(), 0)).toString();
     m_currentRecordId = recordId;
 
@@ -637,79 +590,61 @@ void itemList::onEditButtonClicked()
     editWindow->show();
 }
 
-// ----------------------------------------------------------------------------
-// Przycisk "Klonuj"
-void itemList::onCloneButtonClicked()
-{
-    QItemSelectionModel *selectionModel = ui->itemList_tableView->selectionModel();
-    if (!selectionModel->hasSelection()) {
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
-        return;
-    }
-    QModelIndex index = selectionModel->selectedRows().first();
-    QString recordId = model->data(model->index(index.row(), 0)).toString();
-
-    MainWindow *cloneWindow = new MainWindow(this);
-    cloneWindow->setAttribute(Qt::WA_DeleteOnClose);
-    cloneWindow->setCloneMode(recordId);
-    connect(cloneWindow, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
-    cloneWindow->show();
-}
-
-// ----------------------------------------------------------------------------
-// Przycisk "Kasuj"
 void itemList::onDeleteButtonClicked()
 {
-    QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
-    if (!selModel->hasSelection()) {
+    QItemSelectionModel *sel = ui->itemList_tableView->selectionModel();
+    if (!sel->hasSelection()) {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do usunięcia."));
         return;
     }
-    QModelIndexList selected = selModel->selectedRows();
-    if (selected.isEmpty())
-        return;
-
-    int row = selected.first().row();
+    int row = sel->selectedRows().first().row();
     QString recordId = model->data(model->index(row, 0)).toString();
 
-    QMessageBox::StandardButton btn = QMessageBox::question(
-        this,
-        tr("Potwierdzenie"),
-        tr("Czy na pewno chcesz usunąć rekord o ID %1?").arg(recordId),
-        QMessageBox::Yes | QMessageBox::No
-        );
-
+    auto btn = QMessageBox::question(this,
+                                     tr("Potwierdzenie"),
+                                     tr("Czy na pewno usunąć rekord %1?").arg(recordId),
+                                     QMessageBox::Yes | QMessageBox::No);
     if (btn == QMessageBox::Yes) {
         QSqlQuery query(QSqlDatabase::database("default_connection"));
         query.prepare("DELETE FROM eksponaty WHERE id = :id");
         query.bindValue(":id", recordId);
         if (!query.exec()) {
             QMessageBox::critical(this, tr("Błąd"),
-                                  tr("Nie udało się usunąć rekordu:\n%1")
-                                      .arg(query.lastError().text()));
+                                  tr("Nie udało się usunąć:\n%1").arg(query.lastError().text()));
         } else {
             model->select();
-            QMessageBox::information(this, tr("Sukces"), tr("Rekord został usunięty."));
+            QMessageBox::information(this, tr("Sukces"), tr("Rekord usunięty."));
         }
     }
 }
 
-// ----------------------------------------------------------------------------
-// Przycisk "Koniec"
+void itemList::onCloneButtonClicked()
+{
+    QItemSelectionModel *sel = ui->itemList_tableView->selectionModel();
+    if (!sel->hasSelection()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
+        return;
+    }
+    int row = sel->selectedRows().first().row();
+    QString recordId = model->data(model->index(row, 0)).toString();
+
+    MainWindow *clone = new MainWindow(this);
+    clone->setAttribute(Qt::WA_DeleteOnClose);
+    clone->setCloneMode(recordId);
+    connect(clone, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    clone->show();
+}
+
 void itemList::onEndButtonClicked()
 {
     qApp->quit();
 }
 
-// ----------------------------------------------------------------------------
-// Slot wywoływany po zapisie w oknie MainWindow
 void itemList::onRecordSaved(const QString &recordId)
 {
     refreshList(recordId);
 }
 
-// ----------------------------------------------------------------------------
-// Odświeżenie listy i zaznaczenie jakiegoś wiersza
 void itemList::refreshList(const QString &recordId)
 {
     model->select();
@@ -719,9 +654,9 @@ void itemList::refreshList(const QString &recordId)
         for (int row = 0; row < model->rowCount(); ++row) {
             QModelIndex idx = model->index(row, 0);
             if (model->data(idx).toString() == recordId) {
-                QItemSelectionModel *sel = ui->itemList_tableView->selectionModel();
-                sel->clearSelection();
-                sel->select(model->index(row, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                QItemSelectionModel *s = ui->itemList_tableView->selectionModel();
+                s->clearSelection();
+                s->select(idx, QItemSelectionModel::Select | QItemSelectionModel::Rows);
                 m_currentRecordId = recordId;
                 break;
             }
