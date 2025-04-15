@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DatabaseConfigDialog</class>
+ <widget class="QDialog" name="DatabaseConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Konfiguracja bazy danych</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QComboBox" name="dbTypeComboBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>25</height>
+      </size>
+     </property>
+     <item>
+      <property name="text">
+       <string>SQLite3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MySQL</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>150</height>
+      </size>
+     </property>
+     <!-- Strona konfiguracji dla SQLite3 -->
+     <widget class="QWidget" name="sqlitePage">
+      <layout class="QFormLayout" name="formLayoutSQLite">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_sqlitePath">
+         <property name="text">
+          <string>Plik bazy danych:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="sqlitePathLineEdit"/>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="selectFileButton">
+         <property name="text">
+          <string>Wybierz plik...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <!-- Strona konfiguracji dla MySQL -->
+     <widget class="QWidget" name="mysqlPage">
+      <layout class="QFormLayout" name="formLayoutMySQL">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_host">
+         <property name="text">
+          <string>Host:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="hostLineEdit"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_database">
+         <property name="text">
+          <string>Baza danych:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="databaseLineEdit"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_user">
+         <property name="text">
+          <string>Użytkownik:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="userLineEdit"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_password">
+         <property name="text">
+          <string>Hasło:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="passwordLineEdit">
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_port">
+         <property name="text">
+          <string>Port:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="portSpinBox">
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>65535</number>
+         </property>
+         <property name="value">
+          <number>3306</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok|QDialogButtonBox::Cancel</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

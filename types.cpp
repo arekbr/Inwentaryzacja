@@ -14,11 +14,11 @@ typy::typy(QWidget *parent)
     m_mainWindow(nullptr)
 {
     ui->setupUi(this);
-    m_db = QSqlDatabase::database("default_connection");
+    m_db = QSqlDatabase::database("default_connection"); // MySQL
     setWindowTitle(tr("Zarządzanie typami sprzętu"));
 
-    connect(ui->pushButton_add, &QPushButton::clicked, this, &typy::onAddClicked);
-    connect(ui->pushButton_edit, &QPushButton::clicked, this, &typy::onEditClicked);
+    connect(ui->pushButton_add,    &QPushButton::clicked, this, &typy::onAddClicked);
+    connect(ui->pushButton_edit,   &QPushButton::clicked, this, &typy::onEditClicked);
     connect(ui->pushButton_delete, &QPushButton::clicked, this, &typy::onDeleteClicked);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &typy::onOkClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -38,34 +38,34 @@ void typy::setMainWindow(MainWindow *mainWindow)
 
 void typy::refreshList()
 {
-    QSqlQueryModel *queryModel = new QSqlQueryModel(this);
-    queryModel->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
-    if (queryModel->lastError().isValid()) {
-        QMessageBox::critical(this, tr("Błąd"), tr("Błąd pobierania danych: %1")
-                                                    .arg(queryModel->lastError().text()));
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    model->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
+    if (model->lastError().isValid()) {
+        QMessageBox::critical(this, tr("Błąd"), tr("Błąd pobierania (MySQL): %1")
+                                                    .arg(model->lastError().text()));
         return;
     }
-    ui->listView->setModel(queryModel);
+    ui->listView->setModel(model);
     ui->listView->setModelColumn(0);
 }
 
 void typy::onAddClicked()
 {
-    QString newType = ui->type_lineEdit->text().trimmed();
-    if(newType.isEmpty()){
+    QString txt = ui->type_lineEdit->text().trimmed();
+    if (txt.isEmpty()) {
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa typu nie może być pusta."));
         return;
     }
+    QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
 
-    QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QSqlQuery q(m_db);
+    q.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
+    q.bindValue(":id", uuid);
+    q.bindValue(":name", txt);
 
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", QUuid::createUuid().toString());
-    query.bindValue(":name", newType);
-    if(!query.exec()){
-        QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać typu: %1")
-                                                    .arg(query.lastError().text()));
+    if (!q.exec()) {
+        QMessageBox::critical(this, tr("Błąd"),
+                              tr("Nie udało się dodać:\n%1").arg(q.lastError().text()));
     }
     refreshList();
     ui->type_lineEdit->clear();
@@ -73,27 +73,31 @@ void typy::onAddClicked()
 
 void typy::onEditClicked()
 {
-    QModelIndex index = ui->listView->currentIndex();
-    if(!index.isValid()){
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać typ do edycji."));
+    QModelIndex idx = ui->listView->currentIndex();
+    if (!idx.isValid()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Wybierz rekord do edycji."));
         return;
     }
-    QString currentName = index.data(Qt::DisplayRole).toString();
+    QString oldName = idx.data(Qt::DisplayRole).toString();
     bool ok;
-    QString newName = QInputDialog::getText(this, tr("Edytuj typ"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
-    if(ok && !newName.trimmed().isEmpty()){
-        QSqlQuery query(m_db);
-        query.prepare("SELECT id FROM types WHERE name = :name");
-        query.bindValue(":name", currentName);
-        if(query.exec() && query.next()){
-            QString id = query.value("id").toString();
-            QSqlQuery updateQuery(m_db);
-            updateQuery.prepare("UPDATE types SET name = :newName WHERE id = :id");
-            updateQuery.bindValue(":newName", newName.trimmed());
-            updateQuery.bindValue(":id", id);
-            if(!updateQuery.exec()){
-                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zaktualizować typu: %1")
-                                                            .arg(updateQuery.lastError().text()));
+    QString newName = QInputDialog::getText(this, tr("Edytuj typ"),
+                                            tr("Nowa nazwa:"),
+                                            QLineEdit::Normal,
+                                            oldName, &ok);
+    if (ok && !newName.trimmed().isEmpty()) {
+        QSqlQuery q(m_db);
+        q.prepare("SELECT id FROM types WHERE name=:nm");
+        q.bindValue(":nm", oldName);
+        if (q.exec() && q.next()) {
+            QString id = q.value(0).toString();
+            QSqlQuery q2(m_db);
+            q2.prepare("UPDATE types SET name=:n WHERE id=:id");
+            q2.bindValue(":n", newName.trimmed());
+            q2.bindValue(":id", id);
+            if (!q2.exec()) {
+                QMessageBox::critical(this, tr("Błąd"),
+                                      tr("Nie udało się zaktualizować:\n%1")
+                                          .arg(q2.lastError().text()));
             }
         }
     }
@@ -102,22 +106,23 @@ void typy::onEditClicked()
 
 void typy::onDeleteClicked()
 {
-    QModelIndex index = ui->listView->currentIndex();
-    if(!index.isValid()){
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać typ do usunięcia."));
+    QModelIndex idx = ui->listView->currentIndex();
+    if (!idx.isValid()) {
+        QMessageBox::information(this, tr("Informacja"), tr("Wybierz rekord do usunięcia."));
         return;
     }
-    QString typeName = index.data(Qt::DisplayRole).toString();
-    int ret = QMessageBox::question(this, tr("Potwierdzenie"),
-                                    tr("Czy na pewno chcesz usunąć typ: %1?").arg(typeName),
-                                    QMessageBox::Yes | QMessageBox::No);
-    if(ret == QMessageBox::Yes){
-        QSqlQuery query(m_db);
-        query.prepare("DELETE FROM types WHERE name = :name");
-        query.bindValue(":name", typeName);
-        if(!query.exec()){
-            QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć typu: %1")
-                                                        .arg(query.lastError().text()));
+    QString name = idx.data(Qt::DisplayRole).toString();
+    auto ans = QMessageBox::question(this, tr("Potwierdzenie"),
+                                     tr("Usunąć typ %1?").arg(name),
+                                     QMessageBox::Yes|QMessageBox::No);
+    if (ans==QMessageBox::Yes) {
+        QSqlQuery q(m_db);
+        q.prepare("DELETE FROM types WHERE name=:n");
+        q.bindValue(":n", name);
+        if (!q.exec()) {
+            QMessageBox::critical(this, tr("Błąd"),
+                                  tr("Nie udało się usunąć:\n%1")
+                                      .arg(q.lastError().text()));
         }
     }
     refreshList();
@@ -125,7 +130,7 @@ void typy::onDeleteClicked()
 
 void typy::onOkClicked()
 {
-    if(m_mainWindow) {
+    if (m_mainWindow) {
         m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());
     }
     accept();

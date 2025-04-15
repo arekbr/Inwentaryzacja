@@ -6,6 +6,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 SOURCES += \
+    DatabaseConfigDialog.cpp \
     fullscreenphotoviewer.cpp \
     itemList.cpp \
     main.cpp \
@@ -15,9 +16,11 @@ SOURCES += \
     status.cpp \
     storage.cpp \
     types.cpp \
+    utils.cpp \
     vendors.cpp
 
 HEADERS += \
+    DatabaseConfigDialog.h \
     fullscreenphotoviewer.h \
     itemList.h \
     mainwindow.h \
@@ -26,9 +29,11 @@ HEADERS += \
     status.h \
     storage.h \
     types.h \
+    utils.h \
     vendors.h
 
 FORMS += \
+    DatabaseConfigDialog.ui \
     itemList.ui \
     mainwindow.ui \
     models.ui \
@@ -48,6 +53,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    Create_MySQL.sql \
     README.md \
     createTable.sql \
     database_example_record.sql \

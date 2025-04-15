@@ -15,6 +15,7 @@ storage::storage(QWidget *parent)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
+
     setWindowTitle(tr("Zarządzanie miejscami przechowywania"));
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, &storage::onAddClicked);

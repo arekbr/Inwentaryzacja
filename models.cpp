@@ -6,6 +6,8 @@
 #include <QSqlQueryModel>
 #include <QInputDialog>
 #include "mainwindow.h"
+#include <QUuid>
+
 
 models::models(QWidget *parent)
     : QDialog(parent),
