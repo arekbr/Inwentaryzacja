@@ -76,7 +76,7 @@ Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), 
 - Zoptymalizowano ładowanie danych w głównym oknie dla większych zbiorów.
 - Ujednolicono styl interfejsu w nowych oknach (np. spójne rozmiary przycisków i pól).
 
-## [1.0.0] - [Data początkowego wydania]
+## [1.0.0] - 11 marca 2025
 ### Dodano
 - Początkowe wydanie aplikacji Inwentaryzacja do zarządzania kolekcją retro komputerów.
 - Podstawowe funkcje: przeglądanie listy elementów, zarządzanie typami, producentami i modelami.
