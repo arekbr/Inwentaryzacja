@@ -70,6 +70,7 @@ DISTFILES += \
     README.md \
     createTable.sql \
     database_example_record.sql \
+    fix_qt_mysql_mac.sh \
     images/256ikona.png \
     images/icon.ico \
     images/icon.png \
