@@ -13,35 +13,37 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <!-- Styl całego okna -->
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-    background-color: #F5F5F5;
+   <string notr="true">
+QMainWindow {
+    background-color: #F5F5F5; /* Jasnoszare tło aplikacji */
 }
 
 QLabel {
-    color: #333333;
+    color: #333333; /* Ciemny kolor czcionki dla etykiet */
     font-size: 14px;
     font-weight: bold;
 }
 
 QLineEdit, QComboBox, QDateEdit, QPlainTextEdit {
-    border: 1px solid #CCCCCC;
+    border: 1px solid #CCCCCC; /* Jasnoszare ramki */
     border-radius: 5px;
     padding: 5px;
-    background-color: #FFFFFF;
-    color: #000000; /* Upewniamy się, że tekst jest czarny */
-    min-width: 200px; /* Dodana minimalna szerokość dla spójności */
+    background-color: #FFFFFF; /* Białe tło pól */
+    color: #000000; /* Czarny tekst */
+    min-width: 200px; /* Minimalna szerokość pól dla spójności */
 }
 
 QComboBox QAbstractItemView {
-    background-color: #FFFFFF; /* Tło listy rozwijanej */
-    color: #000000; /* Kolor tekstu w liście */
-    selection-background-color: #4CAF50; /* Tło wybranego elementu */
-    selection-color: #FFFFFF; /* Kolor tekstu wybranego elementu */
+    background-color: #FFFFFF;
+    color: #000000;
+    selection-background-color: #4CAF50; /* Zielone tło wybranego elementu */
+    selection-color: #FFFFFF; /* Biały tekst wybranego elementu */
 }
 
 QComboBox::drop-down {
-    border: none; /* Usuwamy ramkę strzałki, jeśli niepotrzebna */
+    border: none;
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 20px;
@@ -54,31 +56,38 @@ QPushButton {
     font-size: 14px;
 }
 
-QPushButton#New_item_PushButton_OK {
-    background-color: #4CAF50;
+/* Styl przycisku Zapisz oraz przycisków dodaj/usuń zdjęcie */
+QPushButton#New_item_PushButton_OK,
+QPushButton#New_item_addPhoto,
+QPushButton#New_item_removePhoto {
+    background-color: #4CAF50; /* Zielony kolor akcji zatwierdzających */
     color: white;
 }
 
+/* Styl przycisku Anuluj */
 QPushButton#New_item_PushButton_Cancel {
-    background-color: #B0BEC5;
+    background-color: #B0BEC5; /* Szary kolor anulowania */
     color: white;
 }
 
+/* Styl przycisków dodających nowe wpisy (+) */
 QPushButton#New_item_addType,
 QPushButton#New_item_addVendor,
 QPushButton#New_item_addModel,
 QPushButton#New_item_addStatus,
 QPushButton#New_item_addStoragePlace {
-    background-color: #2196F3; /* Niebieski dla przycisków "+" */
+    background-color: #2196F3; /* Niebieski dla przycisków "Dodaj" */
     color: white;
     min-width: 30px;
     max-width: 30px;
 }
 
+/* Efekt najechania na dowolny przycisk */
 QPushButton:hover {
     opacity: 0.8;
 }
 
+/* Styl widoku zdjęcia */
 QGraphicsView {
     border: 1px solid #CCCCCC;
     border-radius: 5px;
