@@ -83,6 +83,10 @@ private:
 
     // Bufor zdjęć (gdy rekord jeszcze nie zapisany do bazy)
     QList<QByteArray> m_photoBuffer;
+
+    // Bufor ścieżka do zapamiętania jakie zdjęcie dodało się do bazy i przeniesienie go do GOTOWE
+    QStringList    m_photoPathsBuffer;
+
 };
 
 #endif // MAINWINDOW_H

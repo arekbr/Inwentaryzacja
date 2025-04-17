@@ -16,6 +16,15 @@
 #include <QDir>
 #include <QSettings>
 #include <QUuid>   // <-- do generowania UUID, jeśli potrzebne
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QUuid>
+#include <QMessageBox>
+#include <QSqlQuery>
 
 #include "photoitem.h"
 #include "types.h"
@@ -405,21 +414,35 @@ void MainWindow::onSaveClicked()
         return;
     }
 
+    // jeśli to nowy rekord, zapisujemy zdjęcia z bufora i przenosimy pliki
     if (!m_editMode) {
-        // Nowy rekord -> zapisywanie zdjęć z bufora
-        for (int i=0; i<m_photoBuffer.size(); i++){
+        for (int i = 0; i < m_photoBuffer.size(); ++i) {
             QByteArray ba = m_photoBuffer[i];
             QString pid = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery q2(db);
-            q2.prepare("INSERT INTO photos (id, eksponat_id, photo) VALUES (:id, :exid, :photo)");
-            q2.bindValue(":id", pid);
-            q2.bindValue(":exid", m_recordId);
+            q2.prepare(R"(
+                INSERT INTO photos (id, eksponat_id, photo)
+                VALUES (:id, :exid, :photo)
+            )");
+            q2.bindValue(":id",    pid);
+            q2.bindValue(":exid",  m_recordId);
             q2.bindValue(":photo", ba);
-            if (!q2.exec()) {
-                qDebug() << "Błąd zapisu zdjęcia:" << q2.lastError().text();
+            if (q2.exec()) {
+                // teraz przenieś plik z bufora ścieżek
+                const QString orig = m_photoPathsBuffer.at(i);
+                QFileInfo fi(orig);
+                QString doneDir = fi.absolutePath()
+                                  + QDir::separator()
+                                  + QStringLiteral("gotowe");
+                QDir().mkpath(doneDir);
+                QString dst = doneDir
+                              + QDir::separator()
+                              + fi.fileName();
+                QFile::rename(orig, dst);
             }
         }
         m_photoBuffer.clear();
+        m_photoPathsBuffer.clear();
     }
 
     emit recordSaved(m_recordId);
@@ -440,13 +463,12 @@ void MainWindow::onCancelClicked()
 ///////////////////////
 void MainWindow::onAddPhotoClicked()
 {
-    QStringList files = QFileDialog::getOpenFileNames(this,
-                                                      tr("Wybierz zdjęcia"),
-                                                      QString(),
-                                                      tr("Images (*.jpg *.jpeg *.png)"));
+    QStringList files = QFileDialog::getOpenFileNames(
+        this, tr("Wybierz zdjęcia"), QString(),
+        tr("Images (*.jpg *.jpeg *.png)"));
     if (files.isEmpty()) return;
 
-    for (auto &fn : files) {
+    for (const QString &fn : files) {
         QFile f(fn);
         if (!f.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć:" << fn;
@@ -456,29 +478,54 @@ void MainWindow::onAddPhotoClicked()
         f.close();
 
         if (m_recordId.isEmpty()) {
-            // Nowy rekord, jeszcze nie w bazie -> do bufora
             m_photoBuffer.append(data);
+            m_photoPathsBuffer.append(fn);
         } else {
-            // Rekord istnieje -> od razu zapis
+            // Rekord już w bazie
             QString photoId = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery q(db);
-            q.prepare("INSERT INTO photos (id, eksponat_id, photo) VALUES (:id, :exid, :photo)");
-            q.bindValue(":id", photoId);
-            q.bindValue(":exid", m_recordId);
+            q.prepare(R"(
+                INSERT INTO photos (id, eksponat_id, photo)
+                VALUES (:id, :exid, :photo)
+            )");
+            q.bindValue(":id",    photoId);
+            q.bindValue(":exid",  m_recordId);
             q.bindValue(":photo", data);
-            if (!q.exec()) {
+            if (q.exec()) {
+                // przenieś plik
+                QFileInfo fi(fn);
+                // Pełna ścieżka do katalogu „gotowe”
+                QString doneDir = fi.absolutePath()
+                                  + QDir::separator()
+                                  + QStringLiteral("gotowe");
+                // tworzy katalog (i wszystkie potrzebne nadrzędne), jeśli nie istnieje
+                if (!QDir().mkpath(doneDir)) {
+                    QMessageBox::warning(this, tr("Uwaga"),
+                                         tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
+                }
+                QString dst = doneDir
+                              + QDir::separator()
+                              + fi.fileName();
+                if (!QFile::rename(fn, dst)) {
+                    QMessageBox::warning(this, tr("Uwaga"),
+                                         tr("Nie można przenieść %1 do %2").arg(fn, dst));
+                }
+            } else {
                 QMessageBox::critical(this, tr("Błąd"),
                                       tr("Nie można zapisać zdjęcia:\n%1")
                                           .arg(q.lastError().text()));
             }
         }
     }
-    if (m_recordId.isEmpty()) {
+
+    // Odświeżamy podgląd
+    if (m_recordId.isEmpty())
         loadPhotosFromBuffer();
-    } else {
+    else
         loadPhotos(m_recordId);
-    }
 }
+
+
 
 ///////////////////////
 // Usuwanie zdjęć
