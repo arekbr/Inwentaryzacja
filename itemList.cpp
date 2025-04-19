@@ -97,6 +97,21 @@ itemList::itemList(QWidget *parent)
     m_sourceModel->setRelation(10, QSqlRelation("storage_places", "id", "name"));
     m_sourceModel->select();
 
+    // Ustaw nagłówki kolumn
+    m_sourceModel->setHeaderData(0, Qt::Horizontal, tr("ID")); // Ukryta kolumna
+    m_sourceModel->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
+    m_sourceModel->setHeaderData(2, Qt::Horizontal, tr("Typ"));
+    m_sourceModel->setHeaderData(3, Qt::Horizontal, tr("Producent"));
+    m_sourceModel->setHeaderData(4, Qt::Horizontal, tr("Model"));
+    m_sourceModel->setHeaderData(5, Qt::Horizontal, tr("Numer seryjny"));
+    m_sourceModel->setHeaderData(6, Qt::Horizontal, tr("Part number"));
+    m_sourceModel->setHeaderData(7, Qt::Horizontal, tr("Revision"));
+    m_sourceModel->setHeaderData(8, Qt::Horizontal, tr("Rok produkcji"));
+    m_sourceModel->setHeaderData(9, Qt::Horizontal, tr("Status"));
+    m_sourceModel->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
+    m_sourceModel->setHeaderData(11, Qt::Horizontal, tr("Opis"));
+    m_sourceModel->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
+
     // Model proxy
     m_proxyModel = new ItemFilterProxyModel(this);
     m_proxyModel->setSourceModel(m_sourceModel);
