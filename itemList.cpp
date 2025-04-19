@@ -325,11 +325,11 @@ void itemList::insertSampleData(QSqlDatabase &db)
     // models
     QString m1 = genId(), m2 = genId(), m3 = genId();
     query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Atari 800XL','%2')")
-                   .arg(m1).arg(v1));
+                   .arg(m1, v1));
     query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Amiga 500','%2')")
-                   .arg(m2).arg(v2));
+                   .arg(m2, v2));
     query.exec(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','ZX Spectrum','%2')")
-                   .arg(m3).arg(v3));
+                   .arg(m3, v3));
 
     // statuses
     QString s1 = genId(), s2 = genId(), s3 = genId();
@@ -651,10 +651,11 @@ void itemList::onAboutClicked()
                              "<p>%2</p>"
                              "<p><b>Autor:</b> %3</p>"
                              "<p><b>Wersja:</b> %4</p>")
-                             .arg(QCoreApplication::applicationName())
-                             .arg(QStringLiteral("Program do inwentaryzacji retro komputerów"))   // opis z .pro
-                             .arg(QStringLiteral("Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK")) // autor/firma z .pro
-                             .arg(QCoreApplication::applicationVersion());
+                             .arg(QCoreApplication::applicationName(),
+                                  QStringLiteral("Program do inwentaryzacji retro komputerów"),
+                                  QStringLiteral("Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
+                                  QCoreApplication::applicationVersion());
+
 
     QMessageBox::about(this, tr("O programie"), html);
        }
