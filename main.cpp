@@ -2,6 +2,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QDebug>
+#include <QCoreApplication>
 
 // Uwzględniamy pliki z naszą implementacją dialogu konfiguracji
 #include "DatabaseConfigDialog.h"
@@ -13,6 +14,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
+    QCoreApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
+
     a.setWindowIcon(QIcon(":/icon.png"));
     // Instalacja tłumaczeń (jeśli są dostępne)
     QTranslator translator;
