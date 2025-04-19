@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QtMath>
+#include <QCoreApplication>
 #include <QUuid>
 
 /*bool ensureDatabaseExists(const QString &dbName, const QString &host, int port, const QString &user, const QString &pass)
@@ -177,6 +178,10 @@ itemList::itemList(QWidget *parent) :
     connect(ui->itemList_pushButton_end,    &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_delete, &QPushButton::clicked, this, &itemList::onDeleteButtonClicked);
     connect(ui->itemList_pushButton_clone,  &QPushButton::clicked, this, &itemList::onCloneButtonClicked);
+    connect(ui->itemList_pushButton_about,
+            &QPushButton::clicked,
+            this,
+            &itemList::onAboutClicked);
 
     // Reakcja na zaznaczenie wiersza
     QItemSelectionModel *selModel = ui->itemList_tableView->selectionModel();
@@ -639,11 +644,27 @@ void itemList::onEndButtonClicked()
 {
     qApp->quit();
 }
+void itemList::onAboutClicked()
+{
+    const QString html = tr(
+                             "<h3>%1</h3>"
+                             "<p>%2</p>"
+                             "<p><b>Autor:</b> %3</p>"
+                             "<p><b>Wersja:</b> %4</p>")
+                             .arg(QCoreApplication::applicationName())
+                             .arg(QStringLiteral("Program do inwentaryzacji retro komputerów"))   // opis z .pro
+                             .arg(QStringLiteral("Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK")) // autor/firma z .pro
+                             .arg(QCoreApplication::applicationVersion());
+
+    QMessageBox::about(this, tr("O programie"), html);
+       }
 
 void itemList::onRecordSaved(const QString &recordId)
 {
     refreshList(recordId);
 }
+
+
 
 void itemList::refreshList(const QString &recordId)
 {

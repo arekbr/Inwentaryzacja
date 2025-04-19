@@ -75,6 +75,12 @@ QPushButton#itemList_pushButton_end {
     color: white;
 }
 
+QPushButton#itemList_pushButton_about {
+    background-color: #B011C5;
+    color: white;
+}
+
+
 QPushButton:hover {
     opacity: 0.8;
 }</string>
@@ -135,6 +141,13 @@ QPushButton:hover {
         <widget class="QPushButton" name="itemList_pushButton_end">
          <property name="text">
           <string>Koniec</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="itemList_pushButton_about">
+         <property name="text">
+          <string>O...</string>
          </property>
         </widget>
        </item>

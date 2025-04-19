@@ -24,6 +24,7 @@ private slots:
     void onEditButtonClicked();
     void onEndButtonClicked();
     void onDeleteButtonClicked();
+    void onAboutClicked();
 
     // Po zaznaczeniu wiersza w QTableView
     void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);

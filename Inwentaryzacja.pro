@@ -1,8 +1,10 @@
 QT       += core gui sql widgets
 
 CONFIG += c++17
-
 VERSION = 1.1.0
+
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 QMAKE_TARGET_COMPANY = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
 QMAKE_TARGET_PRODUCT = Inwentaryzacja
 QMAKE_TARGET_DESCRIPTION = Program do inwentaryzacji retro komputerów
