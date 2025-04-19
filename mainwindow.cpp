@@ -468,7 +468,7 @@ void MainWindow::onAddPhotoClicked()
         tr("Images (*.jpg *.jpeg *.png)"));
     if (files.isEmpty()) return;
 
-    for (const QString &fn : files) {
+    for (const auto &fn : std::as_const(files)) {
         QFile f(fn);
         if (!f.open(QIODevice::ReadOnly)) {
             qDebug() << "Nie można otworzyć:" << fn;
@@ -476,6 +476,7 @@ void MainWindow::onAddPhotoClicked()
         }
         QByteArray data = f.readAll();
         f.close();
+
 
         if (m_recordId.isEmpty()) {
             m_photoBuffer.append(data);
