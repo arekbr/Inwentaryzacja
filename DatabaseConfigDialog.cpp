@@ -1,12 +1,12 @@
 #include "DatabaseConfigDialog.h"
-#include "ui_DatabaseConfigDialog.h"
 #include <QFileDialog>
 #include <QPushButton>
 #include <QSettings>
+#include "ui_DatabaseConfigDialog.h"
 
-DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DatabaseConfigDialog)
+DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::DatabaseConfigDialog)
 {
     ui->setupUi(this);
 
@@ -23,8 +23,14 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent) :
     // Ustaw domyślną stronę konfiguracji – indeks 0 (SQLite3)
     ui->stackedWidget->setCurrentIndex(0);
 
+    // Podłączenie zmiany typu bazy danych
+    connect(ui->dbTypeComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DatabaseConfigDialog::onDatabaseTypeChanged);
+
     // Wczytujemy zapisane ustawienia za pomocą QSettings
-    QSettings settings("MyCompany", "MyApp");  // Zmień nazwę według swoich potrzeb
+    QSettings settings("MyCompany", "MyApp"); // Zmień nazwę według swoich potrzeb
     QString savedDbType = settings.value("Database/Type", "SQLite3").toString();
     ui->dbTypeComboBox->setCurrentText(savedDbType);
 
@@ -36,19 +42,21 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent) :
 
     // Ustawienia dla MySQL
     ui->hostLineEdit->setText(settings.value("Database/MySQL/Host", "127.0.0.1").toString());
-    ui->databaseLineEdit->setText(settings.value("Database/MySQL/Database", "nazwa_bazy").toString());
+    ui->databaseLineEdit->setText(
+        settings.value("Database/MySQL/Database", "nazwa_bazy").toString());
     ui->userLineEdit->setText(settings.value("Database/MySQL/User", "user").toString());
     ui->passwordLineEdit->setText(settings.value("Database/MySQL/Password", "").toString());
     ui->portSpinBox->setValue(settings.value("Database/MySQL/Port", 3306).toInt());
 
     // Podpięcie przycisku wyboru pliku dla SQLite
     connect(ui->selectFileButton, &QPushButton::clicked, this, [this]() {
-        QString filePath = QFileDialog::getOpenFileName(this, tr("Wybierz plik bazy danych"),
-                                                        QString(), tr("SQLite Database (*.db)"));
+        QString filePath = QFileDialog::getOpenFileName(this,
+                                                        tr("Wybierz plik bazy danych"),
+                                                        QString(),
+                                                        tr("SQLite Database (*.db)"));
         if (!filePath.isEmpty())
             ui->sqlitePathLineEdit->setText(filePath);
     });
-
 }
 
 DatabaseConfigDialog::~DatabaseConfigDialog()
@@ -107,7 +115,7 @@ int DatabaseConfigDialog::mysqlPort() const
     return ui->portSpinBox->value();
 }
 
-void DatabaseConfigDialog::on_dbTypeComboBox_currentIndexChanged(int index)
+void DatabaseConfigDialog::onDatabaseTypeChanged(int index)
 {
     ui->stackedWidget->setCurrentIndex(index);
 }
