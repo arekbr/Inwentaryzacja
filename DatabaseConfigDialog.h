@@ -28,7 +28,7 @@ public slots:
     void accept() override;
 
 private slots:
-    void on_dbTypeComboBox_currentIndexChanged(int index);
+    void onDatabaseTypeChanged(int index);
 
 private:
     Ui::DatabaseConfigDialog *ui;
