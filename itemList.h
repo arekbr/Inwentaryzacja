@@ -1,12 +1,14 @@
 #ifndef ITEMLIST_H
 #define ITEMLIST_H
 
-#include <QWidget>
+#include <QComboBox>
 #include <QItemSelection>
-#include <QSqlRelationalTableModel>
 #include <QLabel>
 #include <QSettings>
-#include "photoitem.h" // dla sygnałów hovered, clicked
+#include <QSqlRelationalTableModel>
+#include <QWidget>
+#include "ItemFilterProxyModel.h"
+#include "photoitem.h"
 
 namespace Ui {
 class itemList;
@@ -25,32 +27,30 @@ private slots:
     void onEndButtonClicked();
     void onDeleteButtonClicked();
     void onAboutClicked();
-
-    // Po zaznaczeniu wiersza w QTableView
-    void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-
-    // Po zapisie rekordu w MainWindow:
+    void onTableViewSelectionChanged(const QItemSelection &selected,
+                                     const QItemSelection &deselected);
     void onRecordSaved(const QString &recordId);
-
-    // Odświeża model i (ew.) zaznacza wskazany rekord:
     void refreshList(const QString &recordId = QString());
-
-    // Obsługa hover:
     void onPhotoHovered(PhotoItem *item);
     void onPhotoUnhovered(PhotoItem *item);
-
-    // Kliknięcie miniatury -> fullscreen
     void onPhotoClicked(PhotoItem *item);
-
     void onCloneButtonClicked();
 
 private:
     bool verifyDatabaseSchema(QSqlDatabase &db);
     void createDatabaseSchema(QSqlDatabase &db);
     void insertSampleData(QSqlDatabase &db);
+    void initFilters(QSqlDatabase &db);
+    void refreshFilters();
 
     Ui::itemList *ui;
-    QSqlRelationalTableModel *model;
+    QSqlRelationalTableModel *m_sourceModel; // oryginalny model danych
+    ItemFilterProxyModel *m_proxyModel;      // model proxy dla filtrowania
+    QComboBox *filterTypeComboBox;           // filtry
+    QComboBox *filterVendorComboBox;
+    QComboBox *filterModelComboBox;
+    QComboBox *filterStatusComboBox;
+    QComboBox *filterStorageComboBox;
     QString m_currentRecordId;
     QWidget *m_previewWindow;
 };

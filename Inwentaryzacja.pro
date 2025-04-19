@@ -21,6 +21,7 @@ unix:!macx:QMAKE_POST_LINK += $$quote($$PWD/set_icon.sh $$OUT_PWD/Inwentaryzacja
 
 SOURCES += \
     DatabaseConfigDialog.cpp \
+    ItemFilterProxyModel.cpp \
     fullscreenphotoviewer.cpp \
     itemList.cpp \
     main.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     DatabaseConfigDialog.h \
+    ItemFilterProxyModel.h \
     fullscreenphotoviewer.h \
     itemList.h \
     mainwindow.h \
