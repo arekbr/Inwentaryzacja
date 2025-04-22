@@ -98,48 +98,117 @@ QPushButton:hover {
      </property>
     </widget>
    </item>
-   <!-- Filtry -->
    <item>
     <layout class="QHBoxLayout" name="filterLayout">
      <item>
       <widget class="QLabel" name="labelFilterType">
-       <property name="text"><string>Typ:</string></property>
+       <property name="text">
+        <string>Typ:</string>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filterTypeComboBox"/>
+      <widget class="QComboBox" name="filterTypeComboBox">
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labelFilterVendor">
-       <property name="text"><string>Producent:</string></property>
+       <property name="text">
+        <string>Producent:</string>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filterVendorComboBox"/>
+      <widget class="QComboBox" name="filterVendorComboBox">
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labelFilterModel">
-       <property name="text"><string>Model:</string></property>
+       <property name="text">
+        <string>Model:</string>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filterModelComboBox"/>
+      <widget class="QComboBox" name="filterModelComboBox">
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labelFilterStatus">
-       <property name="text"><string>Status:</string></property>
+       <property name="text">
+        <string>Status:</string>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filterStatusComboBox"/>
+      <widget class="QComboBox" name="filterStatusComboBox">
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labelFilterStorage">
-       <property name="text"><string>Miejsce:</string></property>
+       <property name="text">
+        <string>Miejsce:</string>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="filterStorageComboBox"/>
+      <widget class="QComboBox" name="filterStorageComboBox">
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -155,32 +224,44 @@ QPushButton:hover {
       <layout class="QVBoxLayout" name="buttonsLayout">
        <item>
         <widget class="QPushButton" name="itemList_pushButton_new">
-         <property name="text"><string>Nowy</string></property>
+         <property name="text">
+          <string>Nowy</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_edit">
-         <property name="text"><string>Edycja</string></property>
+         <property name="text">
+          <string>Edycja</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_clone">
-         <property name="text"><string>Klonuj</string></property>
+         <property name="text">
+          <string>Klonuj</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_delete">
-         <property name="text"><string>Kasuj</string></property>
+         <property name="text">
+          <string>Kasuj</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_end">
-         <property name="text"><string>Koniec</string></property>
+         <property name="text">
+          <string>Koniec</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_about">
-         <property name="text"><string>O...</string></property>
+         <property name="text">
+          <string>O...</string>
+         </property>
         </widget>
        </item>
       </layout>
@@ -192,4 +273,3 @@ QPushButton:hover {
  <resources/>
  <connections/>
 </ui>
-
