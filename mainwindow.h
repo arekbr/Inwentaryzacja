@@ -22,6 +22,9 @@ public:
     // Metoda do ładowania danych z tabeli 'tableName' do QComboBox
     void loadComboBoxData(const QString &tableName, QComboBox *comboBox);
 
+
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
     // Ustawienie trybu edycji (edit) lub dodawania
     void setEditMode(bool edit, const QString &recordId = QString());
 
