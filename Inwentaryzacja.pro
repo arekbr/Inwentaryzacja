@@ -69,6 +69,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    ../../Documents/renumeracja.sh \
     CHANGELOG.md \
     Create_MySQL.sql \
     README.md \
@@ -82,6 +83,7 @@ DISTFILES += \
     images/ikona256.ico \
     images/ikona_mac.icns \
     migrate_to_uuid.sql \
+    renumeracja.sh \
     set_icon.sh
 
 RESOURCES += \

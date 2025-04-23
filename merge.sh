@@ -1,30 +1,29 @@
 #!/bin/bash
 
 # Nazwa pliku wynikowego
-OUTPUT_FILE="output.txt"
+output_file="combined_sources.txt"
 
-# Usuń plik wynikowy, jeśli już istnieje, aby zacząć od nowa
-if [ -f "$OUTPUT_FILE" ]; then
-    rm "$OUTPUT_FILE"
-fi
+# Czyścimy plik jeśli istnieje
+> "$output_file"
 
-# Znajdź wszystkie pliki z podanymi rozszerzeniami w bieżącym katalogu
-for file in $(find . -maxdepth 1 -type f \( -name "*.pro" -o -name "*.cpp" -o -name "*.ui" -o -name "*.h" -o -name "*.sql" \))
-do
-    # Pomiń katalogi i pliki wynikowe
-    if [ -f "$file" ]; then
-        # Pobierz nazwę pliku z pełną ścieżką, ale bez katalogu nadrzędnego
-        filename=$(basename "$file")
-        
-        # Dodaj nazwę pliku do pliku wynikowego
-        echo "$filename" >> "$OUTPUT_FILE"
-        
-        # Dodaj zawartość pliku do pliku wynikowego
-        cat "$file" >> "$OUTPUT_FILE"
-        
-        # Dodaj pustą linię jako odstęp
-        echo "" >> "$OUTPUT_FILE"
+# Szukane rozszerzenia
+extensions=("*.pro" "*.h" "*.cpp" "*.ui")
+
+# Pętla po rozszerzeniach
+for ext in "${extensions[@]}"; do
+  for file in $ext; do
+    if [[ -f "$file" ]]; then
+      echo "========" >> "$output_file"
+      echo "Start of $file" >> "$output_file"
+      echo "========" >> "$output_file"
+      cat "$file" >> "$output_file"
+      echo -e "\n=====" >> "$output_file"
+      echo "End of file $file" >> "$output_file"
+      echo "=====" >> "$output_file"
+      echo "" >> "$output_file"
     fi
+  done
 done
 
-echo "Zakończono. Wynik zapisano do $OUTPUT_FILE"
+echo "Gotowe! Plik wynikowy: $output_file"
+

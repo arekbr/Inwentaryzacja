@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
-    <height>300</height>
+    <width>719</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,17 @@
      <height>32</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+   </property>
    <property name="text">
     <string>Dodaj</string>
    </property>
@@ -57,6 +68,17 @@
      <width>100</width>
      <height>32</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
    </property>
    <property name="text">
     <string>Edytuj</string>
@@ -71,6 +93,17 @@
      <height>32</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+   </property>
    <property name="text">
     <string>Usuń</string>
    </property>
@@ -84,15 +117,37 @@
      <height>192</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
+   </property>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
      <x>210</x>
      <y>240</y>
-     <width>151</width>
-     <height>32</height>
+     <width>221</width>
+     <height>71</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+</string>
    </property>
    <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>

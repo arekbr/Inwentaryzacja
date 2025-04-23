@@ -25,6 +25,7 @@
 #include <QUuid>
 #include <QMessageBox>
 #include <QSqlQuery>
+#include <QCompleter>
 
 #include "photoitem.h"
 #include "types.h"
@@ -74,6 +75,57 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->New_item_addStatus,         &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
     connect(ui->New_item_addStoragePlace,   &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
 
+    // Automatyczne dodawanie nowego wpisu do bazy jeśli użytkownik wpisał coś nowego w ComboBoxie
+    auto autoInsert = [this](QComboBox *comboBox, const QString &tableName) {
+        comboBox->setEditable(true);
+        connect(comboBox->lineEdit(), &QLineEdit::editingFinished, this, [this, comboBox, tableName]() {
+            QString text = comboBox->currentText().trimmed();
+            if (text.isEmpty() || comboBox->findText(text, Qt::MatchFixedString | Qt::MatchCaseSensitive) != -1)
+                return;
+
+            QSqlQuery q(db);
+            QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+            if (tableName == "models") {
+                int vendorIndex = ui->New_item_vendor->currentIndex();
+                QVariant vendorData = ui->New_item_vendor->itemData(vendorIndex);
+
+                if (!vendorData.isValid() || vendorData.toString().isEmpty()) {
+                    QMessageBox::warning(this, tr("Błąd"),
+                                         tr("Nie można dodać modelu – najpierw wybierz lub zapisz producenta."));
+                    return;
+                }
+
+                QString vendorId = vendorData.toString();
+                q.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
+                q.bindValue(":vendor_id", vendorId);
+            } else {
+                q.prepare(QString("INSERT INTO %1 (id, name) VALUES (:id, :name)").arg(tableName));
+            }
+
+            q.bindValue(":id", uuid);
+            q.bindValue(":name", text);
+
+            if (!q.exec()) {
+                QMessageBox::warning(this, tr("Błąd"),
+                                     tr("Nie udało się dodać nowej wartości do '%1':\n%2")
+                                         .arg(tableName, q.lastError().text()));
+                return;
+            }
+
+            loadComboBoxData(tableName, comboBox);
+            comboBox->setCurrentIndex(comboBox->findText(text));
+        });
+    };
+
+
+
+    autoInsert(ui->New_item_type, "types");
+    autoInsert(ui->New_item_vendor, "vendors");
+    autoInsert(ui->New_item_model, "models");
+    autoInsert(ui->New_item_status, "statuses");
+    autoInsert(ui->New_item_storagePlace, "storage_places");
+
     // Ustawienia wstępne
     ui->graphicsView->setTransform(QTransform());
 }
@@ -85,6 +137,18 @@ MainWindow::~MainWindow()
     }
     delete ui;
 }
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QComboBox *combo = qobject_cast<QComboBox*>(obj);
+        if (combo && combo->view()) {
+            combo->showPopup();
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
+}
+
 
 ///////////////////////
 // Metody getNewItemXxxComboBox()
@@ -164,11 +228,12 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
             ui->New_item_storagePlace
         };
         for (QComboBox *c : combos) {
-            c->setEditable(true);
-            c->clearEditText();
-            c->setCurrentIndex(-1);
-            c->setEditable(false);
+            c->setEditable(true);           // Pozwala wpisywać nowe dane
+            c->clearEditText();            // Czyści pole (ale nie listę!)
+            c->setCurrentIndex(-1);        // Nie wybiera nic domyślnie
+            c->completer()->setCompletionMode(QCompleter::PopupCompletion); // Pokazuje sugestie
         }
+
 
         // Czyszczenie sceny zdjęć
         ui->graphicsView->setScene(nullptr);
@@ -524,6 +589,9 @@ void MainWindow::onAddPhotoClicked()
         loadPhotosFromBuffer();
     else
         loadPhotos(m_recordId);
+    this->raise();
+    this->activateWindow();
+
 }
 
 
@@ -596,6 +664,9 @@ void MainWindow::onAddTypeClicked()
     typy dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
+    // Dodajemy te dwie linijki:
+    this->raise();
+    this->activateWindow();
 }
 
 void MainWindow::onAddVendorClicked()
@@ -603,6 +674,9 @@ void MainWindow::onAddVendorClicked()
     vendors dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
+    // Dodajemy te dwie linijki:
+    this->raise();
+    this->activateWindow();
 }
 
 void MainWindow::onAddModelClicked()
@@ -610,6 +684,9 @@ void MainWindow::onAddModelClicked()
     models dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
+    // Dodajemy te dwie linijki:
+    this->raise();
+    this->activateWindow();
 }
 
 void MainWindow::onAddStatusClicked()
@@ -617,6 +694,9 @@ void MainWindow::onAddStatusClicked()
     status dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
+    // Dodajemy te dwie linijki:
+    this->raise();
+    this->activateWindow();
 }
 
 void MainWindow::onAddStoragePlaceClicked()
@@ -624,4 +704,7 @@ void MainWindow::onAddStoragePlaceClicked()
     storage dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
+    // Dodajemy te dwie linijki:
+    this->raise();
+    this->activateWindow();
 }
