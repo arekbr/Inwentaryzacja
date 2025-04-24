@@ -126,8 +126,14 @@ MainWindow::MainWindow(QWidget *parent)
     autoInsert(ui->New_item_status, "statuses");
     autoInsert(ui->New_item_storagePlace, "storage_places");
 
-    // Ustawienia wstępne
+
+
+
+    // Ustawienia wstępne // === [KONIEC konstruktora MainWindow] ===
+
     ui->graphicsView->setTransform(QTransform());
+    // === [KONIEC konstruktora MainWindow] ===
+
 }
 
 MainWindow::~MainWindow()
@@ -240,6 +246,18 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
     }
+    // >>> Ustaw domyślne "brak" dla status i miejsce przechowywania
+    auto setDefaultIfAvailable = [](QComboBox *comboBox, const QString &targetName) {
+        int index = comboBox->findText(targetName, Qt::MatchFixedString | Qt::MatchCaseSensitive);
+        if (index != -1) {
+            comboBox->setCurrentIndex(index);
+        }
+    };
+
+    setDefaultIfAvailable(ui->New_item_status, "brak");
+    setDefaultIfAvailable(ui->New_item_storagePlace, "brak");
+    // <<< koniec sekcji
+
 }
 
 ///////////////////////
@@ -395,6 +413,8 @@ void MainWindow::loadPhotosFromBuffer()
     }
     ui->graphicsView->setScene(scene);
 }
+
+
 
 ///////////////////////
 // Obsługa zapisu
