@@ -29,6 +29,7 @@
 #include <QSqlRelationalTableModel>
 #include <QUuid>
 #include <QtMath>
+#include <QTimer>
 #include <functional>
 
 //=============================================================================
@@ -47,6 +48,7 @@ itemList::itemList(QWidget *parent)
     , filterStorageComboBox(nullptr)
     , m_currentRecordId()
     , m_previewWindow(nullptr)
+    , m_currentHoveredItem(nullptr) // ← tu inicjalizujemy
 {
     ui->setupUi(this);
 
@@ -56,6 +58,7 @@ itemList::itemList(QWidget *parent)
     filterModelComboBox = ui->filterModelComboBox;
     filterStatusComboBox = ui->filterStatusComboBox;
     filterStorageComboBox = ui->filterStorageComboBox;
+
 
     // Połączenie z bazą danych
     QSqlDatabase db;
@@ -160,7 +163,25 @@ itemList::itemList(QWidget *parent)
     // Wywołaj raz na start, by zainicjalizować listy i model:
     onFilterChanged();
     // -----------------------------------------
+    m_hoverCheckTimer = new QTimer(this);
+    connect(m_hoverCheckTimer, &QTimer::timeout, this, [this]() {
+        QPoint globalPos = QCursor::pos();
+
+        if (m_previewWindow && !m_previewWindow->geometry().contains(globalPos)) {
+            QWidget *widgetUnderCursor = QApplication::widgetAt(globalPos);
+            if (!qobject_cast<PhotoItem*>(widgetUnderCursor)) {
+                // Kursor jest poza powiększeniem i poza miniaturką – zamykamy
+                if (m_previewWindow) {
+                    m_previewWindow->close();
+                    m_previewWindow = nullptr;
+                    m_currentHoveredItem = nullptr;
+                }
+            }
+        }
+    });
+
 }
+
 
 itemList::~itemList()
 {
@@ -434,22 +455,33 @@ void itemList::onAboutClicked()
 
 void itemList::onPhotoHovered(PhotoItem *item)
 {
+    if (m_previewWindow && m_currentHoveredItem == item)
+        return; // Nie rób nic, jeśli już hoverujemy to samo zdjęcie
+
     if (m_previewWindow) {
         m_previewWindow->close();
         m_previewWindow = nullptr;
+        m_currentHoveredItem = nullptr;
     }
 
     QPixmap originalPixmap = item->data(0).value<QPixmap>();
     if (originalPixmap.isNull())
         return;
 
+
+
     QScreen *screen = QGuiApplication::primaryScreen();
     if (!screen)
         return;
 
-    QRect screenGeometry = screen->availableGeometry();
-    int screenCenterX = screenGeometry.center().x();
-    int screenCenterY = screenGeometry.center().y();
+//    QRect screenGeometry = screen->availableGeometry();
+ //   int screenCenterX = screenGeometry.center().x();
+ //   int screenCenterY = screenGeometry.center().y();
+    // Rozmiar ekranu
+    QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+    int maxX = screenGeometry.right();
+    int maxY = screenGeometry.bottom();
+
 
     int maxWidth = screenGeometry.width() * 0.8;
     int maxHeight = screenGeometry.height() * 0.8;
@@ -458,8 +490,10 @@ void itemList::onPhotoHovered(PhotoItem *item)
                                            Qt::KeepAspectRatio,
                                            Qt::SmoothTransformation);
 
-    m_previewWindow = new QWidget(nullptr,
-                                  Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+    m_previewWindow = new QWidget(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+    m_previewWindow->installEventFilter(this); // ← przeniesione tutaj!
+
+
     m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
     m_previewWindow->setStyleSheet("background-color: rgba(0, 0, 0, 200); border-radius: 10px;");
 
@@ -469,24 +503,90 @@ void itemList::onPhotoHovered(PhotoItem *item)
 
     m_previewWindow->setFixedSize(scaled.width() + 20, scaled.height() + 20);
     imageLabel->setGeometry(10, 10, scaled.width(), scaled.height());
+    QPoint originalPos = item->scenePos().toPoint(); // lokalnie w scenie
+    QPoint globalThumbPos = ui->itemList_graphicsView->viewport()->mapToGlobal(originalPos);
+    // Rozmiar okna podglądu
+    int previewW = m_previewWindow->width();
+    int previewH = m_previewWindow->height();
 
-    int windowX = screenCenterX - (m_previewWindow->width() / 2);
-    int windowY = screenCenterY - (m_previewWindow->height() / 2);
+    // Domyślnie: wyśrodkuj względem miniaturki
+    int windowX = globalThumbPos.x() - previewW / 2;
+    int windowY = globalThumbPos.y() - previewH / 2;
+
+
+    // Skoryguj, jeśli wyjdzie poza ekran
+    windowX = qBound(screenGeometry.left(), windowX, maxX - previewW);
+    windowY = qBound(screenGeometry.top(), windowY, maxY - previewH);
+
     m_previewWindow->move(windowX, windowY);
 
     m_previewWindow->raise();
     m_previewWindow->activateWindow();
     m_previewWindow->show();
+    // PRZENIESIENIE KURSORA na środek powiększonego zdjęcia
+    QPoint centerInGlobal = m_previewWindow->mapToGlobal(QPoint(m_previewWindow->width() / 2,
+                                                                m_previewWindow->height() / 2));
+    QCursor::setPos(centerInGlobal);
+    m_currentHoveredItem = item;
+    if (m_hoverCheckTimer && !m_hoverCheckTimer->isActive())
+        m_hoverCheckTimer->start(100); // sprawdzaj co 100 ms
+
 }
+
 
 void itemList::onPhotoUnhovered(PhotoItem *item)
 {
-    Q_UNUSED(item);
-    if (m_previewWindow) {
-        m_previewWindow->close();
-        m_previewWindow = nullptr;
-    }
+    if (item != m_currentHoveredItem)
+        return;
+
+    QTimer::singleShot(100, this, [=]() {
+        QPoint globalCursorPos = QCursor::pos();
+        if (m_previewWindow && m_previewWindow->geometry().contains(globalCursorPos)) {
+            m_previewHovered = true; // weszliśmy nad podgląd
+            return;
+        }
+
+        m_currentHoveredItem = nullptr;
+
+        if (m_previewWindow) {
+            m_previewWindow->close();
+            if (m_hoverCheckTimer)
+                m_hoverCheckTimer->stop();
+
+            m_previewWindow = nullptr;
+            m_previewHovered = false;
+        }
+    });
 }
+
+// <-- TUTAJ WSTAW NOWĄ METODĘ ↓↓↓↓↓↓↓↓↓↓↓↓
+
+bool itemList::eventFilter(QObject *watched, QEvent *event)
+{
+    if (!watched || !event || !m_previewWindow) // 👈 zabezpieczenie
+        return QWidget::eventFilter(watched, event);
+
+    if (watched == m_previewWindow)
+    {
+        if (event->type() == QEvent::Leave)
+        {
+            m_previewHovered = false;
+
+            if (m_previewWindow) {
+                m_previewWindow->close();
+                m_previewWindow = nullptr;
+                m_currentHoveredItem = nullptr;
+            }
+
+            return true;
+        }
+    }
+
+    return QWidget::eventFilter(watched, event);
+}
+
+// <-- Jeśli plik się kończy, to teraz już jesteś gotowy 👍
+
 
 void itemList::onPhotoClicked(PhotoItem *item)
 {
@@ -533,6 +633,7 @@ void itemList::refreshList(const QString &recordId)
 //=============================================================================
 // Schemat bazy danych i dane przykładowe
 //=============================================================================
+
 
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
