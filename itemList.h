@@ -35,6 +35,7 @@ private slots:
     void onPhotoUnhovered(PhotoItem *item);
     void onPhotoClicked(PhotoItem *item);
     void onCloneButtonClicked();
+    void onFilterChanged();            // slot reagujący na zmianę któregoś filtra
 
 private:
     bool verifyDatabaseSchema(QSqlDatabase &db);
@@ -42,6 +43,7 @@ private:
     void insertSampleData(QSqlDatabase &db);
     void initFilters(QSqlDatabase &db);
     void refreshFilters();
+    void updateFilterComboBoxes();     // metoda odbudowująca listy w ComboBoxach
 
     Ui::itemList *ui;
     QSqlRelationalTableModel *m_sourceModel; // oryginalny model danych
