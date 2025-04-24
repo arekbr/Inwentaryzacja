@@ -149,6 +149,17 @@ itemList::itemList(QWidget *parent)
 
     // Inicjalizacja filtrów
     initFilters(db);
+
+    // --- ZAMIANA na kaskadowe filtrowanie ---
+    // Podłącz slot, by po każdej zmianie jakiegokolwiek ComboBoxa:
+    connect(filterTypeComboBox,   &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterModelComboBox,  &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterStorageComboBox,&QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    // Wywołaj raz na start, by zainicjalizować listy i model:
+    onFilterChanged();
+    // -----------------------------------------
 }
 
 itemList::~itemList()
@@ -724,5 +735,90 @@ void itemList::insertSampleData(QSqlDatabase &db)
                  << query.lastError().text();
     } else {
         qDebug() << "itemList: Wstawiono dane przykładowe (MySQL)";
+    }
+}
+
+void itemList::onFilterChanged()
+{
+    // 1) Ustaw filtry w modelu wg aktualnych wyborów (lub pustego = wszystkie)
+    auto sel = [&](QComboBox *cb){
+        QString t = cb->currentText();
+        return t == tr("Wszystkie") ? QString() : t;
+    };
+    m_proxyModel->setTypeFilter(   sel(filterTypeComboBox));
+    m_proxyModel->setVendorFilter( sel(filterVendorComboBox));
+    m_proxyModel->setModelFilter(  sel(filterModelComboBox));
+    m_proxyModel->setStatusFilter( sel(filterStatusComboBox));
+    m_proxyModel->setStorageFilter(sel(filterStorageComboBox));
+
+    // 2) Odbuduj listy wartości w ComboBoxach zależnie od pozostałych filtrów
+    updateFilterComboBoxes();
+}
+
+void itemList::updateFilterComboBoxes()
+{
+    QSqlDatabase db = QSqlDatabase::database("default_connection");
+    if (!db.isOpen()) return;
+
+    // Pobierz aktualne wybory (puste = wszystkie)
+    QString selType   = filterTypeComboBox->currentText()   == tr("Wszystkie") ? QString() : filterTypeComboBox->currentText();
+    QString selVendor = filterVendorComboBox->currentText() == tr("Wszystkie") ? QString() : filterVendorComboBox->currentText();
+    QString selModel  = filterModelComboBox->currentText()  == tr("Wszystkie") ? QString() : filterModelComboBox->currentText();
+    QString selStatus = filterStatusComboBox->currentText() == tr("Wszystkie") ? QString() : filterStatusComboBox->currentText();
+    QString selStorage= filterStorageComboBox->currentText()== tr("Wszystkie") ? QString() : filterStorageComboBox->currentText();
+
+    struct Filter { QComboBox *cb; QString field; };
+    QVector<Filter> filters = {
+        {filterTypeComboBox,   "types.name"},
+        {filterVendorComboBox, "vendors.name"},
+        {filterModelComboBox,  "models.name"},
+        {filterStatusComboBox, "statuses.name"},
+        {filterStorageComboBox,"storage_places.name"}
+    };
+
+    // Zapytanie bazowe: do eksponaty dołącz wszystkie słowniki
+    const QString baseJoins = R"(
+        FROM eksponaty
+        JOIN types             ON eksponaty.type_id             = types.id
+        JOIN vendors           ON eksponaty.vendor_id           = vendors.id
+        JOIN models            ON eksponaty.model_id            = models.id
+        JOIN statuses          ON eksponaty.status_id           = statuses.id
+        JOIN storage_places    ON eksponaty.storage_place_id    = storage_places.id
+    )";
+
+    for (auto &f : filters) {
+        f.cb->blockSignals(true);
+        QString prev = f.cb->currentText();
+        f.cb->clear();
+        f.cb->addItem(tr("Wszystkie"));
+
+        // Budujemy SELECT DISTINCT dla danego pola, uwzględniając pozostałe selekcje:
+        QString sql = QString(
+                          "SELECT DISTINCT %1 %2 "
+                          "WHERE (:selType IS NULL   OR types.name  = :selType)   "
+                          "  AND (:selVendor IS NULL OR vendors.name= :selVendor) "
+                          "  AND (:selModel IS NULL  OR models.name = :selModel)  "
+                          "  AND (:selStatus IS NULL OR statuses.name= :selStatus)"
+                          "  AND (:selStorage IS NULL OR storage_places.name = :selStorage)"
+                          " ORDER BY %1")
+                          .arg(f.field, baseJoins);
+
+        QSqlQuery q(db);
+        q.prepare(sql);
+        q.bindValue(":selType",    selType.isEmpty()   ? QVariant()         : selType);
+        q.bindValue(":selVendor", selVendor.isEmpty() ? QVariant()            : selVendor);
+        q.bindValue(":selModel", selModel.isEmpty()   ? QVariant()            : selModel);
+        q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant()            : selStatus);
+        q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant()            : selStorage);
+        if (!q.exec()) {
+            qDebug() << "Błąd updateFilterComboBoxes:" << q.lastError().text();
+        }
+        while (q.next()) {
+            f.cb->addItem(q.value(0).toString());
+        }
+        // Przywróć uprzedni wybór, jeśli nadal dostępny
+        int idx = f.cb->findText(prev);
+        f.cb->setCurrentIndex(idx != -1 ? idx : 0);
+        f.cb->blockSignals(false);
     }
 }
