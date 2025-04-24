@@ -82,7 +82,9 @@ DISTFILES += \
     images/ikona.ico \
     images/ikona256.ico \
     images/ikona_mac.icns \
+    merge_win.ps1 \
     migrate_to_uuid.sql \
+    prepare_release_windows.bat \
     renumeracja.sh \
     set_icon.sh
 
