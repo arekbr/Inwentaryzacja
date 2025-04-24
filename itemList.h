@@ -44,6 +44,8 @@ private:
     void initFilters(QSqlDatabase &db);
     void refreshFilters();
     void updateFilterComboBoxes();     // metoda odbudowująca listy w ComboBoxach
+    bool m_previewHovered = false; // <-- dodaj to
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
     Ui::itemList *ui;
     QSqlRelationalTableModel *m_sourceModel; // oryginalny model danych
@@ -55,6 +57,9 @@ private:
     QComboBox *filterStorageComboBox;
     QString m_currentRecordId;
     QWidget *m_previewWindow;
+    PhotoItem *m_currentHoveredItem; // ← tu deklarujemy
+    QTimer *m_hoverCheckTimer = nullptr;
+
 };
 
 #endif // ITEMLIST_H
