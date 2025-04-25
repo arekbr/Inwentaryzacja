@@ -1,3 +1,18 @@
+/**
+ * @file vendors.cpp
+ * @brief Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.
+ * @version 1.1.8
+ * @date 2025-04-25
+ * @author
+ * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
+ * - ChatGPT
+ * - GROK
+ *
+ * Klasa `vendors` umożliwia użytkownikowi zarządzanie listą producentów sprzętu.
+ * Oferuje funkcje dodawania, edytowania i usuwania wpisów w tabeli `vendors`.
+ * Po zatwierdzeniu zmian odświeża pole wyboru producenta w głównym oknie aplikacji.
+ */
+
 #include "vendors.h"
 #include "ui_vendors.h"
 #include <QMessageBox>
@@ -8,6 +23,13 @@
 #include "mainwindow.h"
 #include <QUuid> // dodane
 
+/**
+ * @brief Konstruktor klasy vendors.
+ * @param parent Wskaźnik na widget nadrzędny (domyślnie nullptr).
+ *
+ * Inicjalizuje interfejs graficzny, ustawia połączenie z bazą danych
+ * i podłącza przyciski do odpowiednich slotów. Po uruchomieniu wczytuje dane producentów.
+ */
 vendors::vendors(QWidget *parent)
     : QDialog(parent),
     ui(new Ui::vendors),
@@ -27,16 +49,33 @@ vendors::vendors(QWidget *parent)
     refreshList();
 }
 
+/**
+ * @brief Destruktor klasy vendors.
+ *
+ * Zwalnia zasoby interfejsu użytkownika.
+ */
 vendors::~vendors()
 {
     delete ui;
 }
 
+/**
+ * @brief Ustawia wskaźnik na główne okno aplikacji.
+ * @param mainWindow Wskaźnik do instancji klasy MainWindow.
+ *
+ * Pozwala na synchronizację danych po zatwierdzeniu zmian.
+ */
 void vendors::setMainWindow(MainWindow *mainWindow)
 {
     m_mainWindow = mainWindow;
 }
 
+/**
+ * @brief Odświeża listę producentów w interfejsie użytkownika.
+ *
+ * Pobiera dane z tabeli `vendors` i ustawia je jako model dla `listView`.
+ * W przypadku błędu SQL wyświetla komunikat krytyczny.
+ */
 void vendors::refreshList()
 {
     QSqlQueryModel *queryModel = new QSqlQueryModel(this);
@@ -50,6 +89,12 @@ void vendors::refreshList()
     ui->listView->setModelColumn(0);
 }
 
+/**
+ * @brief Dodaje nowego producenta do bazy danych.
+ *
+ * Pobiera nazwę z pola tekstowego, generuje UUID i wstawia nowy rekord do tabeli `vendors`.
+ * W przypadku błędu wykonania zapytania SQL wyświetla komunikat.
+ */
 void vendors::onAddClicked()
 {
     QString newVendor = ui->lineEdit->text().trimmed();
@@ -57,7 +102,7 @@ void vendors::onAddClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa producenta nie może być pusta."));
         return;
     }
-    // Generujemy UUID
+
     QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
 
     QSqlQuery query(m_db);
@@ -72,6 +117,12 @@ void vendors::onAddClicked()
     ui->lineEdit->clear();
 }
 
+/**
+ * @brief Edytuje zaznaczonego producenta w bazie danych.
+ *
+ * Otwiera okno dialogowe z możliwością zmiany nazwy. Wyszukuje ID producenta i wykonuje aktualizację.
+ * Jeśli wystąpi błąd — wyświetlany jest komunikat. Po zakończeniu odświeżana jest lista.
+ */
 void vendors::onEditClicked()
 {
     QModelIndex index = ui->listView->currentIndex();
@@ -79,12 +130,12 @@ void vendors::onEditClicked()
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać producenta do edycji."));
         return;
     }
+
     QString currentName = index.data(Qt::DisplayRole).toString();
     bool ok;
     QString newName = QInputDialog::getText(this, tr("Edytuj producenta"), tr("Nowa nazwa:"),
                                             QLineEdit::Normal, currentName, &ok);
     if(ok && !newName.trimmed().isEmpty()){
-        // Odczytujemy ID
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM vendors WHERE name = :name");
         query.bindValue(":name", currentName);
@@ -104,6 +155,12 @@ void vendors::onEditClicked()
     refreshList();
 }
 
+/**
+ * @brief Usuwa zaznaczonego producenta z bazy danych.
+ *
+ * Pyta użytkownika o potwierdzenie, a następnie wykonuje zapytanie DELETE.
+ * W przypadku błędu wyświetla komunikat krytyczny.
+ */
 void vendors::onDeleteClicked()
 {
     QModelIndex index = ui->listView->currentIndex();
@@ -111,6 +168,7 @@ void vendors::onDeleteClicked()
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać producenta do usunięcia."));
         return;
     }
+
     QString vendorName = index.data(Qt::DisplayRole).toString();
     int ret = QMessageBox::question(this, tr("Potwierdzenie"),
                                     tr("Czy na pewno chcesz usunąć producenta: %1?").arg(vendorName),
@@ -127,6 +185,12 @@ void vendors::onDeleteClicked()
     refreshList();
 }
 
+/**
+ * @brief Zamyka okno dialogowe i odświeża dane w głównym oknie.
+ *
+ * Jeśli `m_mainWindow` zostało ustawione, metoda odświeża combo box producentów.
+ * Następnie zamyka okno (`accept()`).
+ */
 void vendors::onOkClicked()
 {
     if(m_mainWindow) {

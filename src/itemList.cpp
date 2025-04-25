@@ -1,3 +1,17 @@
+/**
+ * @file itemList.cpp
+ * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @version 1.1.8
+ * @date 2025-04-25
+ *
+ * Plik zawiera implementację metod klasy itemList, odpowiedzialnej za wyświetlanie i zarządzanie
+ * listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenia z bazą danych MySQL,
+ * filtrowanie kaskadowe, wyświetlanie miniatur zdjęć oraz interakcje użytkownika (dodawanie,
+ * edycja, usuwanie, klonowanie rekordów). Wykorzystuje QSqlRelationalTableModel jako źródło
+ * danych oraz ItemFilterProxyModel do dynamicznego filtrowania.
+ */
+
 #include "itemList.h"
 #include "ItemFilterProxyModel.h"
 #include "fullscreenphotoviewer.h"
@@ -32,10 +46,15 @@
 #include <QTimer>
 #include <functional>
 
-//=============================================================================
-// Konstruktor i Destruktor
-//=============================================================================
-
+/**
+ * @brief Konstruktor klasy itemList.
+ * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
+ *
+ * Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych MySQL, konfiguruje
+ * model danych (QSqlRelationalTableModel), model proxy (ItemFilterProxyModel) oraz filtry
+ * kaskadowe w combo boxach. Podłącza sygnały i sloty dla przycisków, tabeli i interakcji ze
+ * zdjęciami. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane.
+ */
 itemList::itemList(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::itemList)
@@ -48,7 +67,7 @@ itemList::itemList(QWidget *parent)
     , filterStorageComboBox(nullptr)
     , m_currentRecordId()
     , m_previewWindow(nullptr)
-    , m_currentHoveredItem(nullptr) // ← tu inicjalizujemy
+    , m_currentHoveredItem(nullptr)
 {
     ui->setupUi(this);
 
@@ -59,12 +78,11 @@ itemList::itemList(QWidget *parent)
     filterStatusComboBox = ui->filterStatusComboBox;
     filterStorageComboBox = ui->filterStorageComboBox;
 
-
     // Połączenie z bazą danych
     QSqlDatabase db;
     if (!QSqlDatabase::contains("default_connection")) {
         db = QSqlDatabase::addDatabase("QMYSQL", "default_connection");
-        db.setHostName("localhost"); // Zastąp swoim adresem serwera
+        db.setHostName("localhost");
         db.setDatabaseName("retro_komputery");
         db.setUserName("user");
         db.setPassword("password");
@@ -101,7 +119,7 @@ itemList::itemList(QWidget *parent)
     m_sourceModel->select();
 
     // Ustaw nagłówki kolumn
-    m_sourceModel->setHeaderData(0, Qt::Horizontal, tr("ID")); // Ukryta kolumna
+    m_sourceModel->setHeaderData(0, Qt::Horizontal, tr("ID"));
     m_sourceModel->setHeaderData(1, Qt::Horizontal, tr("Nazwa"));
     m_sourceModel->setHeaderData(2, Qt::Horizontal, tr("Typ"));
     m_sourceModel->setHeaderData(3, Qt::Horizontal, tr("Producent"));
@@ -153,24 +171,21 @@ itemList::itemList(QWidget *parent)
     // Inicjalizacja filtrów
     initFilters(db);
 
-    // --- ZAMIANA na kaskadowe filtrowanie ---
-    // Podłącz slot, by po każdej zmianie jakiegokolwiek ComboBoxa:
-    connect(filterTypeComboBox,   &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    // Podłączenie slotów dla kaskadowego filtrowania
+    connect(filterTypeComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterModelComboBox,  &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStorageComboBox,&QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    // Wywołaj raz na start, by zainicjalizować listy i model:
+    connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     onFilterChanged();
-    // -----------------------------------------
+
+    // Inicjalizacja timera do sprawdzania pozycji kursora
     m_hoverCheckTimer = new QTimer(this);
     connect(m_hoverCheckTimer, &QTimer::timeout, this, [this]() {
         QPoint globalPos = QCursor::pos();
-
         if (m_previewWindow && !m_previewWindow->geometry().contains(globalPos)) {
             QWidget *widgetUnderCursor = QApplication::widgetAt(globalPos);
-            if (!qobject_cast<PhotoItem*>(widgetUnderCursor)) {
-                // Kursor jest poza powiększeniem i poza miniaturką – zamykamy
+            if (!qobject_cast<PhotoItem *>(widgetUnderCursor)) {
                 if (m_previewWindow) {
                     m_previewWindow->close();
                     m_previewWindow = nullptr;
@@ -179,38 +194,43 @@ itemList::itemList(QWidget *parent)
             }
         }
     });
-
 }
 
-
+/**
+ * @brief Destruktor klasy itemList.
+ *
+ * Zatrzymuje timer utrzymujący połączenie z bazą danych i zwalnia zasoby interfejsu użytkownika.
+ */
 itemList::~itemList()
 {
     if (m_keepAliveTimer)
         m_keepAliveTimer->stop();
-
     delete ui;
 }
 
-//=============================================================================
-// Inicjalizacja filtrów
-//=============================================================================
-
+/**
+ * @brief Inicjalizuje filtry combo boxów.
+ * @param db Referencja do obiektu bazy danych.
+ *
+ * Wypełnia combo boxy danymi z odpowiednich tabel bazy danych (types, vendors, models, statuses,
+ * storage_places) i podłącza sloty do aktualizacji filtrów w modelu proxy. Każdy combo box
+ * zawiera opcję "Wszystkie" oraz unikalne wartości z danej tabeli.
+ */
 void itemList::initFilters(QSqlDatabase &db)
 {
-    auto initFilter =
-        [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
-            cb->blockSignals(true);
-            cb->clear();
-            cb->addItem(tr("Wszystkie"));
-            QSqlQuery q(db);
-            q.exec(QString("SELECT name FROM %1 ORDER BY name").arg(table));
-            while (q.next())
-                cb->addItem(q.value(0).toString());
-            cb->blockSignals(false);
-            connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
-                setter(txt == tr("Wszystkie") ? QString() : txt);
-            });
-        };
+    auto initFilter = [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
+        cb->blockSignals(true);
+        cb->clear();
+        cb->addItem(tr("Wszystkie"));
+        QSqlQuery q(db);
+        q.exec(QString("SELECT name FROM %1 ORDER BY name").arg(table));
+        while (q.next())
+            cb->addItem(q.value(0).toString());
+        cb->blockSignals(false);
+        connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
+            setter(txt == tr("Wszystkie") ? QString() : txt);
+        });
+    };
     initFilter(filterTypeComboBox, "types", [this](const QString &v) {
         m_proxyModel->setTypeFilter(v);
     });
@@ -228,30 +248,28 @@ void itemList::initFilters(QSqlDatabase &db)
     });
 }
 
-//=============================================================================
-// Odświeżanie filtrów
-//=============================================================================
-
+/**
+ * @brief Odświeża filtry combo boxów.
+ *
+ * Zachowuje aktualnie wybrane wartości filtrów, odświeża dane w combo boxach na podstawie
+ * zawartości bazy danych i przywraca wybrane wartości, jeśli nadal istnieją.
+ */
 void itemList::refreshFilters()
 {
     QSqlDatabase db = QSqlDatabase::database("default_connection");
     if (!db.isOpen()) {
-        qDebug()
-            << "itemList: Błąd - połączenie z bazą danych zamknięte podczas odświeżania filtrów.";
+        qDebug() << "itemList: Błąd - połączenie z bazą danych zamknięte podczas odświeżania filtrów.";
         return;
     }
 
-    // Zachowaj aktualnie wybrane wartości filtrów
     QString currentType = filterTypeComboBox->currentText();
     QString currentVendor = filterVendorComboBox->currentText();
     QString currentModel = filterModelComboBox->currentText();
     QString currentStatus = filterStatusComboBox->currentText();
     QString currentStorage = filterStorageComboBox->currentText();
 
-    // Odśwież filtry
     initFilters(db);
 
-    // Przywróć wybrane wartości, jeśli nadal istnieją
     auto restoreFilter = [](QComboBox *cb, const QString &value) {
         if (!value.isEmpty() && value != tr("Wszystkie")) {
             int index = cb->findText(value);
@@ -267,10 +285,14 @@ void itemList::refreshFilters()
     restoreFilter(filterStorageComboBox, currentStorage);
 }
 
-//=============================================================================
-// Obsługa zaznaczenia w tabeli
-//=============================================================================
-
+/**
+ * @brief Obsługuje zmianę zaznaczenia w tabeli eksponatów.
+ * @param selected Zaznaczone indeksy.
+ * @param deselected Odznaczone indeksy.
+ *
+ * Wczytuje zdjęcia powiązane z wybranym eksponatem z tabeli photos i wyświetla ich miniatury
+ * w QGraphicsView. Ustawia siatkę miniaturek w zależności od liczby zdjęć i rozmiaru widoku.
+ */
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.indexes().isEmpty()) {
@@ -283,7 +305,6 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     QModelIndex srcIndex = m_proxyModel->mapToSource(proxyIndex);
     m_currentRecordId = m_sourceModel->data(m_sourceModel->index(srcIndex.row(), 0)).toString();
 
-    // Wczytaj zdjęcia
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
@@ -352,10 +373,11 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
-//=============================================================================
-// Obsługa przycisków
-//=============================================================================
-
+/**
+ * @brief Otwiera okno dodawania nowego eksponatu.
+ *
+ * Tworzy nowe okno MainWindow w trybie dodawania rekordu i podłącza sygnał zapisu rekordu.
+ */
 void itemList::onNewButtonClicked()
 {
     MainWindow *w = new MainWindow(this);
@@ -365,6 +387,11 @@ void itemList::onNewButtonClicked()
     w->show();
 }
 
+/**
+ * @brief Otwiera okno edycji wybranego eksponatu.
+ *
+ * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie edycji.
+ */
 void itemList::onEditButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
@@ -383,6 +410,11 @@ void itemList::onEditButtonClicked()
     w->show();
 }
 
+/**
+ * @brief Otwiera okno klonowania wybranego eksponatu.
+ *
+ * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie klonowania.
+ */
 void itemList::onCloneButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
@@ -401,6 +433,11 @@ void itemList::onCloneButtonClicked()
     w->show();
 }
 
+/**
+ * @brief Usuwa wybrany eksponat po potwierdzeniu.
+ *
+ * Sprawdza, czy wybrano rekord, wyświetla okno potwierdzenia i usuwa rekord z tabeli eksponaty.
+ */
 void itemList::onDeleteButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
@@ -431,35 +468,45 @@ void itemList::onDeleteButtonClicked()
     }
 }
 
+/**
+ * @brief Zamyka aplikację.
+ */
 void itemList::onEndButtonClicked()
 {
     qApp->quit();
 }
 
+/**
+ * @brief Wyświetla okno "O programie".
+ *
+ * Pokazuje informacje o aplikacji, w tym nazwę, wersję i autorów.
+ */
 void itemList::onAboutClicked()
 {
-    const QString html
-        = tr("<h3>%1</h3>"
-             "<p>%2</p>"
-             "<p><b>Autor:</b> %3</p>"
-             "<p><b>Wersja:</b> %4</p>")
-              .arg(QCoreApplication::applicationName(),
-                   QStringLiteral("Program do inwentaryzacji retro komputerów"),
-                   QStringLiteral(
-                       "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
-                   QCoreApplication::applicationVersion());
+    const QString html = tr("<h3>%1</h3>"
+                            "<p>%2</p>"
+                            "<p><b>Autor:</b> %3</p>"
+                            "<p><b>Wersja:</b> %4</p>")
+                             .arg(QCoreApplication::applicationName(),
+                                  QStringLiteral("Program do inwentaryzacji retro komputerów"),
+                                  QStringLiteral(
+                                      "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
+                                  QCoreApplication::applicationVersion());
 
     QMessageBox::about(this, tr("O programie"), html);
 }
 
-//=============================================================================
-// Obsługa interakcji ze zdjęciami
-//=============================================================================
-
+/**
+ * @brief Wyświetla podgląd zdjęcia po najechaniu na miniaturę.
+ * @param item Wskaźnik na element PhotoItem.
+ *
+ * Tworzy okno podglądu z powiększonym zdjęciem, centruje je względem miniaturki i przesuwa kursor
+ * na środek podglądu. Timer m_hoverCheckTimer sprawdza, czy kursor opuścił podgląd.
+ */
 void itemList::onPhotoHovered(PhotoItem *item)
 {
     if (m_previewWindow && m_currentHoveredItem == item)
-        return; // Nie rób nic, jeśli już hoverujemy to samo zdjęcie
+        return;
 
     if (m_previewWindow) {
         m_previewWindow->close();
@@ -471,20 +518,13 @@ void itemList::onPhotoHovered(PhotoItem *item)
     if (originalPixmap.isNull())
         return;
 
-
-
     QScreen *screen = QGuiApplication::primaryScreen();
     if (!screen)
         return;
 
-//    QRect screenGeometry = screen->availableGeometry();
- //   int screenCenterX = screenGeometry.center().x();
- //   int screenCenterY = screenGeometry.center().y();
-    // Rozmiar ekranu
-    QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+    QRect screenGeometry = screen->availableGeometry();
     int maxX = screenGeometry.right();
     int maxY = screenGeometry.bottom();
-
 
     int maxWidth = screenGeometry.width() * 0.8;
     int maxHeight = screenGeometry.height() * 0.8;
@@ -494,8 +534,7 @@ void itemList::onPhotoHovered(PhotoItem *item)
                                            Qt::SmoothTransformation);
 
     m_previewWindow = new QWidget(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-    m_previewWindow->installEventFilter(this); // ← przeniesione tutaj!
-
+    m_previewWindow->installEventFilter(this);
 
     m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
     m_previewWindow->setStyleSheet("background-color: rgba(0, 0, 0, 200); border-radius: 10px;");
@@ -506,18 +545,15 @@ void itemList::onPhotoHovered(PhotoItem *item)
 
     m_previewWindow->setFixedSize(scaled.width() + 20, scaled.height() + 20);
     imageLabel->setGeometry(10, 10, scaled.width(), scaled.height());
-    QPoint originalPos = item->scenePos().toPoint(); // lokalnie w scenie
+    QPoint originalPos = item->scenePos().toPoint();
     QPoint globalThumbPos = ui->itemList_graphicsView->viewport()->mapToGlobal(originalPos);
-    // Rozmiar okna podglądu
+
     int previewW = m_previewWindow->width();
     int previewH = m_previewWindow->height();
 
-    // Domyślnie: wyśrodkuj względem miniaturki
     int windowX = globalThumbPos.x() - previewW / 2;
     int windowY = globalThumbPos.y() - previewH / 2;
 
-
-    // Skoryguj, jeśli wyjdzie poza ekran
     windowX = qBound(screenGeometry.left(), windowX, maxX - previewW);
     windowY = qBound(screenGeometry.top(), windowY, maxY - previewH);
 
@@ -526,17 +562,21 @@ void itemList::onPhotoHovered(PhotoItem *item)
     m_previewWindow->raise();
     m_previewWindow->activateWindow();
     m_previewWindow->show();
-    // PRZENIESIENIE KURSORA na środek powiększonego zdjęcia
+
     QPoint centerInGlobal = m_previewWindow->mapToGlobal(QPoint(m_previewWindow->width() / 2,
                                                                 m_previewWindow->height() / 2));
     QCursor::setPos(centerInGlobal);
     m_currentHoveredItem = item;
     if (m_hoverCheckTimer && !m_hoverCheckTimer->isActive())
-        m_hoverCheckTimer->start(100); // sprawdzaj co 100 ms
-
+        m_hoverCheckTimer->start(100);
 }
 
-
+/**
+ * @brief Ukrywa podgląd zdjęcia po opuszczeniu miniatury.
+ * @param item Wskaźnik na element PhotoItem.
+ *
+ * Zamyka okno podglądu po krótkim opóźnieniu, jeśli kursor nie znajduje się nad oknem podglądu.
+ */
 void itemList::onPhotoUnhovered(PhotoItem *item)
 {
     if (item != m_currentHoveredItem)
@@ -545,7 +585,7 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
     QTimer::singleShot(100, this, [=]() {
         QPoint globalCursorPos = QCursor::pos();
         if (m_previewWindow && m_previewWindow->geometry().contains(globalCursorPos)) {
-            m_previewHovered = true; // weszliśmy nad podgląd
+            m_previewHovered = true;
             return;
         }
 
@@ -562,25 +602,27 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
     });
 }
 
-// <-- TUTAJ WSTAW NOWĄ METODĘ ↓↓↓↓↓↓↓↓↓↓↓↓
-
+/**
+ * @brief Obsługuje zdarzenia filtrowania dla okna podglądu zdjęć.
+ * @param watched Obiekt, dla którego przetwarzane jest zdarzenie.
+ * @param event Wskaźnik na zdarzenie.
+ * @return true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
+ *
+ * Zamyka okno podglądu, gdy kursor opuści jego obszar.
+ */
 bool itemList::eventFilter(QObject *watched, QEvent *event)
 {
-    if (!watched || !event || !m_previewWindow) // 👈 zabezpieczenie
+    if (!watched || !event || !m_previewWindow)
         return QWidget::eventFilter(watched, event);
 
-    if (watched == m_previewWindow)
-    {
-        if (event->type() == QEvent::Leave)
-        {
+    if (watched == m_previewWindow) {
+        if (event->type() == QEvent::Leave) {
             m_previewHovered = false;
-
             if (m_previewWindow) {
                 m_previewWindow->close();
                 m_previewWindow = nullptr;
                 m_currentHoveredItem = nullptr;
             }
-
             return true;
         }
     }
@@ -588,9 +630,12 @@ bool itemList::eventFilter(QObject *watched, QEvent *event)
     return QWidget::eventFilter(watched, event);
 }
 
-// <-- Jeśli plik się kończy, to teraz już jesteś gotowy 👍
-
-
+/**
+ * @brief Otwiera zdjęcie w trybie pełnoekranowym.
+ * @param item Wskaźnik na element PhotoItem.
+ *
+ * Tworzy nowe okno FullScreenPhotoViewer z oryginalnym zdjęciem.
+ */
 void itemList::onPhotoClicked(PhotoItem *item)
 {
     QPixmap original = item->data(0).value<QPixmap>();
@@ -601,21 +646,28 @@ void itemList::onPhotoClicked(PhotoItem *item)
     viewer->show();
 }
 
-//=============================================================================
-// Zapis rekordu i odświeżanie
-//=============================================================================
-
+/**
+ * @brief Odświeża listę po zapisaniu rekordu.
+ * @param recordId ID zapisanego rekordu.
+ *
+ * Wywołuje odświeżenie listy eksponatów i ustawia zaznaczenie na zapisanym rekordzie.
+ */
 void itemList::onRecordSaved(const QString &recordId)
 {
     refreshList(recordId);
 }
 
+/**
+ * @brief Odświeża listę eksponatów.
+ * @param recordId Opcjonalne ID rekordu do wybrania po odświeżeniu.
+ *
+ * Odświeża model danych, filtry i tabelę, a jeśli podano recordId, zaznacza odpowiedni rekord.
+ */
 void itemList::refreshList(const QString &recordId)
 {
     m_sourceModel->select();
     ui->itemList_tableView->resizeColumnsToContents();
 
-    // Odśwież filtry
     refreshFilters();
 
     if (!recordId.isEmpty()) {
@@ -633,15 +685,17 @@ void itemList::refreshList(const QString &recordId)
     }
 }
 
-//=============================================================================
-// Schemat bazy danych i dane przykładowe
-//=============================================================================
-
-
+/**
+ * @brief Weryfikuje schemat bazy danych.
+ * @param db Referencja do obiektu bazy danych.
+ * @return true, jeśli wszystkie wymagane tabele istnieją; false w przeciwnym razie.
+ *
+ * Sprawdza, czy w bazie danych istnieją tabele: eksponaty, types, vendors, models, statuses,
+ * storage_places oraz photos.
+ */
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
-    QStringList tables
-        = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
+    QStringList tables = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
     for (const QString &t : tables) {
         if (!db.tables().contains(t, Qt::CaseInsensitive))
             return false;
@@ -649,6 +703,13 @@ bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
     return true;
 }
 
+/**
+ * @brief Tworzy schemat bazy danych.
+ * @param db Referencja do obiektu bazy danych.
+ *
+ * Tworzy tabele eksponaty, types, vendors, models, statuses, storage_places i photos w bazie
+ * danych MySQL, jeśli jeszcze nie istnieją.
+ */
 void itemList::createDatabaseSchema(QSqlDatabase &db)
 {
     qDebug() << "itemList: Tworzenie schematu (MySQL)";
@@ -723,6 +784,13 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     }
 }
 
+/**
+ * @brief Wstawia przykładowe dane do bazy danych.
+ * @param db Referencja do obiektu bazy danych.
+ *
+ * Dodaje przykładowe rekordy do tabel types, vendors, models, statuses, storage_places oraz
+ * eksponaty, aby umożliwić testowanie aplikacji.
+ */
 void itemList::insertSampleData(QSqlDatabase &db)
 {
     qDebug() << "itemList: Wstawianie danych przykładowych (MySQL)";
@@ -842,6 +910,13 @@ void itemList::insertSampleData(QSqlDatabase &db)
     }
 }
 
+/**
+ * @brief Aktualizuje filtry po zmianie wartości w combo boxach.
+ *
+ * Inicjalizuje timer utrzymujący połączenie z bazą danych, aktualizuje filtry w modelu proxy
+ * na podstawie wybranych wartości w combo boxach i odbudowuje listy wartości w combo boxach
+ * za pomocą updateFilterComboBoxes().
+ */
 void itemList::onFilterChanged()
 {
     m_keepAliveTimer = new QTimer(this);
@@ -851,50 +926,57 @@ void itemList::onFilterChanged()
     });
     m_keepAliveTimer->start(30000);
 
-    // 1) Ustaw filtry w modelu wg aktualnych wyborów (lub pustego = wszystkie)
-    auto sel = [&](QComboBox *cb){
+    auto sel = [&](QComboBox *cb) {
         QString t = cb->currentText();
         return t == tr("Wszystkie") ? QString() : t;
     };
-    m_proxyModel->setTypeFilter(   sel(filterTypeComboBox));
-    m_proxyModel->setVendorFilter( sel(filterVendorComboBox));
-    m_proxyModel->setModelFilter(  sel(filterModelComboBox));
-    m_proxyModel->setStatusFilter( sel(filterStatusComboBox));
+    m_proxyModel->setTypeFilter(sel(filterTypeComboBox));
+    m_proxyModel->setVendorFilter(sel(filterVendorComboBox));
+    m_proxyModel->setModelFilter(sel(filterModelComboBox));
+    m_proxyModel->setStatusFilter(sel(filterStatusComboBox));
     m_proxyModel->setStorageFilter(sel(filterStorageComboBox));
 
-    // 2) Odbuduj listy wartości w ComboBoxach zależnie od pozostałych filtrów
     updateFilterComboBoxes();
 }
 
+/**
+ * @brief Odbudowuje listy w combo boxach filtrów.
+ *
+ * Pobiera aktualne wybory z combo boxów i odbudowuje ich zawartość, uwzględniając zależności
+ * między filtrami (kaskadowe filtrowanie). Zapytania SQL używają JOIN, aby uwzględnić wszystkie
+ * tabele słownikowe.
+ */
 void itemList::updateFilterComboBoxes()
 {
     QSqlDatabase db = QSqlDatabase::database("default_connection");
-    if (!db.isOpen()) return;
+    if (!db.isOpen())
+        return;
 
-    // Pobierz aktualne wybory (puste = wszystkie)
-    QString selType   = filterTypeComboBox->currentText()   == tr("Wszystkie") ? QString() : filterTypeComboBox->currentText();
+    QString selType = filterTypeComboBox->currentText() == tr("Wszystkie") ? QString() : filterTypeComboBox->currentText();
     QString selVendor = filterVendorComboBox->currentText() == tr("Wszystkie") ? QString() : filterVendorComboBox->currentText();
-    QString selModel  = filterModelComboBox->currentText()  == tr("Wszystkie") ? QString() : filterModelComboBox->currentText();
+    QString selModel = filterModelComboBox->currentText() == tr("Wszystkie") ? QString() : filterModelComboBox->currentText();
     QString selStatus = filterStatusComboBox->currentText() == tr("Wszystkie") ? QString() : filterStatusComboBox->currentText();
-    QString selStorage= filterStorageComboBox->currentText()== tr("Wszystkie") ? QString() : filterStorageComboBox->currentText();
+    QString selStorage = filterStorageComboBox->currentText() == tr("Wszystkie") ? QString() : filterStorageComboBox->currentText();
 
-    struct Filter { QComboBox *cb; QString field; };
+    struct Filter {
+        QComboBox *cb;
+        QString field;
+    };
     QVector<Filter> filters = {
-        {filterTypeComboBox,   "types.name"},
+        {filterTypeComboBox, "types.name"},
         {filterVendorComboBox, "vendors.name"},
-        {filterModelComboBox,  "models.name"},
+        {filterModelComboBox, "models.name"},
         {filterStatusComboBox, "statuses.name"},
-        {filterStorageComboBox,"storage_places.name"}
+        {filterStorageComboBox, "storage_places.name"}
     };
 
-    // Zapytanie bazowe: do eksponaty dołącz wszystkie słowniki
     const QString baseJoins = R"(
         FROM eksponaty
-        JOIN types             ON eksponaty.type_id             = types.id
-        JOIN vendors           ON eksponaty.vendor_id           = vendors.id
-        JOIN models            ON eksponaty.model_id            = models.id
-        JOIN statuses          ON eksponaty.status_id           = statuses.id
-        JOIN storage_places    ON eksponaty.storage_place_id    = storage_places.id
+        JOIN types ON eksponaty.type_id = types.id
+        JOIN vendors ON eksponaty.vendor_id = vendors.id
+        JOIN models ON eksponaty.model_id = models.id
+        JOIN statuses ON eksponaty.status_id = statuses.id
+        JOIN storage_places ON eksponaty.storage_place_id = storage_places.id
     )";
 
     for (auto &f : filters) {
@@ -903,31 +985,30 @@ void itemList::updateFilterComboBoxes()
         f.cb->clear();
         f.cb->addItem(tr("Wszystkie"));
 
-        // Budujemy SELECT DISTINCT dla danego pola, uwzględniając pozostałe selekcje:
         QString sql = QString(
                           "SELECT DISTINCT %1 %2 "
-                          "WHERE (:selType IS NULL   OR types.name  = :selType)   "
-                          "  AND (:selVendor IS NULL OR vendors.name= :selVendor) "
-                          "  AND (:selModel IS NULL  OR models.name = :selModel)  "
-                          "  AND (:selStatus IS NULL OR statuses.name= :selStatus)"
-                          "  AND (:selStorage IS NULL OR storage_places.name = :selStorage)"
-                          " ORDER BY %1")
+                          "WHERE (:selType IS NULL OR types.name = :selType) "
+                          "AND (:selVendor IS NULL OR vendors.name = :selVendor) "
+                          "AND (:selModel IS NULL OR models.name = :selModel) "
+                          "AND (:selStatus IS NULL OR statuses.name = :selStatus) "
+                          "AND (:selStorage IS NULL OR storage_places.name = :selStorage) "
+                          "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
         QSqlQuery q(db);
         q.prepare(sql);
-        q.bindValue(":selType",    selType.isEmpty()   ? QVariant()         : selType);
-        q.bindValue(":selVendor", selVendor.isEmpty() ? QVariant()            : selVendor);
-        q.bindValue(":selModel", selModel.isEmpty()   ? QVariant()            : selModel);
-        q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant()            : selStatus);
-        q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant()            : selStorage);
+        q.bindValue(":selType", selType.isEmpty() ? QVariant() : selType);
+        q.bindValue(":selVendor", selVendor.isEmpty() ? QVariant() : selVendor);
+        q.bindValue(":selModel", selModel.isEmpty() ? QVariant() : selModel);
+        q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant() : selStatus);
+        q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant() : selStorage);
         if (!q.exec()) {
             qDebug() << "Błąd updateFilterComboBoxes:" << q.lastError().text();
         }
         while (q.next()) {
             f.cb->addItem(q.value(0).toString());
         }
-        // Przywróć uprzedni wybór, jeśli nadal dostępny
+
         int idx = f.cb->findText(prev);
         f.cb->setCurrentIndex(idx != -1 ? idx : 0);
         f.cb->blockSignals(false);

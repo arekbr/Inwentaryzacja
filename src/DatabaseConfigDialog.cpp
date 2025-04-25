@@ -1,9 +1,30 @@
+/**
+ * @file DatabaseConfigDialog.cpp
+ * @brief Implementacja klasy DatabaseConfigDialog do konfiguracji połączenia z bazą danych.
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @version 1.1.8
+ * @date 2025-04-25
+ *
+ * Plik zawiera implementację metod klasy DatabaseConfigDialog, odpowiedzialnej za konfigurację
+ * parametrów połączenia z bazą danych (SQLite lub MySQL). Klasa obsługuje wybór typu bazy danych,
+ * wprowadzanie parametrów połączenia, zapisywanie ustawień w QSettings oraz dynamiczne przełączanie
+ * interfejsu w zależności od wybranego typu bazy danych.
+ */
+
 #include "DatabaseConfigDialog.h"
 #include <QFileDialog>
 #include <QPushButton>
 #include <QSettings>
 #include "ui_DatabaseConfigDialog.h"
 
+/**
+ * @brief Konstruktor klasy DatabaseConfigDialog.
+ * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
+ *
+ * Inicjalizuje interfejs użytkownika, ustawia dostępne typy baz danych (SQLite3, MySQL),
+ * konfiguruje przełączanie między stronami ustawień za pomocą QStackedWidget oraz wczytuje
+ * zapisane ustawienia z QSettings. Podłącza sygnały i sloty dla przycisków i combo boxa.
+ */
 DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::DatabaseConfigDialog)
@@ -30,7 +51,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             &DatabaseConfigDialog::onDatabaseTypeChanged);
 
     // Wczytujemy zapisane ustawienia za pomocą QSettings
-    QSettings settings("MyCompany", "MyApp"); // Zmień nazwę według swoich potrzeb
+    QSettings settings("MyCompany", "MyApp");
     QString savedDbType = settings.value("Database/Type", "SQLite3").toString();
     ui->dbTypeComboBox->setCurrentText(savedDbType);
 
@@ -59,11 +80,22 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     });
 }
 
+/**
+ * @brief Destruktor klasy DatabaseConfigDialog.
+ *
+ * Zwalnia zasoby interfejsu użytkownika.
+ */
 DatabaseConfigDialog::~DatabaseConfigDialog()
 {
     delete ui;
 }
 
+/**
+ * @brief Zatwierdza wprowadzone dane i zamyka okno dialogowe.
+ *
+ * Zapisuje wszystkie parametry połączenia (typ bazy danych, ścieżka SQLite, dane MySQL)
+ * w QSettings i wywołuje domyślną metodę accept() klasy QDialog, zamykając okno.
+ */
 void DatabaseConfigDialog::accept()
 {
     // Zapisanie ustawień w QSettings
@@ -80,41 +112,76 @@ void DatabaseConfigDialog::accept()
     QDialog::accept();
 }
 
+/**
+ * @brief Zwraca wybrany typ bazy danych.
+ * @return QString zawierający typ bazy danych (np. "SQLite3" lub "MySQL").
+ */
 QString DatabaseConfigDialog::selectedDatabaseType() const
 {
     return ui->dbTypeComboBox->currentText();
 }
 
+/**
+ * @brief Zwraca ścieżkę do pliku bazy SQLite.
+ * @return QString zawierający ścieżkę do pliku SQLite.
+ */
 QString DatabaseConfigDialog::sqliteFilePath() const
 {
     return ui->sqlitePathLineEdit->text();
 }
 
+/**
+ * @brief Zwraca adres hosta dla bazy MySQL.
+ * @return QString zawierający adres hosta MySQL.
+ */
 QString DatabaseConfigDialog::mysqlHost() const
 {
     return ui->hostLineEdit->text();
 }
 
+/**
+ * @brief Zwraca nazwę bazy danych MySQL.
+ * @return QString zawierający nazwę bazy danych MySQL.
+ */
 QString DatabaseConfigDialog::mysqlDatabase() const
 {
     return ui->databaseLineEdit->text();
 }
 
+/**
+ * @brief Zwraca nazwę użytkownika dla bazy MySQL.
+ * @return QString zawierający nazwę użytkownika MySQL.
+ */
 QString DatabaseConfigDialog::mysqlUser() const
 {
     return ui->userLineEdit->text();
 }
 
+/**
+ * @brief Zwraca hasło użytkownika dla bazy MySQL.
+ * @return QString zawierający hasło użytkownika MySQL.
+ */
 QString DatabaseConfigDialog::mysqlPassword() const
 {
     return ui->passwordLineEdit->text();
 }
 
+/**
+ * @brief Zwraca numer portu dla bazy MySQL.
+ * @return int zawierający numer portu MySQL.
+ */
 int DatabaseConfigDialog::mysqlPort() const
 {
     return ui->portSpinBox->value();
 }
 
+/**
+ * @brief Obsługuje zmianę typu bazy danych w combo boxie.
+ * @param index Indeks wybranego typu bazy danych (0 dla SQLite3, 1 dla MySQL).
+ *
+ * Przełącza stronę w QStackedWidget, wyświetlając odpowiednie pola konfiguracyjne
+ * dla wybranego typu bazy danych.
+ */
 void DatabaseConfigDialog::onDatabaseTypeChanged(int index)
 {
     ui->stackedWidget->setCurrentIndex(index);

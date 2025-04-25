@@ -1,3 +1,19 @@
+/**
+ * @file types.cpp
+ * @brief Implementacja klasy typy do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
+ * @version 1.1.8
+ * @date 2025-04-25
+ * @author
+ * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
+ * - ChatGPT
+ * - GROK
+ *
+ * Plik zawiera implementację klasy `typy`, która dostarcza interfejs graficzny
+ * do zarządzania typami sprzętu w aplikacji inwentaryzacyjnej.
+ * Umożliwia dodawanie, edytowanie i usuwanie rekordów w tabeli `types` w bazie danych.
+ * Współpracuje z `MainWindow`, umożliwiając odświeżenie pól wyboru typów.
+ */
+
 #include "types.h"
 #include "ui_types.h"
 #include <QMessageBox>
@@ -8,6 +24,13 @@
 #include "mainwindow.h"
 #include <QUuid>
 
+/**
+ * @brief Konstruktor klasy typy.
+ * @param parent Wskaźnik na nadrzędny widget (domyślnie nullptr).
+ *
+ * Inicjalizuje interfejs użytkownika, ustawia połączenie z bazą danych
+ * i podłącza przyciski do odpowiednich slotów. Wywołuje `refreshList()`.
+ */
 typy::typy(QWidget *parent)
     : QDialog(parent),
     ui(new Ui::typy),
@@ -26,16 +49,33 @@ typy::typy(QWidget *parent)
     refreshList();
 }
 
+/**
+ * @brief Destruktor klasy typy.
+ *
+ * Zwalnia zasoby interfejsu użytkownika.
+ */
 typy::~typy()
 {
     delete ui;
 }
 
+/**
+ * @brief Ustawia wskaźnik na główne okno aplikacji.
+ * @param mainWindow Wskaźnik do instancji klasy MainWindow.
+ *
+ * Pozwala na synchronizację danych z głównym oknem po zatwierdzeniu zmian.
+ */
 void typy::setMainWindow(MainWindow *mainWindow)
 {
     m_mainWindow = mainWindow;
 }
 
+/**
+ * @brief Odświeża listę typów wyświetlanych w widoku listy.
+ *
+ * Pobiera dane z tabeli `types` i ustawia model danych dla `listView`.
+ * W razie błędu wykonania zapytania SQL wyświetlany jest komunikat o błędzie.
+ */
 void typy::refreshList()
 {
     QSqlQueryModel *model = new QSqlQueryModel(this);
@@ -49,6 +89,12 @@ void typy::refreshList()
     ui->listView->setModelColumn(0);
 }
 
+/**
+ * @brief Dodaje nowy typ do bazy danych.
+ *
+ * Pobiera tekst z pola `type_lineEdit`, generuje UUID i dodaje rekord
+ * do tabeli `types`. W przypadku błędu informuje użytkownika.
+ */
 void typy::onAddClicked()
 {
     QString txt = ui->type_lineEdit->text().trimmed();
@@ -71,6 +117,12 @@ void typy::onAddClicked()
     ui->type_lineEdit->clear();
 }
 
+/**
+ * @brief Edytuje aktualnie zaznaczony typ.
+ *
+ * Otwiera okno dialogowe z możliwością zmiany nazwy.
+ * Aktualizuje rekord w bazie danych na podstawie ID typu.
+ */
 void typy::onEditClicked()
 {
     QModelIndex idx = ui->listView->currentIndex();
@@ -104,6 +156,12 @@ void typy::onEditClicked()
     refreshList();
 }
 
+/**
+ * @brief Usuwa wybrany typ z bazy danych.
+ *
+ * Pyta użytkownika o potwierdzenie i wykonuje zapytanie DELETE.
+ * Po zakończeniu operacji odświeża listę typów.
+ */
 void typy::onDeleteClicked()
 {
     QModelIndex idx = ui->listView->currentIndex();
@@ -128,6 +186,12 @@ void typy::onDeleteClicked()
     refreshList();
 }
 
+/**
+ * @brief Zamyka okno dialogowe i odświeża dane w głównym oknie.
+ *
+ * Jeśli `m_mainWindow` jest ustawione, odświeża combo box typów.
+ * Następnie wywołuje `accept()`.
+ */
 void typy::onOkClicked()
 {
     if (m_mainWindow) {

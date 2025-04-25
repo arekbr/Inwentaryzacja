@@ -1,16 +1,38 @@
+/**
+ * @file main.cpp
+ * @brief Główny punkt wejścia aplikacji inwentaryzacyjnej.
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @version 1.1.8
+ * @date 2025-04-25
+ *
+ * Plik zawiera funkcję main, która inicjalizuje aplikację Qt, ustawia nazwę i wersję aplikacji,
+ * ładuje tłumaczenia, wyświetla okno konfiguracji bazy danych (SQLite lub MySQL), nawiązuje
+ * połączenie z bazą danych za pomocą funkcji setupDatabase i uruchamia główne okno aplikacji
+ * (klasa itemList). Funkcja main jest punktem startowym dla aplikacji inwentaryzacyjnej.
+ */
+
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
 #include <QDebug>
 #include <QCoreApplication>
 
-// Uwzględniamy pliki z naszą implementacją dialogu konfiguracji
+// Nagłówki aplikacji
 #include "DatabaseConfigDialog.h"
-// Główne okno – w tym przykładzie używamy klasy itemList, ale możesz podmienić na MainWindow
 #include "itemList.h"
-// Dołączenie funkcji setupDatabase() – załóżmy, że znajduje się ona w utils.h
 #include "utils.h"
 
+/**
+ * @brief Główna funkcja aplikacji inwentaryzacyjnej.
+ * @param argc Liczba argumentów wiersza poleceń.
+ * @param argv Tablica argumentów wiersza poleceń.
+ * @return Kod zakończenia aplikacji (0 dla sukcesu, inne dla błędów).
+ *
+ * Inicjalizuje aplikację Qt, ustawia nazwę i wersję aplikacji, ładuje tłumaczenia na podstawie
+ * języka systemowego, wyświetla okno dialogowe konfiguracji bazy danych, nawiązuje połączenie
+ * z bazą danych (SQLite lub MySQL) i uruchamia główne okno aplikacji (itemList). Jeśli konfiguracja
+ * bazy danych zostanie anulowana lub połączenie nie powiedzie się, aplikacja kończy działanie.
+ */
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -18,7 +40,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
 
     a.setWindowIcon(QIcon(":/icon.png"));
-    // Instalacja tłumaczeń (jeśli są dostępne)
+
+    // Instalacja tłumaczeń
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {
@@ -63,8 +86,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    // Teraz, gdy połączenie (default_connection) zostało poprawnie utworzone,
-    // tworzymy i pokazujemy główne okno aplikacji
+    // Uruchomienie głównego okna aplikacji
     itemList w;
     w.show();
 

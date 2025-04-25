@@ -1,6 +1,7 @@
 QT       += core gui sql widgets
 
 CONFIG += c++17
+CONFIG -= static
 VERSION = 1.1.8
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
@@ -9,67 +10,63 @@ QMAKE_TARGET_COMPANY = Stowarzyszenie Miłośników Oldschoolowych Komputerów S
 QMAKE_TARGET_PRODUCT = Inwentaryzacja
 QMAKE_TARGET_DESCRIPTION = Program do inwentaryzacji retro komputerów
 
-# Ikona aplikacji
 win32:RC_ICONS = images/icon.ico
 macx:ICON = images/icon.icns
 
-# Uncomment, aby wymusić kompilację bez przestarzałych API
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 unix:!macx:QMAKE_POST_LINK += $$quote($$PWD/set_icon.sh $$OUT_PWD/Inwentaryzacja $$PWD/images/icon.png)
 
-# QMAKE_POST_LINK += $$quote(/home/arekbr/projektyQT/Inwentaryzacja/set_icon.sh $$OUT_PWD/Inwentaryzacja /home/arekbr/projektyQT/Inwentaryzacja/images/icon.png)
+QMAKE_RPATHDIR += $$[QT_INSTALL_PLUGINS]
+QMAKE_LIBDIR += $$[QT_INSTALL_PLUGINS]
+
+INCLUDEPATH += include
+DEPENDPATH += include
 
 SOURCES += \
-    DatabaseConfigDialog.cpp \
-    ItemFilterProxyModel.cpp \
-    fullscreenphotoviewer.cpp \
-    itemList.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    models.cpp \
-    photoitem.cpp \
-    status.cpp \
-    storage.cpp \
-    types.cpp \
-    utils.cpp \
-    vendors.cpp
+    src/DatabaseConfigDialog.cpp \
+    src/ItemFilterProxyModel.cpp \
+    src/fullscreenphotoviewer.cpp \
+    src/itemList.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/models.cpp \
+    src/photoitem.cpp \
+    src/status.cpp \
+    src/storage.cpp \
+    src/types.cpp \
+    src/utils.cpp \
+    src/vendors.cpp
 
 HEADERS += \
-    DatabaseConfigDialog.h \
-    ItemFilterProxyModel.h \
-    fullscreenphotoviewer.h \
-    itemList.h \
-    mainwindow.h \
-    models.h \
-    photoitem.h \
-    status.h \
-    storage.h \
-    types.h \
-    utils.h \
-    vendors.h
+    include/DatabaseConfigDialog.h \
+    include/ItemFilterProxyModel.h \
+    include/fullscreenphotoviewer.h \
+    include/itemList.h \
+    include/mainwindow.h \
+    include/models.h \
+    include/photoitem.h \
+    include/status.h \
+    include/storage.h \
+    include/types.h \
+    include/utils.h \
+    include/vendors.h
 
 FORMS += \
-    DatabaseConfigDialog.ui \
-    itemList.ui \
-    mainwindow.ui \
-    models.ui \
-    status.ui \
-    storage.ui \
-    types.ui \
-    vendors.ui
+    forms/DatabaseConfigDialog.ui \
+    forms/itemList.ui \
+    forms/mainwindow.ui \
+    forms/models.ui \
+    forms/status.ui \
+    forms/storage.ui \
+    forms/types.ui \
+    forms/vendors.ui
 
 TRANSLATIONS += \
-    Inwentaryzacja_pl_PL.ts
+    translations/Inwentaryzacja_pl_PL.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
 DISTFILES += \
-    ../../Documents/renumeracja.sh \
+    renumeracja.sh \
     CHANGELOG.md \
     Create_MySQL.sql \
     README.md \
