@@ -5,11 +5,14 @@ $outputFile = "combined_sources.txt"
 "" | Out-File -FilePath $outputFile -Encoding UTF8
 
 # Szukane rozszerzenia
-$extensions = "*.pro", "*.h", "*.cpp", "*.ui"
+$extensions = "*.pro", "*.h", "*.cpp", "*.ui", "*.bat", "*.ps1", "*.sh", "*.sql"
 
 # Pętla po rozszerzeniach
 foreach ($ext in $extensions) {
-    Get-ChildItem -Path . -Filter $ext -File | ForEach-Object {
+    Get-ChildItem -Path . -Recurse -Filter $ext -File | Where-Object {
+        # Pomijamy wszystkie pliki, które są w folderze "build"
+        $_.FullName -notmatch "\\build\\"
+    } | ForEach-Object {
         $file = $_.FullName
         Add-Content -Path $outputFile -Value "========"
         Add-Content -Path $outputFile -Value "Start of $($_.Name)"

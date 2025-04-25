@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1074</width>
+    <height>604</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QMainWindow {
+    background-color: #F5F5F5; /* Jasnoszare tło aplikacji */
+}
+
+QLabel {
+    color: #333333; /* Ciemny kolor czcionki dla etykiet */
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QLineEdit, QComboBox, QDateEdit, QPlainTextEdit {
+    border: 1px solid #CCCCCC; /* Jasnoszare ramki */
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #FFFFFF; /* Białe tło pól */
+    color: #000000; /* Czarny tekst */
+    min-width: 200px; /* Minimalna szerokość pól dla spójności */
+}
+
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    color: #000000;
+    selection-background-color: #4CAF50; /* Zielone tło wybranego elementu */
+    selection-color: #FFFFFF; /* Biały tekst wybranego elementu */
+}
+
+QComboBox::drop-down {
+    border: none;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+}
+
+QPushButton {
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+/* Styl przycisku Zapisz oraz przycisków dodaj/usuń zdjęcie */
+QPushButton#New_item_PushButton_OK,
+QPushButton#New_item_addPhoto,
+QPushButton#New_item_removePhoto {
+    background-color: #4CAF50; /* Zielony kolor akcji zatwierdzających */
+    color: white;
+}
+
+/* Styl przycisku Anuluj */
+QPushButton#New_item_PushButton_Cancel {
+    background-color: #B0BEC5; /* Szary kolor anulowania */
+    color: white;
+}
+
+/* Styl przycisków dodających nowe wpisy (+) */
+QPushButton#New_item_addType,
+QPushButton#New_item_addVendor,
+QPushButton#New_item_addModel,
+QPushButton#New_item_addStatus,
+QPushButton#New_item_addStoragePlace {
+    background-color: #2196F3; /* Niebieski dla przycisków &quot;Dodaj&quot; */
+    color: white;
+    min-width: 30px;
+    max-width: 30px;
+}
+
+/* Efekt najechania na dowolny przycisk */
+QPushButton:hover {
+    opacity: 0.8;
+}
+
+/* Styl widoku zdjęcia */
+QGraphicsView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainLayout">
+    <item>
+     <layout class="QVBoxLayout" name="leftLayout">
+      <item>
+       <widget class="QLabel" name="basicInfoLabel">
+        <property name="font">
+         <font>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Dane podstawowe</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="basicInfoForm">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Nazwa</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="New_item_name"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Part number</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="New_item_partNumber"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Revision</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="New_item_revision"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Ilość</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="New_item_value"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="techDetailsLabel">
+        <property name="font">
+         <font>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Szczegóły techniczne</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="techDetailsForm">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Typ</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QComboBox" name="New_item_type">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="New_item_addType">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Producent</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QComboBox" name="New_item_vendor"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="New_item_addVendor">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Model</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QComboBox" name="New_item_model"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="New_item_addModel">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Numer seryjny</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="New_item_serialNumber"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Data produkcji</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QDateEdit" name="New_item_ProductionDate"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="statusLabel">
+        <property name="font">
+         <font>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Status i lokalizacja</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="statusForm">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Status</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QComboBox" name="New_item_status"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="New_item_addStatus">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Miejsce przechowywania</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QComboBox" name="New_item_storagePlace"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="New_item_addStoragePlace">
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="rightLayout">
+      <item>
+       <widget class="QLabel" name="label_10">
+        <property name="font">
+         <font>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Opis</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="New_item_description"/>
+      </item>
+      <item>
+       <widget class="QGraphicsView" name="graphicsView"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QPushButton" name="New_item_addPhoto">
+          <property name="text">
+           <string>Dodaj zdjęcia</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="New_item_removePhoto">
+          <property name="text">
+           <string>Usuń zdjęcie</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="bottomLayout">
+      <item>
+       <layout class="QHBoxLayout" name="actionButtonsLayout">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="New_item_PushButton_OK">
+          <property name="text">
+           <string>Zapisz</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="New_item_PushButton_Cancel">
+          <property name="text">
+           <string>Anuluj</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
