@@ -1,7 +1,7 @@
 QT       += core gui sql widgets
 
 CONFIG += c++17
-VERSION = 1.1.0
+VERSION = 1.1.8
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
