@@ -261,14 +261,20 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
 }
 
 ///////////////////////
-// setCloneMode
+// setCloneMode na maku ok
 ///////////////////////
 void MainWindow::setCloneMode(const QString &recordId)
 {
     // Ładujemy istniejący rekord, ale docelowo to będzie nowy (kopiowany)
-    m_editMode = false;
-    loadRecord(recordId); // wypełni formularz
-    m_recordId.clear();   // Zresetuj, bo to będzie docelowo nowy
+    m_editMode = false;          // to będzie nowy rekord
+    loadRecord(recordId);        // skopiuj dane tekstowe
+    m_recordId.clear();          // brak ID = tryb „nowy”
+
+    // >>> NOWE – wyczyść zdjęcia <<<
+    ui->graphicsView->setScene(nullptr);
+    m_selectedPhotoIndex = -1;
+    m_photoBuffer.clear();
+    m_photoPathsBuffer.clear();
 }
 
 ///////////////////////
