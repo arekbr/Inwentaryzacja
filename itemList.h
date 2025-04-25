@@ -59,6 +59,8 @@ private:
     QWidget *m_previewWindow;
     PhotoItem *m_currentHoveredItem; // ← tu deklarujemy
     QTimer *m_hoverCheckTimer = nullptr;
+    QTimer *m_keepAliveTimer = nullptr;
+
 
 };
 
