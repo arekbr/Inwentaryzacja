@@ -185,6 +185,9 @@ itemList::itemList(QWidget *parent)
 
 itemList::~itemList()
 {
+    if (m_keepAliveTimer)
+        m_keepAliveTimer->stop();
+
     delete ui;
 }
 
@@ -841,6 +844,13 @@ void itemList::insertSampleData(QSqlDatabase &db)
 
 void itemList::onFilterChanged()
 {
+    m_keepAliveTimer = new QTimer(this);
+    connect(m_keepAliveTimer, &QTimer::timeout, this, []() {
+        QSqlQuery q(QSqlDatabase::database("default_connection"));
+        q.exec("SELECT 1");
+    });
+    m_keepAliveTimer->start(30000);
+
     // 1) Ustaw filtry w modelu wg aktualnych wyborów (lub pustego = wszystkie)
     auto sel = [&](QComboBox *cb){
         QString t = cb->currentText();
