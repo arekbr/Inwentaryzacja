@@ -11,7 +11,7 @@ CONFIG  += c++17 \
            embed_translations
 CONFIG  -= static
 
-VERSION = 1.1.8
+VERSION = 1.2.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_TARGET_COMPANY     = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
@@ -98,7 +98,6 @@ DISTFILES += \
     images/ikona256.ico \
     images/ikona_mac.icns \
     merge_win.ps1 \
-    prepare_release_windows.bat \
     set_icon.sh \
     sqldrivers/mysql_native_password.dll \
     sqldrivers/qsqlmysql.dll

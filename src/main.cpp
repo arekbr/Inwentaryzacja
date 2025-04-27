@@ -62,14 +62,15 @@ int main(int argc, char *argv[])
     // Pobranie typu bazy danych wybranego przez użytkownika
     QString dbType = configDlg.selectedDatabaseType();
     bool connected = false;
-    if (dbType == "SQLite3") {
+    // zaakceptujmy wszystkie warianty SQLite (np. "SQLite", "SQLite3", ...)
+    if (dbType.startsWith("SQLite", Qt::CaseInsensitive)) {
         QString filePath = configDlg.sqliteFilePath();
         if (filePath.isEmpty()) {
             qDebug() << "Nie wybrano pliku bazy SQLite!";
             return 0;
         }
         connected = setupDatabase("SQLite3", filePath);
-    } else if (dbType == "MySQL") {
+    } else if (dbType.compare("MySQL", Qt::CaseInsensitive) == 0) {
         connected = setupDatabase("MySQL",
                                   configDlg.mysqlDatabase(),
                                   configDlg.mysqlHost(),
