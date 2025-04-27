@@ -75,11 +75,15 @@ TRANSLATIONS += \
     translations/Inwentaryzacja_pl_PL.ts
 
 DISTFILES += \
+    images/background.png \
     images/ikonawin.ico \
+    images/installericon.ico \
+    images/logo.png \
+    images/watermark.png \
     mysql_dll/libcrypto-3-x64.dll \
     mysql_dll/libmysql.dll \
     mysql_dll/libssl-3-x64.dll \
-    qt_installer.ps1 \
+    qt_full_installer.ps1 \
     renumeracja.sh \
     CHANGELOG.md \
     Create_MySQL.sql \
@@ -94,7 +98,6 @@ DISTFILES += \
     images/ikona256.ico \
     images/ikona_mac.icns \
     merge_win.ps1 \
-    migrate_to_uuid.sql \
     prepare_release_windows.bat \
     set_icon.sh \
     sqldrivers/mysql_native_password.dll \
