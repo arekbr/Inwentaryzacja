@@ -76,6 +76,9 @@ TRANSLATIONS += \
 
 DISTFILES += \
     images/ikonawin.ico \
+    mysql_dll/libcrypto-3-x64.dll \
+    mysql_dll/libmysql.dll \
+    mysql_dll/libssl-3-x64.dll \
     qt_installer.ps1 \
     renumeracja.sh \
     CHANGELOG.md \
@@ -93,7 +96,9 @@ DISTFILES += \
     merge_win.ps1 \
     migrate_to_uuid.sql \
     prepare_release_windows.bat \
-    set_icon.sh
+    set_icon.sh \
+    sqldrivers/mysql_native_password.dll \
+    sqldrivers/qsqlmysql.dll
 
 RESOURCES += \
     images/icon.qrc
@@ -110,7 +115,8 @@ TARGET     = Inwentaryzacja
 release:win32 {
     DESTDIR = $$PWD/gotowa
     QMAKE_POST_LINK =  windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe) && \
-                       copy /Y $$shell_path($$DESTDIR\\sqldrivers\\libmysql.dll) $$shell_path($$DESTDIR\\libmysql.dll)
+                        copy /Y c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\mysql_dll\\*.dll c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\gotowa\\ && \
+                        copy /Y c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\sqldrivers\\*.dll c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\gotowa\\sqldrivers\\
 }
 
 # — Linux Release deploy

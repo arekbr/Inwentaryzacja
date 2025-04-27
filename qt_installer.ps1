@@ -81,7 +81,7 @@ $config = Fmt-U @"
     <Publisher>Stowarzyszenie Mi{0142}o{015B}nik{00F3}w Oldschoolowych Komputer{00F3}w SMOK &amp; ChatGPT &amp; GROK</Publisher>
 
     <StartMenuDir>Inwentaryzacja</StartMenuDir>
-    <TargetDir>@ApplicationsDir@/Inwentaryzacja</TargetDir>
+    <TargetDir>@HomeDir@/Inwentaryzacja</TargetDir>
     <AllowSpaceInPath>true</AllowSpaceInPath>
 </Installer>
 "@
@@ -140,11 +140,11 @@ Write-Utf8 "$Out\packages\org.smok.inwentaryzacja\meta\installscript.qs" $qs
 # ---------------------------------------------------------------------------
 
 Copy-Item $InstallerBase $InstallerBaseCustom -Force
-& "$ResHack" -open $InstallerBaseCustom `
-             -save $InstallerBaseCustom `
+& "$ResHack" -open "$InstallerBaseCustom" `
+             -save "$InstallerBaseCustom" `
              -action addoverwrite `
-             -res $IconIco `
-             -mask ICONGROUP,1
+             -res "$IconIco" `
+             -mask "ICONGROUP,MAINICON,"
 
 # ---------------------------------------------------------------------------
 # 9.  Budowanie instalatora
@@ -154,5 +154,11 @@ Copy-Item $InstallerBase $InstallerBaseCustom -Force
                    -p "$Out\packages" `
                    -t "$InstallerBaseCustom" `
                    "$InstallerExe"
+
+# ---------------------------------------------------------------------------
+# 9.  czyszczenie icon cache
+# ---------------------------------------------------------------------------
+
+& ie4uinit.exe -ClearIconCache
 
 Write-Host "`n>>> Gotowe: $InstallerExe" -ForegroundColor Green
