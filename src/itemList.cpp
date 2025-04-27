@@ -355,9 +355,13 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         item->setPos(x, y);
         scene->addItem(item);
 
-        connect(item, &PhotoItem::hovered, this, &itemList::onPhotoHovered);
-        connect(item, &PhotoItem::unhovered, this, &itemList::onPhotoUnhovered);
-        connect(item, &PhotoItem::clicked, this, &itemList::onPhotoClicked);
+        connect(item, &PhotoItem::clicked, this, &itemList::onPhotoHovered);
+        // Emituje sygnał kliknięcia po jednokrotnym kliknięciu lewym przyciskiem myszy
+
+        connect(item,
+                &PhotoItem::doubleClicked,
+                this,
+                &itemList::onPhotoClicked); // Emituje sygnał podwójnego kliknięcia lewym przyciskiem myszy
 
         x += scaled.width() + spacing;
         if ((i + 1) % cols == 0) {

@@ -12,10 +12,41 @@
  */
 
 #include "DatabaseConfigDialog.h"
+#include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QPushButton>
 #include <QSettings>
 #include "ui_DatabaseConfigDialog.h"
+
+/**
+ * @brief Funkcja pomocnicza zwracająca obiekt QSettings.
+ *
+ * Tworzy lub otwiera plik ustawień "inwentaryzacja.ini" w katalogu aplikacji
+ * i zwraca obiekt QSettings skonfigurowany do pracy w formacie INI.
+ *
+ * Jeśli plik "inwentaryzacja.ini" nie istnieje, funkcja automatycznie go tworzy
+ * jako pusty plik tekstowy. Dzięki temu możliwe jest bezpieczne zapisywanie i
+ * odczytywanie ustawień aplikacji bez potrzeby sprawdzania istnienia pliku w innych miejscach kodu.
+ *
+ * @return QSettings Obiekt gotowy do odczytu i zapisu ustawień aplikacji.
+ */
+static QSettings getSettings()
+{
+    QString settingsPath = QCoreApplication::applicationDirPath() + "/inwentaryzacja.ini";
+
+    // Upewniamy się, że plik istnieje
+    QFile settingsFile(settingsPath);
+    if (!settingsFile.exists()) {
+        // Jeśli nie istnieje, tworzymy pusty plik
+        QFile file(settingsPath);
+        if (file.open(QIODevice::WriteOnly)) {
+            file.close();
+        }
+    }
+
+    return QSettings(settingsPath, QSettings::IniFormat);
+}
 
 /**
  * @brief Konstruktor klasy DatabaseConfigDialog.
@@ -51,7 +82,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             &DatabaseConfigDialog::onDatabaseTypeChanged);
 
     // Wczytujemy zapisane ustawienia za pomocą QSettings
-    QSettings settings("MyCompany", "MyApp");
+    QSettings settings = getSettings();
     QString savedDbType = settings.value("Database/Type", "SQLite3").toString();
     ui->dbTypeComboBox->setCurrentText(savedDbType);
 
@@ -99,7 +130,7 @@ DatabaseConfigDialog::~DatabaseConfigDialog()
 void DatabaseConfigDialog::accept()
 {
     // Zapisanie ustawień w QSettings
-    QSettings settings("MyCompany", "MyApp");
+    QSettings settings = getSettings();
     settings.setValue("Database/Type", ui->dbTypeComboBox->currentText());
     settings.setValue("Database/SQLite/FilePath", ui->sqlitePathLineEdit->text());
     settings.setValue("Database/MySQL/Host", ui->hostLineEdit->text());

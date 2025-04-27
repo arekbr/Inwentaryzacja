@@ -1,25 +1,36 @@
+##################################################
+## Inwentaryzacja.pro — Qt/QMake project with
+## fully-in-.pro, multiplatform deployment
+##################################################
+
 QT       += core gui sql widgets
 
-CONFIG += c++17
-CONFIG -= static
-VERSION = 1.1.8
+CONFIG  += c++17 \
+           sdk_no_version_check \
+           lrelease \
+           embed_translations
+CONFIG  -= static
 
+VERSION = 1.1.8
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
-QMAKE_TARGET_COMPANY = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
-QMAKE_TARGET_PRODUCT = Inwentaryzacja
+QMAKE_TARGET_COMPANY     = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+QMAKE_TARGET_PRODUCT     = Inwentaryzacja
 QMAKE_TARGET_DESCRIPTION = Program do inwentaryzacji retro komputerów
 
 win32:RC_ICONS = images/icon.ico
-macx:ICON = images/icon.icns
+macx: ICON     = images/ikona_mac.icns
 
-unix:!macx:QMAKE_POST_LINK += $$quote($$PWD/set_icon.sh $$OUT_PWD/Inwentaryzacja $$PWD/images/icon.png)
+# (optional) set a custom Linux icon
+unix:!macx {
+    QMAKE_POST_LINK += $$quote($$PWD/set_icon.sh $$OUT_PWD/Inwentaryzacja $$PWD/images/icon.png)
+}
 
 QMAKE_RPATHDIR += $$[QT_INSTALL_PLUGINS]
-QMAKE_LIBDIR += $$[QT_INSTALL_PLUGINS]
+QMAKE_LIBDIR   += $$[QT_INSTALL_PLUGINS]
 
 INCLUDEPATH += include
-DEPENDPATH += include
+DEPENDPATH  += include
 
 SOURCES += \
     src/DatabaseConfigDialog.cpp \
@@ -62,10 +73,10 @@ FORMS += \
 
 TRANSLATIONS += \
     translations/Inwentaryzacja_pl_PL.ts
-CONFIG += lrelease
-CONFIG += embed_translations
 
 DISTFILES += \
+    images/ikonawin.ico \
+    qt_installer.ps1 \
     renumeracja.sh \
     CHANGELOG.md \
     Create_MySQL.sql \
@@ -82,8 +93,50 @@ DISTFILES += \
     merge_win.ps1 \
     migrate_to_uuid.sql \
     prepare_release_windows.bat \
-    renumeracja.sh \
     set_icon.sh
 
 RESOURCES += \
     images/icon.qrc
+
+
+##################################################
+## Deployment — only on Release builds
+##################################################
+
+DEPLOY_DIR = $$PWD/deploy
+TARGET     = Inwentaryzacja
+
+# — Windows Release deploy
+release:win32 {
+    DESTDIR = $$PWD/gotowa
+    QMAKE_POST_LINK =  windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe) && \
+                       copy /Y $$shell_path($$DESTDIR\\sqldrivers\\libmysql.dll) $$shell_path($$DESTDIR\\libmysql.dll)
+}
+
+# — Linux Release deploy
+release:unix:!macx {
+    QMAKE_POST_LINK += $$quote( \
+        rm -rf "$${DEPLOY_DIR}" && \
+        mkdir -p "$${DEPLOY_DIR}" && \
+        linuxdeployqt "$${OUT_PWD}/$${TARGET}" \
+            -appimage \
+            -qmldir=$$PWD \
+            -bundle-non-qt-libs \
+            -executable="$${OUT_PWD}/$${TARGET}" \
+            -qmake=$$[QMAKE_QMAKE] \
+            -no-translations \
+            -no-strip \
+            -output-dir="$${DEPLOY_DIR}" \
+    )
+}
+
+# — macOS Release deploy
+release:macx {
+    QMAKE_POST_LINK += $$quote( \
+        rm -rf "$${DEPLOY_DIR}" && \
+        mkdir -p "$${DEPLOY_DIR}" && \
+        cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
+        rm -f "$${DEPLOY_DIR}/$${TARGET}.dmg" && \
+        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -dmg -verbose=2 \
+    )
+}

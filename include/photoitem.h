@@ -64,10 +64,20 @@ public:
 
 signals:
     /**
-     * @brief Sygnał emitowany po kliknięciu na obiekt.
-     * @param item Wskaźnik do klikniętego obiektu PhotoItem.
+     * @brief Sygnał emitowany po jednokrotnym kliknięciu lewym przyciskiem myszy.
+     * @param item Wskaźnik na kliknięty element PhotoItem.
+     *
+     * Używany do otwierania podglądu zdjęcia w naturalnym rozmiarze.
      */
     void clicked(PhotoItem *item);
+
+    /**
+     * @brief Sygnał emitowany po dwukrotnym kliknięciu lewym przyciskiem myszy.
+     * @param item Wskaźnik na kliknięty element PhotoItem.
+     *
+     * Używany do otwierania zdjęcia w trybie pełnoekranowym z możliwością powiększania i przesuwania.
+     */
+    void doubleClicked(PhotoItem *item);
 
     /**
      * @brief Sygnał emitowany po najechaniu kursorem na obiekt.
@@ -89,6 +99,14 @@ protected:
      * Przechwytuje kliknięcia i emituje sygnał clicked().
      */
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
+    /**
+     * @brief Obsługa zdarzenia podwójnego kliknięcia myszy.
+     * @param event Obiekt zawierający dane o zdarzeniu podwójnego kliknięcia.
+     *
+     * Przechwytuje podwójne kliknięcia i emituje sygnał doubleClicked().
+     */
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     /**
      * @brief Obsługa zdarzenia najechania kursora.
