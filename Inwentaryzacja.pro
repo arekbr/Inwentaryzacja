@@ -75,6 +75,7 @@ TRANSLATIONS += \
     translations/Inwentaryzacja_pl_PL.ts
 
 DISTFILES += \
+    LICENSE \
     images/background.png \
     images/ikonawin.ico \
     images/installericon.ico \

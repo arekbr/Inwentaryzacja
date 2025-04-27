@@ -68,3 +68,18 @@ Specjalne wirtualne ukłony dla **ChatGPT** i **GROK** – bez nich ten kod by n
 Wszystkiego dobrego!  
 **Arek "Yugorin" Bronowicki**  
 SAMAR
+
+Licencja
+Kod źródłowy Inwentaryzacji jest udostępniony na licencji WTFPL (Do What The F*ck You Want To Public License) – róbcie z nim, co chcecie! 😄 Zobacz plik LICENSE dla szczegółów.
+Zależności
+Projekt używa następujących bibliotek, każda z własną licencją:
+
+Qt: Na licencji LGPLv3. Kod źródłowy i szczegóły licencji dostępne na qt.io. Przy dystrybucji binarnej (np. InwentaryzacjaInstaller.exe) należy zapewnić dostęp do kodu źródłowego Qt.
+SQLite: W domenie publicznej, bez ograniczeń. Zobacz sqlite.org.
+MySQL Connector/C: Na licencji GPLv2 z wyjątkiem FOSS, zgodny z LGPL w tym projekcie. Zobacz mysql.com.
+MinGW (biblioteki runtime GCC): Na licencjach permissywnych (GPL z wyjątkami). Zobacz mingw.org.
+Inne zależności (np. OpenSSL, jeśli używane): Sprawdź ich licencje w dystrybucji źródłowej.
+
+Aby być w zgodzie z licencjami, upewnij się, że przy dystrybucji aplikacji zapewniasz dostęp do kodu źródłowego bibliotek LGPL/GPL.
+Podziękowania
+Wielkie dzięki dla ChatGPT i Grok za napisanie kodu, oraz dla Qt, SQLite, MySQL i MinGW za napędzanie tego projektu! 😎
