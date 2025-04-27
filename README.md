@@ -26,12 +26,12 @@ Program jest w pełni funkcjonalny, ale wciąż się rozwija – kolejne funkcje
 ## Jak zacząć?
 
 ### Wymagania
-- **Qt**: Używamy Qt 6.8.1 (testowane z Qt Creator 15.0.1).
+- **Qt**: Używamy Qt 6.8.3 (testowane z Qt Creator 16.0.1).
 - **Baza danych**: Potrzebujesz SQLite3 (wbudowane) lub MySQL (jeśli chcesz serwer).
 - **System**: Działa na Windows, macOS i Linux.
 
 ### Instalacja
-1. Zainstaluj [Qt 6.8.1](https://www.qt.io/download) i Qt Creator.
+1. Zainstaluj [Qt 6.8.3](https://www.qt.io/download) i Qt Creator.
 2. Pobierz kod źródłowy projektu:
 
 git clone https://github.com/arekbr/Inwentaryzacja.git
