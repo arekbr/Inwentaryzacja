@@ -51,20 +51,37 @@ PhotoItem::~PhotoItem()
 }
 
 /**
- * @brief Obsługuje kliknięcie lewym przyciskiem myszy na obiekt.
+ * @brief Obsługuje kliknięcie myszy na obiekt.
  * @param event Zdarzenie myszy typu QGraphicsSceneMouseEvent.
  *
- * Ustawia flagę `m_pressed` i emituje sygnał `clicked()`.
- * W przypadku innego przycisku myszy przekazuje zdarzenie do klasy bazowej.
+ * W przypadku kliknięcia prawym przyciskiem myszy emituje sygnał `clicked()`,
+ * uruchamiający podgląd zdjęcia. Kliknięcie lewym przyciskiem przekazywane jest
+ * dalej do obsługi systemowej w celu wykrycia ewentualnego podwójnego kliknięcia.
  */
 void PhotoItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        m_pressed = true;
+        // Nic nie rób — czekaj na ewentualny double click
+        QGraphicsPixmapItem::mousePressEvent(event);
+    } else if (event->button() == Qt::RightButton) {
         emit clicked(this);
-        event->accept();
     } else {
         QGraphicsPixmapItem::mousePressEvent(event);
+    }
+}
+
+/**
+ * @brief Obsługuje podwójne kliknięcie lewym przyciskiem myszy na obiekt.
+ * @param event Zdarzenie myszy typu QGraphicsSceneMouseEvent.
+ *
+ * Emituje sygnał `doubleClicked()`, otwierający zdjęcie w trybie pełnoekranowym z powiększaniem.
+ */
+void PhotoItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        emit doubleClicked(this);
+    } else {
+        QGraphicsPixmapItem::mouseDoubleClickEvent(event);
     }
 }
 

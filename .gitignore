@@ -1,4 +1,10 @@
+gotowa/
 build/
+installer/
+releasowa/
+*.exe
+*.log
+*.user
 *.zip
 *.dmg
 *.db
