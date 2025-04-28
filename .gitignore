@@ -2,6 +2,7 @@ gotowa/
 build/
 installer/
 releasowa/
+deploy/
 *.exe
 *.log
 *.user
