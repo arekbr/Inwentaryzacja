@@ -142,10 +142,23 @@ release:unix:!macx {
 # — macOS Release deploy
 release:macx {
     QMAKE_POST_LINK += $$quote( \
+        echo 🧹 Czyszczenie starego deployu... && \
         rm -rf "$${DEPLOY_DIR}" && \
         mkdir -p "$${DEPLOY_DIR}" && \
+        echo 📂 Kopiowanie aplikacji... && \
         cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
-        rm -f "$${DEPLOY_DIR}/$${TARGET}.dmg" && \
-        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -dmg -verbose=2 \
+        echo 🧹 Usuwanie niepotrzebnych wtyczek przed macdeployqt... && \
+        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlmysql.dylib" && \
+        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlodbc.dylib" && \
+        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlpsql.dylib" && \
+        echo 🚀 Wywołanie macdeployqt... && \
+        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 && \
+        echo 💿 Tworzenie DMG... && \
+        hdiutil create -volname "$${TARGET}" \
+            -srcfolder "$${DEPLOY_DIR}/$${TARGET}.app" \
+            -ov -format UDZO "$${DEPLOY_DIR}/$${TARGET}_macOS.dmg" && \
+        echo ✅ Gotowe: $${DEPLOY_DIR}/$${TARGET}_macOS.dmg \
     )
 }
+
+
