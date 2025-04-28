@@ -124,18 +124,51 @@ release:win32 {
 
 # — Linux Release deploy
 release:unix:!macx {
+    DESTDIR = $$PWD/deploy
+    TARGET_DIR = $$DESTDIR/$${TARGET}
+    APPIMAGE_DIR = $$DESTDIR/$${TARGET}.AppDir
+
+    # Katalogi dla pakietów
+    DEB_DIR = $$DESTDIR/deb
+    RPM_DIR = $$DESTDIR/rpm
+
     QMAKE_POST_LINK += $$quote( \
-        rm -rf "$${DEPLOY_DIR}" && \
-        mkdir -p "$${DEPLOY_DIR}" && \
-        linuxdeployqt "$${OUT_PWD}/$${TARGET}" \
-            -appimage \
-            -qmldir=$$PWD \
-            -bundle-non-qt-libs \
-            -executable="$${OUT_PWD}/$${TARGET}" \
-            -qmake=$$[QMAKE_QMAKE] \
-            -no-translations \
-            -no-strip \
-            -output-dir="$${DEPLOY_DIR}" \
+        echo 🧹 Czyszczenie starego deployu... && \
+        rm -rf "$${DESTDIR}" && \
+        mkdir -p "$${TARGET_DIR}" "$${DEB_DIR}" "$${RPM_DIR}" "$${APPIMAGE_DIR}" && \
+        echo 📂 Kopiowanie binarki i zasobów... && \
+        cp "$${OUT_PWD}/$${TARGET}" "$${TARGET_DIR}/" && \
+        cp -r "$${PWD}/images" "$${TARGET_DIR}/" && \
+        cp "$${PWD}/LICENSE" "$${TARGET_DIR}/" && \
+        cp "$${PWD}/README.md" "$${TARGET_DIR}/" && \
+        echo 🚀 Wywołanie linuxdeployqt... && \
+        linuxdeployqt "$${TARGET_DIR}/$${TARGET}" -bundle-non-qt-libs -qmake=$$QMAKE_QMAKE && \
+        echo 📦 Tworzenie AppImage... && \
+        linuxdeployqt "$${TARGET_DIR}/$${TARGET}" -appimage && \
+        mv $${TARGET_DIR}/*.AppImage "$${DESTDIR}/$${TARGET}-$${VERSION}.AppImage" && \
+        echo 📦 Tworzenie pakietu .deb... && \
+        fpm -s dir -t deb \
+            -n "$${TARGET}" \
+            -v "$${VERSION}" \
+            --description "$${QMAKE_TARGET_DESCRIPTION}" \
+            --vendor "$${QMAKE_TARGET_COMPANY}" \
+            --license "GPL" \
+            --prefix /usr \
+            -C "$${TARGET_DIR}" \
+            -p "$${DEB_DIR}/$${TARGET}_$${VERSION}_amd64.deb" \
+            . && \
+        echo 📦 Tworzenie pakietu .rpm... && \
+        fpm -s dir -t rpm \
+            -n "$${TARGET}" \
+            -v "$${VERSION}" \
+            --description "$${QMAKE_TARGET_DESCRIPTION}" \
+            --vendor "$${QMAKE_TARGET_COMPANY}" \
+            --license "GPL" \
+            --prefix /usr \
+            -C "$${TARGET_DIR}" \
+            -p "$${RPM_DIR}/$${TARGET}-$${VERSION}.x86_64.rpm" \
+            . && \
+        echo ✅ Gotowe: $${DESTDIR}/$${TARGET}-$${VERSION}.AppImage, $${DEB_DIR}/$${TARGET}_$${VERSION}_amd64.deb, $${RPM_DIR}/$${TARGET}-$${VERSION}.x86_64.rpm \
     )
 }
 
