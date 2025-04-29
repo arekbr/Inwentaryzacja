@@ -22,7 +22,7 @@
 /**
  * @brief Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą "default_connection".
  *
- * Obsługiwane typy:
+ * Obsługiwane types:
  * - `"SQLite3"`: korzysta z drivera `QSQLITE`; `dbSource` to ścieżka do pliku bazy.
  * - `"MySQL"`: korzysta z drivera `QMYSQL`; `dbSource` to nazwa bazy danych;
  *    opcjonalnie podaje się `host`, `user`, `password` oraz `port`.

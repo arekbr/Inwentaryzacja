@@ -716,7 +716,7 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
  */
 void MainWindow::onAddTypeClicked()
 {
-    typy dlg(this);
+    types dlg(this);
     dlg.setMainWindow(this);
     dlg.exec();
     this->raise();

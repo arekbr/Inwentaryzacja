@@ -1,6 +1,6 @@
 /**
  * @file types.cpp
- * @brief Implementacja klasy typy do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
+ * @brief Implementacja klasy types do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
  * @version 1.1.8
  * @date 2025-04-25
  * @author
@@ -8,7 +8,7 @@
  * - ChatGPT
  * - GROK
  *
- * Plik zawiera implementację klasy `typy`, która dostarcza interfejs graficzny
+ * Plik zawiera implementację klasy `types`, która dostarcza interfejs graficzny
  * do zarządzania typami sprzętu w aplikacji inwentaryzacyjnej.
  * Umożliwia dodawanie, edytowanie i usuwanie rekordów w tabeli `types` w bazie danych.
  * Współpracuje z `MainWindow`, umożliwiając odświeżenie pól wyboru typów.
@@ -25,36 +25,36 @@
 #include <QUuid>
 
 /**
- * @brief Konstruktor klasy typy.
+ * @brief Konstruktor klasy types.
  * @param parent Wskaźnik na nadrzędny widget (domyślnie nullptr).
  *
  * Inicjalizuje interfejs użytkownika, ustawia połączenie z bazą danych
  * i podłącza przyciski do odpowiednich slotów. Wywołuje `refreshList()`.
  */
-typy::typy(QWidget *parent)
+types::types(QWidget *parent)
     : QDialog(parent),
-    ui(new Ui::typy),
+    ui(new Ui::types),
     m_mainWindow(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection"); // MySQL
     setWindowTitle(tr("Zarządzanie typami sprzętu"));
 
-    connect(ui->pushButton_add,    &QPushButton::clicked, this, &typy::onAddClicked);
-    connect(ui->pushButton_edit,   &QPushButton::clicked, this, &typy::onEditClicked);
-    connect(ui->pushButton_delete, &QPushButton::clicked, this, &typy::onDeleteClicked);
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &typy::onOkClicked);
+    connect(ui->pushButton_add,    &QPushButton::clicked, this, &types::onAddClicked);
+    connect(ui->pushButton_edit,   &QPushButton::clicked, this, &types::onEditClicked);
+    connect(ui->pushButton_delete, &QPushButton::clicked, this, &types::onDeleteClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &types::onOkClicked);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     refreshList();
 }
 
 /**
- * @brief Destruktor klasy typy.
+ * @brief Destruktor klasy types.
  *
  * Zwalnia zasoby interfejsu użytkownika.
  */
-typy::~typy()
+types::~types()
 {
     delete ui;
 }
@@ -65,7 +65,7 @@ typy::~typy()
  *
  * Pozwala na synchronizację danych z głównym oknem po zatwierdzeniu zmian.
  */
-void typy::setMainWindow(MainWindow *mainWindow)
+void types::setMainWindow(MainWindow *mainWindow)
 {
     m_mainWindow = mainWindow;
 }
@@ -76,7 +76,7 @@ void typy::setMainWindow(MainWindow *mainWindow)
  * Pobiera dane z tabeli `types` i ustawia model danych dla `listView`.
  * W razie błędu wykonania zapytania SQL wyświetlany jest komunikat o błędzie.
  */
-void typy::refreshList()
+void types::refreshList()
 {
     QSqlQueryModel *model = new QSqlQueryModel(this);
     model->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
@@ -95,7 +95,7 @@ void typy::refreshList()
  * Pobiera tekst z pola `type_lineEdit`, generuje UUID i dodaje rekord
  * do tabeli `types`. W przypadku błędu informuje użytkownika.
  */
-void typy::onAddClicked()
+void types::onAddClicked()
 {
     QString txt = ui->type_lineEdit->text().trimmed();
     if (txt.isEmpty()) {
@@ -123,7 +123,7 @@ void typy::onAddClicked()
  * Otwiera okno dialogowe z możliwością zmiany nazwy.
  * Aktualizuje rekord w bazie danych na podstawie ID typu.
  */
-void typy::onEditClicked()
+void types::onEditClicked()
 {
     QModelIndex idx = ui->listView->currentIndex();
     if (!idx.isValid()) {
@@ -162,7 +162,7 @@ void typy::onEditClicked()
  * Pyta użytkownika o potwierdzenie i wykonuje zapytanie DELETE.
  * Po zakończeniu operacji odświeża listę typów.
  */
-void typy::onDeleteClicked()
+void types::onDeleteClicked()
 {
     QModelIndex idx = ui->listView->currentIndex();
     if (!idx.isValid()) {
@@ -192,7 +192,7 @@ void typy::onDeleteClicked()
  * Jeśli `m_mainWindow` jest ustawione, odświeża combo box typów.
  * Następnie wywołuje `accept()`.
  */
-void typy::onOkClicked()
+void types::onOkClicked()
 {
     if (m_mainWindow) {
         m_mainWindow->loadComboBoxData("types", m_mainWindow->getNewItemTypeComboBox());

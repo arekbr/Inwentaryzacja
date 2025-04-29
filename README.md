@@ -14,7 +14,7 @@ Dlaczego tak? Bo to frajda, wyzwanie i sposób, żeby mieć narzędzie, jakiego 
 
 Inwentaryzacja to więcej niż prosta baza danych. Aktualna wersja (1.2.0) oferuje:
 - **Zarządzanie elementami**: Dodawaj, edytuj, usuwaj komputery i akcesoria z kolekcji.
-- **Typy i producenci**: Kategoryzuj sprzęt (np. Amiga, Atari) i przypisuj producentów.
+- **types i producenci**: Kategoryzuj sprzęt (np. Amiga, Atari) i przypisuj producentów.
 - **Statusy i miejsca przechowywania**: Oznacz, czy sprzęt jest „sprawny”, „do naprawy”, i gdzie leży („strych”, „piwnica”).
 - **Obsługa zdjęć**: Dodawaj fotki swoich retro maszyn i przeglądaj je w pełnym ekranie.
 - **Elastyczna baza danych**: Wybierz między SQLite3 (prosta, lokalna) a MySQL (dla bardziej zaawansowanych).

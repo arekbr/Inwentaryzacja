@@ -802,7 +802,7 @@ void itemList::insertSampleData(QSqlDatabase &db)
 
     auto genId = []() { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
 
-    // Typy
+    // types
     QString t1 = genId(), t2 = genId(), t3 = genId();
     query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Komputer')").arg(t1));
     query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Monitor')").arg(t2));

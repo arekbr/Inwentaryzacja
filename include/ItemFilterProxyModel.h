@@ -47,7 +47,7 @@ public:
      * @param type QString zawierający nazwę typu eksponatu lub pusty ciąg dla braku filtru.
      *
      * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych o określonym typie.
-     * Pusty ciąg oznacza brak filtru (wszystkie typy).
+     * Pusty ciąg oznacza brak filtru (wszystkie types).
      */
     void setTypeFilter(const QString &type);
 
