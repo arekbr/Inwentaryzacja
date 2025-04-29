@@ -1,6 +1,6 @@
 /**
  * @file types.h
- * @brief Deklaracja klasy typy służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
+ * @brief Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
  * @version 1.1.8
  * @date 2025-04-25
  * @author
@@ -8,7 +8,7 @@
  * - ChatGPT
  * - GROK
  *
- * Plik zawiera deklarację klasy `typy`, reprezentującej okno dialogowe
+ * Plik zawiera deklarację klasy `types`, reprezentującej okno dialogowe
  * umożliwiające użytkownikowi zarządzanie typami eksponatów (np. Komputer, Monitor, Drukarka).
  * Klasa współpracuje z `MainWindow`, umożliwiając odświeżenie odpowiedniego pola combo box
  * po zakończeniu edycji typów.
@@ -25,35 +25,35 @@
 class MainWindow;
 
 namespace Ui {
-class typy;
+class types;
 }
 
 /**
- * @class typy
+ * @class types
  * @brief Okno dialogowe do zarządzania typami eksponatów.
  *
  * Klasa dziedziczy po QDialog i udostępnia interfejs do dodawania, edytowania
  * i usuwania typów sprzętu w bazie danych. Zmiany są synchronizowane z głównym oknem aplikacji.
  */
-class typy : public QDialog
+class types : public QDialog
 {
     Q_OBJECT
 
 public:
     /**
-     * @brief Konstruktor klasy typy.
+     * @brief Konstruktor klasy types.
      * @param parent Wskaźnik na nadrzędny widget (domyślnie nullptr).
      *
      * Inicjalizuje interfejs użytkownika oraz połączenie z bazą danych.
      */
-    explicit typy(QWidget *parent = nullptr);
+    explicit types(QWidget *parent = nullptr);
 
     /**
-     * @brief Destruktor klasy typy.
+     * @brief Destruktor klasy types.
      *
      * Usuwa interfejs użytkownika i zwalnia zasoby.
      */
-    ~typy();
+    ~types();
 
     /**
      * @brief Ustawia wskaźnik na główne okno aplikacji.
@@ -101,7 +101,7 @@ private:
     void refreshList();
 
     /// Wskaźnik do interfejsu użytkownika wygenerowanego przez Qt Designer.
-    Ui::typy *ui;
+    Ui::types *ui;
 
     /// Wskaźnik na główne okno aplikacji, wykorzystywany do odświeżenia pól wyboru.
     MainWindow *m_mainWindow;

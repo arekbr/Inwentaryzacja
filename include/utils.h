@@ -25,7 +25,7 @@
  * @brief Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów.
  *
  * Funkcja tworzy i rejestruje globalne połączenie `QSqlDatabase` pod nazwą „default_connection”.
- * Obsługuje różne typy baz danych (np. QSQLITE, QMYSQL) i umożliwia konfigurację połączenia
+ * Obsługuje różne types baz danych (np. QSQLITE, QMYSQL) i umożliwia konfigurację połączenia
  * zarówno lokalnego (plik), jak i zdalnego (host, port, login, hasło).
  *
  * @param dbType Typ bazy danych (np. "QSQLITE", "QMYSQL").
