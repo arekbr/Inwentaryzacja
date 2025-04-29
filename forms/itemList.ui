@@ -13,77 +13,6 @@
   <property name="windowTitle">
    <string>Lista przedmiotów</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">QWidget {
-    background-color: #F5F5F5;
-}
-
-QLabel {
-    color: #333333;
-    font-weight: bold;
-}
-
-QTableView {
-    border: 1px solid #CCCCCC;
-    border-radius: 5px;
-    background-color: #FFFFFF;
-    color: #000000;
-}
-
-QTableView QHeaderView::section {
-    background-color: #E0E0E0;
-    color: #333333;
-    padding: 5px;
-    border: 1px solid #CCCCCC;
-}
-
-QGraphicsView {
-    border: 1px solid #CCCCCC;
-    border-radius: 5px;
-    background-color: #FFFFFF;
-}
-
-QPushButton {
-    border: none;
-    border-radius: 5px;
-    padding: 8px;
-    font-size: 14px;
-}
-
-QPushButton#itemList_pushButton_new {
-    background-color: #4CAF50;
-    color: white;
-}
-
-QPushButton#itemList_pushButton_edit {
-    background-color: #2196F3;
-    color: white;
-}
-
-QPushButton#itemList_pushButton_clone {
-    background-color: #B00EC5;
-    color: white;
-}
-
-QPushButton#itemList_pushButton_delete {
-    background-color: #F44336;
-    color: white;
-}
-
-QPushButton#itemList_pushButton_end {
-    background-color: #B0BEC5;
-    color: white;
-}
-
-QPushButton#itemList_pushButton_about {
-    background-color: #B011C5;
-    color: white;
-}
-
-QPushButton:hover {
-    opacity: 0.8;
-}</string>
-  </property>
   <layout class="QVBoxLayout" name="mainLayout">
    <item>
     <widget class="QLabel" name="headerLabel">
@@ -109,17 +38,6 @@ QPushButton:hover {
      </item>
      <item>
       <widget class="QComboBox" name="filterTypeComboBox">
-       <property name="styleSheet">
-        <string notr="true">QComboBox {
-    background-color: white;
-    color: black;
-}
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: black;
-}
-</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -131,17 +49,6 @@ QComboBox QAbstractItemView {
      </item>
      <item>
       <widget class="QComboBox" name="filterVendorComboBox">
-       <property name="styleSheet">
-        <string notr="true">QComboBox {
-    background-color: white;
-    color: black;
-}
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: black;
-}
-</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -153,17 +60,6 @@ QComboBox QAbstractItemView {
      </item>
      <item>
       <widget class="QComboBox" name="filterModelComboBox">
-       <property name="styleSheet">
-        <string notr="true">QComboBox {
-    background-color: white;
-    color: black;
-}
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: black;
-}
-</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -175,17 +71,6 @@ QComboBox QAbstractItemView {
      </item>
      <item>
       <widget class="QComboBox" name="filterStatusComboBox">
-       <property name="styleSheet">
-        <string notr="true">QComboBox {
-    background-color: white;
-    color: black;
-}
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: black;
-}
-</string>
-       </property>
       </widget>
      </item>
      <item>
@@ -197,17 +82,6 @@ QComboBox QAbstractItemView {
      </item>
      <item>
       <widget class="QComboBox" name="filterStorageComboBox">
-       <property name="styleSheet">
-        <string notr="true">QComboBox {
-    background-color: white;
-    color: black;
-}
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: black;
-}
-</string>
-       </property>
       </widget>
      </item>
      <item>

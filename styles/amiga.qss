@@ -1,0 +1,80 @@
+QMainWindow {
+    background-color: #C0C0C0;
+    font-family: "Topaz Plus";
+    font-size: 12px;
+    color: #000000;
+}
+
+QLabel {
+    background: transparent;
+    color: #000000;
+}
+
+QLineEdit, QPlainTextEdit, QComboBox, QDateEdit {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 2px outset #505050; /* Wypukła ramka */
+    padding: 2px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    selection-background-color: #78AFFF;
+    selection-color: #000000;
+}
+
+QPushButton {
+    background-color: #C0C0C0;
+    color: #000000;
+    border: 2px outset #505050; /* Wypukły przycisk */
+    padding: 5px;
+    font-weight: bold;
+}
+
+QPushButton:pressed {
+    border: 2px inset #505050; /* Wciśnięty, wklęsły efekt */
+    background-color: #A0A0A0;
+}
+
+QStatusBar {
+    background-color: #C0C0C0;
+    color: #000000;
+    border-top: 1px solid #505050;
+}
+
+QGraphicsView {
+    background-color: #FFFFFF;
+    border: 2px outset #505050;
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #C0C0C0;
+    border: 2px outset #505050;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #A0A0A0;
+    border: 1px solid #505050;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+QListView::item:selected, QTreeView::item:selected {
+    background-color: #78AFFF;
+    color: #000000;
+}
+
+QTabWidget::pane {
+    border: 2px outset #505050;
+}
+
+QTabBar::tab {
+    background: #C0C0C0;
+    border: 2px outset #505050;
+    padding: 5px;
+}
+
+QTabBar::tab:selected {
+    background: #A0A0A0;
+    border: 2px inset #505050;
+}
