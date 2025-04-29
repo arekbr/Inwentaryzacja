@@ -1,0 +1,447 @@
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QWidget {
+    background-color: #F5F5F5;
+}
+
+QLabel {
+    color: #333333;
+    font-weight: bold;
+}
+
+QTableView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+QTableView QHeaderView::section {
+    background-color: #E0E0E0;
+    color: #333333;
+    padding: 5px;
+    border: 1px solid #CCCCCC;
+}
+
+QGraphicsView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+}
+
+QPushButton {
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+QPushButton#itemList_pushButton_new {
+    background-color: #4CAF50;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_edit {
+    background-color: #2196F3;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_clone {
+    background-color: #B00EC5;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_delete {
+    background-color: #F44336;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_end {
+    background-color: #B0BEC5;
+    color: white;
+}
+
+QPushButton#itemList_pushButton_about {
+    background-color: #B011C5;
+    color: white;
+}
+
+QPushButton:hover {
+    opacity: 0.8;
+}
+
+QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QComboBox {
+    background-color: white;
+    color: black;
+}
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+
+QMainWindow {
+    background-color: #F5F5F5; /* Jasnoszare tło aplikacji */
+}
+
+QLabel {
+    color: #333333; /* Ciemny kolor czcionki dla etykiet */
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QLineEdit, QComboBox, QDateEdit, QPlainTextEdit {
+    border: 1px solid #CCCCCC; /* Jasnoszare ramki */
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #FFFFFF; /* Białe tło pól */
+    color: #000000; /* Czarny tekst */
+    min-width: 200px; /* Minimalna szerokość pól dla spójności */
+}
+
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    color: #000000;
+    selection-background-color: #4CAF50; /* Zielone tło wybranego elementu */
+    selection-color: #FFFFFF; /* Biały tekst wybranego elementu */
+}
+
+QComboBox::drop-down {
+    border: none;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+}
+
+QPushButton {
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+/* Styl przycisku Zapisz oraz przycisków dodaj/usuń zdjęcie */
+QPushButton#New_item_PushButton_OK,
+QPushButton#New_item_addPhoto,
+QPushButton#New_item_removePhoto {
+    background-color: #4CAF50; /* Zielony kolor akcji zatwierdzających */
+    color: white;
+}
+
+/* Styl przycisku Anuluj */
+QPushButton#New_item_PushButton_Cancel {
+    background-color: #B0BEC5; /* Szary kolor anulowania */
+    color: white;
+}
+
+/* Styl przycisków dodających nowe wpisy (+) */
+QPushButton#New_item_addType,
+QPushButton#New_item_addVendor,
+QPushButton#New_item_addModel,
+QPushButton#New_item_addStatus,
+QPushButton#New_item_addStoragePlace {
+    background-color: #2196F3; /* Niebieski dla przycisków &quot;Dodaj&quot; */
+    color: white;
+    min-width: 30px;
+    max-width: 30px;
+}
+
+/* Efekt najechania na dowolny przycisk */
+QPushButton:hover {
+    opacity: 0.8;
+}
+
+/* Styl widoku zdjęcia */
+QGraphicsView {
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+}
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QListView {
+    background-color: white;
+    color: black;
+}
+QListView QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}
+
+
+QPushButton {
+    background-color: white;
+    color: black;
+}
+QPushButton QAbstractItemView {
+    background-color: white;
+    color: black;
+}

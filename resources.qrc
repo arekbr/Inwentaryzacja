@@ -1,0 +1,25 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>images/icon.ico</file>
+        <file>images/icon.png</file>
+	<file>icon.png</file>
+        <file>images/ikona.ico</file>
+        <file>images/ikona256.ico</file>
+        <file>images/ikona_mac.icns</file>
+        <file>images/256ikona.png</file>
+        <file>images/background.png</file>
+        <file>images/installericon.ico</file>
+        <file>images/logo.png</file>
+        <file>images/watermark.png</file>
+        <file>styles/default.qss</file>
+        <file>styles/amiga.qss</file>
+        <file>images/topaz.ttf</file>
+        <file>images/amiga_new.png</file>
+        <file>images/amiga_edit.png</file>
+        <file>images/amiga_delete.png</file>
+        <file>images/amiga_clone.png</file>
+        <file>images/amiga_end.png</file>
+        <file>images/amiga_about.png</file>
+    </qresource>
+</RCC>

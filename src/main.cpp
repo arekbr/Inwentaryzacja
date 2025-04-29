@@ -12,15 +12,31 @@
  */
 
 #include <QApplication>
-#include <QTranslator>
-#include <QLocale>
-#include <QDebug>
 #include <QCoreApplication>
+#include <QDebug>
+#include <QDirIterator>
+#include <QFile>
+#include <QFontDatabase>
+#include <QLocale>
+#include <QTextStream>
+#include <QTranslator>
 
 // Nagłówki aplikacji
 #include "DatabaseConfigDialog.h"
 #include "itemList.h"
 #include "utils.h"
+
+void loadStyleSheet(const QString &filePath)
+{
+    QFile file(filePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString style = QString::fromUtf8(file.readAll());
+        qApp->setStyleSheet(style);
+        file.close();
+    } else {
+        qWarning("Nie można załadować pliku stylu: %s", qPrintable(filePath));
+    }
+}
 
 /**
  * @brief Główna funkcja aplikacji inwentaryzacyjnej.
@@ -36,10 +52,20 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    loadStyleSheet(":styles/amiga.qss");
+
+    // Ładuj czcionkę Topaz
+    int id = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont topazFont(family);
+    topazFont.setPointSize(12); // Workbench był bardzo drobny, około 8px na 320x256
+    qApp->setFont(topazFont);
+
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
     QCoreApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
 
-    a.setWindowIcon(QIcon(":/icon.png"));
+    QIcon icon(":/images/icon.png");
+    a.setWindowIcon(icon);
 
     // Instalacja tłumaczeń
     QTranslator translator;

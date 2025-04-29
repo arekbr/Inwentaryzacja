@@ -76,10 +76,18 @@ TRANSLATIONS += \
 
 DISTFILES += \
     LICENSE \
+    images/amiga_about.png \
+    images/amiga_clone.png \
+    images/amiga_delete.png \
+    images/amiga_edit.png \
+    images/amiga_end.png \
+    images/amiga_new.png \
     images/background.png \
+    images/icon.icns \
     images/ikonawin.ico \
     images/installericon.ico \
     images/logo.png \
+    images/topaz.ttf \
     images/watermark.png \
     make_deb.sh \
     make_deb.sh \
@@ -107,10 +115,14 @@ DISTFILES += \
     merge_win.ps1 \
     set_icon.sh \
     sqldrivers/mysql_native_password.dll \
-    sqldrivers/qsqlmysql.dll
+    sqldrivers/qsqlmysql.dll \
+    styles/amiga.qss \
+    styles/default.qss
 
 RESOURCES += \
-    images/icon.qrc
+    images/icon.qrc \
+    images/resources.qrc \
+    resources.qrc
 
 
 ##################################################

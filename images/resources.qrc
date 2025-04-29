@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon.png</file>
+        <file>fonts/topaz.ttf</file>
+        <file>styles/default.qss</file>
+        <file>styles/amiga.qss</file>
+        <file>images/icon.ico</file>
+        <file>images/amiga_icon_new.png</file>
+        <file>images/amiga_icon_edit.png</file>
+        <file>images/amiga_icon_delete.png</file>
+        <file>images/amiga_icon_clone.png</file>
+        <file>images/amiga_icon_end.png</file>
+        <file>images/amiga_icon_about.png</file>
+    </qresource>
+</RCC>
