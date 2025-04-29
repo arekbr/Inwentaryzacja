@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1353</width>
+    <width>1203</width>
     <height>618</height>
    </rect>
   </property>
@@ -208,6 +208,27 @@ QComboBox QAbstractItemView {
 }
 </string>
        </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelSelectSkin">
+       <property name="text">
+        <string>Skórka</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="filterSelectSkin">
+       <item>
+        <property name="text">
+         <string>Amiga</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Standard</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>
