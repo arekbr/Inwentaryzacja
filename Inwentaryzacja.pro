@@ -81,6 +81,7 @@ DISTFILES += \
     images/installericon.ico \
     images/logo.png \
     images/watermark.png \
+    merge.sh \
     mysql_dll/libcrypto-3-x64.dll \
     mysql_dll/libmysql.dll \
     mysql_dll/libssl-3-x64.dll \
