@@ -81,6 +81,11 @@ DISTFILES += \
     images/installericon.ico \
     images/logo.png \
     images/watermark.png \
+    make_deb.sh \
+    make_deb.sh \
+    make_rpm.sh \
+    make_rpm.sh \
+    merge.sh \
     merge.sh \
     mysql_dll/libcrypto-3-x64.dll \
     mysql_dll/libmysql.dll \
@@ -123,55 +128,23 @@ release:win32 {
                         copy /Y c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\sqldrivers\\*.dll c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\gotowa\\sqldrivers\\
 }
 
-# — Linux Release deploy
+
+# — Linux Release deploy (for .deb and .rpm packages)
 release:unix:!macx {
-    DESTDIR = $$PWD/deploy
-    TARGET_DIR = $$DESTDIR/$${TARGET}
-    APPIMAGE_DIR = $$DESTDIR/$${TARGET}.AppDir
-
-    # Katalogi dla pakietów
-    DEB_DIR = $$DESTDIR/deb
-    RPM_DIR = $$DESTDIR/rpm
-
     QMAKE_POST_LINK += $$quote( \
-        echo 🧹 Czyszczenie starego deployu... && \
-        rm -rf "$${DESTDIR}" && \
-        mkdir -p "$${TARGET_DIR}" "$${DEB_DIR}" "$${RPM_DIR}" "$${APPIMAGE_DIR}" && \
-        echo 📂 Kopiowanie binarki i zasobów... && \
-        cp "$${OUT_PWD}/$${TARGET}" "$${TARGET_DIR}/" && \
-        cp -r "$${PWD}/images" "$${TARGET_DIR}/" && \
-        cp "$${PWD}/LICENSE" "$${TARGET_DIR}/" && \
-        cp "$${PWD}/README.md" "$${TARGET_DIR}/" && \
-        echo 🚀 Wywołanie linuxdeployqt... && \
-        linuxdeployqt "$${TARGET_DIR}/$${TARGET}" -bundle-non-qt-libs -qmake=$$QMAKE_QMAKE && \
-        echo 📦 Tworzenie AppImage... && \
-        linuxdeployqt "$${TARGET_DIR}/$${TARGET}" -appimage && \
-        mv $${TARGET_DIR}/*.AppImage "$${DESTDIR}/$${TARGET}-$${VERSION}.AppImage" && \
-        echo 📦 Tworzenie pakietu .deb... && \
-        fpm -s dir -t deb \
-            -n "$${TARGET}" \
-            -v "$${VERSION}" \
-            --description "$${QMAKE_TARGET_DESCRIPTION}" \
-            --vendor "$${QMAKE_TARGET_COMPANY}" \
-            --license "GPL" \
-            --prefix /usr \
-            -C "$${TARGET_DIR}" \
-            -p "$${DEB_DIR}/$${TARGET}_$${VERSION}_amd64.deb" \
-            . && \
-        echo 📦 Tworzenie pakietu .rpm... && \
-        fpm -s dir -t rpm \
-            -n "$${TARGET}" \
-            -v "$${VERSION}" \
-            --description "$${QMAKE_TARGET_DESCRIPTION}" \
-            --vendor "$${QMAKE_TARGET_COMPANY}" \
-            --license "GPL" \
-            --prefix /usr \
-            -C "$${TARGET_DIR}" \
-            -p "$${RPM_DIR}/$${TARGET}-$${VERSION}.x86_64.rpm" \
-            . && \
-        echo ✅ Gotowe: $${DESTDIR}/$${TARGET}-$${VERSION}.AppImage, $${DEB_DIR}/$${TARGET}_$${VERSION}_amd64.deb, $${RPM_DIR}/$${TARGET}-$${VERSION}.x86_64.rpm \
+        echo "🧹 Czyszczenie starego deployu..." && \
+        rm -rf "$${DEPLOY_DIR}" && \
+        mkdir -p "$${DEPLOY_DIR}/usr/bin" && \
+        echo "📂 Kopiowanie pliku binarnego..." && \
+        echo $${DEPLOY_DIR} && \
+        cp "$${OUT_PWD}/$${TARGET}" "$${DEPLOY_DIR}" && \
+        echo "✅ Gotowe: Deploy w katalogu $${DEPLOY_DIR}/usr/bin" \
     )
 }
+
+
+
+
 
 # — macOS Release deploy
 release:macx {
