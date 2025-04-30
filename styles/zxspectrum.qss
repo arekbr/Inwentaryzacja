@@ -1,0 +1,113 @@
+/* Główne okno */
+QMainWindow {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+/* Globalne ustawienia dla widgetów */
+QWidget {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+/* Etykiety */
+QLabel {
+    background: transparent;
+    color: #00FFFF;
+}
+
+/* Pola tekstowe */
+QLineEdit, QPlainTextEdit, QComboBox, QDateEdit {
+    background-color: #000000;
+    color: #FFFF00;
+    border: 1px solid #FF0000;
+    padding: 2px;
+    font-weight: bold;
+}
+
+/* Lista rozwijana */
+QComboBox QAbstractItemView {
+    background-color: #000000;
+    color: #FFFF00;
+    selection-background-color: #FF00FF;
+    selection-color: #000000;
+}
+
+/* Przyciski */
+QPushButton {
+    background-color: #000000;
+    color: #00FF00;
+    border: 2px solid #00FF00;
+    padding: 4px;
+    font-weight: bold;
+}
+
+QPushButton:pressed {
+    background-color: #00FF00;
+    color: #000000;
+    border: 2px solid #00FF00;
+}
+
+/* Paski przewijania */
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #000000;
+    border: 1px solid #00FFFF;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #FFFF00;
+    border: 1px solid #FF0000;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+/* Tabela */
+QTableView {
+    background-color: #000000;
+    color: #00FFFF;
+    border: 1px solid #00FF00;
+    gridline-color: #00FF00;
+}
+
+QTableView::item:selected {
+    background-color: #FF0000;
+    color: #000000;
+}
+
+/* Nagłówki tabel */
+QHeaderView::section {
+    background-color: #000000;
+    color: #FF00FF;
+    border: 1px solid #FFFF00;
+    padding: 4px;
+}
+
+/* Listy / drzewa */
+QListView, QTreeView {
+    background-color: #000000;
+    color: #00FFFF;
+    border: 1px solid #FFFF00;
+}
+
+QListView::item:selected, QTreeView::item:selected {
+    background-color: #FF00FF;
+    color: #000000;
+}
+
+/* Zakładki */
+QTabWidget::pane {
+    border: 1px solid #00FF00;
+}
+
+QTabBar::tab {
+    background: #000000;
+    color: #FFFF00;
+    border: 1px solid #FFFF00;
+    padding: 5px;
+}
+
+QTabBar::tab:selected {
+    background: #00FFFF;
+    color: #000000;
+    border: 1px solid #00FFFF;
+}

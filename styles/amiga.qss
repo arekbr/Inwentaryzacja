@@ -1,14 +1,14 @@
 /* Główne okno aplikacji */
 QMainWindow {
-    background-color: #D4D0C8;
-    font-family: "Topaz Plus", monospace;
+    background-color: #D4D0C8; /* Workbench Gray - tło główne */
+    font-family: "Topaz Plus";
     font-size: 12px;
     color: #000000;
 }
 
-/* Ogólne widgety */
+/* Wszystkie widgety (w tym główny QWidget w itemlist.ui) */
 QWidget {
-    background-color: #D4D0C8;
+    background-color: #D4D0C8; /* Workbench Gray - tło dla wszystkich widgetów */
     color: #000000;
 }
 
@@ -16,43 +16,35 @@ QWidget {
 QLabel {
     background: transparent;
     color: #000000;
-    font-weight: normal;
 }
 
-/* Pola edycyjne */
+/* Pola tekstowe, comboboxy, edytory daty */
 QLineEdit, QPlainTextEdit, QComboBox, QDateEdit {
-    background-color: #C0C0C0;
+    background-color: #E8ECEF; /* Bardzo jasnoszary, tło pól tekstowych */
     color: #000000;
-    border: 2px outset #B0B0B0;
+    border: 2px outset #B0B0B0; /* Jasnoszara ramka wypukła */
     padding: 2px;
 }
-QLineEdit:focus, QPlainTextEdit:focus, QComboBox:focus, QDateEdit:focus {
-    border: 2px inset #808080;
-    background-color: #A8A8A8;
-}
 
-/* Lista rozwijana */
+/* Lista rozwijana w QComboBox */
 QComboBox QAbstractItemView {
-    background-color: #C0C0C0;
-    selection-background-color: #72A0C1;
+    background-color: #E8ECEF;
+    selection-background-color: #72A0C1; /* Workbench Blue - podświetlenie */
     selection-color: #000000;
-    border: 1px solid #808080;
 }
 
 /* Przyciski */
 QPushButton {
-    background-color: #D4D0C8;
+    background-color: #D4D0C8; /* Tło przycisków jak tło główne */
     color: #000000;
-    border: 2px outset #B0B0B0;
+    border: 2px outset #B0B0B0; /* Jasnoszara ramka wypukła */
     padding: 5px;
     font-weight: bold;
 }
-QPushButton:hover {
-    background-color: #C8C8C8;
-}
+
 QPushButton:pressed {
-    border: 2px inset #808080;
-    background-color: #B0B0B0;
+    border: 2px inset #B0B0B0; /* Wciśnięty, wklęsły efekt */
+    background-color: #B0B0B0; /* Ciemniejsze tło po wciśnięciu */
 }
 
 /* Pasek statusu */
@@ -64,7 +56,7 @@ QStatusBar {
 
 /* Widok graficzny */
 QGraphicsView {
-    background-color: #FFFFFF;
+    background-color: #FFFFFF; /* Białe tło, jak w oknach graficznych Workbench 1.3 */
     border: 2px outset #B0B0B0;
 }
 
@@ -73,6 +65,7 @@ QScrollBar:vertical, QScrollBar:horizontal {
     background: #D4D0C8;
     border: 2px outset #B0B0B0;
 }
+
 QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
     background: #B0B0B0;
     border: 1px solid #808080;
@@ -80,36 +73,43 @@ QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
     min-width: 20px;
 }
 
-/* Tabele */
+/* Tabela (QTableView) */
 QTableView {
-    background-color: #C0C0C0;
+    background-color: #E8ECEF; /* Bardzo jasnoszary - tło tabeli */
     color: #000000;
     border: 2px outset #B0B0B0;
-    gridline-color: #808080;
+    gridline-color: #B0B0B0; /* Kolor siatki */
 }
+
+/* Komórki w tabeli */
 QTableView::item {
-    background-color: #C0C0C0;
+    background-color: #E8ECEF;
     color: #000000;
 }
+
+/* Wybrane komórki */
 QTableView::item:selected {
-    background-color: #72A0C1;
+    background-color: #72A0C1; /* Workbench Blue - podświetlenie */
     color: #000000;
 }
+
+/* Nagłówki tabeli */
 QHeaderView::section {
-    background-color: #D4D0C8;
+    background-color: #D4D0C8; /* Tło nagłówków jak tło główne */
     color: #000000;
     border: 1px solid #B0B0B0;
     padding: 4px;
 }
 
-/* Listy i drzewa */
+/* Listy i drzewa (np. inne listy, jeśli używane) */
 QListView, QTreeView {
-    background-color: #C0C0C0;
+    background-color: #E8ECEF; /* Bardzo jasnoszary dla listy */
     color: #000000;
     border: 2px outset #B0B0B0;
 }
+
 QListView::item:selected, QTreeView::item:selected {
-    background-color: #72A0C1;
+    background-color: #72A0C1; /* Workbench Blue - podświetlenie */
     color: #000000;
 }
 
@@ -117,12 +117,14 @@ QListView::item:selected, QTreeView::item:selected {
 QTabWidget::pane {
     border: 2px outset #B0B0B0;
 }
+
 QTabBar::tab {
     background: #D4D0C8;
     border: 2px outset #B0B0B0;
     padding: 5px;
 }
+
 QTabBar::tab:selected {
     background: #B0B0B0;
-    border: 2px inset #808080;
+    border: 2px inset #B0B0B0;
 }

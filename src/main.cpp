@@ -58,15 +58,36 @@ int main(int argc, char *argv[])
     a.setStyle("Fusion");
 
     // Ładowanie stylu z zasobów Qt (.qrc)
-    loadStyleSheet(":/styles/amiga.qss");
+    loadStyleSheet(":/styles/zxspectrum.qss");
 
 
     // Ładuj czcionkę Topaz
     int id = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+
+    // Ładowanie czcionki ZX Spectrum
+    int zxId = QFontDatabase::addApplicationFont(":/images/zxspectrum.ttf");
+    QStringList zxFamilies = QFontDatabase::applicationFontFamilies(zxId);
+
+    if (!zxFamilies.isEmpty()) {
+        QFont zxFont(zxFamilies.at(0));
+        zxFont.setPointSize(12);
+        qApp->setFont(zxFont);
+    } else {
+        qWarning() << "Nie udało się załadować czcionki ZX Spectrum!";
+    }
+
+    qDebug() << "ZX rodzina fontow:" << QFontDatabase::applicationFontFamilies(zxId);
+
+
+
     QFont topazFont(family);
     topazFont.setPointSize(12); // Workbench był bardzo drobny, około 8px na 320x256
     qApp->setFont(topazFont);
+
+    QFont zxFont("Untitled1");
+    zxFont.setPointSize(12);
+    qApp->setFont(zxFont);
 
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
     QCoreApplication::setApplicationVersion(QStringLiteral(APP_VERSION));
