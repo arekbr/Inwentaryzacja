@@ -76,6 +76,7 @@ TRANSLATIONS += \
 
 DISTFILES += \
     LICENSE \
+    fix_mysql_mac_new.sh \
     images/amiga_about.png \
     images/amiga_clone.png \
     images/amiga_delete.png \
@@ -185,17 +186,43 @@ release:unix:!macx {
 
 
 # — macOS Release deploy
+#release:macx {
+#    QMAKE_POST_LINK += $$quote( \
+#        echo 🧹 Czyszczenie starego deployu... && \
+#        rm -rf "$${DEPLOY_DIR}" && \
+##        mkdir -p "$${DEPLOY_DIR}" && \
+#        echo 📂 Kopiowanie aplikacji... && \
+#        cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
+#        echo 🧹 Usuwanie niepotrzebnych wtyczek przed macdeployqt... && \
+#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlmysql.dylib" && \
+#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlodbc.dylib" && \
+#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlpsql.dylib" && \
+#        echo 🚀 Wywołanie macdeployqt... && \
+#        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 && \
+#        echo 💿 Tworzenie DMG... && \
+#        hdiutil create -volname "$${TARGET}" \
+#            -srcfolder "$${DEPLOY_DIR}/$${TARGET}.app" \
+#            -ov -format UDZO "$${DEPLOY_DIR}/$${TARGET}_macOS.dmg" && \
+#        echo ✅ Gotowe: $${DEPLOY_DIR}/$${TARGET}_macOS.dmg \
+#    )
+#}
+
+# — macOS Release deploy
+# — macOS Release deploy
 release:macx {
     QMAKE_POST_LINK += $$quote( \
+        echo 🔌 Kopiowanie i patchowanie bibliotek MySQL do katalogu build... && \
+        $${PWD}/fix_mysql_mac_new.sh "$${OUT_PWD}/$${TARGET}.app" && \
         echo 🧹 Czyszczenie starego deployu... && \
         rm -rf "$${DEPLOY_DIR}" && \
         mkdir -p "$${DEPLOY_DIR}" && \
         echo 📂 Kopiowanie aplikacji... && \
         cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
         echo 🧹 Usuwanie niepotrzebnych wtyczek przed macdeployqt... && \
-        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlmysql.dylib" && \
         rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlodbc.dylib" && \
         rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlpsql.dylib" && \
+        echo 🔌 Kopiowanie i patchowanie bibliotek MySQL do katalogu deploy... && \
+        $${PWD}/fix_mysql_mac_new.sh "$${DEPLOY_DIR}/$${TARGET}.app" && \
         echo 🚀 Wywołanie macdeployqt... && \
         macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 && \
         echo 💿 Tworzenie DMG... && \
@@ -205,5 +232,3 @@ release:macx {
         echo ✅ Gotowe: $${DEPLOY_DIR}/$${TARGET}_macOS.dmg \
     )
 }
-
-
