@@ -89,6 +89,34 @@ DISTFILES += \
     images/logo.png \
     images/topaz.ttf \
     images/watermark.png \
+    macos_lib_sql/iconengines/libqsvgicon.dylib \
+    macos_lib_sql/imageformats/libqgif.dylib \
+    macos_lib_sql/imageformats/libqicns.dylib \
+    macos_lib_sql/imageformats/libqico.dylib \
+    macos_lib_sql/imageformats/libqjpeg.dylib \
+    macos_lib_sql/imageformats/libqmacheif.dylib \
+    macos_lib_sql/imageformats/libqmacjp2.dylib \
+    macos_lib_sql/imageformats/libqpdf.dylib \
+    macos_lib_sql/imageformats/libqtga.dylib \
+    macos_lib_sql/imageformats/libqtiff.dylib \
+    macos_lib_sql/imageformats/libqwbmp.dylib \
+    macos_lib_sql/imageformats/libqwebp.dylib \
+    macos_lib_sql/libcrypto.1.1.dylib \
+    macos_lib_sql/libmysqlclient.21.dylib \
+    macos_lib_sql/libmysqlclient.a \
+    macos_lib_sql/libqsqlite.dylib \
+    macos_lib_sql/libqsqlmysql.dylib \
+    macos_lib_sql/libqsqlodbc.dylib \
+    macos_lib_sql/libqsqlpsql.dylib \
+    macos_lib_sql/libssl.1.1.dylib \
+    macos_lib_sql/platforminputcontexts/libqtvirtualkeyboardplugin.dylib \
+    macos_lib_sql/platforms/libqcocoa.dylib \
+    macos_lib_sql/sqldrivers/libqsqlite.dylib \
+    macos_lib_sql/sqldrivers/libqsqlmysql.dylib \
+    macos_lib_sql/sqldrivers/libqsqlodbc.dylib \
+    macos_lib_sql/sqldrivers/libqsqlpsql.dylib \
+    macos_lib_sql/sqldrivers/libssl.1.1.dylib \
+    macos_lib_sql/styles/libqmacstyle.dylib \
     make_deb.sh \
     make_deb.sh \
     make_rpm.sh \
@@ -120,9 +148,7 @@ DISTFILES += \
     styles/default.qss
 
 RESOURCES += \
-    images/icon.qrc \
-    images/resources.qrc \
-    resources.qrc
+        resources.qrc
 
 
 ##################################################
