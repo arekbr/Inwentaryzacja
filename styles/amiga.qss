@@ -10,6 +10,7 @@ QMainWindow {
 QWidget {
     background-color: #D4D0C8; /* Workbench Gray - tło dla wszystkich widgetów */
     color: #000000;
+    font-family: inherit;
 }
 
 /* Etykiety */
