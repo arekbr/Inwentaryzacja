@@ -1,5 +1,4 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
+<RCC>
     <qresource prefix="/">
         <file>images/icon.ico</file>
         <file>images/icon.png</file>
@@ -20,5 +19,7 @@
         <file>images/amiga_clone.png</file>
         <file>images/amiga_end.png</file>
         <file>images/amiga_about.png</file>
+        <file>images/zxspectrum.ttf</file>
+        <file>styles/zxspectrum.qss</file>
     </qresource>
 </RCC>
