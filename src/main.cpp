@@ -2,13 +2,13 @@
  * @file main.cpp
  * @brief Główny punkt wejścia aplikacji inwentaryzacyjnej.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.1.10
+ * @date 2025-04-30
  *
  * Plik zawiera funkcję main, która inicjalizuje aplikację Qt, ustawia nazwę i wersję aplikacji,
  * ładuje tłumaczenia, wyświetla okno konfiguracji bazy danych (SQLite lub MySQL), nawiązuje
- * połączenie z bazą danych za pomocą funkcji setupDatabase i uruchamia główne okno aplikacji
- * (klasa itemList). Funkcja main jest punktem startowym dla aplikacji inwentaryzacyjnej.
+ * połączenie z bazą danych za pomocą funkcji setupDatabase, ładuje skórkę graficzną z QSettings
+ * i uruchamia główne okno aplikacji (klasa itemList). Czcionki są zarządzane przez klasę itemList.
  */
 
 #include <QApplication>
@@ -16,8 +16,6 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QFile>
-#include <QFontDatabase>
-#include <QLocale>
 #include <QTextStream>
 #include <QTranslator>
 
@@ -26,19 +24,25 @@
 #include "itemList.h"
 #include "utils.h"
 
+/**
+ * @brief Ładuje arkusz stylów z podanego pliku QSS.
+ * @param filePath Ścieżka do pliku QSS w systemie zasobów Qt (np. ":/styles/default.qss").
+ *
+ * Otwiera plik QSS, wczytuje jego zawartość i ustawia styl aplikacji za pomocą qApp->setStyleSheet.
+ * Loguje sukces lub błąd ładowania.
+ */
 void loadStyleSheet(const QString &filePath)
 {
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString style = QString::fromUtf8(file.readAll());
-        qDebug() << "Zawartość pliku stylu (" << filePath << "):\n" << style; // Debugowanie
+        qDebug() << "Zawartość pliku stylu (" << filePath << "):\n" << style;
         qApp->setStyleSheet(style);
         file.close();
     } else {
-        qWarning("Nie można załadować pliku stylu: %s", qPrintable(filePath));
+        qWarning() << "Nie można załadować pliku stylu:" << filePath;
     }
 }
-
 
 /**
  * @brief Główna funkcja aplikacji inwentaryzacyjnej.
@@ -47,9 +51,8 @@ void loadStyleSheet(const QString &filePath)
  * @return Kod zakończenia aplikacji (0 dla sukcesu, inne dla błędów).
  *
  * Inicjalizuje aplikację Qt, ustawia nazwę i wersję aplikacji, ładuje tłumaczenia na podstawie
- * języka systemowego, wyświetla okno dialogowe konfiguracji bazy danych, nawiązuje połączenie
- * z bazą danych (SQLite lub MySQL) i uruchamia główne okno aplikacji (itemList). Jeśli konfiguracja
- * bazy danych zostanie anulowana lub połączenie nie powiedzie się, aplikacja kończy działanie.
+ * języka systemowego, ładuje skórkę graficzną z QSettings, wyświetla okno dialogowe konfiguracji
+ * bazy danych, nawiązuje połączenie z bazą danych (SQLite lub MySQL) i uruchamia główne okno aplikacji.
  */
 int main(int argc, char *argv[])
 {
@@ -57,37 +60,18 @@ int main(int argc, char *argv[])
     // Wymuszenie stylu Qt, aby uniknąć nadpisywania przez styl systemowy
     a.setStyle("Fusion");
 
-    // Ładowanie stylu z zasobów Qt (.qrc)
-    loadStyleSheet(":/styles/zxspectrum.qss");
-
-
-    // Ładuj czcionkę Topaz
-    int id = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
-    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-
-    // Ładowanie czcionki ZX Spectrum
-    int zxId = QFontDatabase::addApplicationFont(":/images/zxspectrum.ttf");
-    QStringList zxFamilies = QFontDatabase::applicationFontFamilies(zxId);
-
-    if (!zxFamilies.isEmpty()) {
-        QFont zxFont(zxFamilies.at(0));
-        zxFont.setPointSize(12);
-        qApp->setFont(zxFont);
+    // Ładowanie skórki z QSettings
+    QSettings settings("SMOK", "Inwentaryzacja");
+    QString skin = settings.value("skin", "Standard").toString();
+    QString qssPath;
+    if (skin == "Amiga") {
+        qssPath = ":/styles/amiga.qss";
+    } else if (skin == "ZX Spectrum") {
+        qssPath = ":/styles/zxspectrum.qss";
     } else {
-        qWarning() << "Nie udało się załadować czcionki ZX Spectrum!";
+        qssPath = ":/styles/default.qss"; // Domyślnie Standard
     }
-
-    qDebug() << "ZX rodzina fontow:" << QFontDatabase::applicationFontFamilies(zxId);
-
-
-
-    QFont topazFont(family);
-    topazFont.setPointSize(12); // Workbench był bardzo drobny, około 8px na 320x256
-    qApp->setFont(topazFont);
-
-    QFont zxFont("Untitled1");
-    zxFont.setPointSize(12);
-    qApp->setFont(zxFont);
+    loadStyleSheet(qssPath);
 
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
     QCoreApplication::setApplicationVersion(QStringLiteral(APP_VERSION));

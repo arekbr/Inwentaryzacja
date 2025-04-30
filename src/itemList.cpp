@@ -2,14 +2,13 @@
  * @file itemList.cpp
  * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.1.10
+ * @date 2025-04-30
  *
  * Plik zawiera implementację metod klasy itemList, odpowiedzialnej za wyświetlanie i zarządzanie
  * listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenia z bazą danych MySQL,
- * filtrowanie kaskadowe, wyświetlanie miniatur zdjęć oraz interakcje użytkownika (dodawanie,
- * edycja, usuwanie, klonowanie rekordów). Wykorzystuje QSqlRelationalTableModel jako źródło
- * danych oraz ItemFilterProxyModel do dynamicznego filtrowania.
+ * filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, interakcje użytkownika (dodawanie,
+ * edycja, usuwanie, klonowanie rekordów), zmianę skórki graficznej oraz dynamiczną zmianę czcionek.
  */
 
 #include "itemList.h"
@@ -26,6 +25,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QFontDatabase>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGuiApplication>
@@ -41,9 +41,9 @@
 #include <QSqlRelation>
 #include <QSqlRelationalDelegate>
 #include <QSqlRelationalTableModel>
+#include <QTimer>
 #include <QUuid>
 #include <QtMath>
-#include <QTimer>
 #include <functional>
 
 /**
@@ -51,9 +51,10 @@
  * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
  *
  * Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych MySQL, konfiguruje
- * model danych (QSqlRelationalTableModel), model proxy (ItemFilterProxyModel) oraz filtry
- * kaskadowe w combo boxach. Podłącza sygnały i sloty dla przycisków, tabeli i interakcji ze
- * zdjęciami. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane.
+ * model danych (QSqlRelationalTableModel), model proxy (ItemFilterProxyModel), filtry
+ * kaskadowe w combo boxach, combo box wyboru skórki graficznej oraz czcionki. Podłącza sygnały
+ * i sloty dla przycisków, tabeli, interakcji ze zdjęciami i zmiany skórki. W razie potrzeby
+ * tworzy schemat bazy danych i wstawia przykładowe dane.
  */
 itemList::itemList(QWidget *parent)
     : QWidget(parent)
@@ -68,6 +69,8 @@ itemList::itemList(QWidget *parent)
     , m_currentRecordId()
     , m_previewWindow(nullptr)
     , m_currentHoveredItem(nullptr)
+    , m_topazFontId(-1)
+    , m_zxFontId(-1)
 {
     ui->setupUi(this);
 
@@ -77,6 +80,16 @@ itemList::itemList(QWidget *parent)
     filterModelComboBox = ui->filterModelComboBox;
     filterStatusComboBox = ui->filterStatusComboBox;
     filterStorageComboBox = ui->filterStorageComboBox;
+
+    // Inicjalizacja combo boxa wyboru skórki
+    ui->filterSelectSkin->clear();
+    ui->filterSelectSkin->addItems({"Amiga", "ZX Spectrum", "Standard"});
+    QSettings settings("SMOK", "Inwentaryzacja");
+    QString savedSkin = settings.value("skin", "Standard").toString();
+    int skinIndex = ui->filterSelectSkin->findText(savedSkin);
+    ui->filterSelectSkin->setCurrentIndex(skinIndex != -1 ? skinIndex : 2); // Domyślnie "Standard"
+    loadStyleSheet(ui->filterSelectSkin->currentText());
+    loadFont(ui->filterSelectSkin->currentText());
 
     // Połączenie z bazą danych
     QSqlDatabase db;
@@ -168,6 +181,9 @@ itemList::itemList(QWidget *parent)
             this,
             &itemList::onTableViewSelectionChanged);
 
+    // Połączenie combo boxa wyboru skórki
+    connect(ui->filterSelectSkin, &QComboBox::currentTextChanged, this, &itemList::onSkinChanged);
+
     // Inicjalizacja filtrów
     initFilters(db);
 
@@ -209,6 +225,137 @@ itemList::~itemList()
 }
 
 /**
+ * @brief Ładuje arkusz stylów dla wybranej skórki.
+ * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+ *
+ * Mapuje nazwę skórki na odpowiedni plik QSS w zasobach Qt i ustawia styl aplikacji
+ * za pomocą qApp->setStyleSheet.
+ */
+void itemList::loadStyleSheet(const QString &skin)
+{
+    QString qssPath;
+    if (skin == "Amiga") {
+        qssPath = ":/styles/amiga.qss";
+    } else if (skin == "ZX Spectrum") {
+        qssPath = ":/styles/zxspectrum.qss";
+    } else {
+        qssPath = ":/styles/default.qss"; // Domyślnie Standard
+    }
+
+    QFile file(qssPath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString style = QString::fromUtf8(file.readAll());
+        qApp->setStyleSheet(style);
+        file.close();
+        qDebug() << "Załadowano skórkę:" << skin << "z pliku:" << qssPath;
+    } else {
+        qWarning() << "Nie można załadować pliku QSS:" << qssPath;
+    }
+}
+
+/**
+ * @brief Ładuje czcionkę dla wybranej skórki.
+ * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+ *
+ * Mapuje nazwę skórki na odpowiednią czcionkę: Amiga -> topaz.ttf, ZX Spectrum -> zxspectrum.ttf,
+ * Standard -> domyślna czcionka systemowa. Ładuje czcionkę z zasobów Qt za pomocą QFontDatabase
+ * i ustawia ją dla aplikacji za pomocą qApp->setFont. Używa statycznych metod QFontDatabase,
+ * aby uniknąć ostrzeżeń o przestarzałym API.
+ */
+void itemList::loadFont(const QString &skin)
+{
+    QFont font;
+    if (skin == "Amiga") {
+        if (m_topazFontId == -1) {
+            QFile file(":/images/topaz.ttf");
+            if (!file.exists()) {
+                qWarning() << "Plik topaz.ttf nie istnieje w zasobach!";
+                font = QFont(); // Fallback na domyślną czcionkę systemową
+            } else {
+                m_topazFontId = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
+                if (m_topazFontId == -1) {
+                    qWarning() << "Nie można załadować pliku topaz.ttf z zasobów";
+                }
+            }
+        }
+        if (m_topazFontId != -1) {
+            QStringList families = QFontDatabase::applicationFontFamilies(m_topazFontId);
+            if (!families.isEmpty()) {
+                font.setFamily(families.first());
+                font.setPointSize(12);
+                qDebug() << "Załadowano czcionkę Topaz dla skórki Amiga, rodzina:"
+                         << families.first();
+            } else {
+                qWarning() << "Brak dostępnych rodzin czcionek dla topaz.ttf";
+                font = QFont(); // Fallback
+            }
+        } else {
+            font = QFont(); // Fallback
+        }
+    } else if (skin == "ZX Spectrum") {
+        if (m_zxFontId == -1) {
+            QFile file(":/images/zxspectrum.ttf");
+            if (!file.exists()) {
+                qWarning() << "Plik zxspectrum.ttf nie istnieje w zasobach!";
+                font = QFont(); // Fallback na domyślną czcionkę systemową
+            } else {
+                m_zxFontId = QFontDatabase::addApplicationFont(":/images/zxspectrum.ttf");
+                if (m_zxFontId == -1) {
+                    qWarning() << "Nie można załadować pliku zxspectrum.ttf z zasobów";
+                }
+            }
+        }
+        if (m_zxFontId != -1) {
+            QStringList families = QFontDatabase::applicationFontFamilies(m_zxFontId);
+            if (!families.isEmpty()) {
+                font.setFamily(families.first());
+                font.setPointSize(12);
+                qDebug() << "Załadowano czcionkę ZX Spectrum dla skórki ZX Spectrum, rodzina:"
+                         << families.first();
+            } else {
+                qWarning() << "Brak dostępnych rodzin czcionek dla zxspectrum.ttf";
+                font = QFont(); // Fallback
+            }
+        } else {
+            font = QFont(); // Fallback
+        }
+    } else {
+        // Standard: użyj domyślnej czcionki systemowej
+        font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+        font.setPointSize(12); // Spójność z innymi skórkami
+        qDebug() << "Ustawiono domyślną czcionkę systemową dla skórki Standard, rodzina:"
+                 << font.family();
+    }
+
+    // Ustaw czcionkę dla aplikacji
+    qApp->setFont(font);
+
+    // Reset palety, aby wymusić aktualizację czcionki
+    qApp->setPalette(QApplication::palette());
+
+    // Wymuś aktualizację stylów, aby zapewnić propagację czcionki
+    qApp->setStyleSheet(qApp->styleSheet());
+    qDebug() << "Ustawiono czcionkę dla aplikacji:" << font.family()
+             << ", rozmiar:" << font.pointSize();
+}
+
+/**
+ * @brief Obsługuje zmianę skórki graficznej.
+ * @param skin Nazwa wybranej skórki (np. "Amiga", "ZX Spectrum", "Standard").
+ *
+ * Ładuje arkusz stylów i czcionkę dla wybranej skórki oraz zapisuje wybór w QSettings,
+ * aby był trwały między sesjami aplikacji.
+ */
+void itemList::onSkinChanged(const QString &skin)
+{
+    loadStyleSheet(skin);
+    loadFont(skin);
+    QSettings settings("SMOK", "Inwentaryzacja");
+    settings.setValue("skin", skin);
+    qDebug() << "Zmieniono skórkę na:" << skin;
+}
+
+/**
  * @brief Inicjalizuje filtry combo boxów.
  * @param db Referencja do obiektu bazy danych.
  *
@@ -218,19 +365,20 @@ itemList::~itemList()
  */
 void itemList::initFilters(QSqlDatabase &db)
 {
-    auto initFilter = [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
-        cb->blockSignals(true);
-        cb->clear();
-        cb->addItem(tr("Wszystkie"));
-        QSqlQuery q(db);
-        q.exec(QString("SELECT name FROM %1 ORDER BY name").arg(table));
-        while (q.next())
-            cb->addItem(q.value(0).toString());
-        cb->blockSignals(false);
-        connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
-            setter(txt == tr("Wszystkie") ? QString() : txt);
-        });
-    };
+    auto initFilter =
+        [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
+            cb->blockSignals(true);
+            cb->clear();
+            cb->addItem(tr("Wszystkie"));
+            QSqlQuery q(db);
+            q.exec(QString("SELECT name FROM %1 ORDER BY name").arg(table));
+            while (q.next())
+                cb->addItem(q.value(0).toString());
+            cb->blockSignals(false);
+            connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
+                setter(txt == tr("Wszystkie") ? QString() : txt);
+            });
+        };
     initFilter(filterTypeComboBox, "types", [this](const QString &v) {
         m_proxyModel->setTypeFilter(v);
     });
@@ -258,7 +406,8 @@ void itemList::refreshFilters()
 {
     QSqlDatabase db = QSqlDatabase::database("default_connection");
     if (!db.isOpen()) {
-        qDebug() << "itemList: Błąd - połączenie z bazą danych zamknięte podczas odświeżania filtrów.";
+        qDebug()
+            << "itemList: Błąd - połączenie z bazą danych zamknięte podczas odświeżania filtrów.";
         return;
     }
 
@@ -487,15 +636,16 @@ void itemList::onEndButtonClicked()
  */
 void itemList::onAboutClicked()
 {
-    const QString html = tr("<h3>%1</h3>"
-                            "<p>%2</p>"
-                            "<p><b>Autor:</b> %3</p>"
-                            "<p><b>Wersja:</b> %4</p>")
-                             .arg(QCoreApplication::applicationName(),
-                                  QStringLiteral("Program do inwentaryzacji retro komputerów"),
-                                  QStringLiteral(
-                                      "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
-                                  QCoreApplication::applicationVersion());
+    const QString html
+        = tr("<h3>%1</h3>"
+             "<p>%2</p>"
+             "<p><b>Autor:</b> %3</p>"
+             "<p><b>Wersja:</b> %4</p>")
+              .arg(QCoreApplication::applicationName(),
+                   QStringLiteral("Program do inwentaryzacji retro komputerów"),
+                   QStringLiteral(
+                       "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
+                   QCoreApplication::applicationVersion());
 
     QMessageBox::about(this, tr("O programie"), html);
 }
@@ -537,7 +687,8 @@ void itemList::onPhotoHovered(PhotoItem *item)
                                            Qt::KeepAspectRatio,
                                            Qt::SmoothTransformation);
 
-    m_previewWindow = new QWidget(this, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+    m_previewWindow = new QWidget(this,
+                                  Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     m_previewWindow->installEventFilter(this);
 
     m_previewWindow->setAttribute(Qt::WA_TranslucentBackground);
@@ -567,8 +718,8 @@ void itemList::onPhotoHovered(PhotoItem *item)
     m_previewWindow->activateWindow();
     m_previewWindow->show();
 
-    QPoint centerInGlobal = m_previewWindow->mapToGlobal(QPoint(m_previewWindow->width() / 2,
-                                                                m_previewWindow->height() / 2));
+    QPoint centerInGlobal = m_previewWindow->mapToGlobal(
+        QPoint(m_previewWindow->width() / 2, m_previewWindow->height() / 2));
     QCursor::setPos(centerInGlobal);
     m_currentHoveredItem = item;
     if (m_hoverCheckTimer && !m_hoverCheckTimer->isActive())
@@ -699,7 +850,8 @@ void itemList::refreshList(const QString &recordId)
  */
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
-    QStringList tables = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
+    QStringList tables
+        = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
     for (const QString &t : tables) {
         if (!db.tables().contains(t, Qt::CaseInsensitive))
             return false;
@@ -956,23 +1108,32 @@ void itemList::updateFilterComboBoxes()
     if (!db.isOpen())
         return;
 
-    QString selType = filterTypeComboBox->currentText() == tr("Wszystkie") ? QString() : filterTypeComboBox->currentText();
-    QString selVendor = filterVendorComboBox->currentText() == tr("Wszystkie") ? QString() : filterVendorComboBox->currentText();
-    QString selModel = filterModelComboBox->currentText() == tr("Wszystkie") ? QString() : filterModelComboBox->currentText();
-    QString selStatus = filterStatusComboBox->currentText() == tr("Wszystkie") ? QString() : filterStatusComboBox->currentText();
-    QString selStorage = filterStorageComboBox->currentText() == tr("Wszystkie") ? QString() : filterStorageComboBox->currentText();
+    QString selType = filterTypeComboBox->currentText() == tr("Wszystkie")
+                          ? QString()
+                          : filterTypeComboBox->currentText();
+    QString selVendor = filterVendorComboBox->currentText() == tr("Wszystkie")
+                            ? QString()
+                            : filterVendorComboBox->currentText();
+    QString selModel = filterModelComboBox->currentText() == tr("Wszystkie")
+                           ? QString()
+                           : filterModelComboBox->currentText();
+    QString selStatus = filterStatusComboBox->currentText() == tr("Wszystkie")
+                            ? QString()
+                            : filterStatusComboBox->currentText();
+    QString selStorage = filterStorageComboBox->currentText() == tr("Wszystkie")
+                             ? QString()
+                             : filterStorageComboBox->currentText();
 
-    struct Filter {
+    struct Filter
+    {
         QComboBox *cb;
         QString field;
     };
-    QVector<Filter> filters = {
-        {filterTypeComboBox, "types.name"},
-        {filterVendorComboBox, "vendors.name"},
-        {filterModelComboBox, "models.name"},
-        {filterStatusComboBox, "statuses.name"},
-        {filterStorageComboBox, "storage_places.name"}
-    };
+    QVector<Filter> filters = {{filterTypeComboBox, "types.name"},
+                               {filterVendorComboBox, "vendors.name"},
+                               {filterModelComboBox, "models.name"},
+                               {filterStatusComboBox, "statuses.name"},
+                               {filterStorageComboBox, "storage_places.name"}};
 
     const QString baseJoins = R"(
         FROM eksponaty
@@ -989,14 +1150,13 @@ void itemList::updateFilterComboBoxes()
         f.cb->clear();
         f.cb->addItem(tr("Wszystkie"));
 
-        QString sql = QString(
-                          "SELECT DISTINCT %1 %2 "
-                          "WHERE (:selType IS NULL OR types.name = :selType) "
-                          "AND (:selVendor IS NULL OR vendors.name = :selVendor) "
-                          "AND (:selModel IS NULL OR models.name = :selModel) "
-                          "AND (:selStatus IS NULL OR statuses.name = :selStatus) "
-                          "AND (:selStorage IS NULL OR storage_places.name = :selStorage) "
-                          "ORDER BY %1")
+        QString sql = QString("SELECT DISTINCT %1 %2 "
+                              "WHERE (:selType IS NULL OR types.name = :selType) "
+                              "AND (:selVendor IS NULL OR vendors.name = :selVendor) "
+                              "AND (:selModel IS NULL OR models.name = :selModel) "
+                              "AND (:selStatus IS NULL OR statuses.name = :selStatus) "
+                              "AND (:selStorage IS NULL OR storage_places.name = :selStorage) "
+                              "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
         QSqlQuery q(db);

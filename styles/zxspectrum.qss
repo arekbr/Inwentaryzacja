@@ -8,6 +8,7 @@ QMainWindow {
 QWidget {
     background-color: #000000;
     color: #FFFFFF;
+    font-family: inherit;
 }
 
 /* Etykiety */

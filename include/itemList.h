@@ -2,13 +2,12 @@
  * @file itemList.h
  * @brief Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyjnej.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.1.10
+ * @date 2025-04-30
  *
  * Klasa itemList reprezentuje widget wyświetlający tabelę eksponatów z możliwością filtrowania, edycji,
- * dodawania, usuwania i klonowania rekordów. Obsługuje interakcję z miniaturami zdjęć oraz podgląd
- * pełnoekranowy. Wykorzystuje model relacyjny QSqlRelationalTableModel oraz proxy ItemFilterProxyModel
- * do filtrowania danych.
+ * dodawania, usuwania i klonowania rekordów. Obsługuje interakcję z miniaturami zdjęć, podgląd
+ * pełnoekranowy, wybór skórki graficznej oraz dynamiczną zmianę czcionek w zależności od skórki.
  */
 
 #ifndef ITEMLIST_H
@@ -33,9 +32,8 @@ class itemList;
  *
  * Klasa itemList odpowiada za wyświetlanie i zarządzanie tabelą eksponatów w aplikacji do inwentaryzacji
  * retro komputerów. Umożliwia filtrowanie danych za pomocą combo boxów, obsługę zdjęć eksponatów
- * (podgląd, powiększenie, pełny ekran), a także operacje CRUD (Create, Read, Update, Delete) na rekordach.
- * Wykorzystuje QSqlRelationalTableModel jako źródło danych oraz ItemFilterProxyModel do dynamicznego
- * filtrowania.
+ * (podgląd, powiększenie, pełny ekran), operacje CRUD (Create, Read, Update, Delete) na rekordach,
+ * zmianę skórki graficznej oraz dynamiczną zmianę czcionek w zależności od wybranej skórki.
  */
 class itemList : public QWidget
 {
@@ -46,7 +44,7 @@ public:
      * @brief Konstruktor klasy itemList.
      * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
      *
-     * Inicjalizuje interfejs użytkownika, model danych, filtry oraz połączenia sygnałów i slotów.
+     * Inicjalizuje interfejs użytkownika, model danych, filtry, skórkę graficzną, czcionki oraz połączenia sygnałów i slotów.
      */
     explicit itemList(QWidget *parent = nullptr);
 
@@ -90,7 +88,8 @@ private slots:
      *
      * Aktualizuje wyświetlane miniatury zdjęć dla wybranego eksponatu.
      */
-    void onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    void onTableViewSelectionChanged(const QItemSelection &selected,
+                                     const QItemSelection &deselected);
 
     /**
      * @brief Odświeża listę po zapisaniu rekordu.
@@ -132,6 +131,14 @@ private slots:
      */
     void onFilterChanged();
 
+    /**
+     * @brief Obsługuje zmianę skórki graficznej.
+     * @param skin Nazwa wybranej skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     *
+     * Ładuje odpowiedni plik QSS, ustawia odpowiednią czcionkę i zapisuje wybór w QSettings.
+     */
+    void onSkinChanged(const QString &skin);
+
 private:
     /**
      * @brief Weryfikuje schemat bazy danych.
@@ -167,6 +174,18 @@ private:
      * @brief Odbudowuje listy w combo boxach filtrów.
      */
     void updateFilterComboBoxes();
+
+    /**
+     * @brief Ładuje arkusz stylów dla wybranej skórki.
+     * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     */
+    void loadStyleSheet(const QString &skin);
+
+    /**
+     * @brief Ładuje czcionkę dla wybranej skórki.
+     * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     */
+    void loadFont(const QString &skin);
 
     /**
      * @brief Obsługuje zdarzenia filtrowania (np. opuszczenie okna podglądu).
@@ -217,6 +236,12 @@ private:
 
     /// Timer do utrzymywania aktywności połączenia z bazą danych.
     QTimer *m_keepAliveTimer;
+
+    /// ID czcionki Topaz załadowanej z zasobów.
+    int m_topazFontId;
+
+    /// ID czcionki ZX Spectrum załadowanej z zasobów.
+    int m_zxFontId;
 };
 
 #endif // ITEMLIST_H
