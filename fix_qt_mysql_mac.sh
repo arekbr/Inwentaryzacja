@@ -4,18 +4,25 @@
 # KONFIGURACJA
 # ============================
 
-MYSQL_LIB="/usr/local/mysql-8.0.31-macos12-x86_64/lib/libmysqlclient.21.dylib"
-QT_PLUGIN_PATH="$HOME/Qt/6.5.3/macos/plugins/sqldrivers"
+LIB_DIR="/Users/Arek/projektyQT/Inwentaryzacja/macos_lib_sql"
+MYSQL_LIB="$LIB_DIR/libmysqlclient.21.dylib"
+QT_PLUGIN_PATH="$LIB_DIR"
+LIBSSL="$LIB_DIR/libssl.1.1.dylib"
+LIBCRYPTO="$LIB_DIR/libcrypto.1.1.dylib"
 
-# Szukamy bibliotek SSL 1.1 (potrzebnych przez MySQL 8)
-LIBSSL=$(find /usr/local /opt /usr -name "libssl.1.1.dylib" 2>/dev/null | head -n 1)
-LIBCRYPTO=$(find /usr/local /opt /usr -name "libcrypto.1.1.dylib" 2>/dev/null | head -n 1)
+# Sprawdzenie, czy wszystkie pliki istnieją
+for lib in "$MYSQL_LIB" "$QT_PLUGIN_PATH/libqsqlmysql.dylib" "$LIBSSL" "$LIBCRYPTO"; do
+  if [[ ! -f "$lib" ]]; then
+    echo "❌ Brak pliku: $lib"
+    exit 1
+  fi
+done
 
 # ============================
 # SZUKAJ .app
 # ============================
 
-APP_PATH=$(find ./build -type d -name "*.app" | head -n 1)
+APP_PATH=$(find /Users/Arek/projektyQT/Inwentaryzacja/build -type d -name "*.app" | head -n 1)
 if [[ -z "$APP_PATH" ]]; then
   echo "❌ Nie znaleziono .app w katalogu build/"
   exit 1
@@ -36,13 +43,13 @@ echo "⚙️ Binarka: $BIN_PATH"
 
 mkdir -p "$PLUGIN_DIR"
 if [[ ! -f "$PLUGIN_PATH" ]]; then
-  echo "🔌 Kopiuję plugin QMYSQL..."
+  echo "🔌 Kopiuję plugin QMYSQL z $QT_PLUGIN_PATH/libqsqlmysql.dylib..."
   cp "$QT_PLUGIN_PATH/libqsqlmysql.dylib" "$PLUGIN_PATH" || {
     echo "❌ Nie udało się skopiować pluginu Qt MySQL"
     exit 1
   }
 else
-  echo "✅ Plugin QMYSQL już obecny."
+  echo "✅ Plugin QMYSQL już obecny w $PLUGIN_PATH."
 fi
 
 # ============================
@@ -51,24 +58,29 @@ fi
 
 mkdir -p "$FRAMEWORKS_PATH"
 if [[ ! -f "$FRAMEWORKS_PATH/libmysqlclient.21.dylib" ]]; then
-  echo "📥 Kopiuję libmysqlclient.21.dylib..."
-  cp "$MYSQL_LIB" "$FRAMEWORKS_PATH/"
+  echo "📥 Kopiuję $MYSQL_LIB do $FRAMEWORKS_PATH/libmysqlclient.21.dylib..."
+  cp "$MYSQL_LIB" "$FRAMEWORKS_PATH/libmysqlclient.21.dylib" || {
+    echo "❌ Błąd podczas kopiowania libmysqlclient.21.dylib"
+    exit 1
+  }
 else
-  echo "✅ libmysqlclient.21.dylib już obecny."
+  echo "✅ libmysqlclient.21.dylib już obecny w $FRAMEWORKS_PATH."
 fi
 
 # ============================
 # libssl i libcrypto
 # ============================
 
-if [[ -n "$LIBSSL" && -n "$LIBCRYPTO" ]]; then
-  echo "🔐 Kopiuję libssl i libcrypto..."
-  cp "$LIBSSL" "$FRAMEWORKS_PATH/"
-  cp "$LIBCRYPTO" "$FRAMEWORKS_PATH/"
-else
-  echo "❌ Nie znaleziono libssl.1.1.dylib lub libcrypto.1.1.dylib"
+echo "🔐 Kopiuję libssl i libcrypto..."
+cp "$LIBSSL" "$FRAMEWORKS_PATH/libssl.1.1.dylib" || {
+  echo "❌ Błąd podczas kopiowania libssl.1.1.dylib"
   exit 1
-fi
+}
+cp "$LIBCRYPTO" "$FRAMEWORKS_PATH/libcrypto.1.1.dylib" || {
+  echo "❌ Błąd podczas kopiowania libcrypto.1.1.dylib"
+  exit 1
+}
+echo "✅ libssl i libcrypto skopiowane."
 
 # ============================
 # PATCH pluginu Qt
@@ -77,7 +89,10 @@ fi
 echo "🛠️ Patchuję plugin QMYSQL..."
 install_name_tool -change @rpath/libmysqlclient.21.dylib \
   @executable_path/../Frameworks/libmysqlclient.21.dylib \
-  "$PLUGIN_PATH"
+  "$PLUGIN_PATH" || {
+    echo "❌ Błąd podczas patchowania pluginu QMYSQL"
+    exit 1
+  }
 
 # ============================
 # PATCH libmysqlclient (SSL deps)
@@ -86,11 +101,17 @@ install_name_tool -change @rpath/libmysqlclient.21.dylib \
 echo "🛠️ Patchuję libmysqlclient.21.dylib..."
 install_name_tool -change @loader_path/../lib/libssl.1.1.dylib \
   @executable_path/../Frameworks/libssl.1.1.dylib \
-  "$FRAMEWORKS_PATH/libmysqlclient.21.dylib"
+  "$FRAMEWORKS_PATH/libmysqlclient.21.dylib" || {
+    echo "❌ Błąd podczas patchowania libmysqlclient dla libssl"
+    exit 1
+  }
 
 install_name_tool -change @loader_path/../lib/libcrypto.1.1.dylib \
   @executable_path/../Frameworks/libcrypto.1.1.dylib \
-  "$FRAMEWORKS_PATH/libmysqlclient.21.dylib"
+  "$FRAMEWORKS_PATH/libmysqlclient.21.dylib" || {
+    echo "❌ Błąd podczas patchowania libmysqlclient dla libcrypto"
+    exit 1
+  }
 
 # ============================
 # RPATH (na wszelki wypadek)
@@ -99,10 +120,12 @@ install_name_tool -change @loader_path/../lib/libcrypto.1.1.dylib \
 echo "🔧 Sprawdzam @rpath..."
 if ! otool -l "$BIN_PATH" | grep -q "@executable_path/../Frameworks"; then
   echo "➕ Dodaję @rpath..."
-  install_name_tool -add_rpath @executable_path/../Frameworks "$BIN_PATH"
+  install_name_tool -add_rpath @executable_path/../Frameworks "$BIN_PATH" || {
+    echo "❌ Błąd podczas dodawania @rpath"
+    exit 1
+  }
 else
   echo "ℹ️ @rpath już obecny."
 fi
 
 echo "✅ GOTOWE: Twoja aplikacja Qt powinna teraz bez problemu ładować driver QMYSQL + libssl."
-
