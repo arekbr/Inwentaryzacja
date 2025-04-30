@@ -5,7 +5,7 @@ releasowa/
 deploy/
 *.exe
 *.log
-*.user
+*.pro.user*
 *.zip
 *.dmg
 *.db
