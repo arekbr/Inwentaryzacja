@@ -31,12 +31,14 @@ void loadStyleSheet(const QString &filePath)
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString style = QString::fromUtf8(file.readAll());
+        qDebug() << "Zawartość pliku stylu (" << filePath << "):\n" << style; // Debugowanie
         qApp->setStyleSheet(style);
         file.close();
     } else {
         qWarning("Nie można załadować pliku stylu: %s", qPrintable(filePath));
     }
 }
+
 
 /**
  * @brief Główna funkcja aplikacji inwentaryzacyjnej.
@@ -52,7 +54,12 @@ void loadStyleSheet(const QString &filePath)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    loadStyleSheet(":styles/amiga.qss");
+    // Wymuszenie stylu Qt, aby uniknąć nadpisywania przez styl systemowy
+    a.setStyle("Fusion");
+
+    // Ładowanie stylu z zasobów Qt (.qrc)
+    loadStyleSheet(":/styles/amiga.qss");
+
 
     // Ładuj czcionkę Topaz
     int id = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
