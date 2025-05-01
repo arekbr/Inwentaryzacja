@@ -19,5 +19,7 @@
         <file>images/amiga_end.png</file>
         <file>images/amiga_about.png</file>
         <file>styles/zxspectrum.qss</file>
+        <file>fonts/topaz.ttf</file>
+        <file>fonts/zxspectrum.ttf</file>
     </qresource>
 </RCC>
