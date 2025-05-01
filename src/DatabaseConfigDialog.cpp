@@ -301,12 +301,12 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
     QFont font;
     if (skin == "Amiga") {
         if (m_topazFontId == -1) {
-            QFile file(":/images/topaz.ttf");
+            QFile file(":/fonts/topaz.ttf");
             if (!file.exists()) {
                 qWarning() << "Plik topaz.ttf nie istnieje w zasobach!";
                 font = QFont(); // Fallback na domyślną czcionkę systemową
             } else {
-                m_topazFontId = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
+                m_topazFontId = QFontDatabase::addApplicationFont(":/fonts/topaz.ttf");
                 if (m_topazFontId == -1) {
                     qWarning() << "Nie można załadować pliku topaz.ttf z zasobów";
                 }
@@ -328,12 +328,12 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
         }
     } else if (skin == "ZX Spectrum") {
         if (m_zxFontId == -1) {
-            QFile file(":/images/zxspectrum.ttf");
+            QFile file(":/fonts/zxspectrum.ttf");
             if (!file.exists()) {
                 qWarning() << "Plik zxspectrum.ttf nie istnieje w zasobach!";
                 font = QFont(); // Fallback na domyślną czcionkę systemową
             } else {
-                m_zxFontId = QFontDatabase::addApplicationFont(":/images/zxspectrum.ttf");
+                m_zxFontId = QFontDatabase::addApplicationFont(":/fonts/zxspectrum.ttf");
                 if (m_zxFontId == -1) {
                     qWarning() << "Nie można załadować pliku zxspectrum.ttf z zasobów";
                 }
