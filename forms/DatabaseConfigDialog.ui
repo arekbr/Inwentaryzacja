@@ -149,6 +149,11 @@
      </item>
      <item>
       <property name="text">
+       <string>Atari 8bit</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>Amiga</string>
       </property>
      </item>
