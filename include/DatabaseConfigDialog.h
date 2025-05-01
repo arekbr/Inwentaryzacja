@@ -147,6 +147,9 @@ private:
 
     /// ID czcionki ZX Spectrum załadowanej z zasobów.
     int m_zxFontId;
+
+    /// ID czcionki ZX Spectrum załadowanej z zasobów.
+    int m_atari8bitFontId;
 };
 
 #endif // DATABASECONFIGDIALOG_H

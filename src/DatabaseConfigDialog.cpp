@@ -58,6 +58,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     , ui(new Ui::DatabaseConfigDialog)
     , m_topazFontId(-1)
     , m_zxFontId(-1)
+    , m_atari8bitFontId(-1)
 {
     ui->setupUi(this);
 
@@ -79,7 +80,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
 
     // Inicjalizacja combo boxa dla skórki graficznej
     ui->filterSelectSkin->clear();
-    ui->filterSelectSkin->addItems({"Amiga", "ZX Spectrum", "Standard"});
+    ui->filterSelectSkin->addItems({"Amiga", "Atari 8bit", "ZX Spectrum", "Standard"});
 
     // Ładowanie zapisanych ustawień
     QSettings settings = getSettings();
@@ -273,6 +274,8 @@ void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
         qssPath = ":/styles/amiga.qss";
     } else if (skin == "ZX Spectrum") {
         qssPath = ":/styles/zxspectrum.qss";
+    } else if (skin == "Atari 8bit") {
+        qssPath = ":/styles/atari8bit.qss";
     } else {
         qssPath = ":/styles/default.qss"; // Domyślnie Standard
     }
@@ -348,6 +351,34 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
                          << families.first();
             } else {
                 qWarning() << "Brak dostępnych rodzin czcionek dla zxspectrum.ttf";
+                font = QFont(); // Fallback
+            }
+        } else {
+            font = QFont(); // Fallback
+        }
+    } else if (skin == "Atari 8bit") {
+        if (m_atari8bitFontId == -1) {
+            QFile file(":/fonts/EightBit Atari-Ataripl.ttf");
+            if (!file.exists()) {
+                qWarning() << "Plik EightBit Atari-Ataripl.ttf nie istnieje w zasobach!";
+                font = QFont(); // Fallback na domyślną czcionkę systemową
+            } else {
+                m_atari8bitFontId = QFontDatabase::addApplicationFont(
+                    ":/fonts/EightBit Atari-Ataripl.ttf");
+                if (m_atari8bitFontId == -1) {
+                    qWarning() << "Nie można załadować pliku EightBit Atari-Ataripl.ttf z zasobów";
+                }
+            }
+        }
+        if (m_atari8bitFontId != -1) {
+            QStringList families = QFontDatabase::applicationFontFamilies(m_atari8bitFontId);
+            if (!families.isEmpty()) {
+                font.setFamily(families.first());
+                font.setPointSize(12);
+                qDebug() << "Załadowano czcionkę EightBit Atari-Ataripl dla skórki Atari, rodzina:"
+                         << families.first();
+            } else {
+                qWarning() << "Brak dostępnych rodzin czcionek dla EightBit Atari-Ataripl.ttf";
                 font = QFont(); // Fallback
             }
         } else {

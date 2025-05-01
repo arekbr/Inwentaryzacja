@@ -152,6 +152,7 @@ DISTFILES += \
     sqldrivers/mysql_native_password.dll \
     sqldrivers/qsqlmysql.dll \
     styles/amiga.qss \
+    styles/atari8bit.qss \
     styles/default.qss \
     styles/zxspectrum.qss
 

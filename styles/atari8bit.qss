@@ -1,0 +1,136 @@
+/* Główne okno aplikacji */
+QMainWindow {
+    background-color: #015869; /* Tło z menu */
+    color: #4F91A0; /* Poprawiony kolor czcionki: RGB(79, 145, 160) */
+    font-family: "EightBit Atari", monospace;
+    font-size: 12px;
+}
+
+/* Wszystkie widgety */
+QWidget {
+    background-color: #015869;
+    color: #4F91A0;
+    font-family: "EightBit Atari", monospace;
+}
+
+/* Etykiety */
+QLabel {
+    background: transparent;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+}
+
+/* Pola tekstowe, comboboxy, edytory daty */
+QLineEdit, QPlainTextEdit, QComboBox, QDateEdit {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 2px outset #003F4E; /* Ramka z menu */
+    padding: 2px;
+    font-weight: bold;
+}
+
+/* Lista rozwijana w QComboBox */
+QComboBox QAbstractItemView {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    selection-background-color: #C0D0D0; /* Podświetlenie z menu */
+    selection-color: #000000;
+}
+
+/* Przyciski */
+QPushButton {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 2px outset #003F4E; /* Ramka z menu */
+    padding: 5px;
+    font-weight: bold;
+}
+
+QPushButton:pressed {
+    background-color: #C0D0D0; /* Podświetlenie z menu */
+    color: #000000;
+    border: 2px inset #003F4E; /* Wklęsły efekt */
+}
+
+/* Pasek statusu */
+QStatusBar {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border-top: 1px solid #003F4E;
+}
+
+/* Widok graficzny */
+QGraphicsView {
+    background-color: #015869;
+    border: 2px outset #003F4E;
+}
+
+/* Paski przewijania */
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #015869;
+    border: 2px outset #003F4E;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #4F91A0; /* Poprawiony kolor uchwytu */
+    border: 1px solid #003F4E;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+/* Tabela (QTableView) */
+QTableView {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 2px outset #003F4E;
+    gridline-color: #003F4E;
+}
+
+/* Komórki w tabeli */
+QTableView::item {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+}
+
+/* Wybrane komórki */
+QTableView::item:selected {
+    background-color: #4F91A0; /* Inwers: tło = kolor tekstu */
+    color: #015869; /* Inwers: tekst = kolor tła */
+}
+
+/* Nagłówki tabeli */
+QHeaderView::section {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 1px solid #003F4E;
+    padding: 4px;
+}
+
+/* Listy i drzewa */
+QListView, QTreeView {
+    background-color: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 2px outset #003F4E;
+}
+
+QListView::item:selected, QTreeView::item:selected {
+    background-color: #C0D0D0; /* Podświetlenie z menu */
+    color: #000000;
+}
+
+/* Zakładki */
+QTabWidget::pane {
+    border: 2px outset #003F4E;
+}
+
+QTabBar::tab {
+    background: #015869;
+    color: #4F91A0; /* Poprawiony kolor czcionki */
+    border: 2px outset #003F4E;
+    padding: 5px;
+}
+
+QTabBar::tab:selected {
+    background: #C0D0D0; /* Podświetlenie z menu */
+    color: #000000;
+    border: 2px inset #003F4E;
+}
