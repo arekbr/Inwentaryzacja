@@ -2,13 +2,14 @@
  * @file itemList.cpp
  * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.10
- * @date 2025-04-30
+ * @version 1.2.0
+ * @date 2025-05-01
  *
  * Plik zawiera implementację metod klasy itemList, odpowiedzialnej za wyświetlanie i zarządzanie
  * listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenia z bazą danych MySQL,
  * filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, interakcje użytkownika (dodawanie,
- * edycja, usuwanie, klonowanie rekordów), zmianę skórki graficznej oraz dynamiczną zmianę czcionek.
+ * edycja, usuwanie, klonowanie rekordów). Skórka graficzna i czcionki są zarządzane przez
+ * klasę DatabaseConfigDialog.
  */
 
 #include "itemList.h"
@@ -25,7 +26,6 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
-#include <QFontDatabase>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGuiApplication>
@@ -52,9 +52,8 @@
  *
  * Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych MySQL, konfiguruje
  * model danych (QSqlRelationalTableModel), model proxy (ItemFilterProxyModel), filtry
- * kaskadowe w combo boxach, combo box wyboru skórki graficznej oraz czcionki. Podłącza sygnały
- * i sloty dla przycisków, tabeli, interakcji ze zdjęciami i zmiany skórki. W razie potrzeby
- * tworzy schemat bazy danych i wstawia przykładowe dane.
+ * kaskadowe w combo boxach oraz podłącza sygnały i sloty dla przycisków, tabeli i interakcji
+ * ze zdjęciami. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane.
  */
 itemList::itemList(QWidget *parent)
     : QWidget(parent)
@@ -69,8 +68,6 @@ itemList::itemList(QWidget *parent)
     , m_currentRecordId()
     , m_previewWindow(nullptr)
     , m_currentHoveredItem(nullptr)
-    , m_topazFontId(-1)
-    , m_zxFontId(-1)
 {
     ui->setupUi(this);
 
@@ -80,16 +77,6 @@ itemList::itemList(QWidget *parent)
     filterModelComboBox = ui->filterModelComboBox;
     filterStatusComboBox = ui->filterStatusComboBox;
     filterStorageComboBox = ui->filterStorageComboBox;
-
-    // Inicjalizacja combo boxa wyboru skórki
-    ui->filterSelectSkin->clear();
-    ui->filterSelectSkin->addItems({"Amiga", "ZX Spectrum", "Standard"});
-    QSettings settings("SMOK", "Inwentaryzacja");
-    QString savedSkin = settings.value("skin", "Standard").toString();
-    int skinIndex = ui->filterSelectSkin->findText(savedSkin);
-    ui->filterSelectSkin->setCurrentIndex(skinIndex != -1 ? skinIndex : 2); // Domyślnie "Standard"
-    loadStyleSheet(ui->filterSelectSkin->currentText());
-    loadFont(ui->filterSelectSkin->currentText());
 
     // Połączenie z bazą danych
     QSqlDatabase db;
@@ -181,9 +168,6 @@ itemList::itemList(QWidget *parent)
             this,
             &itemList::onTableViewSelectionChanged);
 
-    // Połączenie combo boxa wyboru skórki
-    connect(ui->filterSelectSkin, &QComboBox::currentTextChanged, this, &itemList::onSkinChanged);
-
     // Inicjalizacja filtrów
     initFilters(db);
 
@@ -225,143 +209,11 @@ itemList::~itemList()
 }
 
 /**
- * @brief Ładuje arkusz stylów dla wybranej skórki.
- * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
- *
- * Mapuje nazwę skórki na odpowiedni plik QSS w zasobach Qt i ustawia styl aplikacji
- * za pomocą qApp->setStyleSheet.
- */
-void itemList::loadStyleSheet(const QString &skin)
-{
-    QString qssPath;
-    if (skin == "Amiga") {
-        qssPath = ":/styles/amiga.qss";
-    } else if (skin == "ZX Spectrum") {
-        qssPath = ":/styles/zxspectrum.qss";
-    } else {
-        qssPath = ":/styles/default.qss"; // Domyślnie Standard
-    }
-
-    QFile file(qssPath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString style = QString::fromUtf8(file.readAll());
-        qApp->setStyleSheet(style);
-        file.close();
-        qDebug() << "Załadowano skórkę:" << skin << "z pliku:" << qssPath;
-    } else {
-        qWarning() << "Nie można załadować pliku QSS:" << qssPath;
-    }
-}
-
-/**
- * @brief Ładuje czcionkę dla wybranej skórki.
- * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
- *
- * Mapuje nazwę skórki na odpowiednią czcionkę: Amiga -> topaz.ttf, ZX Spectrum -> zxspectrum.ttf,
- * Standard -> domyślna czcionka systemowa. Ładuje czcionkę z zasobów Qt za pomocą QFontDatabase
- * i ustawia ją dla aplikacji za pomocą qApp->setFont. Używa statycznych metod QFontDatabase,
- * aby uniknąć ostrzeżeń o przestarzałym API.
- */
-void itemList::loadFont(const QString &skin)
-{
-    QFont font;
-    if (skin == "Amiga") {
-        if (m_topazFontId == -1) {
-            QFile file(":/images/topaz.ttf");
-            if (!file.exists()) {
-                qWarning() << "Plik topaz.ttf nie istnieje w zasobach!";
-                font = QFont(); // Fallback na domyślną czcionkę systemową
-            } else {
-                m_topazFontId = QFontDatabase::addApplicationFont(":/images/topaz.ttf");
-                if (m_topazFontId == -1) {
-                    qWarning() << "Nie można załadować pliku topaz.ttf z zasobów";
-                }
-            }
-        }
-        if (m_topazFontId != -1) {
-            QStringList families = QFontDatabase::applicationFontFamilies(m_topazFontId);
-            if (!families.isEmpty()) {
-                font.setFamily(families.first());
-                font.setPointSize(12);
-                qDebug() << "Załadowano czcionkę Topaz dla skórki Amiga, rodzina:"
-                         << families.first();
-            } else {
-                qWarning() << "Brak dostępnych rodzin czcionek dla topaz.ttf";
-                font = QFont(); // Fallback
-            }
-        } else {
-            font = QFont(); // Fallback
-        }
-    } else if (skin == "ZX Spectrum") {
-        if (m_zxFontId == -1) {
-            QFile file(":/images/zxspectrum.ttf");
-            if (!file.exists()) {
-                qWarning() << "Plik zxspectrum.ttf nie istnieje w zasobach!";
-                font = QFont(); // Fallback na domyślną czcionkę systemową
-            } else {
-                m_zxFontId = QFontDatabase::addApplicationFont(":/images/zxspectrum.ttf");
-                if (m_zxFontId == -1) {
-                    qWarning() << "Nie można załadować pliku zxspectrum.ttf z zasobów";
-                }
-            }
-        }
-        if (m_zxFontId != -1) {
-            QStringList families = QFontDatabase::applicationFontFamilies(m_zxFontId);
-            if (!families.isEmpty()) {
-                font.setFamily(families.first());
-                font.setPointSize(12);
-                qDebug() << "Załadowano czcionkę ZX Spectrum dla skórki ZX Spectrum, rodzina:"
-                         << families.first();
-            } else {
-                qWarning() << "Brak dostępnych rodzin czcionek dla zxspectrum.ttf";
-                font = QFont(); // Fallback
-            }
-        } else {
-            font = QFont(); // Fallback
-        }
-    } else {
-        // Standard: użyj domyślnej czcionki systemowej
-        font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
-        font.setPointSize(12); // Spójność z innymi skórkami
-        qDebug() << "Ustawiono domyślną czcionkę systemową dla skórki Standard, rodzina:"
-                 << font.family();
-    }
-
-    // Ustaw czcionkę dla aplikacji
-    qApp->setFont(font);
-
-    // Reset palety, aby wymusić aktualizację czcionki
-    qApp->setPalette(QApplication::palette());
-
-    // Wymuś aktualizację stylów, aby zapewnić propagację czcionki
-    qApp->setStyleSheet(qApp->styleSheet());
-    qDebug() << "Ustawiono czcionkę dla aplikacji:" << font.family()
-             << ", rozmiar:" << font.pointSize();
-}
-
-/**
- * @brief Obsługuje zmianę skórki graficznej.
- * @param skin Nazwa wybranej skórki (np. "Amiga", "ZX Spectrum", "Standard").
- *
- * Ładuje arkusz stylów i czcionkę dla wybranej skórki oraz zapisuje wybór w QSettings,
- * aby był trwały między sesjami aplikacji.
- */
-void itemList::onSkinChanged(const QString &skin)
-{
-    loadStyleSheet(skin);
-    loadFont(skin);
-    QSettings settings("SMOK", "Inwentaryzacja");
-    settings.setValue("skin", skin);
-    qDebug() << "Zmieniono skórkę na:" << skin;
-}
-
-/**
  * @brief Inicjalizuje filtry combo boxów.
  * @param db Referencja do obiektu bazy danych.
  *
  * Wypełnia combo boxy danymi z odpowiednich tabel bazy danych (types, vendors, models, statuses,
- * storage_places) i podłącza sloty do aktualizacji filtrów w modelu proxy. Każdy combo box
- * zawiera opcję "Wszystkie" oraz unikalne wartości z danej tabeli.
+ * storage_places) i podłącza sloty do aktualizacji filtrów w modelu proxy.
  */
 void itemList::initFilters(QSqlDatabase &db)
 {
@@ -440,7 +292,7 @@ void itemList::refreshFilters()
  * @param deselected Odznaczone indeksy.
  *
  * Wczytuje zdjęcia powiązane z wybranym eksponatem z tabeli photos i wyświetla ich miniatury
- * w QGraphicsView. Ustawia siatkę miniaturek w zależności od liczby zdjęć i rozmiaru widoku.
+ * w QGraphicsView.
  */
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
@@ -505,12 +357,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         scene->addItem(item);
 
         connect(item, &PhotoItem::clicked, this, &itemList::onPhotoHovered);
-        // Emituje sygnał kliknięcia po jednokrotnym kliknięciu lewym przyciskiem myszy
-
-        connect(item,
-                &PhotoItem::doubleClicked,
-                this,
-                &itemList::onPhotoClicked); // Emituje sygnał podwójnego kliknięcia lewym przyciskiem myszy
+        connect(item, &PhotoItem::doubleClicked, this, &itemList::onPhotoClicked);
 
         x += scaled.width() + spacing;
         if ((i + 1) % cols == 0) {
@@ -528,8 +375,6 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
 /**
  * @brief Otwiera okno dodawania nowego eksponatu.
- *
- * Tworzy nowe okno MainWindow w trybie dodawania rekordu i podłącza sygnał zapisu rekordu.
  */
 void itemList::onNewButtonClicked()
 {
@@ -542,8 +387,6 @@ void itemList::onNewButtonClicked()
 
 /**
  * @brief Otwiera okno edycji wybranego eksponatu.
- *
- * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie edycji.
  */
 void itemList::onEditButtonClicked()
 {
@@ -565,8 +408,6 @@ void itemList::onEditButtonClicked()
 
 /**
  * @brief Otwiera okno klonowania wybranego eksponatu.
- *
- * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie klonowania.
  */
 void itemList::onCloneButtonClicked()
 {
@@ -588,8 +429,6 @@ void itemList::onCloneButtonClicked()
 
 /**
  * @brief Usuwa wybrany eksponat po potwierdzeniu.
- *
- * Sprawdza, czy wybrano rekord, wyświetla okno potwierdzenia i usuwa rekord z tabeli eksponaty.
  */
 void itemList::onDeleteButtonClicked()
 {
@@ -631,8 +470,6 @@ void itemList::onEndButtonClicked()
 
 /**
  * @brief Wyświetla okno "O programie".
- *
- * Pokazuje informacje o aplikacji, w tym nazwę, wersję i autorów.
  */
 void itemList::onAboutClicked()
 {
@@ -653,9 +490,6 @@ void itemList::onAboutClicked()
 /**
  * @brief Wyświetla podgląd zdjęcia po najechaniu na miniaturę.
  * @param item Wskaźnik na element PhotoItem.
- *
- * Tworzy okno podglądu z powiększonym zdjęciem, centruje je względem miniaturki i przesuwa kursor
- * na środek podglądu. Timer m_hoverCheckTimer sprawdza, czy kursor opuścił podgląd.
  */
 void itemList::onPhotoHovered(PhotoItem *item)
 {
@@ -729,8 +563,6 @@ void itemList::onPhotoHovered(PhotoItem *item)
 /**
  * @brief Ukrywa podgląd zdjęcia po opuszczeniu miniatury.
  * @param item Wskaźnik na element PhotoItem.
- *
- * Zamyka okno podglądu po krótkim opóźnieniu, jeśli kursor nie znajduje się nad oknem podglądu.
  */
 void itemList::onPhotoUnhovered(PhotoItem *item)
 {
@@ -762,8 +594,6 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
  * @param watched Obiekt, dla którego przetwarzane jest zdarzenie.
  * @param event Wskaźnik na zdarzenie.
  * @return true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
- *
- * Zamyka okno podglądu, gdy kursor opuści jego obszar.
  */
 bool itemList::eventFilter(QObject *watched, QEvent *event)
 {
@@ -788,8 +618,6 @@ bool itemList::eventFilter(QObject *watched, QEvent *event)
 /**
  * @brief Otwiera zdjęcie w trybie pełnoekranowym.
  * @param item Wskaźnik na element PhotoItem.
- *
- * Tworzy nowe okno FullScreenPhotoViewer z oryginalnym zdjęciem.
  */
 void itemList::onPhotoClicked(PhotoItem *item)
 {
@@ -804,8 +632,6 @@ void itemList::onPhotoClicked(PhotoItem *item)
 /**
  * @brief Odświeża listę po zapisaniu rekordu.
  * @param recordId ID zapisanego rekordu.
- *
- * Wywołuje odświeżenie listy eksponatów i ustawia zaznaczenie na zapisanym rekordzie.
  */
 void itemList::onRecordSaved(const QString &recordId)
 {
@@ -815,8 +641,6 @@ void itemList::onRecordSaved(const QString &recordId)
 /**
  * @brief Odświeża listę eksponatów.
  * @param recordId Opcjonalne ID rekordu do wybrania po odświeżeniu.
- *
- * Odświeża model danych, filtry i tabelę, a jeśli podano recordId, zaznacza odpowiedni rekord.
  */
 void itemList::refreshList(const QString &recordId)
 {
@@ -844,9 +668,6 @@ void itemList::refreshList(const QString &recordId)
  * @brief Weryfikuje schemat bazy danych.
  * @param db Referencja do obiektu bazy danych.
  * @return true, jeśli wszystkie wymagane tabele istnieją; false w przeciwnym razie.
- *
- * Sprawdza, czy w bazie danych istnieją tabele: eksponaty, types, vendors, models, statuses,
- * storage_places oraz photos.
  */
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
@@ -862,9 +683,6 @@ bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 /**
  * @brief Tworzy schemat bazy danych.
  * @param db Referencja do obiektu bazy danych.
- *
- * Tworzy tabele eksponaty, types, vendors, models, statuses, storage_places i photos w bazie
- * danych MySQL, jeśli jeszcze nie istnieją.
  */
 void itemList::createDatabaseSchema(QSqlDatabase &db)
 {
@@ -943,9 +761,6 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
 /**
  * @brief Wstawia przykładowe dane do bazy danych.
  * @param db Referencja do obiektu bazy danych.
- *
- * Dodaje przykładowe rekordy do tabel types, vendors, models, statuses, storage_places oraz
- * eksponaty, aby umożliwić testowanie aplikacji.
  */
 void itemList::insertSampleData(QSqlDatabase &db)
 {
@@ -1068,10 +883,6 @@ void itemList::insertSampleData(QSqlDatabase &db)
 
 /**
  * @brief Aktualizuje filtry po zmianie wartości w combo boxach.
- *
- * Inicjalizuje timer utrzymujący połączenie z bazą danych, aktualizuje filtry w modelu proxy
- * na podstawie wybranych wartości w combo boxach i odbudowuje listy wartości w combo boxach
- * za pomocą updateFilterComboBoxes().
  */
 void itemList::onFilterChanged()
 {
@@ -1097,10 +908,6 @@ void itemList::onFilterChanged()
 
 /**
  * @brief Odbudowuje listy w combo boxach filtrów.
- *
- * Pobiera aktualne wybory z combo boxów i odbudowuje ich zawartość, uwzględniając zależności
- * między filtrami (kaskadowe filtrowanie). Zapytania SQL używają JOIN, aby uwzględnić wszystkie
- * tabele słownikowe.
  */
 void itemList::updateFilterComboBoxes()
 {
