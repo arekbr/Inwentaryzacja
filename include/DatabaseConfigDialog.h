@@ -1,14 +1,15 @@
 /**
  * @file DatabaseConfigDialog.h
- * @brief Deklaracja klasy DatabaseConfigDialog do konfiguracji połączenia z bazą danych.
+ * @brief Deklaracja klasy DatabaseConfigDialog do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.2.0
+ * @date 2025-05-01
  *
  * Klasa DatabaseConfigDialog reprezentuje okno dialogowe umożliwiające użytkownikowi wybór typu
- * bazy danych (SQLite lub MySQL) oraz wprowadzenie parametrów połączenia, takich jak ścieżka do pliku
- * SQLite lub dane dostępowe MySQL (host, nazwa bazy, użytkownik, hasło, port). Klasa przechowuje
- * wprowadzone dane i udostępnia je poprzez metody dostępowe.
+ * bazy danych (SQLite lub MySQL), wprowadzenie parametrów połączenia (ścieżka do pliku SQLite
+ * lub dane dostępowe MySQL) oraz wybór skórki graficznej aplikacji (Amiga, ZX Spectrum, Standard).
+ * Klasa przechowuje wprowadzone dane, obsługuje zmianę stylów i czcionek, a także zapisuje ustawienia
+ * w QSettings dla trwałości między sesjami aplikacji.
  */
 
 #ifndef DATABASECONFIGDIALOG_H
@@ -23,12 +24,12 @@ class DatabaseConfigDialog;
 
 /**
  * @class DatabaseConfigDialog
- * @brief Okno dialogowe do konfiguracji połączenia z bazą danych.
+ * @brief Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.
  *
- * Klasa DatabaseConfigDialog pozwala użytkownikowi wybrać typ bazy danych (SQLite lub MySQL)
- * i skonfigurować parametry połączenia. Po zatwierdzeniu danych przez użytkownika, parametry
- * są dostępne poprzez metody dostępowe. Obsługuje dynamiczne przełączanie interfejsu w zależności
- * od wybranego typu bazy danych.
+ * Klasa DatabaseConfigDialog pozwala użytkownikowi skonfigurować parametry połączenia z bazą danych
+ * oraz wybrać skórkę graficzną aplikacji. Po zatwierdzeniu danych przez użytkownika, parametry są
+ * zapisywane w QSettings i dostępne poprzez metody dostępowe. Obsługuje dynamiczne przełączanie
+ * interfejsu w zależności od wybranego typu bazy danych oraz zmianę stylów i czcionek aplikacji.
  */
 class DatabaseConfigDialog : public QDialog
 {
@@ -39,20 +40,21 @@ public:
      * @brief Konstruktor klasy DatabaseConfigDialog.
      * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
      *
-     * Inicjalizuje okno dialogowe i ustawia interfejs użytkownika.
+     * Inicjalizuje okno dialogowe, ustawia interfejs użytkownika, ładuje dostępne skórki
+     * i konfiguruje początkowe ustawienia na podstawie QSettings.
      */
     explicit DatabaseConfigDialog(QWidget *parent = nullptr);
 
     /**
      * @brief Destruktor klasy DatabaseConfigDialog.
      *
-     * Zwalnia zasoby interfejsu użytkownika.
+     * Zwalnia zasoby interfejsu użytkownika oraz odrejestrowuje załadowane czcionki.
      */
     ~DatabaseConfigDialog();
 
     /**
      * @brief Zwraca wybrany typ bazy danych.
-     * @return QString zawierający typ bazy danych (np. "SQLite" lub "MySQL").
+     * @return QString zawierający typ bazy danych (np. "SQLite3" lub "MySQL").
      */
     QString selectedDatabaseType() const;
 
@@ -97,7 +99,7 @@ public slots:
      * @brief Zatwierdza wprowadzone dane i zamyka okno dialogowe.
      *
      * Przesłania metodę accept() klasy QDialog, zapisując wprowadzone parametry
-     * i zamykając okno dialogowe.
+     * połączenia z bazą danych oraz wybraną skórkę graficzną w QSettings.
      */
     void accept() override;
 
@@ -111,9 +113,40 @@ private slots:
      */
     void onDatabaseTypeChanged(int index);
 
+    /**
+     * @brief Obsługuje zmianę skórki graficznej.
+     * @param skin Nazwa wybranej skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     *
+     * Ładuje odpowiedni plik QSS, ustawia odpowiednią czcionkę i aktualizuje interfejs aplikacji.
+     */
+    void onSkinChanged(const QString &skin);
+
 private:
+    /**
+     * @brief Ładuje arkusz stylów dla wybranej skórki.
+     * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     *
+     * Wczytuje plik QSS z zasobów Qt i stosuje go do aplikacji za pomocą qApp->setStyleSheet.
+     */
+    void loadStyleSheet(const QString &skin);
+
+    /**
+     * @brief Ładuje czcionkę dla wybranej skórki.
+     * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
+     *
+     * Ładuje odpowiednią czcionkę z zasobów Qt (topaz.ttf dla Amigi, zxspectrum.ttf dla ZX Spectrum
+     * lub domyślną czcionkę systemową dla Standard) i ustawia ją dla aplikacji.
+     */
+    void loadFont(const QString &skin);
+
     /// Wskaźnik na obiekt interfejsu użytkownika.
     Ui::DatabaseConfigDialog *ui;
+
+    /// ID czcionki Topaz załadowanej z zasobów.
+    int m_topazFontId;
+
+    /// ID czcionki ZX Spectrum załadowanej z zasobów.
+    int m_zxFontId;
 };
 
 #endif // DATABASECONFIGDIALOG_H

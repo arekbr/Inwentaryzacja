@@ -42,7 +42,6 @@
        <height>150</height>
       </size>
      </property>
-     <!-- Strona konfiguracji dla SQLite3 -->
      <widget class="QWidget" name="sqlitePage">
       <layout class="QFormLayout" name="formLayoutSQLite">
        <item row="0" column="0">
@@ -64,7 +63,6 @@
        </item>
       </layout>
      </widget>
-     <!-- Strona konfiguracji dla MySQL -->
      <widget class="QWidget" name="mysqlPage">
       <layout class="QFormLayout" name="formLayoutMySQL">
        <item row="0" column="0">
@@ -107,7 +105,7 @@
        <item row="3" column="1">
         <widget class="QLineEdit" name="passwordLineEdit">
          <property name="echoMode">
-          <enum>QLineEdit::Password</enum>
+          <enum>QLineEdit::EchoMode::Password</enum>
          </property>
         </widget>
        </item>
@@ -136,12 +134,38 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="labelSkin">
+     <property name="text">
+      <string>Skórka</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="filterSelectSkin">
+     <item>
+      <property name="text">
+       <string>Standard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Amiga</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ZX Spectrum</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Ok|QDialogButtonBox::Cancel</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
