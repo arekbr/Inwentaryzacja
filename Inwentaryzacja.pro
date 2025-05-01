@@ -76,7 +76,11 @@ TRANSLATIONS += \
 
 DISTFILES += \
     LICENSE \
+    Refactor-Inwentaryzacja.ps1 \
+    deploy_debug.bat \
     fix_mysql_mac_new.sh \
+    fonts/topaz.ttf \
+    fonts/zxspectrum.ttf \
     images/amiga_about.png \
     images/amiga_clone.png \
     images/amiga_delete.png \
@@ -127,6 +131,8 @@ DISTFILES += \
     mysql_dll/libcrypto-3-x64.dll \
     mysql_dll/libmysql.dll \
     mysql_dll/libssl-3-x64.dll \
+    prepare_dmg.sh \
+    prepare_release.sh \
     qt_full_installer.ps1 \
     renumeracja.sh \
     CHANGELOG.md \
@@ -146,7 +152,8 @@ DISTFILES += \
     sqldrivers/mysql_native_password.dll \
     sqldrivers/qsqlmysql.dll \
     styles/amiga.qss \
-    styles/default.qss
+    styles/default.qss \
+    styles/zxspectrum.qss
 
 RESOURCES += \
         resources.qrc
