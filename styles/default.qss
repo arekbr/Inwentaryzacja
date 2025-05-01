@@ -1,7 +1,6 @@
 /* Globalne ustawienia dla widgetów */
 QWidget {
     background-color: #F5F5F5;
-    font-family: inherit;
 }
 
 /* Etykiety */

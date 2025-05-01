@@ -2,13 +2,14 @@
 QMainWindow {
     background-color: #000000;
     color: #FFFFFF;
+    font-family: "Untitled1";
 }
 
 /* Globalne ustawienia dla widgetów */
 QWidget {
     background-color: #000000;
     color: #FFFFFF;
-    font-family: inherit;
+    font-family: "Untitled1";
 }
 
 /* Etykiety */

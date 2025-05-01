@@ -1,7 +1,7 @@
 /* Główne okno aplikacji */
 QMainWindow {
     background-color: #D4D0C8; /* Workbench Gray - tło główne */
-    font-family: "Topaz Plus";
+    font-family: "Topaz Unicode KS13";
     font-size: 12px;
     color: #000000;
 }
@@ -10,7 +10,7 @@ QMainWindow {
 QWidget {
     background-color: #D4D0C8; /* Workbench Gray - tło dla wszystkich widgetów */
     color: #000000;
-    font-family: inherit;
+    font-family: "Topaz Unicode KS13";
 }
 
 /* Etykiety */
