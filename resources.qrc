@@ -12,14 +12,12 @@
         <file>images/watermark.png</file>
         <file>styles/default.qss</file>
         <file>styles/amiga.qss</file>
-        <file>fonts/topaz.ttf</file>
         <file>images/amiga_new.png</file>
         <file>images/amiga_edit.png</file>
         <file>images/amiga_delete.png</file>
         <file>images/amiga_clone.png</file>
         <file>images/amiga_end.png</file>
         <file>images/amiga_about.png</file>
-        <file>fonts/zxspectrum.ttf</file>
         <file>styles/zxspectrum.qss</file>
     </qresource>
 </RCC>

@@ -79,7 +79,6 @@ DISTFILES += \
     Refactor-Inwentaryzacja.ps1 \
     deploy_debug.bat \
     fix_mysql_mac_new.sh \
-    fonts/topaz.ttf \
     fonts/zxspectrum.ttf \
     images/amiga_about.png \
     images/amiga_clone.png \
