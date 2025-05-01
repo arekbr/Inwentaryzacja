@@ -92,7 +92,6 @@ DISTFILES += \
     images/ikonawin.ico \
     images/installericon.ico \
     images/logo.png \
-    images/topaz.ttf \
     images/watermark.png \
     macos_lib_sql/iconengines/libqsvgicon.dylib \
     macos_lib_sql/imageformats/libqgif.dylib \
