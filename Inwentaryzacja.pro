@@ -1891,13 +1891,19 @@ RESOURCES += \
 DEPLOY_DIR = $$PWD/deploy
 TARGET     = Inwentaryzacja
 
-# — Windows Release deploy
 release:win32 {
     DESTDIR = $$PWD/gotowa
-    QMAKE_POST_LINK =  windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe) && \
-                        copy /Y c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\mysql_dll\\*.dll c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\gotowa\\ && \
-                        copy /Y c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\sqldrivers\\*.dll c:\\Users\\Arek\\projektyQT\\Inwentaryzacja\\gotowa\\sqldrivers\\
+    MYSQL_DLL_DIR = $$PWD/mysql_dll
+    SQLDRIVERS_DIR = $$PWD/sqldrivers
+    SQLDRIVERS_DEST = $$DESTDIR/sqldrivers
+
+    QMAKE_POST_LINK = \
+        windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe) && \
+        if not exist $$shell_path($$SQLDRIVERS_DEST) mkdir $$shell_path($$SQLDRIVERS_DEST) && \
+        copy /Y $$shell_path($$MYSQL_DLL_DIR\\*.dll) $$shell_path($$DESTDIR\\) && \
+        copy /Y $$shell_path($$SQLDRIVERS_DIR\\*.dll) $$shell_path($$SQLDRIVERS_DEST\\)
 }
+
 
 
 # — Linux Release deploy (for .deb and .rpm packages)

@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # ============================
-# KONFIGURACJA
+# KONFIGURACJA (ścieżki relatywne)
 # ============================
 
-LIB_DIR="/Users/Arek/projektyQT/Inwentaryzacja/macos_lib_sql"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="$SCRIPT_DIR/macos_lib_sql"
 MYSQL_LIB="$LIB_DIR/libmysqlclient.21.dylib"
 QT_PLUGIN_PATH="$LIB_DIR"
 LIBSSL="$LIB_DIR/libssl.1.1.dylib"
@@ -125,7 +126,7 @@ install_name_tool -change @loader_path/../lib/libcrypto.1.1.dylib \
 echo "🔧 Sprawdzam @rpath..."
 if ! otool -l "$BIN_PATH" | grep -q "@executable_path/../Frameworks"; then
   echo "➕ Dodaję @rpath..."
- _neighboring_id="e77490b0-5a60-4781-81d1-1aa8a359b376" install_name_tool -add_rpath @executable_path/../Frameworks "$BIN_PATH" || {
+  install_name_tool -add_rpath @executable_path/../Frameworks "$BIN_PATH" || {
     echo "❌ Błąd podczas dodawania @rpath"
     exit 1
   }
