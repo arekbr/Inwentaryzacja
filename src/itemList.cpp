@@ -2,14 +2,32 @@
  * @file itemList.cpp
  * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.0
- * @date 2025-05-01
+ * @version 1.2.2
+ * @date 2025-05-03
  *
+ * @section Overview
  * Plik zawiera implementację metod klasy itemList, odpowiedzialnej za wyświetlanie i zarządzanie
  * listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenia z bazą danych MySQL,
  * filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, interakcje użytkownika (dodawanie,
  * edycja, usuwanie, klonowanie rekordów). Skórka graficzna i czcionki są zarządzane przez
  * klasę DatabaseConfigDialog.
+ *
+ * @section Structure
+ * Kod jest podzielony na następujące sekcje:
+ * 1. **Konstruktor** – inicjalizuje interfejs, model danych, filtry i połączenia sygnałów-slotów.
+ * 2. **Destruktor** – zwalnia zasoby.
+ * 3. **Metody slotów** – obsługują interakcje użytkownika (przyciski, tabela, zdjęcia).
+ * 4. **Metody prywatne** – zarządzają schematem bazy danych, filtrami i zdarzeniami.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QApplication, QSqlDatabase, QSqlQuery, QGraphicsScene, QMessageBox, QTimer, itp.
+ * - **Nagłówki aplikacji**: itemList.h, ItemFilterProxyModel.h, fullscreenphotoviewer.h, mainwindow.h, photoitem.h.
+ * - **Interfejs użytkownika**: ui_itemList.h.
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa obsługuje tylko MySQL w tej implementacji, choć aplikacja wspiera także SQLite (konfigurowane w DatabaseConfigDialog).
+ * - Filtrowanie kaskadowe zapewnia dynamiczną aktualizację combo boxów w zależności od wybranych filtrów.
  */
 
 #include "itemList.h"
@@ -50,6 +68,7 @@
  * @brief Konstruktor klasy itemList.
  * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
  *
+ * @section ConstructorOverview
  * Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych MySQL, konfiguruje
  * model danych (QSqlRelationalTableModel), model proxy (ItemFilterProxyModel), filtry
  * kaskadowe w combo boxach oraz podłącza sygnały i sloty dla przycisków, tabeli i interakcji
@@ -199,6 +218,7 @@ itemList::itemList(QWidget *parent)
 /**
  * @brief Destruktor klasy itemList.
  *
+ * @section DestructorOverview
  * Zatrzymuje timer utrzymujący połączenie z bazą danych i zwalnia zasoby interfejsu użytkownika.
  */
 itemList::~itemList()
@@ -212,6 +232,7 @@ itemList::~itemList()
  * @brief Inicjalizuje filtry combo boxów.
  * @param db Referencja do obiektu bazy danych.
  *
+ * @section MethodOverview
  * Wypełnia combo boxy danymi z odpowiednich tabel bazy danych (types, vendors, models, statuses,
  * storage_places) i podłącza sloty do aktualizacji filtrów w modelu proxy.
  */
@@ -251,6 +272,7 @@ void itemList::initFilters(QSqlDatabase &db)
 /**
  * @brief Odświeża filtry combo boxów.
  *
+ * @section MethodOverview
  * Zachowuje aktualnie wybrane wartości filtrów, odświeża dane w combo boxach na podstawie
  * zawartości bazy danych i przywraca wybrane wartości, jeśli nadal istnieją.
  */
@@ -291,6 +313,7 @@ void itemList::refreshFilters()
  * @param selected Zaznaczone indeksy.
  * @param deselected Odznaczone indeksy.
  *
+ * @section MethodOverview
  * Wczytuje zdjęcia powiązane z wybranym eksponatem z tabeli photos i wyświetla ich miniatury
  * w QGraphicsView.
  */
@@ -375,6 +398,10 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
 /**
  * @brief Otwiera okno dodawania nowego eksponatu.
+ *
+ * @section MethodOverview
+ * Tworzy nowe okno MainWindow w trybie dodawania rekordu, ustawia automatyczne usuwanie
+ * po zamknięciu i podłącza sygnał recordSaved.
  */
 void itemList::onNewButtonClicked()
 {
@@ -387,6 +414,9 @@ void itemList::onNewButtonClicked()
 
 /**
  * @brief Otwiera okno edycji wybranego eksponatu.
+ *
+ * @section MethodOverview
+ * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie edycji.
  */
 void itemList::onEditButtonClicked()
 {
@@ -408,6 +438,9 @@ void itemList::onEditButtonClicked()
 
 /**
  * @brief Otwiera okno klonowania wybranego eksponatu.
+ *
+ * @section MethodOverview
+ * Sprawdza, czy wybrano rekord, pobiera jego ID i otwiera okno MainWindow w trybie klonowania.
  */
 void itemList::onCloneButtonClicked()
 {
@@ -429,6 +462,10 @@ void itemList::onCloneButtonClicked()
 
 /**
  * @brief Usuwa wybrany eksponat po potwierdzeniu.
+ *
+ * @section MethodOverview
+ * Sprawdza, czy wybrano rekord, wyświetla potwierdzenie usunięcia, usuwa rekord z bazy danych
+ * i odświeża model danych.
  */
 void itemList::onDeleteButtonClicked()
 {
@@ -462,6 +499,9 @@ void itemList::onDeleteButtonClicked()
 
 /**
  * @brief Zamyka aplikację.
+ *
+ * @section MethodOverview
+ * Wywołuje qApp->quit(), kończąc działanie aplikacji.
  */
 void itemList::onEndButtonClicked()
 {
@@ -470,6 +510,9 @@ void itemList::onEndButtonClicked()
 
 /**
  * @brief Wyświetla okno "O programie".
+ *
+ * @section MethodOverview
+ * Pokazuje QMessageBox z informacjami o nazwie, wersji, autorach i opisie aplikacji.
  */
 void itemList::onAboutClicked()
 {
@@ -490,6 +533,10 @@ void itemList::onAboutClicked()
 /**
  * @brief Wyświetla podgląd zdjęcia po najechaniu na miniaturę.
  * @param item Wskaźnik na element PhotoItem.
+ *
+ * @section MethodOverview
+ * Tworzy okno podglądu z powiększonym zdjęciem, pozycjonuje je względem miniatury i uruchamia
+ * timer do sprawdzania pozycji kursora.
  */
 void itemList::onPhotoHovered(PhotoItem *item)
 {
@@ -563,6 +610,10 @@ void itemList::onPhotoHovered(PhotoItem *item)
 /**
  * @brief Ukrywa podgląd zdjęcia po opuszczeniu miniatury.
  * @param item Wskaźnik na element PhotoItem.
+ *
+ * @section MethodOverview
+ * Zamyka okno podglądu po krótkim opóźnieniu, jeśli kursor nie znajduje się nad oknem
+ * podglądu lub miniaturą.
  */
 void itemList::onPhotoUnhovered(PhotoItem *item)
 {
@@ -594,6 +645,9 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
  * @param watched Obiekt, dla którego przetwarzane jest zdarzenie.
  * @param event Wskaźnik na zdarzenie.
  * @return true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
+ *
+ * @section MethodOverview
+ * Zamyka okno podglądu, jeśli kursor opuści jego obszar (zdarzenie QEvent::Leave).
  */
 bool itemList::eventFilter(QObject *watched, QEvent *event)
 {
@@ -618,6 +672,9 @@ bool itemList::eventFilter(QObject *watched, QEvent *event)
 /**
  * @brief Otwiera zdjęcie w trybie pełnoekranowym.
  * @param item Wskaźnik na element PhotoItem.
+ *
+ * @section MethodOverview
+ * Tworzy nowe okno FullScreenPhotoViewer z oryginalnym zdjęciem i wyświetla je.
  */
 void itemList::onPhotoClicked(PhotoItem *item)
 {
@@ -632,6 +689,9 @@ void itemList::onPhotoClicked(PhotoItem *item)
 /**
  * @brief Odświeża listę po zapisaniu rekordu.
  * @param recordId ID zapisanego rekordu.
+ *
+ * @section MethodOverview
+ * Wywołuje refreshList z podanym ID rekordu, aby odświeżyć widok i zaznaczyć zapisany rekord.
  */
 void itemList::onRecordSaved(const QString &recordId)
 {
@@ -641,6 +701,9 @@ void itemList::onRecordSaved(const QString &recordId)
 /**
  * @brief Odświeża listę eksponatów.
  * @param recordId Opcjonalne ID rekordu do wybrania po odświeżeniu.
+ *
+ * @section MethodOverview
+ * Odświeża model danych, tabelę i filtry, opcjonalnie zaznaczając rekord o podanym ID.
  */
 void itemList::refreshList(const QString &recordId)
 {
@@ -668,6 +731,10 @@ void itemList::refreshList(const QString &recordId)
  * @brief Weryfikuje schemat bazy danych.
  * @param db Referencja do obiektu bazy danych.
  * @return true, jeśli wszystkie wymagane tabele istnieją; false w przeciwnym razie.
+ *
+ * @section MethodOverview
+ * Sprawdza, czy tabele eksponaty, types, vendors, models, statuses, storage_places i photos
+ * istnieją w bazie danych.
  */
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
@@ -683,6 +750,10 @@ bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 /**
  * @brief Tworzy schemat bazy danych.
  * @param db Referencja do obiektu bazy danych.
+ *
+ * @section MethodOverview
+ * Tworzy tabele dla eksponatów, typów, producentów, modeli, statusów, miejsc przechowywania
+ * i zdjęć w bazie danych MySQL.
  */
 void itemList::createDatabaseSchema(QSqlDatabase &db)
 {
@@ -761,6 +832,10 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
 /**
  * @brief Wstawia przykładowe dane do bazy danych.
  * @param db Referencja do obiektu bazy danych.
+ *
+ * @section MethodOverview
+ * Wstawia przykładowe rekordy dla typów, producentów, modeli, statusów, miejsc przechowywania
+ * i eksponatów, generując unikalne UUID dla każdego rekordu.
  */
 void itemList::insertSampleData(QSqlDatabase &db)
 {
@@ -883,6 +958,11 @@ void itemList::insertSampleData(QSqlDatabase &db)
 
 /**
  * @brief Aktualizuje filtry po zmianie wartości w combo boxach.
+ *
+ * @section MethodOverview
+ * Inicjalizuje timer utrzymujący połączenie z bazą danych, ustawia filtry w modelu proxy
+ * na podstawie wybranych wartości w combo boxach i odbudowuje listy combo boxów dla
+ * filtrowania kaskadowego.
  */
 void itemList::onFilterChanged()
 {
@@ -908,6 +988,10 @@ void itemList::onFilterChanged()
 
 /**
  * @brief Odbudowuje listy w combo boxach filtrów.
+ *
+ * @section MethodOverview
+ * Aktualizuje zawartość combo boxów z uwzględnieniem kaskadowego filtrowania, pobierając
+ * unikalne wartości z bazy danych z uwzględnieniem innych aktywnych filtrów.
  */
 void itemList::updateFilterComboBoxes()
 {

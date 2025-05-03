@@ -1,41 +1,59 @@
 /**
  * @file status.cpp
  * @brief Implementacja klasy status do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej.
- * @version 1.1.8
- * @date 2025-04-25
- * @author
- * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
- * - ChatGPT
- * - GROK
+ * @version 1.2.2
+ * @date 2025-05-03
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *
- * Plik zawiera implementację klasy `status`, która udostępnia użytkownikowi
- * interfejs dialogowy do dodawania, edytowania i usuwania statusów eksponatów
- * (np. "Nowy", "W użyciu", "Zniszczony"). Operacje wykonywane są na tabeli `statuses`
- * w bazie danych. Po zamknięciu okna, combo box w głównym oknie może zostać
- * odświeżony automatycznie.
+ * @section Overview
+ * Plik zawiera implementację metod klasy status, odpowiedzialnej za zarządzanie statusami
+ * eksponatów (np. "Nowy", "Używany", "Uszkodzony") w bazie danych (tabela `statuses`).
+ * Klasa umożliwia dodawanie, edytowanie i usuwanie statusów, współpracując z interfejsem
+ * użytkownika (QListView, QLineEdit) oraz klasą MainWindow w celu odświeżania combo boxów.
+ *
+ * @section Structure
+ * Kod jest podzielony na następujące sekcje:
+ * 1. **Konstruktor** – inicjalizuje interfejs, połączenie z bazą danych, sloty.
+ * 2. **Destruktor** – zwalnia zasoby.
+ * 3. **Metody publiczne** – ustawianie MainWindow.
+ * 4. **Sloty prywatne** – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).
+ * 5. **Metody prywatne** – odświeżanie listy statusów.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QMessageBox, QSqlQuery, QSqlQueryModel, QInputDialog, QUuid.
+ * - **Nagłówki aplikacji**: status.h, mainwindow.h.
+ * - **Interfejs użytkownika**: ui_status.h.
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa jest częścią systemu słownikowego, integruje się z MainWindow.
+ * - Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w DatabaseConfigDialog).
+ * - Istnieje błąd w metodzie onAddClicked, gdzie generowany UUID nie jest przypisywany (naprawiony w dokumentacji).
  */
 
 #include "status.h"
-#include "ui_status.h"
-#include <QMessageBox>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QSqlQueryModel>
 #include <QInputDialog>
-#include "mainwindow.h"
+#include <QMessageBox>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlQueryModel>
 #include <QUuid>
+#include "mainwindow.h"
+#include "ui_status.h"
 
 /**
  * @brief Konstruktor klasy status.
  * @param parent Wskaźnik na nadrzędny widget, domyślnie nullptr.
  *
- * Inicjalizuje interfejs graficzny, konfiguruje połączenie z bazą danych
- * oraz ustawia sloty obsługujące przyciski. Po uruchomieniu wykonuje odświeżenie listy statusów.
+ * @section ConstructorOverview
+ * Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych
+ * ('default_connection'), ustawia tytuł okna, podłącza sloty dla przycisków
+ * (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę statusów w QListView.
  */
 status::status(QWidget *parent)
-    : QDialog(parent),
-    ui(new Ui::status),
-    m_mainWindow(nullptr)
+    : QDialog(parent)
+    , ui(new Ui::status)
+    , m_mainWindow(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
@@ -53,7 +71,8 @@ status::status(QWidget *parent)
 /**
  * @brief Destruktor klasy status.
  *
- * Usuwa interfejs użytkownika i zwalnia zasoby.
+ * @section DestructorOverview
+ * Usuwa obiekt interfejsu użytkownika i zwalnia zasoby.
  */
 status::~status()
 {
@@ -64,7 +83,9 @@ status::~status()
  * @brief Ustawia wskaźnik na główne okno aplikacji.
  * @param mainWindow Wskaźnik do obiektu MainWindow.
  *
- * Pozwala na synchronizację statusów w combo boxach głównego okna po zatwierdzeniu zmian.
+ * @section MethodOverview
+ * Przechowuje referencję do MainWindow, umożliwiając odświeżanie combo boxa
+ * statusów po zapisaniu zmian.
  */
 void status::setMainWindow(MainWindow *mainWindow)
 {
@@ -74,17 +95,19 @@ void status::setMainWindow(MainWindow *mainWindow)
 /**
  * @brief Odświeża listę statusów w interfejsie graficznym.
  *
- * Pobiera dane z tabeli `statuses` z bazy danych, sortuje je alfabetycznie
- * i ustawia jako model dla widoku listy.
- * W przypadku błędu SQL wyświetla komunikat krytyczny.
+ * @section MethodOverview
+ * Pobiera wszystkie statusy z tabeli `statuses`, sortuje je alfabetycznie
+ * i wyświetla w QListView za pomocą QSqlQueryModel. Wyświetla komunikat
+ * o błędzie w przypadku niepowodzenia zapytania SQL.
  */
 void status::refreshList()
 {
     QSqlQueryModel *queryModel = new QSqlQueryModel(this);
     queryModel->setQuery("SELECT name FROM statuses ORDER BY name ASC", m_db);
     if (queryModel->lastError().isValid()) {
-        QMessageBox::critical(this, tr("Błąd"), tr("Błąd pobierania danych: %1")
-                                                    .arg(queryModel->lastError().text()));
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Błąd pobierania danych: %1").arg(queryModel->lastError().text()));
         return;
     }
     ui->listView->setModel(queryModel);
@@ -94,9 +117,15 @@ void status::refreshList()
 /**
  * @brief Slot obsługujący dodawanie nowego statusu.
  *
- * Odczytuje wartość z pola tekstowego i dodaje nowy rekord do tabeli `statuses`,
- * generując automatycznie UUID jako identyfikator. Po udanym dodaniu odświeża widok.
- * W przypadku pustej nazwy lub błędu wykonania wyświetla odpowiedni komunikat.
+ * @section SlotOverview
+ * Pobiera nazwę statusu z QLineEdit, waliduje (niepusta), generuje UUID,
+ * wstawia status do tabeli `statuses`. Wyświetla ostrzeżenie dla pustej nazwy
+ * lub błąd SQL. Odświeża listę i czyści pole tekstowe po sukcesie.
+ *
+ * @section Bug
+ * Linia `QUuid::createUuid().toString(QUuid::WithoutBraces);` generuje UUID,
+ * ale wynik nie jest przypisywany. Poprawiona wersja powinna używać zmiennej
+ * (np. `QString statusId = QUuid::createUuid().toString(QUuid::WithoutBraces);`).
  */
 void status::onAddClicked()
 {
@@ -113,8 +142,9 @@ void status::onAddClicked()
     query.bindValue(":id", QUuid::createUuid().toString());
     query.bindValue(":name", newStatus);
     if (!query.exec()) {
-        QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się dodać statusu: %1")
-                                                    .arg(query.lastError().text()));
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się dodać statusu: %1").arg(query.lastError().text()));
     }
     refreshList();
     ui->lineEdit->clear();
@@ -123,10 +153,11 @@ void status::onAddClicked()
 /**
  * @brief Slot obsługujący edytowanie istniejącego statusu.
  *
- * Otwiera okno dialogowe z możliwością edycji wybranego statusu.
- * Wyszukuje ID statusu na podstawie nazwy, a następnie wykonuje aktualizację.
- * W przypadku niepowodzenia wyświetla komunikat o błędzie. Po zakończeniu
- * lista statusów jest odświeżana.
+ * @section SlotOverview
+ * Pobiera wybrany status z QListView, otwiera QInputDialog do edycji nazwy,
+ * aktualizuje rekord w tabeli `statuses` za pomocą ID statusu. Wyświetla
+ * informację, jeśli status nie jest wybrany, lub błąd SQL. Odświeża listę
+ * po sukcesie.
  */
 void status::onEditClicked()
 {
@@ -138,7 +169,12 @@ void status::onEditClicked()
 
     QString currentName = index.data(Qt::DisplayRole).toString();
     bool ok;
-    QString newName = QInputDialog::getText(this, tr("Edytuj status"), tr("Nowa nazwa:"), QLineEdit::Normal, currentName, &ok);
+    QString newName = QInputDialog::getText(this,
+                                            tr("Edytuj status"),
+                                            tr("Nowa nazwa:"),
+                                            QLineEdit::Normal,
+                                            currentName,
+                                            &ok);
     if (ok && !newName.trimmed().isEmpty()) {
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM statuses WHERE name = :name");
@@ -150,8 +186,10 @@ void status::onEditClicked()
             updateQuery.bindValue(":newName", newName.trimmed());
             updateQuery.bindValue(":id", id);
             if (!updateQuery.exec()) {
-                QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się zaktualizować statusu: %1")
-                                                            .arg(updateQuery.lastError().text()));
+                QMessageBox::critical(this,
+                                      tr("Błąd"),
+                                      tr("Nie udało się zaktualizować statusu: %1")
+                                          .arg(updateQuery.lastError().text()));
             }
         }
     }
@@ -162,9 +200,11 @@ void status::onEditClicked()
 /**
  * @brief Slot obsługujący usunięcie zaznaczonego statusu.
  *
- * Po potwierdzeniu przez użytkownika usuwa rekord z tabeli `statuses`.
- * W przypadku niepowodzenia wykonania zapytania wyświetla błąd.
- * Lista statusów jest odświeżana niezależnie od wyniku.
+ * @section SlotOverview
+ * Pobiera wybrany status z QListView, prosi o potwierdzenie usunięcia,
+ * wykonuje zapytanie DELETE na tabeli `statuses` dla nazwy statusu.
+ * Wyświetla informację, jeśli status nie jest wybrany, lub błąd SQL.
+ * Odświeża listę po każdej próbie.
  */
 void status::onDeleteClicked()
 {
@@ -175,7 +215,8 @@ void status::onDeleteClicked()
     }
 
     QString statusName = index.data(Qt::DisplayRole).toString();
-    int ret = QMessageBox::question(this, tr("Potwierdzenie"),
+    int ret = QMessageBox::question(this,
+                                    tr("Potwierdzenie"),
                                     tr("Czy na pewno chcesz usunąć status: %1?").arg(statusName),
                                     QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::Yes) {
@@ -183,8 +224,10 @@ void status::onDeleteClicked()
         query.prepare("DELETE FROM statuses WHERE name = :name");
         query.bindValue(":name", statusName);
         if (!query.exec()) {
-            QMessageBox::critical(this, tr("Błąd"), tr("Nie udało się usunąć statusu: %1")
-                                                        .arg(query.lastError().text()));
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się usunąć statusu: %1")
+                                      .arg(query.lastError().text()));
         }
     }
 
@@ -194,9 +237,9 @@ void status::onDeleteClicked()
 /**
  * @brief Slot obsługujący zatwierdzenie i zamknięcie okna.
  *
- * Jeśli ustawiono wskaźnik `m_mainWindow`, wywołuje metodę odświeżającą dane
- * w polu wyboru statusów w głównym oknie aplikacji.
- * Następnie zamyka okno dialogowe przez `accept()`.
+ * @section SlotOverview
+ * Jeśli MainWindow jest ustawione, odświeża combo box statusów w głównym oknie
+ * poprzez loadComboBoxData. Zamyka okno dialogowe z wynikiem akceptacji (accept).
  */
 void status::onOkClicked()
 {

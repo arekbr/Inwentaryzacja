@@ -2,31 +2,54 @@
  * @file fullscreenphotoviewer.h
  * @brief Deklaracja klas ZoomableGraphicsView i FullScreenPhotoViewer do pełnoekranowego podglądu zdjęć.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.2.2
+ * @date 2025-05-03
  *
- * Plik zawiera deklaracje dwóch klas: ZoomableGraphicsView, która umożliwia powiększanie i przesuwanie
- * obrazu za pomocą kółka myszy i przeciągania, oraz FullScreenPhotoViewer, która wyświetla zdjęcie
- * w trybie pełnoekranowym z możliwością zamknięcia okna klawiszem Escape. Klasy są używane w aplikacji
- * inwentaryzacyjnej do podglądu zdjęć eksponatów.
+ * @section Overview
+ * Plik fullscreenphotoviewer.h definiuje dwie klasy: ZoomableGraphicsView oraz FullScreenPhotoViewer, 
+ * używane w aplikacji inwentaryzacyjnej do pełnoekranowego wyświetlania zdjęć eksponatów. Klasa 
+ * ZoomableGraphicsView umożliwia powiększanie i przesuwanie obrazu za pomocą kółka myszy i przeciągania, 
+ * natomiast FullScreenPhotoViewer tworzy bezramkowe okno pełnoekranowe z możliwością zamknięcia klawiszem Escape.
+ *
+ * @section Structure
+ * Plik nagłówkowy zawiera:
+ * 1. **Deklarację klasy ZoomableGraphicsView** – dziedziczy po QGraphicsView, implementuje powiększanie i przesuwanie.
+ * 2. **Deklarację klasy FullScreenPhotoViewer** – dziedziczy po QMainWindow, zarządza pełnoekranowym wyświetlaniem zdjęcia.
+ * 3. **Metody inline** – wszystkie metody są zdefiniowane w pliku nagłówkowym, eliminując potrzebę osobnego pliku .cpp.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QMainWindow, QGraphicsView, QGraphicsScene, QKeyEvent, QWheelEvent.
+ * - **Zasoby**: Brak bezpośrednich zależności od zasobów Qt (np. plików QSS czy czcionek).
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Obie klasy są zoptymalizowane pod kątem prostoty i wydajności, z implementacją inline w pliku nagłówkowym.
+ * - FullScreenPhotoViewer jest modalny i automatycznie usuwa się po zamknięciu, co zapobiega wyciekom pamięci.
  */
 
 #ifndef FULLSCREENPHOTOVIEWER_H
 #define FULLSCREENPHOTOVIEWER_H
 
-#include <QMainWindow>
-#include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QKeyEvent>
+#include <QMainWindow>
 #include <QWheelEvent>
 
 /**
  * @class ZoomableGraphicsView
  * @brief Widok graficzny umożliwiający powiększanie i przesuwanie obrazu.
  *
- * Klasa ZoomableGraphicsView dziedziczy po QGraphicsView i implementuje funkcjonalność
- * powiększania obrazu za pomocą kółka myszy oraz przesuwania obrazu przez przeciąganie.
- * Ustawia kotwicę transformacji pod kursorem myszy i tryb przeciągania typu ScrollHandDrag.
+ * @section ClassOverview
+ * Klasa ZoomableGraphicsView dziedziczy po QGraphicsView i dostarcza funkcjonalność powiększania 
+ * obrazu za pomocą kółka myszy oraz przesuwania przez przeciąganie. Ustawia kotwicę transformacji 
+ * pod kursorem myszy, co zapewnia intuicyjne powiększanie, oraz tryb przeciągania ScrollHandDrag 
+ * dla przesuwania obrazu.
+ *
+ * @section Responsibilities
+ * - Obsługa zdarzeń kółka myszy do zmiany skali obrazu.
+ * - Umożliwienie przesuwania obrazu poprzez przeciąganie myszą.
+ * - Przechowywanie bieżącego współczynnika skali.
  */
 class ZoomableGraphicsView : public QGraphicsView
 {
@@ -36,11 +59,14 @@ public:
      * @brief Konstruktor klasy ZoomableGraphicsView.
      * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
      *
-     * Inicjalizuje widok graficzny z włączonym trybem przeciągania i kotwicą transformacji
-     * pod kursorem myszy.
+     * @section ConstructorOverview
+     * Inicjalizuje widok graficzny, ustawia kotwicę transformacji pod kursorem myszy 
+     * (AnchorUnderMouse) oraz tryb przeciągania (ScrollHandDrag). Ustawia początkowy 
+     * współczynnik skali na 1.0.
      */
     explicit ZoomableGraphicsView(QWidget *parent = nullptr)
-        : QGraphicsView(parent), m_scaleFactor(1.0)
+        : QGraphicsView(parent)
+        , m_scaleFactor(1.0)
     {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         setDragMode(QGraphicsView::ScrollHandDrag);
@@ -51,8 +77,11 @@ protected:
      * @brief Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu.
      * @param event Wskaźnik na zdarzenie kółka myszy.
      *
-     * Powiększa obraz o współczynnik 1.15 przy przewijaniu w górę i pomniejsza o odwrotność
-     * tego współczynnika przy przewijaniu w dół. Aktualizuje bieżący współczynnik skali.
+     * @section MethodOverview
+     * Przetwarza zdarzenia kółka myszy, zwiększając skalę obrazu o współczynnik 1.15 
+     * (zoom in) lub zmniejszając o 1/1.15 (zoom out) w zależności od kierunku przewijania. 
+     * Aktualizuje zmienną m_scaleFactor i akceptuje zdarzenie, aby zapobiec jego dalszemu 
+     * przetwarzaniu.
      */
     void wheelEvent(QWheelEvent *event) override
     {
@@ -78,9 +107,16 @@ private:
  * @class FullScreenPhotoViewer
  * @brief Okno pełnoekranowe do wyświetlania zdjęć.
  *
- * Klasa FullScreenPhotoViewer dziedziczy po QMainWindow i wyświetla zdjęcie w trybie pełnoekranowym,
- * korzystając z ZoomableGraphicsView. Okno jest bezramkowe, pozostaje na wierzchu i zamyka się
- * po naciśnięciu klawisza Escape. Jest modalne i automatycznie usuwa się po zamknięciu.
+ * @section ClassOverview
+ * Klasa FullScreenPhotoViewer dziedziczy po QMainWindow i tworzy bezramkowe, modalne okno 
+ * pełnoekranowe do wyświetlania zdjęcia w obiekcie QPixmap. Wykorzystuje ZoomableGraphicsView 
+ * do obsługi powiększania i przesuwania obrazu. Okno zamyka się po naciśnięciu klawisza Escape 
+ * i automatycznie usuwa się po zamknięciu (WA_DeleteOnClose).
+ *
+ * @section Responsibilities
+ * - Wyświetlanie zdjęcia w trybie pełnoekranowym.
+ * - Obsługa zamykania okna klawiszem Escape.
+ * - Zarządzanie sceną graficzną i widokiem ZoomableGraphicsView.
  */
 class FullScreenPhotoViewer : public QMainWindow
 {
@@ -91,15 +127,16 @@ public:
      * @param pixmap Obiekt QPixmap zawierający zdjęcie do wyświetlenia.
      * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
      *
-     * Inicjalizuje okno pełnoekranowe, ustawia zdjęcie w scenie graficznej, konfiguruje
-     * ZoomableGraphicsView jako centralny widget i wyświetla okno w trybie pełnoekranowym.
+     * @section ConstructorOverview
+     * Inicjalizuje bezramkowe okno pełnoekranowe z flagami FramelessWindowHint i 
+     * WindowStaysOnTopHint. Ustawia modalność (ApplicationModal) i automatyczne usuwanie 
+     * po zamknięciu (WA_DeleteOnClose). Tworzy scenę graficzną, dodaje do niej zdjęcie, 
+     * konfiguruje ZoomableGraphicsView jako centralny widget i wyświetla okno w trybie pełnoekranowym.
      */
     explicit FullScreenPhotoViewer(const QPixmap &pixmap, QWidget *parent = nullptr)
         : QMainWindow(parent)
     {
-        setWindowFlags(windowFlags()
-                       | Qt::FramelessWindowHint
-                       | Qt::WindowStaysOnTopHint);
+        setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
         setWindowModality(Qt::ApplicationModal);
         setAttribute(Qt::WA_DeleteOnClose, true);
@@ -122,7 +159,9 @@ protected:
      * @brief Obsługuje zdarzenia naciśnięcia klawiszy.
      * @param event Wskaźnik na zdarzenie klawiatury.
      *
-     * Zamyka okno po naciśnięciu klawisza Escape. Inne zdarzenia są przekazywane do QMainWindow.
+     * @section MethodOverview
+     * Zamyka okno po naciśnięciu klawisza Escape, wywołując metodę close(). Dla innych 
+     * klawiszy przekazuje zdarzenie do metody bazowej QMainWindow::keyPressEvent.
      */
     void keyPressEvent(QKeyEvent *event) override
     {

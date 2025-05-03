@@ -2,14 +2,31 @@
  * @file ItemFilterProxyModel.h
  * @brief Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.2.2
+ * @date 2025-05-03
  *
- * Plik zawiera deklarację klasy ItemFilterProxyModel, która dziedziczy po QSortFilterProxyModel
- * i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej. Klasa
- * umożliwia ustawienie filtrów dla typu, producenta, modelu, statusu i miejsca przechowywania
- * eksponatu, a następnie decyduje, które wiersze modelu źródłowego powinny być wyświetlane
- * na podstawie zadanych kryteriów.
+ * @section Overview
+ * Plik ItemFilterProxyModel.h definiuje klasę ItemFilterProxyModel, która dziedziczy po 
+ * QSortFilterProxyModel i służy do dynamicznego filtrowania listy eksponatów w aplikacji 
+ * inwentaryzacyjnej. Klasa umożliwia ustawienie filtrów dla różnych atrybutów eksponatu 
+ * (typ, producent, model, status, miejsce przechowywania) i kontroluje, które wiersze 
+ * modelu źródłowego (np. QSqlRelationalTableModel) są wyświetlane w widoku.
+ *
+ * @section Structure
+ * Plik nagłówkowy zawiera:
+ * 1. **Deklarację klasy ItemFilterProxyModel** – dziedziczy po QSortFilterProxyModel.
+ * 2. **Metody publiczne** – konstruktor i metody do ustawiania filtrów.
+ * 3. **Metoda chroniona** – filterAcceptsRow, realizująca logikę filtrowania.
+ * 4. **Zmienne prywatne** – przechowują wartości filtrów dla każdego atrybutu.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klasy QSortFilterProxyModel do filtrowania i sortowania danych.
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa jest zaprojektowana do współpracy z modelem źródłowym, takim jak QSqlRelationalTableModel, 
+ *   w kontekście aplikacji inwentaryzacyjnej.
+ * - Filtry są dynamiczne i mogą być ustawiane niezależnie dla każdego atrybutu.
  */
 
 /*
@@ -25,10 +42,16 @@
  * @class ItemFilterProxyModel
  * @brief Model proxy do filtrowania listy eksponatów.
  *
- * Klasa ItemFilterProxyModel dziedziczy po QSortFilterProxyModel i implementuje
- * mechanizm filtrowania danych eksponatów na podstawie wartości takich jak typ,
- * producent, model, status i miejsce przechowywania. Filtry są ustawiane za pomocą
- * dedykowanych metod, a logika filtrowania jest realizowana w metodzie filterAcceptsRow().
+ * @section ClassOverview
+ * Klasa ItemFilterProxyModel dziedziczy po QSortFilterProxyModel i dostarcza mechanizm 
+ * dynamicznego filtrowania danych eksponatów na podstawie atrybutów takich jak typ, 
+ * producent, model, status i miejsce przechowywania. Umożliwia ustawienie filtrów 
+ * poprzez dedykowane metody i implementuje logikę filtrowania w metodzie filterAcceptsRow.
+ *
+ * @section Responsibilities
+ * - Ustawianie filtrów dla różnych atrybutów eksponatu.
+ * - Decydowanie, które wiersze modelu źródłowego spełniają kryteria filtrów.
+ * - Współpraca z widokami Qt (np. QTableView) do wyświetlania przefiltrowanych danych.
  */
 class ItemFilterProxyModel : public QSortFilterProxyModel
 {
@@ -38,7 +61,9 @@ public:
      * @brief Konstruktor klasy ItemFilterProxyModel.
      * @param parent Wskaźnik na obiekt nadrzędny. Domyślnie nullptr.
      *
-     * Inicjalizuje model proxy, ustawiając go jako dziecko podanego rodzica.
+     * @section ConstructorOverview
+     * Inicjalizuje model proxy, ustawiając go jako dziecko podanego rodzica. 
+     * Przygotowuje model do filtrowania danych bez dodatkowych ustawień początkowych.
      */
     explicit ItemFilterProxyModel(QObject *parent = nullptr);
 
@@ -46,8 +71,9 @@ public:
      * @brief Ustawia filtr dla typu eksponatu.
      * @param type QString zawierający nazwę typu eksponatu lub pusty ciąg dla braku filtru.
      *
-     * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych o określonym typie.
-     * Pusty ciąg oznacza brak filtru (wszystkie types).
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla typu eksponatu i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok z uwzględnieniem nowego filtru. Pusty ciąg wyłącza filtr dla typu.
      */
     void setTypeFilter(const QString &type);
 
@@ -55,8 +81,9 @@ public:
      * @brief Ustawia filtr dla producenta eksponatu.
      * @param vendor QString zawierający nazwę producenta lub pusty ciąg dla braku filtru.
      *
-     * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych od określonego producenta.
-     * Pusty ciąg oznacza brak filtru (wszyscy producenci).
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla producenta i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla producenta.
      */
     void setVendorFilter(const QString &vendor);
 
@@ -64,8 +91,9 @@ public:
      * @brief Ustawia filtr dla modelu eksponatu.
      * @param model QString zawierający nazwę modelu lub pusty ciąg dla braku filtru.
      *
-     * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych o określonym modelu.
-     * Pusty ciąg oznacza brak filtru (wszystkie modele).
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla modelu i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla modelu.
      */
     void setModelFilter(const QString &model);
 
@@ -73,8 +101,9 @@ public:
      * @brief Ustawia filtr dla statusu eksponatu.
      * @param status QString zawierający nazwę statusu lub pusty ciąg dla braku filtru.
      *
-     * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych o określonym statusie.
-     * Pusty ciąg oznacza brak filtru (wszystkie statusy).
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla statusu i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla statusu.
      */
     void setStatusFilter(const QString &status);
 
@@ -82,8 +111,9 @@ public:
      * @brief Ustawia filtr dla miejsca przechowywania eksponatu.
      * @param storage QString zawierający nazwę miejsca przechowywania lub pusty ciąg dla braku filtru.
      *
-     * Ustawia filtr, który ogranicza wyświetlane eksponaty do tych przechowywanych w określonym miejscu.
-     * Pusty ciąg oznacza brak filtru (wszystkie miejsca).
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla miejsca przechowywania i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla miejsca przechowywania.
      */
     void setStorageFilter(const QString &storage);
 
@@ -94,9 +124,11 @@ protected:
      * @param sourceParent Indeks rodzica w modelu źródłowym.
      * @return true, jeśli wiersz spełnia wszystkie aktywne filtry; false w przeciwnym razie.
      *
-     * Przesłania metodę QSortFilterProxyModel, sprawdzając, czy wartości w wierszu
-     * modelu źródłowego zgadzają się z ustawionymi filtrami (typ, producent, model,
-     * status, miejsce przechowywania).
+     * @section MethodOverview
+     * Przesłania metodę QSortFilterProxyModel, implementując logikę filtrowania. 
+     * Sprawdza, czy wartości w kolumnach modelu źródłowego (typ, producent, model, 
+     * status, miejsce przechowywania) odpowiadają ustawionym filtrom. Pusty filtr 
+     * dla danego atrybutu oznacza, że wszystkie wartości dla tej kolumny są akceptowane.
      */
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 

@@ -1,17 +1,31 @@
 /**
  * @file DatabaseConfigDialog.cpp
- * @brief Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite
- *        oraz wyboru skórki graficznej aplikacji.
+ * @brief Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki graficznej aplikacji.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.0
- * @date 2025-05-01
+ * @version 1.2.2
+ * @date 2025-05-03
  *
- * Plik zawiera implementację metod klasy DatabaseConfigDialog, odpowiedzialnej za konfigurację
- * parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wybór skórki graficznej aplikacji
- * (Amiga, ZX Spectrum, Standard). Rozszerzono funkcję wyboru pliku SQLite, by umożliwić wskazanie
- * nowej ścieżki za pomocą getSaveFileName i automatyczne utworzenie pliku .db. Dodano obsługę
- * zmiany skórki graficznej, w tym ładowanie stylów QSS i czcionek z zasobów Qt, z zapisem wyboru
- * w QSettings dla trwałości między sesjami aplikacji.
+ * @section Overview
+ * Plik DatabaseConfigDialog.cpp zawiera implementację metod klasy DatabaseConfigDialog, która zarządza oknem dialogowym do konfiguracji połączenia z bazą danych (SQLite lub MySQL) oraz wyboru skórki graficznej (Amiga, Atari 8bit, ZX Spectrum, Standard). Implementacja obejmuje ładowanie stylów QSS, czcionek, zapis ustawień w QSettings oraz obsługę dynamicznego wyboru pliku SQLite z możliwością tworzenia nowego pliku .db.
+ *
+ * @section Structure
+ * Kod jest podzielony na następujące sekcje:
+ * 1. **Sekcja pomocnicza** – funkcja getSettings do tworzenia i zwracania obiektu QSettings.
+ * 2. **Sekcja konstruktora** – inicjalizacja interfejsu, combo boxów, ustawień i połączeń sygnałów-slotów.
+ * 3. **Sekcja destruktora** – zwalnianie zasobów i czcionek.
+ * 4. **Sekcja metod publicznych** – metody dostępowe do parametrów bazy danych oraz metoda accept.
+ * 5. **Sekcja slotów prywatnych** – obsługa zmiany typu bazy danych i skórki graficznej.
+ * 6. **Sekcja metod prywatnych** – ładowanie stylów QSS i czcionek dla skórek.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QApplication, QDebug, QDir, QFile, QFileDialog, QFontDatabase, QPushButton, QSettings.
+ * - **Interfejs użytkownika**: ui_DatabaseConfigDialog.h generowany przez Qt Designer.
+ * - **Zasoby**: Pliki QSS (:/styles/.qss), czcionki (:/fonts/.ttf).
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Ustawienia są zapisywane w pliku inwentaryzacja.ini w katalogu aplikacji.
+ * - Obsługa błędów obejmuje logowanie komunikatów w przypadku problemów z ładowaniem zasobów.
  */
 
 #include "DatabaseConfigDialog.h"
@@ -29,8 +43,8 @@
  * @brief Pobiera obiekt QSettings dla aplikacji.
  * @return Obiekt QSettings zainicjalizowany z plikiem inwentaryzacja.ini.
  *
- * Tworzy plik konfiguracyjny, jeśli nie istnieje, w katalogu aplikacji i zwraca obiekt QSettings
- * w formacie IniFormat.
+ * @section FunctionOverview
+ * Tworzy plik inwentaryzacja.ini w katalogu aplikacji, jeśli nie istnieje, i zwraca obiekt QSettings w formacie IniFormat do przechowywania ustawień aplikacji.
  */
 static QSettings getSettings()
 {
@@ -49,9 +63,8 @@ static QSettings getSettings()
  * @brief Konstruktor klasy DatabaseConfigDialog.
  * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
  *
- * Inicjalizuje interfejs użytkownika, ustawia opcje combo boxów dla typu bazy danych
- * i skórki graficznej, ładuje zapisane ustawienia z QSettings i konfiguruje połączenia
- * sygnałów i slotów dla interakcji użytkownika.
+ * @section ConstructorOverview
+ * Inicjalizuje interfejs użytkownika, ustawia opcje combo boxów dla typu bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard). Ładuje zapisane ustawienia z QSettings, konfiguruje początkowy stan interfejsu i ustanawia połączenia sygnałów-slotów dla interakcji użytkownika, w tym wybór pliku SQLite.
  */
 DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     : QDialog(parent)
@@ -62,27 +75,32 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Połączenia dla przycisków dialogowych
+    // Sekcja: Połączenia przycisków dialogowych
+    // Łączy sygnały przycisków OK/Anuluj z odpowiednimi slotami (accept, reject).
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &DatabaseConfigDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-    // Inicjalizacja combo boxa dla typu bazy danych
+    // Sekcja: Inicjalizacja combo boxa dla typu bazy danych
+    // Wypełnia combo box opcjami SQLite3 i MySQL, ustawia domyślny widok na SQLite.
     ui->dbTypeComboBox->clear();
     ui->dbTypeComboBox->addItem("SQLite3");
     ui->dbTypeComboBox->addItem("MySQL");
     ui->stackedWidget->setCurrentIndex(0);
 
-    // Połączenie dla zmiany typu bazy danych
+    // Sekcja: Połączenie dla zmiany typu bazy danych
+    // Łączy sygnał zmiany indeksu combo boxa z slotem onDatabaseTypeChanged.
     connect(ui->dbTypeComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DatabaseConfigDialog::onDatabaseTypeChanged);
 
-    // Inicjalizacja combo boxa dla skórki graficznej
+    // Sekcja: Inicjalizacja combo boxa dla skórki graficznej
+    // Wypełnia combo box dostępnymi skórkami graficznymi.
     ui->filterSelectSkin->clear();
     ui->filterSelectSkin->addItems({"Amiga", "Atari 8bit", "ZX Spectrum", "Standard"});
 
-    // Ładowanie zapisanych ustawień
+    // Sekcja: Ładowanie zapisanych ustawień
+    // Wczytuje ustawienia z pliku inwentaryzacja.ini, ustawia wartości pól interfejsu.
     QSettings settings = getSettings();
     QString savedDbType = settings.value("Database/Type", "SQLite3").toString();
     ui->dbTypeComboBox->setCurrentText(savedDbType);
@@ -104,13 +122,15 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     loadStyleSheet(savedSkin);
     loadFont(savedSkin);
 
-    // Połączenie dla zmiany skórki graficznej
+    // Sekcja: Połączenie dla zmiany skórki graficznej
+    // Łączy sygnał zmiany skórki z slotem onSkinChanged.
     connect(ui->filterSelectSkin,
             &QComboBox::currentTextChanged,
             this,
             &DatabaseConfigDialog::onSkinChanged);
 
-    // Połączenie dla przycisku wyboru pliku SQLite
+    // Sekcja: Połączenie dla przycisku wyboru pliku SQLite
+    // Obsługuje wybór istniejącego lub nowego pliku SQLite, z opcją utworzenia nowego pliku .db.
     connect(ui->selectFileButton, &QPushButton::clicked, this, [this]() {
         if (ui->dbTypeComboBox->currentText() == "SQLite3") {
             QString filePath
@@ -135,7 +155,8 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
 /**
  * @brief Destruktor klasy DatabaseConfigDialog.
  *
- * Zwalnia zasoby interfejsu użytkownika i usuwa załadowane czcionki z QFontDatabase.
+ * @section DestructorOverview
+ * Zwalnia zasoby interfejsu użytkownika (ui) oraz usuwa załadowane czcionki (Topaz, ZX Spectrum, Atari 8bit) z QFontDatabase, aby zapobiec wyciekom pamięci.
  */
 DatabaseConfigDialog::~DatabaseConfigDialog()
 {
@@ -151,8 +172,8 @@ DatabaseConfigDialog::~DatabaseConfigDialog()
 /**
  * @brief Zatwierdza wprowadzone dane i zamyka okno dialogowe.
  *
- * Zapisuje parametry połączenia z bazą danych oraz wybraną skórkę graficzną w QSettings
- * i wywołuje metodę accept klasy QDialog.
+ * @section MethodOverview
+ * Zapisuje wszystkie wprowadzone parametry (typ bazy danych, ścieżka SQLite, dane MySQL, wybrana skórka) w pliku inwentaryzacja.ini za pomocą QSettings, a następnie wywołuje metodę accept klasy QDialog, zamykając okno z wynikiem QDialog::Accepted.
  */
 void DatabaseConfigDialog::accept()
 {
@@ -172,6 +193,9 @@ void DatabaseConfigDialog::accept()
 /**
  * @brief Zwraca wybrany typ bazy danych.
  * @return QString zawierający typ bazy danych.
+ *
+ * @section MethodOverview
+ * Pobiera tekst wybrany w combo boxie dbTypeComboBox, reprezentujący typ bazy danych (SQLite3 lub MySQL).
  */
 QString DatabaseConfigDialog::selectedDatabaseType() const
 {
@@ -181,6 +205,9 @@ QString DatabaseConfigDialog::selectedDatabaseType() const
 /**
  * @brief Zwraca ścieżkę do pliku bazy SQLite.
  * @return QString zawierający ścieżkę do pliku SQLite.
+ *
+ * @section MethodOverview
+ * Zwraca tekst z pola sqlitePathLineEdit, zawierający ścieżkę do pliku bazy SQLite.
  */
 QString DatabaseConfigDialog::sqliteFilePath() const
 {
@@ -190,6 +217,9 @@ QString DatabaseConfigDialog::sqliteFilePath() const
 /**
  * @brief Zwraca adres hosta dla bazy MySQL.
  * @return QString zawierający adres hosta MySQL.
+ *
+ * @section MethodOverview
+ * Zwraca tekst z pola hostLineEdit, zawierający adres hosta bazy MySQL.
  */
 QString DatabaseConfigDialog::mysqlHost() const
 {
@@ -199,6 +229,9 @@ QString DatabaseConfigDialog::mysqlHost() const
 /**
  * @brief Zwraca nazwę bazy danych MySQL.
  * @return QString zawierający nazwę bazy danych MySQL.
+ *
+ * @section MethodOverview
+ * Zwraca tekst z pola databaseLineEdit, zawierający nazwę bazy danych MySQL.
  */
 QString DatabaseConfigDialog::mysqlDatabase() const
 {
@@ -208,6 +241,9 @@ QString DatabaseConfigDialog::mysqlDatabase() const
 /**
  * @brief Zwraca nazwę użytkownika dla bazy MySQL.
  * @return QString zawierający nazwę użytkownika MySQL.
+ *
+ * @section MethodOverview
+ * Zwraca tekst z pola userLineEdit, zawierający nazwę użytkownika bazy MySQL.
  */
 QString DatabaseConfigDialog::mysqlUser() const
 {
@@ -217,6 +253,9 @@ QString DatabaseConfigDialog::mysqlUser() const
 /**
  * @brief Zwraca hasło użytkownika dla bazy MySQL.
  * @return QString zawierający hasło użytkownika MySQL.
+ *
+ * @section MethodOverview
+ * Zwraca tekst z pola passwordLineEdit, zawierający hasło użytkownika bazy MySQL.
  */
 QString DatabaseConfigDialog::mysqlPassword() const
 {
@@ -226,6 +265,9 @@ QString DatabaseConfigDialog::mysqlPassword() const
 /**
  * @brief Zwraca numer portu dla bazy MySQL.
  * @return int zawierający numer portu MySQL.
+ *
+ * @section MethodOverview
+ * Zwraca wartość z pola portSpinBox, reprezentującą numer portu bazy MySQL.
  */
 int DatabaseConfigDialog::mysqlPort() const
 {
@@ -236,8 +278,8 @@ int DatabaseConfigDialog::mysqlPort() const
  * @brief Obsługuje zmianę typu bazy danych w combo boxie.
  * @param index Indeks wybranego typu bazy danych.
  *
- * Przełącza stronę w QStackedWidget w zależności od wybranego typu bazy danych
- * (SQLite lub MySQL).
+ * @section SlotOverview
+ * Przełącza aktywną stronę w QStackedWidget, pokazując odpowiednie pola dla wybranego typu bazy danych (SQLite lub MySQL).
  */
 void DatabaseConfigDialog::onDatabaseTypeChanged(int index)
 {
@@ -248,8 +290,8 @@ void DatabaseConfigDialog::onDatabaseTypeChanged(int index)
  * @brief Obsługuje zmianę skórki graficznej.
  * @param skin Nazwa wybranej skórki (np. "Amiga", "ZX Spectrum", "Standard").
  *
- * Ładuje arkusz stylów i czcionkę dla wybranej skórki, aktualizuje interfejs aplikacji
- * i zapisuje wybór w QSettings.
+ * @section SlotOverview
+ * Wywołuje metody loadStyleSheet i loadFont dla wybranej skórki, aktualizuje styl i czcionkę aplikacji, zapisuje wybór w QSettings i loguje zmianę.
  */
 void DatabaseConfigDialog::onSkinChanged(const QString &skin)
 {
@@ -264,8 +306,8 @@ void DatabaseConfigDialog::onSkinChanged(const QString &skin)
  * @brief Ładuje arkusz stylów dla wybranej skórki.
  * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
  *
- * Mapuje nazwę skórki na odpowiedni plik QSS w zasobach Qt i ustawia styl aplikacji
- * za pomocą qApp->setStyleSheet.
+ * @section MethodOverview
+ * Mapuje nazwę skórki na odpowiedni plik QSS w zasobach Qt (np. :/styles/amiga.qss), wczytuje jego zawartość i stosuje do aplikacji za pomocą qApp->setStyleSheet. Loguje sukces lub błąd ładowania.
  */
 void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
 {
@@ -295,9 +337,8 @@ void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
  * @brief Ładuje czcionkę dla wybranej skórki.
  * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
  *
- * Mapuje nazwę skórki na odpowiednią czcionkę: Amiga -> topaz.ttf, ZX Spectrum -> zxspectrum.ttf,
- * Standard -> domyślna czcionka systemowa. Ładuje czcionkę z zasobów Qt za pomocą QFontDatabase
- * i ustawia ją dla aplikacji za pomocą qApp->setFont.
+ * @section MethodOverview
+ * Mapuje nazwę skórki na odpowiednią czcionkę (np. topaz.ttf dla Amigi, zxspectrum.ttf dla ZX Spectrum, EightBit Atari-Ataripl.ttf dla Atari 8bit, domyślna systemowa dla Standard). Ładuje czcionkę za pomocą QFontDatabase, ustawia ją dla aplikacji za pomocą qApp->setFont i aktualizuje paletę oraz styl, aby zapewnić propagację czcionki. Loguje sukces lub błąd ładowania.
  */
 void DatabaseConfigDialog::loadFont(const QString &skin)
 {
@@ -392,7 +433,8 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
                  << font.family();
     }
 
-    // Ustaw czcionkę dla aplikacji
+    // Sekcja: Ustawienie czcionki dla aplikacji
+    // Ustawia wybraną czcionkę dla całej aplikacji, resetuje paletę i styl, aby zapewnić propagację.
     qApp->setFont(font);
 
     // Reset palety, aby wymusić aktualizację czcionki

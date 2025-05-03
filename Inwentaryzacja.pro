@@ -11,7 +11,7 @@ CONFIG  += c++17 \
            embed_translations
 CONFIG  -= static
 
-VERSION = 1.2.0
+VERSION = 1.2.2
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_TARGET_COMPANY     = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
@@ -78,6 +78,33 @@ DISTFILES += \
     LICENSE \
     Refactor-Inwentaryzacja.ps1 \
     deploy_debug.bat \
+    documentation/DatabaseConfigDialog_cpp.md \
+    documentation/DatabaseConfigDialog_h.md \
+    documentation/ItemFilterProxyModel_cpp.md \
+    documentation/ItemFilterProxyModel_documentation.md \
+    documentation/ItemFilterProxyModel_h.md \
+    documentation/fullscreenphotoviewer_cpp.md \
+    documentation/fullscreenphotoviewer_h.md \
+    documentation/itemList_cpp.md \
+    documentation/itemList_documentation.md \
+    documentation/itemList_h.md \
+    documentation/main.md \
+    documentation/mainwindow_cpp.md \
+    documentation/mainwindow_h.md \
+    documentation/models_cpp.md \
+    documentation/models_h.md \
+    documentation/photoitem_cpp.md \
+    documentation/photoitem_h.md \
+    documentation/status_cpp.md \
+    documentation/status_h.md \
+    documentation/storage_cpp.md \
+    documentation/storage_h.md \
+    documentation/types_cpp.md \
+    documentation/types_h.md \
+    documentation/utils_cpp.md \
+    documentation/utils_h.md \
+    documentation/vendors_cpp.md \
+    documentation/vendors_h.md \
     fix_mysql_mac_new.sh \
     fonts/topaz.ttf \
     fonts/zxspectrum.ttf \
