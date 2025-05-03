@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="_item_filter_proxy_model__cpp_8md" kind="file" language="Markdown">
+    <compoundname>ItemFilterProxyModel_cpp.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`ItemFilterProxyModel.cpp`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>ItemFilterProxyModel.cpp</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`ItemFilterProxyModel.cpp`<sp/>zawiera<sp/>implementację<sp/>metod<sp/>klasy<sp/>`ItemFilterProxyModel`,<sp/>która<sp/>umożliwia<sp/>dynamiczne<sp/>filtrowanie<sp/>listy<sp/>eksponatów<sp/>w<sp/>aplikacji<sp/>inwentaryzacyjnej<sp/>na<sp/>podstawie<sp/>atrybutów<sp/>takich<sp/>jak<sp/>typ,<sp/>producent,<sp/>model,<sp/>status<sp/>i<sp/>miejsce<sp/>przechowywania.<sp/>Klasa<sp/>korzysta<sp/>z<sp/>mechanizmu<sp/>`QSortFilterProxyModel`,<sp/>zapewniając<sp/>filtrowanie<sp/>wierszy<sp/>modelu<sp/>źródłowego<sp/>(np.<sp/>`QSqlRelationalTableModel`)<sp/>z<sp/>ignorowaniem<sp/>wielkości<sp/>liter.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Kod<sp/>jest<sp/>podzielony<sp/>na<sp/>następujące<sp/>sekcje:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**Sekcja<sp/>konstruktora**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Inicjalizuje<sp/>model<sp/>proxy<sp/>i<sp/>konfiguruje<sp/>filtrowanie<sp/>bez<sp/>uwzględnienia<sp/>wielkości<sp/>liter.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Sekcja<sp/>metod<sp/>ustawiania<sp/>filtrów**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Metody<sp/>`setTypeFilter`,<sp/>`setVendorFilter`,<sp/>`setModelFilter`,<sp/>`setStatusFilter`,<sp/>`setStorageFilter`<sp/>zapisują<sp/>wartości<sp/>filtrów<sp/>i<sp/>odświeżają<sp/>widok.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Sekcja<sp/>metody<sp/>filterAcceptsRow**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Implementuje<sp/>logikę<sp/>filtrowania,<sp/>sprawdzając<sp/>zgodność<sp/>wierszy<sp/>modelu<sp/>źródłowego<sp/>z<sp/>filtrami.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">1.<sp/>**Inicjalizacja**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Konstruktor<sp/>ustawia<sp/>model<sp/>proxy<sp/>jako<sp/>dziecko<sp/>podanego<sp/>rodzica<sp/>i<sp/>konfiguruje<sp/>filtrowanie<sp/>z<sp/>ignorowaniem<sp/>wielkości<sp/>liter<sp/>(`Qt::CaseInsensitive`).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Ustawianie<sp/>filtrów**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Każda<sp/>metoda<sp/>ustawiania<sp/>filtru<sp/>(`setTypeFilter`,<sp/>`setVendorFilter`<sp/>itp.)<sp/>zapisuje<sp/>wartość<sp/>filtru<sp/>w<sp/>odpowiedniej<sp/>zmiennej<sp/>prywatnej<sp/>(`m_type`,<sp/>`m_vendor`<sp/>itp.)<sp/>i<sp/>wywołuje<sp/>`invalidateFilter()`,<sp/>co<sp/>odświeża<sp/>widok<sp/>z<sp/>uwzględnieniem<sp/>nowego<sp/>filtru.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Pusty<sp/>ciąg<sp/>jako<sp/>wartość<sp/>filtru<sp/>oznacza<sp/>brak<sp/>ograniczeń<sp/>dla<sp/>danego<sp/>atrybutu.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Filtrowanie**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Metoda<sp/>`filterAcceptsRow`<sp/>sprawdza,<sp/>czy<sp/>wartości<sp/>w<sp/>kolumnach<sp/>modelu<sp/>źródłowego<sp/>(2:<sp/>typ,<sp/>3:<sp/>producent,<sp/>4:<sp/>model,<sp/>9:<sp/>status,<sp/>10:<sp/>miejsce<sp/>przechowywania)<sp/>odpowiadają<sp/>ustawionym<sp/>filtrom.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Używa<sp/>lambdy<sp/>`pasuje`,<sp/>która<sp/>porównuje<sp/>wartość<sp/>w<sp/>kolumnie<sp/>z<sp/>wartością<sp/>filtru.<sp/>Jeśli<sp/>filtr<sp/>jest<sp/>pusty,<sp/>wszystkie<sp/>wartości<sp/>dla<sp/>tej<sp/>kolumny<sp/>są<sp/>akceptowane.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Wiersz<sp/>jest<sp/>widoczny<sp/>tylko<sp/>wtedy,<sp/>gdy<sp/>spełnia<sp/>wszystkie<sp/>aktywne<sp/>filtry.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Biblioteki<sp/>Qt**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QSortFilterProxyModel`:<sp/>Bazowa<sp/>klasa<sp/>dla<sp/>filtrowania<sp/>i<sp/>sortowania.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QModelIndex`,<sp/>`QAbstractItemModel`:<sp/>Obsługa<sp/>indeksów<sp/>i<sp/>danych<sp/>modelu<sp/>źródłowego.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Nagłówek**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`ItemFilterProxyModel.h`:<sp/>Definicja<sp/>klasy.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Brak<sp/>zależności<sp/>od<sp/>zasobów<sp/>Qt.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Filtrowanie<sp/>ignoruje<sp/>wielkość<sp/>liter,<sp/>co<sp/>ułatwia<sp/>dopasowanie<sp/>wartości.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Struktura<sp/>kolumn<sp/>(2,<sp/>3,<sp/>4,<sp/>9,<sp/>10)<sp/>jest<sp/>zgodna<sp/>z<sp/>modelem<sp/>`QSqlRelationalTableModel`<sp/>używanym<sp/>w<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Wywołanie<sp/>`invalidateFilter()`<sp/>po<sp/>każdej<sp/>zmianie<sp/>filtru<sp/>zapewnia<sp/>natychmiastowe<sp/>odświeżenie<sp/>widoku.</highlight></codeline>
+    </programlisting>
+    <location file="documentation/ItemFilterProxyModel_cpp.md"/>
+  </compounddef>
+</doxygen>

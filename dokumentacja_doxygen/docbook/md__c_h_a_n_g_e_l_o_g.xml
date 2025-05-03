@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md__c_h_a_n_g_e_l_o_g" xml:lang="pl">
+
+<para>Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym pliku.</para>
+
+<para>Format opiera się na <link xlink:href="https://keepachangelog.com/pl/1.0.0/">Keep a Changelog</link>, a projekt stosuje <link xlink:href="https://semver.org/lang/pl/">Wersjonowanie Semantyczne</link>.</para>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md1">
+<title>[1.2.0] - 2025-04-15</title>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md2">
+<title>Dodano</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Konfiguracja bazy danych</emphasis>: Nowe okno (<computeroutput><link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></computeroutput>) do wyboru i ustawiania bazy danych:<itemizedlist>
+<listitem>
+<para>Obsługa SQLite3 (wybór pliku za pomocą <computeroutput>QFileDialog</computeroutput>).</para>
+</listitem><listitem>
+<para>Obsługa MySQL (ustawienia hosta, portu, użytkownika, hasła, nazwy bazy).</para>
+</listitem><listitem>
+<para>Zapisywanie ustawień w <computeroutput>QSettings</computeroutput> dla trwałości konfiguracji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zarządzanie statusami</emphasis>: Dedykowane okno (<computeroutput>status.ui</computeroutput>) z pełnymi operacjami:<itemizedlist>
+<listitem>
+<para>Dodawanie, edycja i usuwanie statusów w bazie danych.</para>
+</listitem><listitem>
+<para>Integracja z głównym oknem (odświeżanie listy statusów w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Użycie UUID dla unikalnych identyfikatorów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zarządzanie miejscami przechowywania</emphasis>: Nowe okno (<computeroutput>storage.ui</computeroutput>) do obsługi lokalizacji:<itemizedlist>
+<listitem>
+<para>Dodawanie, edycja i usuwanie miejsc przechowywania.</para>
+</listitem><listitem>
+<para>Synchronizacja z głównym oknem aplikacji.</para>
+</listitem><listitem>
+<para>UUID dla identyfikatorów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Obsługa zdjęć</emphasis>: Nowe moduły (<computeroutput>photoitem</computeroutput>, <computeroutput>fullscreenphotoviewer</computeroutput>) umożliwiające:<itemizedlist>
+<listitem>
+<para>Dodawanie zdjęć do elementów inwentaryzacji.</para>
+</listitem><listitem>
+<para>Przeglądanie zdjęć w trybie pełnoekranowym.</para>
+</listitem><listitem>
+<para>Zarządzanie zdjęciami w bazie danych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Ulepszone zarządzanie typami i producentami</emphasis>:<itemizedlist>
+<listitem>
+<para>Przejście na okna dialogowe (<computeroutput>QDialog</computeroutput>) w <computeroutput><link linkend="_types_8cpp">types.cpp</link></computeroutput> i <computeroutput><link linkend="_vendors_8cpp">vendors.cpp</link></computeroutput>.</para>
+</listitem><listitem>
+<para>Pełne operacje CRUD (tworzenie, odczyt, aktualizacja, usuwanie).</para>
+</listitem><listitem>
+<para>Interfejsy z listami (<computeroutput>QListView</computeroutput>) i przyciskami akcji (dodaj, edytuj, usuń).</para>
+</listitem><listitem>
+<para>Synchronizacja z głównym oknem dla dynamicznych list rozwijanych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Funkcja konfiguracji bazy</emphasis>: Nowy moduł <computeroutput><link linkend="_utils_8cpp">utils.cpp</link></computeroutput> z funkcją <computeroutput>setupDatabase</computeroutput>:<itemizedlist>
+<listitem>
+<para>Ujednolicona konfiguracja połączenia dla SQLite3 i MySQL.</para>
+</listitem><listitem>
+<para>Obsługa błędów z komunikatami w <computeroutput>QMessageBox</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Skrypty SQL</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>Create_MySQL.sql</computeroutput>: Inicjalizacja bazy MySQL z pełną strukturą tabel.</para>
+</listitem><listitem>
+<para><computeroutput>createTable.sql</computeroutput>: Skrypt do tworzenia tabel dla nowych funkcji.</para>
+</listitem><listitem>
+<para><computeroutput>migrate_to_uuid.sql</computeroutput>: Migracja identyfikatorów na UUID dla istniejących danych.</para>
+</listitem><listitem>
+<para><computeroutput>database_example_record.sql</computeroutput>: Przykładowe rekordy do testowania bazy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Dokumentacja</emphasis>: Plik <computeroutput>README.md</computeroutput> opisujący:<itemizedlist>
+<listitem>
+<para>Cel projektu (inwentaryzacja retro komputerów).</para>
+</listitem><listitem>
+<para>Proces tworzenia z użyciem AI (ChatGPT, GROK, DeepSeek).</para>
+</listitem><listitem>
+<para>Wymagania (Qt 6.8.1, SQLite3) i instrukcje instalacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Gitignore</emphasis>: Plik <computeroutput>.gitignore</computeroutput> ignorujący pliki tymczasowe (<computeroutput>build/</computeroutput>, <computeroutput>*.db</computeroutput>, <computeroutput>*.DS_Store</computeroutput> itp.).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md3">
+<title>Zmieniono</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Główne okno</emphasis> (<computeroutput><link linkend="_mainwindow_8cpp">mainwindow.cpp</link></computeroutput>, <computeroutput>mainwindow.ui</computeroutput>):<itemizedlist>
+<listitem>
+<para>Dodano zaawansowane filtrowanie i wyszukiwanie elementów w liście inwentaryzacyjnej.</para>
+</listitem><listitem>
+<para>Wprowadzono obsługę UUID dla nowych rekordów.</para>
+</listitem><listitem>
+<para>Zintegrowano nowe moduły (statusy, miejsca przechowywania, zdjęcia).</para>
+</listitem><listitem>
+<para>Ulepszono zarządzanie danymi w tabelach (<computeroutput>QTableView</computeroutput>) z dynamicznym ładowaniem.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Lista elementów</emphasis> (<computeroutput><link linkend="_item_list_8cpp">itemList.cpp</link></computeroutput>):<itemizedlist>
+<listitem>
+<para>Rozbudowano o możliwość edycji i usuwania bezpośrednio z interfejsu.</para>
+</listitem><listitem>
+<para>Poprawiono integrację z bazą danych dla nowych tabel (statusy, miejsca).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Modele</emphasis> (<computeroutput><link linkend="_models_8cpp">models.cpp</link></computeroutput>):<itemizedlist>
+<listitem>
+<para>Zaktualizowano o obsługę nowych typów danych (np. zdjęcia, statusy).</para>
+</listitem><listitem>
+<para>Ulepszono ładowanie i zapisywanie danych z bazy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Interfejsy typów i producentów</emphasis> (<computeroutput>types.ui</computeroutput>, <computeroutput>vendors.ui</computeroutput>):<itemizedlist>
+<listitem>
+<para>Dodano widoki list (<computeroutput>QListView</computeroutput>) dla przeglądania rekordów.</para>
+</listitem><listitem>
+<para>Wprowadzono przyciski akcji (dodaj, edytuj, usuń) dla łatwiejszej obsługi.</para>
+</listitem><listitem>
+<para>Zwiększono szerokość okien dla lepszej czytelności (np. z 400px na 546px dla <computeroutput>types.ui</computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Plik projektu</emphasis> (<computeroutput>Inwentaryzacja.pro</computeroutput>):<itemizedlist>
+<listitem>
+<para>Dodano moduł <computeroutput>widgets</computeroutput> dla pełnej obsługi Qt Widgets.</para>
+</listitem><listitem>
+<para>Włączono nowe pliki źródłowe, nagłówki, formularze i skrypty SQL.</para>
+</listitem><listitem>
+<para>Ulepszono konfigurację tłumaczeń (<computeroutput>lrelease</computeroutput>, <computeroutput>embed_translations</computeroutput>) dla <computeroutput>Inwentaryzacja_pl_PL.ts</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Struktura bazy danych</emphasis>:<itemizedlist>
+<listitem>
+<para>Przejście na UUID dla tabel (<computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput>).</para>
+</listitem><listitem>
+<para>Rozbudowa schematu o nowe tabele dla statusów i miejsc przechowywania.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Kod i organizacja</emphasis>:<itemizedlist>
+<listitem>
+<para>Przepisano <computeroutput>types</computeroutput> i <computeroutput>vendors</computeroutput> z <computeroutput>QWidget</computeroutput> na <computeroutput>QDialog</computeroutput> dla lepszej modalności.</para>
+</listitem><listitem>
+<para>Dodano zarządzanie błędami w interakcjach z bazą (np. komunikaty w <computeroutput>QMessageBox</computeroutput>).</para>
+</listitem><listitem>
+<para>Usprawniono połączenia sygnałów-slotów w nowych oknach.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md4">
+<title>Poprawiono</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Stabilność interfejsu użytkownika dzięki lepszemu zarządzaniu danymi w <computeroutput>QSqlQueryModel</computeroutput>.</para>
+</listitem><listitem>
+<para>Poprawiono obsługę błędów bazy danych w nowych modułach (<computeroutput>status</computeroutput>, <computeroutput>storage</computeroutput>, <computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>).</para>
+</listitem><listitem>
+<para>Zoptymalizowano ładowanie danych w głównym oknie dla większych zbiorów.</para>
+</listitem><listitem>
+<para>Ujednolicono styl interfejsu w nowych oknach (np. spójne rozmiary przycisków i pól).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md5">
+<title>[1.0.0] - 11 marca 2025</title>
+<section xml:id="_md__c_h_a_n_g_e_l_o_g_1autotoc_md6">
+<title>Dodano</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Początkowe wydanie aplikacji Inwentaryzacja do zarządzania kolekcją retro komputerów.</para>
+</listitem><listitem>
+<para>Podstawowe funkcje: przeglądanie listy elementów, zarządzanie typami, producentami i modelami.</para>
+</listitem><listitem>
+<para>Obsługa bazy danych SQLite3 do przechowywania danych.</para>
+</listitem><listitem>
+<para>Prosty interfejs użytkownika z głównym oknem, listą elementów i formularzami. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

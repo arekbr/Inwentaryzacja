@@ -1,0 +1,61 @@
+\hypertarget{status_8cpp}{}\doxysection{Dokumentacja pliku src/status.cpp}
+\label{status_8cpp}\index{src/status.cpp@{src/status.cpp}}
+
+
+Implementacja klasy status do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej.  
+
+
+{\ttfamily \#include \char`\"{}status.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$QInput\+Dialog$>$}\newline
+{\ttfamily \#include $<$QMessage\+Box$>$}\newline
+{\ttfamily \#include $<$QSql\+Error$>$}\newline
+{\ttfamily \#include $<$QSql\+Query$>$}\newline
+{\ttfamily \#include $<$QSql\+Query\+Model$>$}\newline
+{\ttfamily \#include $<$QUuid$>$}\newline
+{\ttfamily \#include \char`\"{}mainwindow.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ui\+\_\+status.\+h\char`\"{}}\newline
+Wykres zależności załączania dla status.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{status_8cpp__incl}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Opis szczegółowy}
+Implementacja klasy status do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej. 
+
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03 
+\end{DoxyDate}
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyAuthor}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik zawiera implementację metod klasy status, odpowiedzialnej za zarządzanie statusami eksponatów (np. \char`\"{}\+Nowy\char`\"{}, \char`\"{}\+Używany\char`\"{}, \char`\"{}\+Uszkodzony\char`\"{}) w bazie danych (tabela {\ttfamily statuses}). Klasa umożliwia dodawanie, edytowanie i usuwanie statusów, współpracując z interfejsem użytkownika (QList\+View, QLine\+Edit) oraz klasą \mbox{\hyperlink{class_main_window}{Main\+Window}} w celu odświeżania combo boxów.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Kod jest podzielony na następujące sekcje\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Konstruktor}} – inicjalizuje interfejs, połączenie z bazą danych, sloty.
+\item {\bfseries{Destruktor}} – zwalnia zasoby.
+\item {\bfseries{Metody publiczne}} – ustawianie \mbox{\hyperlink{class_main_window}{Main\+Window}}.
+\item {\bfseries{Sloty prywatne}} – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).
+\item {\bfseries{Metody prywatne}} – odświeżanie listy statusów.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas QMessage\+Box, QSql\+Query, QSql\+Query\+Model, QInput\+Dialog, QUuid.
+\item {\bfseries{Nagłówki aplikacji}}\+: \mbox{\hyperlink{status_8h}{status.\+h}}, \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}.
+\item {\bfseries{Interfejs użytkownika}}\+: \mbox{\hyperlink{ui__status_8h_source}{ui\+\_\+status.\+h}}.
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Klasa jest częścią systemu słownikowego, integruje się z \mbox{\hyperlink{class_main_window}{Main\+Window}}.
+\item Obsługuje My\+SQL, ale aplikacja wspiera także SQLite (konfigurowane w \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}).
+\item Istnieje błąd w metodzie on\+Add\+Clicked, gdzie generowany UUID nie jest przypisywany (naprawiony w dokumentacji). 
+\end{DoxyItemize}

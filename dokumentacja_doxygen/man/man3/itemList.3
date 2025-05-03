@@ -1,0 +1,85 @@
+.TH "itemList" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+itemList \- Widget zarządzający listą eksponatów z interfejsem użytkownika\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <itemList\&.h>\fP
+.PP
+Dziedziczy QWidget\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBitemList\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy \fBitemList\fP\&. "
+.ti -1c
+.RI "\fB~itemList\fP ()"
+.br
+.RI "Destruktor klasy \fBitemList\fP\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Widget zarządzający listą eksponatów z interfejsem użytkownika\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa \fBitemList\fP odpowiada za wyświetlanie i zarządzanie tabelą eksponatów w aplikacji do inwentaryzacji retro komputerów\&. Umożliwia filtrowanie danych za pomocą combo boxów, obsługę zdjęć eksponatów (podgląd, powiększenie, pełny ekran) oraz operacje CRUD (Create, Read, Update, Delete) na rekordach\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie tabeli eksponatów z danymi z bazy danych\&.
+.IP "\(bu" 2
+Filtrowanie kaskadowe za pomocą combo boxów\&.
+.IP "\(bu" 2
+Obsługa miniatur zdjęć (podgląd, pełny ekran)\&.
+.IP "\(bu" 2
+Operacje na rekordach: dodawanie, edycja, usuwanie, klonowanie\&.
+.IP "\(bu" 2
+Zarządzanie schematem bazy danych i przykładowymi danymi\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "itemList::itemList (QWidget * parent = \fCnullptr\fP)\fC [explicit]\fP"
+
+.PP
+Konstruktor klasy \fBitemList\fP\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs użytkownika, model danych (QSqlRelationalTableModel), model proxy (\fBItemFilterProxyModel\fP), filtry combo boxów oraz połączenia sygnałów i slotów dla interakcji użytkownika\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych MySQL, konfiguruje model danych (QSqlRelationalTableModel), model proxy (\fBItemFilterProxyModel\fP), filtry kaskadowe w combo boxach oraz podłącza sygnały i sloty dla przycisków, tabeli i interakcji ze zdjęciami\&. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane\&. 
+.SS "itemList::~itemList ()"
+
+.PP
+Destruktor klasy \fBitemList\fP\&. 
+.SH "DestructorOverview"
+.PP
+Zwalnia zasoby, w tym interfejs użytkownika, model danych, timery i inne obiekty dynamiczne\&.
+.SH "DestructorOverview"
+.PP
+Zatrzymuje timer utrzymujący połączenie z bazą danych i zwalnia zasoby interfejsu użytkownika\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

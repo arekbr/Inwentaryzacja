@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_ui__storage" xml:lang="pl">
+<title>Dokumentacja klasy Ui_storage</title>
+<indexterm><primary>Ui_storage</primary></indexterm>
+Diagram dziedziczenia dla Ui_storage<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_ui__storage__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__storage_1a58a35ff3d00c8b0da34a5d52763e0fd5"/>void <emphasis role="strong">setupUi</emphasis> (QWidget *<link linkend="_classstorage">storage</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1aba6458d59089cbdc3e7b542180841c4e"/>void <emphasis role="strong">retranslateUi</emphasis> (QWidget *<link linkend="_classstorage">storage</link>)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Atrybuty publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__storage_1a630bd810c85e332104457ad450e2d167"/>QLabel * <emphasis role="strong">label</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1ada5875c19cf56b9623f0d571aeb7292f"/>QLineEdit * <emphasis role="strong">lineEdit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1ae2c756d0fc82f8d0168e8eb4a7d6fa34"/>QPushButton * <emphasis role="strong">pushButton_add</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1a26ad1015e450a226aee603bd7494debe"/>QPushButton * <emphasis role="strong">pushButton_edit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1ad86fc1cdbeaca074d14850c1c925782e"/>QPushButton * <emphasis role="strong">pushButton_delete</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1a134d3519b53826932c1a4d00391f47e2"/>QListView * <emphasis role="strong">listView</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__storage_1ab43e687b375046b3ab50d089be087355"/>QDialogButtonBox * <emphasis role="strong">buttonBox</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+build/ui_storage.h</section>

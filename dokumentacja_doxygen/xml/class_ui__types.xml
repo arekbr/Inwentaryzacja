@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui__types" kind="class" language="C++" prot="public">
+    <compoundname>Ui_types</compoundname>
+    <derivedcompoundref refid="class_ui_1_1types" prot="public" virt="non-virtual">Ui::types</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_ui__types_1a2a1cd9bf6ecdd90eac2b3f308092ffc8" prot="public" static="no" mutable="no">
+        <type>QLineEdit *</type>
+        <definition>QLineEdit* Ui_types::type_lineEdit</definition>
+        <argsstring></argsstring>
+        <name>type_lineEdit</name>
+        <qualifiedname>Ui_types::type_lineEdit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="27" column="15" bodyfile="build/ui_types.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1a00e11d63d7f750427d0f150a95ad7f6e" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_types::label</definition>
+        <argsstring></argsstring>
+        <name>label</name>
+        <qualifiedname>Ui_types::label</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="28" column="12" bodyfile="build/ui_types.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1af88c00e8212f5d329c1acfff5cd29f11" prot="public" static="no" mutable="no">
+        <type>QListView *</type>
+        <definition>QListView* Ui_types::listView</definition>
+        <argsstring></argsstring>
+        <name>listView</name>
+        <qualifiedname>Ui_types::listView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="29" column="15" bodyfile="build/ui_types.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1a043d828242af7318837c468e60c42c20" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_types::pushButton_add</definition>
+        <argsstring></argsstring>
+        <name>pushButton_add</name>
+        <qualifiedname>Ui_types::pushButton_add</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="30" column="17" bodyfile="build/ui_types.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1ac7d20db02c24871f458d60eacad46e14" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_types::pushButton_edit</definition>
+        <argsstring></argsstring>
+        <name>pushButton_edit</name>
+        <qualifiedname>Ui_types::pushButton_edit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="31" column="17" bodyfile="build/ui_types.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1a74f727808b60d8275910f458a01b7190" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_types::pushButton_delete</definition>
+        <argsstring></argsstring>
+        <name>pushButton_delete</name>
+        <qualifiedname>Ui_types::pushButton_delete</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="32" column="17" bodyfile="build/ui_types.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__types_1a6a4566ba3fa9a6830bb202f35b5c54f4" prot="public" static="no" mutable="no">
+        <type>QDialogButtonBox *</type>
+        <definition>QDialogButtonBox* Ui_types::buttonBox</definition>
+        <argsstring></argsstring>
+        <name>buttonBox</name>
+        <qualifiedname>Ui_types::buttonBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="33" column="22" bodyfile="build/ui_types.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ui__types_1a7cee6ed0ea9cad2c0ea06c67eaf239b2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_types::setupUi</definition>
+        <argsstring>(QWidget *types)</argsstring>
+        <name>setupUi</name>
+        <qualifiedname>Ui_types::setupUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>types</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="35" column="10" bodyfile="build/ui_types.h" bodystart="35" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ui__types_1a54f01e06d0787ed99bc53ec818df1350" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_types::retranslateUi</definition>
+        <argsstring>(QWidget *types)</argsstring>
+        <name>retranslateUi</name>
+        <qualifiedname>Ui_types::retranslateUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>types</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_types.h" line="113" column="10" bodyfile="build/ui_types.h" bodystart="113" bodyend="120"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Ui::types</label>
+        <link refid="class_ui_1_1types"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Ui_types</label>
+        <link refid="class_ui__types"/>
+      </node>
+    </inheritancegraph>
+    <location file="build/ui_types.h" line="24" column="1" bodyfile="build/ui_types.h" bodystart="25" bodyend="122"/>
+    <listofallmembers>
+      <member refid="class_ui__types_1a6a4566ba3fa9a6830bb202f35b5c54f4" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>buttonBox</name></member>
+      <member refid="class_ui__types_1a00e11d63d7f750427d0f150a95ad7f6e" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>label</name></member>
+      <member refid="class_ui__types_1af88c00e8212f5d329c1acfff5cd29f11" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>listView</name></member>
+      <member refid="class_ui__types_1a043d828242af7318837c468e60c42c20" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>pushButton_add</name></member>
+      <member refid="class_ui__types_1a74f727808b60d8275910f458a01b7190" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>pushButton_delete</name></member>
+      <member refid="class_ui__types_1ac7d20db02c24871f458d60eacad46e14" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>pushButton_edit</name></member>
+      <member refid="class_ui__types_1a54f01e06d0787ed99bc53ec818df1350" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__types_1a7cee6ed0ea9cad2c0ea06c67eaf239b2" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>setupUi</name></member>
+      <member refid="class_ui__types_1a2a1cd9bf6ecdd90eac2b3f308092ffc8" prot="public" virt="non-virtual"><scope>Ui_types</scope><name>type_lineEdit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

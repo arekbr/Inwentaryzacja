@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation__database_config_dialog_cpp" kind="page">
+    <compoundname>md_documentation_DatabaseConfigDialog_cpp</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;DatabaseConfigDialog.cpp&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md8">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="_database_config_dialog_8cpp" kindref="compound">DatabaseConfigDialog.cpp</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md9">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="_database_config_dialog_8cpp" kindref="compound">DatabaseConfigDialog.cpp</ref></computeroutput> zawiera implementację metod klasy <computeroutput><ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref></computeroutput>, odpowiedzialnej za konfigurację parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wybór skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Implementacja obejmuje ładowanie stylów QSS, czcionek, zapis ustawień w <computeroutput>QSettings</computeroutput> oraz obsługę dynamicznego wyboru pliku SQLite z możliwością tworzenia nowego pliku <computeroutput>.db</computeroutput>.</para>
+</sect1>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md10">
+<title>Struktura kodu</title>
+<para>Kod jest podzielony na następujące sekcje:</para>
+<para><orderedlist>
+<listitem><para><bold>Sekcja pomocnicza</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Funkcja <computeroutput>getSettings()</computeroutput>: Tworzy i zwraca obiekt <computeroutput>QSettings</computeroutput> dla pliku <computeroutput>inwentaryzacja.ini</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja konstruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Inicjalizuje interfejs użytkownika, combo boxy, wczytuje zapisane ustawienia i ustanawia połączenia sygnałów-slotów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja destruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Zwalnia zasoby interfejsu i odrejestrowuje czcionki.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja metod publicznych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Metody dostępowe do parametrów bazy danych.</para>
+</listitem><listitem><para>Metoda <computeroutput>accept()</computeroutput>: Zapisuje ustawienia i zamyka okno dialogowe.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja slotów prywatnych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>onDatabaseTypeChanged(int index)</computeroutput>: Przełącza interfejs w zależności od typu bazy danych.</para>
+</listitem><listitem><para><computeroutput>onSkinChanged(const QString &amp;skin)</computeroutput>: Aktualizuje styl i czcionkę dla wybranej skórki.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja metod prywatnych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>loadStyleSheet(const QString &amp;skin)</computeroutput>: Ładuje plik QSS dla wybranej skórki.</para>
+</listitem><listitem><para><computeroutput>loadFont(const QString &amp;skin)</computeroutput>: Ładuje czcionkę dla wybranej skórki.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md11">
+<title>Opis działania</title>
+<para><orderedlist>
+<listitem><para><bold>Inicjalizacja</bold>:<itemizedlist>
+<listitem><para>Konstruktor konfiguruje interfejs użytkownika (<computeroutput>ui-&gt;setupUi</computeroutput>), wypełnia combo boxy opcjami bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard).</para>
+</listitem><listitem><para>Wczytuje zapisane ustawienia z <computeroutput>QSettings</computeroutput> i ustawia początkowe wartości pól (np. ścieżka SQLite, dane MySQL, wybrana skórka).</para>
+</listitem><listitem><para>Ustanawia połączenia sygnałów-slotów dla przycisków, combo boxów i wyboru pliku SQLite.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Wybór pliku SQLite</bold>:<itemizedlist>
+<listitem><para>Przycisk <computeroutput>selectFileButton</computeroutput> otwiera okno dialogowe <computeroutput>QFileDialog::getSaveFileName</computeroutput>, umożliwiając wybór istniejącego lub nowego pliku <computeroutput>.db</computeroutput>.</para>
+</listitem><listitem><para>Jeśli wybrany plik nie istnieje, tworzony jest pusty plik.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zmiana typu bazy danych</bold>:<itemizedlist>
+<listitem><para>Slot <computeroutput>onDatabaseTypeChanged</computeroutput> przełącza strony w <computeroutput>QStackedWidget</computeroutput>, pokazując pola odpowiednie dla SQLite lub MySQL.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zmiana skórki graficznej</bold>:<itemizedlist>
+<listitem><para>Slot <computeroutput>onSkinChanged</computeroutput> wywołuje <computeroutput>loadStyleSheet</computeroutput> i <computeroutput>loadFont</computeroutput>, aktualizując styl i czcionkę aplikacji.</para>
+</listitem><listitem><para>Wybór skórki jest zapisywany w <computeroutput>QSettings</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zatwierdzanie ustawień</bold>:<itemizedlist>
+<listitem><para>Metoda <computeroutput>accept</computeroutput> zapisuje wszystkie parametry (baza danych, skórka) w <computeroutput>QSettings</computeroutput> i zamyka okno dialogowe.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Ładowanie stylów i czcionek</bold>:<itemizedlist>
+<listitem><para><computeroutput>loadStyleSheet</computeroutput> wczytuje plik QSS z zasobów Qt i stosuje go za pomocą <computeroutput>qApp-&gt;setStyleSheet</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>loadFont</computeroutput> ładuje czcionkę (np. <computeroutput>topaz.ttf</computeroutput> dla Amigi) za pomocą <computeroutput>QFontDatabase</computeroutput>, ustawia ją dla aplikacji i resetuje paletę/styl dla propagacji zmian.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md12">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QApplication</computeroutput>: Ustawianie stylów i czcionek dla aplikacji.</para>
+</listitem><listitem><para><computeroutput>QDebug</computeroutput>, <computeroutput>qWarning</computeroutput>: Logowanie komunikatów diagnostycznych.</para>
+</listitem><listitem><para><computeroutput>QDir</computeroutput>, <computeroutput>QFile</computeroutput>: Obsługa plików konfiguracyjnych i zasobów.</para>
+</listitem><listitem><para><computeroutput>QFileDialog</computeroutput>: Wybór pliku SQLite.</para>
+</listitem><listitem><para><computeroutput>QFontDatabase</computeroutput>: Ładowanie i zarządzanie czcionkami.</para>
+</listitem><listitem><para><computeroutput>QPushButton</computeroutput>, <computeroutput>QSettings</computeroutput>: Obsługa interfejsu i zapisu ustawień.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui___database_config_dialog_8h_source" kindref="compound">ui_DatabaseConfigDialog.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Pliki QSS (<computeroutput>:/styles/amiga.qss</computeroutput>, <computeroutput>:/styles/atari8bit.qss</computeroutput>, <computeroutput>:/styles/zxspectrum.qss</computeroutput>, <computeroutput>:/styles/default.qss</computeroutput>).</para>
+</listitem><listitem><para>Czcionki (<computeroutput>:/fonts/topaz.ttf</computeroutput>, <computeroutput>:/fonts/zxspectrum.ttf</computeroutput>, <computeroutput>:/fonts/EightBit Atari-Ataripl.ttf</computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation__database_config_dialog_cpp_1autotoc_md13">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Ustawienia są zapisywane w pliku <computeroutput>inwentaryzacja.ini</computeroutput> w katalogu aplikacji.</para>
+</listitem><listitem><para>W przypadku błędów ładowania zasobów (np. czcionek lub QSS) aplikacja przechodzi na domyślne ustawienia i loguje ostrzeżenia.</para>
+</listitem><listitem><para>Czcionki są odrejestrowywane w destruktorze, aby zapobiec wyciekom pamięci. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/DatabaseConfigDialog_cpp.md"/>
+  </compounddef>
+</doxygen>

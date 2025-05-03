@@ -1,0 +1,61 @@
+\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md43}{}\doxysection{Metadane}\label{md_documentation__item_filter_proxy_model_h_autotoc_md43}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{_item_filter_proxy_model_8h}{Item\+Filter\+Proxy\+Model.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md44}{}\doxysection{Przegląd}\label{md_documentation__item_filter_proxy_model_h_autotoc_md44}
+Plik {\ttfamily \mbox{\hyperlink{_item_filter_proxy_model_8h}{Item\+Filter\+Proxy\+Model.\+h}}} definiuje klasę {\ttfamily \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}}, która dziedziczy po {\ttfamily QSort\+Filter\+Proxy\+Model} i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia ustawienie filtrów dla atrybutów eksponatu, takich jak typ, producent, model, status i miejsce przechowywania, oraz kontroluje, które wiersze modelu źródłowego są wyświetlane w widoku na podstawie zadanych kryteriów.\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md45}{}\doxysection{Struktura kodu}\label{md_documentation__item_filter_proxy_model_h_autotoc_md45}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QSort\+Filter\+Proxy\+Model}.
+\item Używa makra {\ttfamily Q\+\_\+\+OBJECT} dla wsparcia mechanizmu sygnałów i slotów Qt.
+\end{DoxyItemize}
+\item {\bfseries{Metody publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje model proxy.
+\item Metody ustawiania filtrów\+: {\ttfamily set\+Type\+Filter}, {\ttfamily set\+Vendor\+Filter}, {\ttfamily set\+Model\+Filter}, {\ttfamily set\+Status\+Filter}, {\ttfamily set\+Storage\+Filter} – ustawiają filtry dla odpowiednich atrybutów.
+\end{DoxyItemize}
+\item {\bfseries{Metoda chroniona}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily filter\+Accepts\+Row}\+: Implementuje logikę filtrowania, decydując, które wiersze modelu źródłowego są widoczne.
+\end{DoxyItemize}
+\item {\bfseries{Zmienne prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily m\+\_\+type}, {\ttfamily m\+\_\+vendor}, {\ttfamily m\+\_\+model}, {\ttfamily m\+\_\+status}, {\ttfamily m\+\_\+storage}\+: Przechowują wartości filtrów dla każdego atrybutu.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md46}{}\doxysection{Opis działania}\label{md_documentation__item_filter_proxy_model_h_autotoc_md46}
+
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Konstruktor tworzy model proxy jako dziecko podanego rodzica, przygotowując go do filtrowania danych.
+\item {\bfseries{Ustawianie filtrów}}\+: Dedykowane metody ({\ttfamily set\+Type\+Filter}, {\ttfamily set\+Vendor\+Filter} itp.) zapisują wartości filtrów dla odpowiednich atrybutów i odświeżają widok poprzez wywołanie {\ttfamily invalidate\+Filter()}.
+\item {\bfseries{Filtrowanie}}\+: Metoda {\ttfamily filter\+Accepts\+Row} sprawdza, czy wartości w wierszu modelu źródłowego odpowiadają ustawionym filtrom. Pusty filtr dla danego atrybutu oznacza akceptację wszystkich wartości dla tej kolumny.
+\item {\bfseries{Zastosowanie}}\+: Klasa jest używana w aplikacji inwentaryzacyjnej do dynamicznego filtrowania danych w widoku (np. {\ttfamily QTable\+View}), współpracując z modelem źródłowym, takim jak {\ttfamily QSql\+Relational\+Table\+Model}.
+\end{DoxyItemize}\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md47}{}\doxysection{Zależności}\label{md_documentation__item_filter_proxy_model_h_autotoc_md47}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QSort\+Filter\+Proxy\+Model}\+: Bazowa klasa dla filtrowania i sortowania danych.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation__item_filter_proxy_model_h_autotoc_md48}{}\doxysection{Uwagi}\label{md_documentation__item_filter_proxy_model_h_autotoc_md48}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Filtry są niezależne, co pozwala na elastyczne kombinacje kryteriów filtrowania.
+\item Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2), co jest zgodne z modelem {\ttfamily QSql\+Relational\+Table\+Model} używanym w aplikacji.
+\item Filtrowanie jest dynamiczne i natychmiast odświeża widok po zmianie filtru. 
+\end{DoxyItemize}

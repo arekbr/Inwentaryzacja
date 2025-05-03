@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui__status" kind="class" language="C++" prot="public">
+    <compoundname>Ui_status</compoundname>
+    <derivedcompoundref refid="class_ui_1_1status" prot="public" virt="non-virtual">Ui::status</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_ui__status_1aec6019ecfe57c98675220212f2e5b53f" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_status::label</definition>
+        <argsstring></argsstring>
+        <name>label</name>
+        <qualifiedname>Ui_status::label</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="27" column="12" bodyfile="build/ui_status.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1a94dd3ea74a08b1ca21685bb01fe4a454" prot="public" static="no" mutable="no">
+        <type>QLineEdit *</type>
+        <definition>QLineEdit* Ui_status::lineEdit</definition>
+        <argsstring></argsstring>
+        <name>lineEdit</name>
+        <qualifiedname>Ui_status::lineEdit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="28" column="15" bodyfile="build/ui_status.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1a02025c530615ee36e85e9d7aebc3cd35" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_status::pushButton_add</definition>
+        <argsstring></argsstring>
+        <name>pushButton_add</name>
+        <qualifiedname>Ui_status::pushButton_add</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="29" column="17" bodyfile="build/ui_status.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1a85e09d59795aad011ab899f8b3659c6e" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_status::pushButton_edit</definition>
+        <argsstring></argsstring>
+        <name>pushButton_edit</name>
+        <qualifiedname>Ui_status::pushButton_edit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="30" column="17" bodyfile="build/ui_status.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1acf315a83b8e92b973b7ab21576485ded" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_status::pushButton_delete</definition>
+        <argsstring></argsstring>
+        <name>pushButton_delete</name>
+        <qualifiedname>Ui_status::pushButton_delete</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="31" column="17" bodyfile="build/ui_status.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1ac4ac8d380c5fd6c6c12fd67071f39d21" prot="public" static="no" mutable="no">
+        <type>QListView *</type>
+        <definition>QListView* Ui_status::listView</definition>
+        <argsstring></argsstring>
+        <name>listView</name>
+        <qualifiedname>Ui_status::listView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="32" column="15" bodyfile="build/ui_status.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__status_1a2dd1d8dd654af491eb1214f2f9bfde59" prot="public" static="no" mutable="no">
+        <type>QDialogButtonBox *</type>
+        <definition>QDialogButtonBox* Ui_status::buttonBox</definition>
+        <argsstring></argsstring>
+        <name>buttonBox</name>
+        <qualifiedname>Ui_status::buttonBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="33" column="22" bodyfile="build/ui_status.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ui__status_1a569721d7a33be7b8ccadd825213386c0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_status::setupUi</definition>
+        <argsstring>(QWidget *status)</argsstring>
+        <name>setupUi</name>
+        <qualifiedname>Ui_status::setupUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>status</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="35" column="10" bodyfile="build/ui_status.h" bodystart="35" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ui__status_1a10727201ebfb9de15c34e89a0406d21d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_status::retranslateUi</definition>
+        <argsstring>(QWidget *status)</argsstring>
+        <name>retranslateUi</name>
+        <qualifiedname>Ui_status::retranslateUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>status</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_status.h" line="113" column="10" bodyfile="build/ui_status.h" bodystart="113" bodyend="120"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Ui::status</label>
+        <link refid="class_ui_1_1status"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Ui_status</label>
+        <link refid="class_ui__status"/>
+      </node>
+    </inheritancegraph>
+    <location file="build/ui_status.h" line="24" column="1" bodyfile="build/ui_status.h" bodystart="25" bodyend="122"/>
+    <listofallmembers>
+      <member refid="class_ui__status_1a2dd1d8dd654af491eb1214f2f9bfde59" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>buttonBox</name></member>
+      <member refid="class_ui__status_1aec6019ecfe57c98675220212f2e5b53f" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>label</name></member>
+      <member refid="class_ui__status_1a94dd3ea74a08b1ca21685bb01fe4a454" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>lineEdit</name></member>
+      <member refid="class_ui__status_1ac4ac8d380c5fd6c6c12fd67071f39d21" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>listView</name></member>
+      <member refid="class_ui__status_1a02025c530615ee36e85e9d7aebc3cd35" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>pushButton_add</name></member>
+      <member refid="class_ui__status_1acf315a83b8e92b973b7ab21576485ded" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>pushButton_delete</name></member>
+      <member refid="class_ui__status_1a85e09d59795aad011ab899f8b3659c6e" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>pushButton_edit</name></member>
+      <member refid="class_ui__status_1a10727201ebfb9de15c34e89a0406d21d" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__status_1a569721d7a33be7b8ccadd825213386c0" prot="public" virt="non-virtual"><scope>Ui_status</scope><name>setupUi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;ItemFilterProxyModel.h&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation__item_filter_proxy_model_h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="_item_filter_proxy_model_8h.html" title="Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.">ItemFilterProxyModel.h</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md43"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="_item_filter_proxy_model_8h.html" title="Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.">ItemFilterProxyModel.h</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md44"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="_item_filter_proxy_model_8h.html" title="Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.">ItemFilterProxyModel.h</a></code> definiuje klasę <code><a class="el" href="class_item_filter_proxy_model.html" title="Model proxy do filtrowania listy eksponatów.">ItemFilterProxyModel</a></code>, która dziedziczy po <code>QSortFilterProxyModel</code> i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia ustawienie filtrów dla atrybutów eksponatu, takich jak typ, producent, model, status i miejsce przechowywania, oraz kontroluje, które wiersze modelu źródłowego są wyświetlane w widoku na podstawie zadanych kryteriów.</p>
+<h1><a class="anchor" id="autotoc_md45"></a>
+Struktura kodu</h1>
+<p >Plik nagłówkowy zawiera następujące elementy:</p>
+<ol type="1">
+<li><b>Deklaracja klasy <code><a class="el" href="class_item_filter_proxy_model.html" title="Model proxy do filtrowania listy eksponatów.">ItemFilterProxyModel</a></code></b> <br  />
+<ul>
+<li>Dziedziczy po <code>QSortFilterProxyModel</code>.</li>
+<li>Używa makra <code>Q_OBJECT</code> dla wsparcia mechanizmu sygnałów i slotów Qt.</li>
+</ul>
+</li>
+<li><b>Metody publiczne</b> <br  />
+<ul>
+<li>Konstruktor: Inicjalizuje model proxy.</li>
+<li>Metody ustawiania filtrów: <code>setTypeFilter</code>, <code>setVendorFilter</code>, <code>setModelFilter</code>, <code>setStatusFilter</code>, <code>setStorageFilter</code> – ustawiają filtry dla odpowiednich atrybutów.</li>
+</ul>
+</li>
+<li><b>Metoda chroniona</b> <br  />
+<ul>
+<li><code>filterAcceptsRow</code>: Implementuje logikę filtrowania, decydując, które wiersze modelu źródłowego są widoczne.</li>
+</ul>
+</li>
+<li><b>Zmienne prywatne</b> <br  />
+<ul>
+<li><code>m_type</code>, <code>m_vendor</code>, <code>m_model</code>, <code>m_status</code>, <code>m_storage</code>: Przechowują wartości filtrów dla każdego atrybutu.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md46"></a>
+Opis działania</h1>
+<ul>
+<li><b>Inicjalizacja</b>: Konstruktor tworzy model proxy jako dziecko podanego rodzica, przygotowując go do filtrowania danych.</li>
+<li><b>Ustawianie filtrów</b>: Dedykowane metody (<code>setTypeFilter</code>, <code>setVendorFilter</code> itp.) zapisują wartości filtrów dla odpowiednich atrybutów i odświeżają widok poprzez wywołanie <code>invalidateFilter()</code>.</li>
+<li><b>Filtrowanie</b>: Metoda <code>filterAcceptsRow</code> sprawdza, czy wartości w wierszu modelu źródłowego odpowiadają ustawionym filtrom. Pusty filtr dla danego atrybutu oznacza akceptację wszystkich wartości dla tej kolumny.</li>
+<li><b>Zastosowanie</b>: Klasa jest używana w aplikacji inwentaryzacyjnej do dynamicznego filtrowania danych w widoku (np. <code>QTableView</code>), współpracując z modelem źródłowym, takim jak <code>QSqlRelationalTableModel</code>.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md47"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QSortFilterProxyModel</code>: Bazowa klasa dla filtrowania i sortowania danych.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md48"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Filtry są niezależne, co pozwala na elastyczne kombinacje kryteriów filtrowania.</li>
+<li>Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2), co jest zgodne z modelem <code>QSqlRelationalTableModel</code> używanym w aplikacji.</li>
+<li>Filtrowanie jest dynamiczne i natychmiast odświeża widok po zmianie filtru. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

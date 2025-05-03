@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_mainwindow_h" kind="page">
+    <compoundname>md_documentation_mainwindow_h</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;mainwindow.h&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md79">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md80">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></computeroutput> definiuje klasę <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>, która reprezentuje główne okno formularza do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych MySQL. Emituje sygnał <computeroutput>recordSaved</computeroutput> po zapisaniu rekordu i zawiera sloty do obsługi akcji użytkownika, takich jak zapis, anulowanie czy dodawanie zdjęć.</para>
+</sect1>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md81">
+<title>Struktura kodu</title>
+<para>Plik nagłówkowy zawiera następujące elementy:</para>
+<para><orderedlist>
+<listitem><para><bold>Deklaracja klasy <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput></bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Dziedziczy po <computeroutput>QMainWindow</computeroutput>.</para>
+</listitem><listitem><para>Używa makra <computeroutput>Q_OBJECT</computeroutput> dla wsparcia mechanizmu sygnałów i slotów Qt.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody publiczne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Konstruktor: Inicjalizuje interfejs, połączenie z bazą danych i combo boxy.</para>
+</listitem><listitem><para>Destruktor: Zwalnia zasoby.</para>
+</listitem><listitem><para><computeroutput>loadComboBoxData</computeroutput>: Ładuje dane z tabeli do combo boxa.</para>
+</listitem><listitem><para><computeroutput>eventFilter</computeroutput>: Obsługuje zdarzenia dla combo boxów (otwieranie listy po kliknięciu).</para>
+</listitem><listitem><para><computeroutput>setEditMode</computeroutput>: Ustawia tryb edycji lub dodawania rekordu.</para>
+</listitem><listitem><para><computeroutput>setCloneMode</computeroutput>: Ustawia tryb klonowania rekordu.</para>
+</listitem><listitem><para><computeroutput>getNewItemVendorComboBox</computeroutput>, <computeroutput>getNewItemModelComboBox</computeroutput>, <computeroutput>getNewItemStoragePlaceComboBox</computeroutput>, <computeroutput>getNewItemTypeComboBox</computeroutput>, <computeroutput>getNewItemStatusComboBox</computeroutput>: Zwracają wskaźniki na combo boxy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sygnały</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>recordSaved</computeroutput>: Emitowany po zapisaniu rekordu, przekazuje ID rekordu.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sloty prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>onSaveClicked</computeroutput>: Zapisuje dane do bazy danych i emituje sygnał <computeroutput>recordSaved</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>onCancelClicked</computeroutput>: Zamyka okno bez zapisywania zmian.</para>
+</listitem><listitem><para><computeroutput>onAddPhotoClicked</computeroutput>: Dodaje nowe zdjęcie do rekordu.</para>
+</listitem><listitem><para><computeroutput>onRemovePhotoClicked</computeroutput>: Usuwa wybrane zdjęcie.</para>
+</listitem><listitem><para><computeroutput>onPhotoClicked</computeroutput>: Obsługuje kliknięcie w miniaturę zdjęcia.</para>
+</listitem><listitem><para><computeroutput>onAddTypeClicked</computeroutput>, <computeroutput>onAddVendorClicked</computeroutput>, <computeroutput>onAddModelClicked</computeroutput>, <computeroutput>onAddStatusClicked</computeroutput>, <computeroutput>onAddStoragePlaceClicked</computeroutput>: Otwierają okna dialogowe dla słowników.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>loadRecord</computeroutput>: Wczytuje dane rekordu do formularza.</para>
+</listitem><listitem><para><computeroutput>loadPhotos</computeroutput>: Wczytuje zdjęcia powiązane z rekordem.</para>
+</listitem><listitem><para><computeroutput>loadPhotosFromBuffer</computeroutput>: Wczytuje zdjęcia z bufora pamięci.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zmienne prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>db</computeroutput>: Połączenie z bazą danych MySQL.</para>
+</listitem><listitem><para><computeroutput>ui</computeroutput>: Wskaźnik na interfejs użytkownika.</para>
+</listitem><listitem><para><computeroutput>m_editMode</computeroutput>: Flaga trybu edycji (true) lub dodawania (false).</para>
+</listitem><listitem><para><computeroutput>m_recordId</computeroutput>: ID edytowanego rekordu.</para>
+</listitem><listitem><para><computeroutput>m_selectedPhotoIndex</computeroutput>: Indeks wybranej miniatury zdjęcia.</para>
+</listitem><listitem><para><computeroutput>m_photoBuffer</computeroutput>: Bufor dla zdjęć niezapisanych rekordów.</para>
+</listitem><listitem><para><computeroutput>m_photoPathsBuffer</computeroutput>: Bufor ścieżek do zdjęć przed zapisem.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md82">
+<title>Opis działania</title>
+<para><itemizedlist>
+<listitem><para><bold>Inicjalizacja</bold>: Konstruktor konfiguruje interfejs, łączy się z bazą danych, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie wartości do słowników.</para>
+</listitem><listitem><para><bold>Formularz</bold>: Wyświetla pola tekstowe (nazwa, numer seryjny, opis, itp.), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar dla miniatur zdjęć.</para>
+</listitem><listitem><para><bold>Tryby pracy</bold>:<itemizedlist>
+<listitem><para><bold>Dodawanie</bold>: Czyści pola, ustawia domyślne wartości (&quot;brak&quot; dla statusu i miejsca przechowywania).</para>
+</listitem><listitem><para><bold>Edycja</bold>: Wczytuje dane rekordu i zdjęcia na podstawie ID.</para>
+</listitem><listitem><para><bold>Klonowanie</bold>: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zdjęcia</bold>: Obsługuje dodawanie zdjęć (do bufora lub bazy), usuwanie (z bazy po potwierdzeniu) i wybór miniatur w <computeroutput>QGraphicsView</computeroutput>.</para>
+</listitem><listitem><para><bold>Słowniki</bold>: Umożliwia dodawanie nowych wartości do tabel <computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>models</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput> przez dialogi lub automatycznie po wpisaniu w combo boxie.</para>
+</listitem><listitem><para><bold>Zapis</bold>: Waliduje dane, zapisuje rekord w tabeli <computeroutput>eksponaty</computeroutput>, przenosi zdjęcia do tabeli <computeroutput>photos</computeroutput> i katalogu &quot;gotowe&quot;, emituje <computeroutput>recordSaved</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md83">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QMainWindow</computeroutput>, <computeroutput>QSqlDatabase</computeroutput>, <computeroutput>QComboBox</computeroutput>, <computeroutput>QList</computeroutput>: Obsługa interfejsu, bazy danych i danych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="photoitem_8h" kindref="compound">photoitem.h</ref></computeroutput>: Klasa dla miniatur zdjęć (forward-deklaracja).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui__mainwindow_8h_source" kindref="compound">ui_mainwindow.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_mainwindow_h_1autotoc_md84">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Klasa integruje formularz z bazą danych i dialogami słownikowymi, będąc kluczowym elementem edycji danych.</para>
+</listitem><listitem><para>Automatyczne dodawanie wartości do słowników wymaga wybrania producenta dla modeli, co zapewnia spójność danych.</para>
+</listitem><listitem><para>Zdjęcia są przechowywane jako <computeroutput>LONGBLOB</computeroutput> w tabeli <computeroutput>photos</computeroutput>, co może wpłynąć na wydajność przy dużej liczbie rekordów.</para>
+</listitem><listitem><para>Połączenie z bazą danych (<computeroutput>default_connection</computeroutput>) jest współdzielone z innymi komponentami (np. <computeroutput><ref refid="classitem_list" kindref="compound">itemList</ref></computeroutput>). </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/mainwindow_h.md"/>
+  </compounddef>
+</doxygen>

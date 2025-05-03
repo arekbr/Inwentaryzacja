@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="namespace_ui" kind="namespace" language="C++">
+    <compoundname>Ui</compoundname>
+    <innerclass refid="class_ui_1_1_database_config_dialog" prot="public">Ui::DatabaseConfigDialog</innerclass>
+    <innerclass refid="class_ui_1_1item_list" prot="public">Ui::itemList</innerclass>
+    <innerclass refid="class_ui_1_1_main_window" prot="public">Ui::MainWindow</innerclass>
+    <innerclass refid="class_ui_1_1models" prot="public">Ui::models</innerclass>
+    <innerclass refid="class_ui_1_1status" prot="public">Ui::status</innerclass>
+    <innerclass refid="class_ui_1_1storage" prot="public">Ui::storage</innerclass>
+    <innerclass refid="class_ui_1_1types" prot="public">Ui::types</innerclass>
+    <innerclass refid="class_ui_1_1vendors" prot="public">Ui::vendors</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="build/ui_DatabaseConfigDialog.h" line="206" column="1"/>
+  </compounddef>
+</doxygen>

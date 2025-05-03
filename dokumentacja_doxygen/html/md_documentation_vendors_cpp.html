@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;vendors.cpp&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation_vendors_cpp.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="vendors_8cpp.html" title="Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.">vendors.cpp</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md170"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="vendors_8cpp.html" title="Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.">vendors.cpp</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md171"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="vendors_8cpp.html" title="Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.">vendors.cpp</a></code> zawiera implementację metod klasy <code>vendors</code>, odpowiedzialnej za zarządzanie producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli <code>vendors</code> w bazie danych MySQL, współpracując z interfejsem użytkownika (<code>QListView</code>, <code>QLineEdit</code>) oraz klasą <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> w celu odświeżania combo boxów producentów po zapisaniu zmian.</p>
+<h1><a class="anchor" id="autotoc_md172"></a>
+Struktura kodu</h1>
+<p >Kod jest podzielony na następujące sekcje:</p>
+<ol type="1">
+<li><b>Sekcja konstruktora</b> <br  />
+<ul>
+<li>Inicjalizuje interfejs, połączenie z bazą danych, sloty i listę producentów.</li>
+</ul>
+</li>
+<li><b>Sekcja destruktora</b> <br  />
+<ul>
+<li>Zwalnia zasoby interfejsu.</li>
+</ul>
+</li>
+<li><b>Sekcja metod publicznych</b> <br  />
+<ul>
+<li><code>setMainWindow</code>: Ustawia referencję do <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>.</li>
+</ul>
+</li>
+<li><b>Sekcja slotów prywatnych</b> <br  />
+<ul>
+<li><code>onAddClicked</code>: Dodaje nowego producenta.</li>
+<li><code>onEditClicked</code>: Edytuje istniejącego producenta.</li>
+<li><code>onDeleteClicked</code>: Usuwa producenta.</li>
+<li><code>onOkClicked</code>: Odświeża combo box i zamyka okno.</li>
+</ul>
+</li>
+<li><b>Sekcja metod prywatnych</b> <br  />
+<ul>
+<li><code>refreshList</code>: Odświeża listę producentów w <code>QListView</code>.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md173"></a>
+Opis działania</h1>
+<ol type="1">
+<li><b>Inicjalizacja</b>:<ul>
+<li>Konstruktor ustawia interfejs (<code>ui-&gt;setupUi</code>), pobiera połączenie z bazą MySQL (<code>default_connection</code>), ustala tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i wywołuje <code>refreshList</code> do wyświetlenia producentów.</li>
+<li>Inicjalizuje <code>m_mainWindow</code> jako <code>nullptr</code>.</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li>Zawiera <code>QListView</code> do wyświetlania producentów (sortowanych alfabetycznie), <code>QLineEdit</code> do wprowadzania nazwy producenta oraz przyciski do zarządzania producentami i zamykania okna.</li>
+<li><code>QSqlQueryModel</code> dostarcza dane do <code>QListView</code>.</li>
+</ul>
+</li>
+<li><b>Zarządzanie producentami</b>:<ul>
+<li><b>Dodawanie</b> (<code>onAddClicked</code>):<ul>
+<li>Pobiera nazwę z <code>QLineEdit</code>, waliduje (niepusta).</li>
+<li>Generuje UUID dla producenta i zapisuje do zmiennej <code>newId</code>.</li>
+<li>Wykonuje <code>INSERT</code> do tabeli <code>vendors</code>, odświeża listę i czyści pole.</li>
+</ul>
+</li>
+<li><b>Edycja</b> (<code>onEditClicked</code>):<ul>
+<li>Sprawdza, czy wybrano producenta w <code>QListView</code>.</li>
+<li>Otwiera <code>QInputDialog</code> z aktualną nazwą, waliduje nową nazwę.</li>
+<li>Pobiera ID producenta po nazwie, wykonuje <code>UPDATE</code> i odświeża listę.</li>
+</ul>
+</li>
+<li><b>Usuwanie</b> (<code>onDeleteClicked</code>):<ul>
+<li>Sprawdza, czy wybrano producenta.</li>
+<li>Prosi o potwierdzenie w <code>QMessageBox</code>.</li>
+<li>Wykonuje <code>DELETE</code> dla nazwy producenta i odświeża listę.</li>
+</ul>
+</li>
+<li>Wyświetla komunikaty o błędach SQL lub brakujących wyborach.</li>
+</ul>
+</li>
+<li><b>Integracja z <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code></b>:<ul>
+<li><code>onOkClicked</code> wywołuje <code>loadComboBoxData</code> na combo boxie producentów w <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> (jeśli ustawione) i zamyka okno z wynikiem <code>accept()</code>.</li>
+<li><code>setMainWindow</code> przechowuje referencję do <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> dla odświeżania.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md174"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QMessageBox</code>, <code>QSqlQuery</code>, <code>QSqlQueryModel</code>, <code>QInputDialog</code>, <code>QUuid</code>: Obsługa komunikatów, zapytań SQL, modeli danych, dialogów i UUID.</li>
+</ul>
+</li>
+<li><b>Nagłówki aplikacji</b>:<ul>
+<li><code><a class="el" href="vendors_8h.html" title="Deklaracja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.">vendors.h</a></code>: Definicja klasy.</li>
+<li><code><a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a></code>: Klasa <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> dla odświeżania combo boxów.</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li><code><a class="el" href="ui__vendors_8h_source.html">ui_vendors.h</a></code>: Plik generowany przez Qt Designer.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md175"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <code><a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a></code>).</li>
+<li>Usuwanie i edycja producentów opierają się na nazwie, co może powodować problemy przy duplikatach nazw (brak unikalności w schemacie bazy).</li>
+<li>Połączenie z bazą danych (<code>default_connection</code>) jest współdzielone z innymi komponentami (np. <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>, <code>models</code>).</li>
+<li>Lista producentów w <code>QListView</code> nie jest filtrowana (np. po kategorii), co może być rozszerzone w przyszłości.</li>
+<li>W przeciwieństwie do niektórych innych klas słownikowych (np. <code>storage</code>), metoda <code>onAddClicked</code> poprawnie przechowuje UUID w zmiennej, co eliminuje problem nieużywanego generowania UUID. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

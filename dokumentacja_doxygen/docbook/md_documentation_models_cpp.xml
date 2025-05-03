@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md_documentation_models_cpp" xml:lang="pl">
+<section xml:id="_md_documentation_models_cpp_1autotoc_md86">
+<title>Metadane</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Plik</emphasis>: <link linkend="_models_8cpp">models.cpp</link></para>
+</listitem><listitem>
+<para><emphasis role="bold">Wersja</emphasis>: 1.2.2</para>
+</listitem><listitem>
+<para><emphasis role="bold">Data</emphasis>: 2025-05-03</para>
+</listitem><listitem>
+<para><emphasis role="bold">Autorzy</emphasis>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_models_cpp_1autotoc_md87">
+<title>Przegląd</title>
+
+<para>Plik <computeroutput><link linkend="_models_8cpp">models.cpp</link></computeroutput> zawiera implementację metod klasy <computeroutput>models</computeroutput>, odpowiedzialnej za zarządzanie modelami eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli <computeroutput>models</computeroutput> w bazie danych MySQL, współpracując z interfejsem użytkownika (<computeroutput>QListView</computeroutput>, <computeroutput>QLineEdit</computeroutput>) oraz klasą <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> w celu odświeżania combo boxów. Obsługuje powiązanie modeli z producentami poprzez <computeroutput>vendorId</computeroutput> (QString).</para>
+</section>
+<section xml:id="_md_documentation_models_cpp_1autotoc_md88">
+<title>Struktura kodu</title>
+
+<para>Kod jest podzielony na następujące sekcje:</para>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Sekcja konstruktora</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Inicjalizuje interfejs, połączenie z bazą danych, sloty i listę modeli.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja destruktora</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Zwalnia zasoby interfejsu.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod publicznych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>setMainWindow</computeroutput>: Ustawia referencję do <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>.</para>
+</listitem><listitem>
+<para><computeroutput>setVendorId</computeroutput>: Ustawia identyfikator producenta.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja slotów prywatnych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>onAddClicked</computeroutput>: Dodaje nowy model.</para>
+</listitem><listitem>
+<para><computeroutput>onEditClicked</computeroutput>: Edytuje istniejący model.</para>
+</listitem><listitem>
+<para><computeroutput>onDeleteClicked</computeroutput>: Usuwa model.</para>
+</listitem><listitem>
+<para><computeroutput>onOkClicked</computeroutput>: Odświeża combo box i zamyka okno.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod prywatnych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>refreshList</computeroutput>: Odświeża listę modeli w <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_models_cpp_1autotoc_md89">
+<title>Opis działania</title>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Inicjalizacja</emphasis>:<itemizedlist>
+<listitem>
+<para>Konstruktor ustawia interfejs (<computeroutput>ui-&gt;setupUi</computeroutput>), pobiera połączenie z bazą MySQL (<computeroutput>default_connection</computeroutput>), ustala tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i wywołuje <computeroutput>refreshList</computeroutput> do wyświetlenia modeli.</para>
+</listitem><listitem>
+<para>Inicjalizuje <computeroutput>m_vendorId</computeroutput> jako pusty QString i <computeroutput>m_mainWindow</computeroutput> jako nullptr.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">ArithmeticError</emphasis>:<itemizedlist>
+<listitem>
+<para>Zawiera <computeroutput>QListView</computeroutput> do wyświetlania modeli (sortowanych alfabetycznie), <computeroutput>QLineEdit</computeroutput> do wprowadzania nazwy modelu oraz przyciski do zarządzania modelami i zamykania okna.</para>
+</listitem><listitem>
+<para><computeroutput>QSqlQueryModel</computeroutput> dostarcza dane do <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zarządzanie modelami</emphasis>:<itemizedlist>
+<listitem>
+<para><emphasis role="bold">Dodawanie</emphasis> (<computeroutput>onAddClicked</computeroutput>):<itemizedlist>
+<listitem>
+<para>Pobiera nazwę z <computeroutput>QLineEdit</computeroutput>, waliduje (niepusta).</para>
+</listitem><listitem>
+<para>Generuje UUID dla modelu.</para>
+</listitem><listitem>
+<para>Pobiera <computeroutput>vendorId</computeroutput> z <computeroutput>m_vendorId</computeroutput> lub combo boxa <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> (domyślnie <computeroutput>unknown_vendor_uuid</computeroutput>).</para>
+</listitem><listitem>
+<para>Wykonuje <computeroutput>INSERT</computeroutput> do tabeli <computeroutput>models</computeroutput>, odświeża listę i czyści pole.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Edycja</emphasis> (<computeroutput>onEditClicked</computeroutput>):<itemizedlist>
+<listitem>
+<para>Sprawdza, czy wybrano model w <computeroutput>QListView</computeroutput>.</para>
+</listitem><listitem>
+<para>Otwiera <computeroutput>QInputDialog</computeroutput> z aktualną nazwą, waliduje nową nazwę.</para>
+</listitem><listitem>
+<para>Pobiera ID modelu po nazwie, wykonuje <computeroutput>UPDATE</computeroutput> i odświeża listę.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Usuwanie</emphasis> (<computeroutput>onDeleteClicked</computeroutput>):<itemizedlist>
+<listitem>
+<para>Sprawdza, czy wybrano model.</para>
+</listitem><listitem>
+<para>Prosi o potwierdzenie w <computeroutput>QMessageBox</computeroutput>.</para>
+</listitem><listitem>
+<para>Wykonuje <computeroutput>DELETE</computeroutput> dla nazwy modelu i odświeża listę.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>Wyświetla komunikaty o błędach SQL lub brakujących wyborach.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Integracja z <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput></emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>onOkClicked</computeroutput> wywołuje <computeroutput>loadComboBoxData</computeroutput> na combo boxie modeli w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> (jeśli ustawione) i zamyka okno z wynikiem <computeroutput>accept()</computeroutput>.</para>
+</listitem><listitem>
+<para><computeroutput>setMainWindow</computeroutput> przechowuje referencję do <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> dla odświeżania.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Filtr producentów</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>setVendorId</computeroutput> ustala <computeroutput>vendorId</computeroutput> dla nowych modeli, ale <computeroutput>refreshList</computeroutput> wyświetla wszystkie modele (brak filtru po <computeroutput>vendorId</computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_models_cpp_1autotoc_md90">
+<title>Zależności</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Biblioteki Qt</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>QMessageBox</computeroutput>, <computeroutput>QSqlQuery</computeroutput>, <computeroutput>QSqlQueryModel</computeroutput>, <computeroutput>QInputDialog</computeroutput>, <computeroutput>QUuid</computeroutput>: Obsługa komunikatów, zapytań SQL, modeli danych, dialogów i UUID.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput><link linkend="_models_8h">models.h</link></computeroutput>: Definicja klasy.</para>
+</listitem><listitem>
+<para><computeroutput><link linkend="_mainwindow_8h">mainwindow.h</link></computeroutput>: Klasa <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> dla odświeżania combo boxów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Interfejs użytkownika</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput><link linkend="_ui__models_8h_source">ui_models.h</link></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>:<itemizedlist>
+<listitem>
+<para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_models_cpp_1autotoc_md91">
+<title>Uwagi</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem>
+<para>Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <computeroutput><link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Metoda <computeroutput>refreshList</computeroutput> nie filtruje modeli po <computeroutput>vendorId</computeroutput>, co może prowadzić do wyświetlania modeli innych producentów.</para>
+</listitem><listitem>
+<para>Usuwanie i edycja modeli opierają się na nazwie, co może powodować problemy przy duplikatach nazw (brak unikalności w schemacie bazy).</para>
+</listitem><listitem>
+<para>Połączenie z bazą danych (<computeroutput>default_connection</computeroutput>) jest współdzielone z innymi komponentami (np. <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>, <computeroutput><link linkend="_classitem_list">itemList</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Domyślny <computeroutput>vendorId</computeroutput> (<computeroutput>unknown_vendor_uuid</computeroutput>) jest używany, gdy brak producenta, co wymaga istnienia takiego rekordu w tabeli <computeroutput>vendors</computeroutput>. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>

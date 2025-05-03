@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_status_h" kind="page">
+    <compoundname>md_documentation_status_h</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;status.h&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_status_h_1autotoc_md121">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="status_8h" kindref="compound">status.h</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_status_h_1autotoc_md122">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="status_8h" kindref="compound">status.h</ref></computeroutput> definiuje klasę <computeroutput>status</computeroutput>, która reprezentuje okno dialogowe do zarządzania statusami eksponatów (np. &quot;Nowy&quot;, &quot;Używany&quot;, &quot;Uszkodzony&quot;) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie statusów w tabeli <computeroutput>statuses</computeroutput> w bazie danych oraz synchronizację z głównym oknem (<computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>) w celu odświeżenia combo boxów statusów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy <computeroutput>models</computeroutput> czy <computeroutput>vendors</computeroutput>.</para>
+</sect1>
+<sect1 id="md_documentation_status_h_1autotoc_md123">
+<title>Struktura kodu</title>
+<para>Plik nagłówkowy zawiera następujące elementy:</para>
+<para><orderedlist>
+<listitem><para><bold>Deklaracja klasy <computeroutput>status</computeroutput></bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Dziedziczy po <computeroutput>QDialog</computeroutput>.</para>
+</listitem><listitem><para>Używa makra <computeroutput>Q_OBJECT</computeroutput> dla wsparcia mechanizmu sygnałów i slotów Qt.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody publiczne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Konstruktor: Inicjalizuje okno dialogowe, interfejs i połączenie z bazą danych.</para>
+</listitem><listitem><para>Destruktor: Zwalnia zasoby.</para>
+</listitem><listitem><para><computeroutput>setMainWindow</computeroutput>: Ustawia referencję do <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla odświeżania combo boxów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sloty prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>onAddClicked</computeroutput>: Dodaje nowy status do tabeli <computeroutput>statuses</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>onEditClicked</computeroutput>: Edytuje nazwę istniejącego statusu.</para>
+</listitem><listitem><para><computeroutput>onDeleteClicked</computeroutput>: Usuwa wybrany status po potwierdzeniu.</para>
+</listitem><listitem><para><computeroutput>onOkClicked</computeroutput>: Odświeża combo box w <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> i zamyka okno.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>refreshList</computeroutput>: Odświeża listę statusów w <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zmienne prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>ui</computeroutput>: Wskaźnik na interfejs użytkownika.</para>
+</listitem><listitem><para><computeroutput>m_mainWindow</computeroutput>: Wskaźnik na główne okno aplikacji.</para>
+</listitem><listitem><para><computeroutput>m_db</computeroutput>: Połączenie z bazą danych MySQL.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_status_h_1autotoc_md124">
+<title>Opis działania</title>
+<para><itemizedlist>
+<listitem><para><bold>Inicjalizacja</bold>: Konstruktor konfiguruje interfejs (<computeroutput>ui-&gt;setupUi</computeroutput>), ustala połączenie z bazą danych (<computeroutput>default_connection</computeroutput>), ustawia tytuł okna (&quot;Zarządzanie statusami&quot;), podłącza sloty dla przycisków i odświeża listę statusów.</para>
+</listitem><listitem><para><bold>Interfejs</bold>: Zawiera <computeroutput>QListView</computeroutput> do wyświetlania statusów, <computeroutput>QLineEdit</computeroutput> do wprowadzania nazwy statusu oraz przyciski (Dodaj, Edytuj, Usuń, OK, Anuluj).</para>
+</listitem><listitem><para><bold>Zarządzanie statusami</bold>:<itemizedlist>
+<listitem><para><bold>Dodawanie</bold>: Pobiera nazwę z <computeroutput>QLineEdit</computeroutput>, generuje UUID, zapisuje status w tabeli <computeroutput>statuses</computeroutput>.</para>
+</listitem><listitem><para><bold>Edycja</bold>: Otwiera <computeroutput>QInputDialog</computeroutput> dla wybranej nazwy statusu, aktualizuje rekord w bazie.</para>
+</listitem><listitem><para><bold>Usuwanie</bold>: Usuwa status po potwierdzeniu, wykonując zapytanie <computeroutput>DELETE</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Integracja z <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput></bold>: Po zatwierdzeniu zmian (<computeroutput>onOkClicked</computeroutput>), odświeża combo box statusów w głównym oknie, jeśli <computeroutput>m_mainWindow</computeroutput> jest ustawione.</para>
+</listitem><listitem><para><bold>Baza danych</bold>: Operuje na tabeli <computeroutput>statuses</computeroutput> z polami <computeroutput>id</computeroutput> (UUID) i <computeroutput>name</computeroutput> (nazwa statusu).</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_status_h_1autotoc_md125">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QDialog</computeroutput>, <computeroutput>QSqlDatabase</computeroutput>: Obsługa okna dialogowego i bazy danych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></computeroutput>: Deklaracja klasy <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla komunikacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui__status_8h_source" kindref="compound">ui_status.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_status_h_1autotoc_md126">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Klasa jest częścią systemu słownikowego, wspiera zarządzanie statusami w kontekście eksponatów.</para>
+</listitem><listitem><para>Połączenie z bazą danych (<computeroutput>default_connection</computeroutput>) jest współdzielone z innymi komponentami (np. <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>, <computeroutput>models</computeroutput>).</para>
+</listitem><listitem><para>Operacje CRUD (Create, Read, Update, Delete) opierają się na nazwie statusu, co może powodować problemy przy duplikatach (brak unikalności w schemacie bazy).</para>
+</listitem><listitem><para>Klasa nie filtruje statusów (np. po kategorii), co może być rozszerzone w przyszłości. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/status_h.md"/>
+  </compounddef>
+</doxygen>

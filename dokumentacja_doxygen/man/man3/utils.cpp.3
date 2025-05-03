@@ -1,0 +1,113 @@
+.TH "src/utils.cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/utils.cpp \- Implementacja funkcji pomocniczej \fCsetupDatabase\fP odpowiedzialnej za konfigurację połączenia z bazą danych w aplikacji inwentaryzacyjnej\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <QMessageBox>\fP
+.br
+\fC#include <QSqlDatabase>\fP
+.br
+\fC#include <QSqlError>\fP
+.br
+\fC#include <QSqlQuery>\fP
+.br
+\fC#include <QUuid>\fP
+.br
+
+.SS "Funkcje"
+
+.in +1c
+.ti -1c
+.RI "bool \fBsetupDatabase\fP (const QString &dbType, const QString &dbSource, const QString &host, const QString &user, const QString &password, int port)"
+.br
+.RI "Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą 'default_connection'\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Implementacja funkcji pomocniczej \fCsetupDatabase\fP odpowiedzialnej za konfigurację połączenia z bazą danych w aplikacji inwentaryzacyjnej\&. 
+
+
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03 
+.RE
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik zawiera implementację funkcji \fCsetupDatabase\fP, która konfiguruje i otwiera połączenie z bazą danych typu SQLite lub MySQL, zapisując je pod nazwą 'default_connection'\&. Funkcja obsługuje parametry dla połączeń lokalnych (SQLite) i zdalnych (MySQL), a dla SQLite automatycznie tworzy schemat bazy danych i wypełnia go przykładowymi danymi słownikowymi\&.
+.SH "Structure"
+.PP
+Kod zawiera:
+.IP "1." 4
+\fBImplementację funkcji \fCsetupDatabase\fP\fP – konfiguruje połączenie, otwiera bazę i tworzy schemat dla SQLite\&.
+.IP "2." 4
+\fBTworzenie schematu SQLite\fP – definiuje tabele i dane początkowe\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas \fCQMessageBox\fP, \fCQSqlDatabase\fP, \fCQSqlError\fP, \fCQSqlQuery\fP, \fCQUuid\fP\&.
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP: Brak (tylko Qt)\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Funkcja jest kluczowa dla inicjalizacji bazy danych w aplikacji, wywoływana np\&. przez \fC\fBDatabaseConfigDialog\fP\fP\&.
+.IP "\(bu" 2
+Schemat SQLite obejmuje tabele: \fCeksponaty\fP, \fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatuses\fP, \fCstorage_places\fP, \fCphotos\fP\&.
+.IP "\(bu" 2
+Przykładowe dane słownikowe obejmują typowe wartości dla retro sprzętu komputerowego\&. 
+.PP
+
+.SH "Dokumentacja funkcji"
+.PP 
+.SS "bool setupDatabase (const QString & dbType, const QString & dbSource, const QString & host, const QString & user, const QString & password, int port)"
+
+.PP
+Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą 'default_connection'\&. Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów\&.
+.SH "FunctionOverview"
+.PP
+Funkcja konfiguruje połączenie z bazą danych SQLite (\fCQSQLITE\fP) lub MySQL (\fCQMYSQL\fP)\&. Dla SQLite \fCdbSource\fP to ścieżka do pliku bazy, dla MySQL to nazwa bazy danych\&. Jeśli połączenie 'default_connection' istnieje, jest usuwane i tworzone od nowa\&. Dla SQLite automatycznie tworzy schemat bazy (tabele i dane początkowe) jeśli nie istnieje\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIdbType\fP Typ bazy danych ('SQLite3' lub 'MySQL')\&. 
+.br
+\fIdbSource\fP Dla SQLite – ścieżka do pliku; dla MySQL – nazwa bazy danych\&. 
+.br
+\fIhost\fP Adres hosta dla MySQL (np\&. 'localhost', opcjonalny)\&. 
+.br
+\fIuser\fP Nazwa użytkownika dla MySQL (opcjonalny)\&. 
+.br
+\fIpassword\fP Hasło użytkownika dla MySQL (opcjonalny)\&. 
+.br
+\fIport\fP Numer portu dla MySQL (domyślnie 3306, opcjonalny)\&. 
+.RE
+.PP
+\fBZwraca\fP
+.RS 4
+\fCtrue\fP jeśli połączenie zostało nawiązane pomyślnie; \fCfalse\fP w przypadku błędu\&. 
+.RE
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

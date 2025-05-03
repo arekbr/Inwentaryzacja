@@ -1,0 +1,4 @@
+<map id="DatabaseConfigDialog" name="DatabaseConfigDialog">
+<area shape="rect" id="node1" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej." alt="" coords="5,80,172,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="51,5,126,32"/>
+</map>

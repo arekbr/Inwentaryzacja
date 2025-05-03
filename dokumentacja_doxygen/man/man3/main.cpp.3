@@ -1,0 +1,139 @@
+.TH "src/main.cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/main.cpp \- Główny punkt wejścia aplikacji inwentaryzacyjnej\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <QApplication>\fP
+.br
+\fC#include <QCoreApplication>\fP
+.br
+\fC#include <QDebug>\fP
+.br
+\fC#include <QDirIterator>\fP
+.br
+\fC#include <QTranslator>\fP
+.br
+\fC#include 'DatabaseConfigDialog\&.h'\fP
+.br
+\fC#include 'itemList\&.h'\fP
+.br
+\fC#include 'utils\&.h'\fP
+.br
+
+.SS "Funkcje"
+
+.in +1c
+.ti -1c
+.RI "int \fBmain\fP (int argc, char *argv[])"
+.br
+.RI "Główna funkcja aplikacji inwentaryzacyjnej\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Główny punkt wejścia aplikacji inwentaryzacyjnej\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik \fBmain\&.cpp\fP stanowi główny punkt wejścia aplikacji inwentaryzacyjnej opartej na bibliotece Qt\&. Odpowiada za inicjalizację aplikacji, ustawienie jej podstawowych właściwości (nazwa, wersja, ikona), ładowanie tłumaczeń językowych, wyświetlanie okna konfiguracji bazy danych oraz nawiązywanie połączenia z wybraną bazą danych (SQLite lub MySQL)\&. Po poprawnym skonfigurowaniu środowiska uruchamia główne okno aplikacji reprezentowane przez klasę \fBitemList\fP\&.
+.SH "Structure"
+.PP
+Kod jest podzielony na następujące sekcje:
+.IP "1." 4
+\fBSekcja inicjalizacji aplikacji Qt\fP - konfiguracja podstawowa aplikacji, stylu graficznego i ikony\&.
+.IP "2." 4
+\fBSekcja ładowania tłumaczeń\fP - dynamiczne ładowanie plików tłumaczeń na podstawie języka systemowego\&.
+.IP "3." 4
+\fBSekcja konfiguracji bazy danych\fP - wyświetlanie okna dialogowego i pobieranie ustawień bazy danych\&.
+.IP "4." 4
+\fBSekcja nawiązywania połączenia z bazą danych\fP - obsługa różnych typów baz danych (SQLite, MySQL)\&.
+.IP "5." 4
+\fBSekcja uruchamiania głównego okna\fP - inicjalizacja i wyświetlanie głównego interfejsu aplikacji\&.
+.IP "6." 4
+\fBSekcja pętli zdarzeń Qt\fP - uruchomienie głównej pętli aplikacji\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas takich jak QApplication, QTranslator, QIcon, QLocale do zarządzania aplikacją i tłumaczeniami\&.
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP: \fBDatabaseConfigDialog\fP (okno konfiguracji bazy), \fBitemList\fP (główne okno), utils (funkcje pomocnicze, np\&. setupDatabase)\&.
+.IP "\(bu" 2
+\fBZasoby\fP: Ikona aplikacji (:/images/icon\&.png) oraz pliki tłumaczeń (:/i18n/Inwentaryzacja_*\&.qm)\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie pozwala na modyfikację, zgodnie z wymaganiami użytkownika\&. Wszelkie komentarze i dokumentacja są dodawane bez ingerencji w oryginalny kod\&.
+.IP "\(bu" 2
+Aplikacja obsługuje dwa typy baz danych: SQLite (lokalna baza plikowa) oraz MySQL (baza sieciowa)\&.
+.IP "\(bu" 2
+Styl graficzny jest ustawiony na 'Fusion', aby zapewnić spójny wygląd niezależnie od systemu operacyjnego\&. 
+.PP
+
+.SH "Dokumentacja funkcji"
+.PP 
+.SS "int main (int argc, char * argv[])"
+
+.PP
+Główna funkcja aplikacji inwentaryzacyjnej\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIargc\fP Liczba argumentów wiersza poleceń\&. 
+.br
+\fIargv\fP Tablica argumentów wiersza poleceń\&. 
+.RE
+.PP
+\fBZwraca\fP
+.RS 4
+Kod zakończenia aplikacji (0 dla sukcesu, inne dla błędów)\&.
+.RE
+.PP
+.SH "FunctionOverview"
+.PP
+Funkcja main jest punktem wejścia aplikacji i odpowiada za jej inicjalizację oraz uruchomienie\&. Wykonuje następujące kroki:
+.IP "1." 4
+Inicjalizuje aplikację Qt i ustawia jej styl graficzny\&.
+.IP "2." 4
+Konfiguruje nazwę, wersję i ikonę aplikacji\&.
+.IP "3." 4
+Ładuje tłumaczenia językowe na podstawie ustawień systemowych\&.
+.IP "4." 4
+Wyświetla okno konfiguracji bazy danych i pobiera ustawienia od użytkownika\&.
+.IP "5." 4
+Nawiązuje połączenie z bazą danych (SQLite lub MySQL) za pomocą funkcji setupDatabase\&.
+.IP "6." 4
+Uruchamia główne okno aplikacji (klasa \fBitemList\fP) i wchodzi w główną pętlę zdarzeń Qt - Qt\&.
+.PP
+.SH "ReturnValues"
+.PP
+.IP "\(bu" 2
+\fB0\fP: Aplikacja zakończyła się pomyślnie lub użytkownik anulował konfigurację\&.
+.IP "\(bu" 2
+\fBInne\fP: Błąd podczas nawiązywania połączenia z bazą danych lub nieznany typ bazy danych\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

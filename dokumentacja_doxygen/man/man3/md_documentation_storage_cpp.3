@@ -1,0 +1,176 @@
+.TH "md_documentation_storage_cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_storage_cpp \- Dokumentacja dla pliku \fC\fBstorage\&.cpp\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBstorage\&.cpp\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBstorage\&.cpp\fP\fP zawiera implementację metod klasy \fCstorage\fP, odpowiedzialnej za zarządzanie miejscami przechowywania eksponatów (np\&. magazyny, półki, pokoje) w aplikacji inwentaryzacyjnej\&. Klasa umożliwia dodawanie, edytowanie i usuwanie lokalizacji w tabeli \fCstorage_places\fP w bazie danych MySQL, współpracując z interfejsem użytkownika (\fCQListView\fP, \fCQLineEdit\fP) oraz klasą \fC\fBMainWindow\fP\fP w celu odświeżania combo boxów lokalizacji po zapisaniu zmian\&.
+.SH "Struktura kodu"
+.PP
+Kod jest podzielony na następujące sekcje:
+.PP
+.IP "1." 4
+\fBSekcja konstruktora\fP 
+.br
+.IP "  \(bu" 4
+Inicjalizuje interfejs, połączenie z bazą danych, sloty i listę lokalizacji\&.
+.PP
+
+.IP "2." 4
+\fBSekcja destruktora\fP 
+.br
+.IP "  \(bu" 4
+Zwalnia zasoby interfejsu\&.
+.PP
+
+.IP "3." 4
+\fBSekcja metod publicznych\fP 
+.br
+.IP "  \(bu" 4
+\fCsetMainWindow\fP: Ustawia referencję do \fC\fBMainWindow\fP\fP\&.
+.PP
+
+.IP "4." 4
+\fBSekcja slotów prywatnych\fP 
+.br
+.IP "  \(bu" 4
+\fConAddClicked\fP: Dodaje nową lokalizację\&.
+.IP "  \(bu" 4
+\fConEditClicked\fP: Edytuje istniejącą lokalizację\&.
+.IP "  \(bu" 4
+\fConDeleteClicked\fP: Usuwa lokalizację\&.
+.IP "  \(bu" 4
+\fConOkClicked\fP: Odświeża combo box i zamyka okno\&.
+.PP
+
+.IP "5." 4
+\fBSekcja metod prywatnych\fP 
+.br
+.IP "  \(bu" 4
+\fCrefreshList\fP: Odświeża listę lokalizacji w \fCQListView\fP\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "1." 4
+\fBInicjalizacja\fP:
+.IP "  \(bu" 4
+Konstruktor ustawia interfejs (\fCui->setupUi\fP), pobiera połączenie z bazą MySQL (\fCdefault_connection\fP), ustala tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i wywołuje \fCrefreshList\fP do wyświetlenia lokalizacji\&.
+.IP "  \(bu" 4
+Inicjalizuje \fCm_mainWindow\fP jako \fCnullptr\fP\&.
+.PP
+
+.IP "2." 4
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+Zawiera \fCQListView\fP do wyświetlania lokalizacji (sortowanych alfabetycznie), \fCQLineEdit\fP do wprowadzania nazwy lokalizacji oraz przyciski do zarządzania lokalizacjami i zamykania okna\&.
+.IP "  \(bu" 4
+\fCQSqlQueryModel\fP dostarcza dane do \fCQListView\fP\&.
+.PP
+
+.IP "3." 4
+\fBZarządzanie lokalizacjami\fP:
+.IP "  \(bu" 4
+\fBDodawanie\fP (\fConAddClicked\fP):
+.IP "    \(bu" 6
+Pobiera nazwę z \fCQLineEdit\fP, waliduje (niepusta)\&.
+.IP "    \(bu" 6
+Generuje UUID dla lokalizacji\&.
+.IP "    \(bu" 6
+Wykonuje \fCINSERT\fP do tabeli \fCstorage_places\fP, odświeża listę i czyści pole\&.
+.IP "    \(bu" 6
+\fBBłąd\fP: Linia \fCQUuid::createUuid()\&.toString(QUuid::WithoutBraces);\fP generuje UUID, ale nie przypisuje go (wynik jest odrzucany)\&.
+.PP
+
+.IP "  \(bu" 4
+\fBEdycja\fP (\fConEditClicked\fP):
+.IP "    \(bu" 6
+Sprawdza, czy wybrano lokalizację w \fCQListView\fP\&.
+.IP "    \(bu" 6
+Otwiera \fCQInputDialog\fP z aktualną nazwą, waliduje nową nazwę\&.
+.IP "    \(bu" 6
+Pobiera ID lokalizacji po nazwie, wykonuje \fCUPDATE\fP i odświeża listę\&.
+.PP
+
+.IP "  \(bu" 4
+\fBUsuwanie\fP (\fConDeleteClicked\fP):
+.IP "    \(bu" 6
+Sprawdza, czy wybrano lokalizację\&.
+.IP "    \(bu" 6
+Prosi o potwierdzenie w \fCQMessageBox\fP\&.
+.IP "    \(bu" 6
+Wykonuje \fCDELETE\fP dla nazwy lokalizacji i odświeża listę\&.
+.PP
+
+.IP "  \(bu" 4
+Wyświetla komunikaty o błędach SQL lub brakujących wyborach\&.
+.PP
+
+.IP "4." 4
+\fBIntegracja z \fC\fBMainWindow\fP\fP\fP:
+.IP "  \(bu" 4
+\fConOkClicked\fP wywołuje \fCloadComboBoxData\fP na combo boxie lokalizacji w \fC\fBMainWindow\fP\fP (jeśli ustawione) i zamyka okno z wynikiem \fCaccept()\fP\&.
+.IP "  \(bu" 4
+\fCsetMainWindow\fP przechowuje referencję do \fC\fBMainWindow\fP\fP dla odświeżania\&.
+.PP
+
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQMessageBox\fP, \fCQSqlQuery\fP, \fCQSqlQueryModel\fP, \fCQInputDialog\fP, \fCQUuid\fP: Obsługa komunikatów, zapytań SQL, modeli danych, dialogów i UUID\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBstorage\&.h\fP\fP: Definicja klasy\&.
+.IP "  \(bu" 4
+\fC\fBmainwindow\&.h\fP\fP: Klasa \fC\fBMainWindow\fP\fP dla odświeżania combo boxów\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_storage\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w \fC\fBDatabaseConfigDialog\fP\fP)\&.
+.IP "\(bu" 2
+\fBBłąd w \fConAddClicked\fP\fP: Linia \fCQUuid::createUuid()\&.toString(QUuid::WithoutBraces);\fP nie przypisuje UUID, co jest niepotrzebne, ponieważ kolejne wygenerowanie UUID jest używane w \fCquery\&.bindValue\fP\&. Sugerowana poprawka: usunąć nieużywaną linię lub przypisać wynik do zmiennej\&.
+.IP "\(bu" 2
+Usuwanie i edycja lokalizacji opierają się na nazwie, co może powodować problemy przy duplikatach nazw (brak unikalności w schemacie bazy)\&.
+.IP "\(bu" 2
+Połączenie z bazą danych (\fCdefault_connection\fP) jest współdzielone z innymi komponentami (np\&. \fC\fBMainWindow\fP\fP, \fCmodels\fP)\&.
+.IP "\(bu" 2
+Lista lokalizacji w \fCQListView\fP nie jest filtrowana (np\&. po typie magazynu), co może być rozszerzone w przyszłości\&. 
+.PP
+

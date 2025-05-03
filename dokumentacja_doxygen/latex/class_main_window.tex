@@ -1,0 +1,366 @@
+\hypertarget{class_main_window}{}\doxysection{Dokumentacja klasy Main\+Window}
+\label{class_main_window}\index{MainWindow@{MainWindow}}
+
+
+Główne okno formularza do zarządzania eksponatami.  
+
+
+
+
+{\ttfamily \#include $<$mainwindow.\+h$>$}
+
+
+
+Diagram dziedziczenia dla Main\+Window
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=167pt]{class_main_window__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Diagram współpracy dla Main\+Window\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=167pt]{class_main_window__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Sygnały}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_main_window_a8531dbd2a1bd4631b23c6ef3aee5f093}{record\+Saved}} (const QString \&record\+Id)
+\begin{DoxyCompactList}\small\item\em Sygnał emitowany po zapisaniu nowego lub edytowanego rekordu. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Metody publiczne}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_main_window_a996c5a2b6f77944776856f08ec30858d}{Main\+Window}} (QWidget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Konstruktor klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_main_window_ae98d00a93bc118200eeef9f9bba1dba7}{$\sim$\+Main\+Window}} ()
+\begin{DoxyCompactList}\small\item\em Destruktor klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_main_window_a79c0ca2f9ab3bd891a10d789c5aa5c13}{load\+Combo\+Box\+Data}} (const QString \&table\+Name, QCombo\+Box $\ast$combo\+Box)
+\begin{DoxyCompactList}\small\item\em Ładuje dane z tabeli do combo boxa. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_main_window_aeaecedc36266ab4571b7af2a9fcd5b08}{event\+Filter}} (QObject $\ast$obj, QEvent $\ast$event) override
+\begin{DoxyCompactList}\small\item\em Obsługuje zdarzenia filtrowania dla obiektów interfejsu. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_main_window_a7b0d495e752bc0ffc5612ee5f55309a3}{set\+Edit\+Mode}} (bool edit, const QString \&record\+Id=QString())
+\begin{DoxyCompactList}\small\item\em Ustawia tryb edycji lub dodawania rekordu. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_main_window_ab6be97151407b1267a3f55f937679510}{set\+Clone\+Mode}} (const QString \&record\+Id)
+\begin{DoxyCompactList}\small\item\em Ustawia tryb klonowania rekordu. \end{DoxyCompactList}\item 
+QCombo\+Box $\ast$ \mbox{\hyperlink{class_main_window_af34e634f7c17fb26afb6144d966755e2}{get\+New\+Item\+Vendor\+Combo\+Box}} () const
+\begin{DoxyCompactList}\small\item\em Zwraca wskaźnik na combo box dla producentów. \end{DoxyCompactList}\item 
+QCombo\+Box $\ast$ \mbox{\hyperlink{class_main_window_aafe2704edfa2c18ec9995243af32a9e8}{get\+New\+Item\+Model\+Combo\+Box}} () const
+\begin{DoxyCompactList}\small\item\em Zwraca wskaźnik na combo box dla modeli. \end{DoxyCompactList}\item 
+QCombo\+Box $\ast$ \mbox{\hyperlink{class_main_window_aaa8bf4b547f55746104ad09c104172c1}{get\+New\+Item\+Storage\+Place\+Combo\+Box}} () const
+\begin{DoxyCompactList}\small\item\em Zwraca wskaźnik na combo box dla miejsc przechowywania. \end{DoxyCompactList}\item 
+QCombo\+Box $\ast$ \mbox{\hyperlink{class_main_window_a3e75c09333690711f6f08433ba18b067}{get\+New\+Item\+Type\+Combo\+Box}} () const
+\begin{DoxyCompactList}\small\item\em Zwraca wskaźnik na combo box dla typów. \end{DoxyCompactList}\item 
+QCombo\+Box $\ast$ \mbox{\hyperlink{class_main_window_abd79b32282cd39820ac430d87d90efde}{get\+New\+Item\+Status\+Combo\+Box}} () const
+\begin{DoxyCompactList}\small\item\em Zwraca wskaźnik na combo box dla statusów. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Główne okno formularza do zarządzania eksponatami. 
+
+\hypertarget{class_zoomable_graphics_view_ClassOverview}{}\doxysubsection{Class\+Overview}\label{class_zoomable_graphics_view_ClassOverview}
+Klasa \mbox{\hyperlink{class_main_window}{Main\+Window}} dziedziczy po QMain\+Window i odpowiada za interfejs użytkownika do dodawania, edycji i klonowania rekordów eksponatów. Obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych. Emituje sygnał record\+Saved po zapisaniu rekordu.\hypertarget{class_zoomable_graphics_view_Responsibilities}{}\doxysubsection{Responsibilities}\label{class_zoomable_graphics_view_Responsibilities}
+
+\begin{DoxyItemize}
+\item Wyświetlanie formularza do wprowadzania danych eksponatu.
+\item Ładowanie danych słownikowych (typy, producenci, modele, statusy, miejsca przechowywania) do combo boxów.
+\item Zarządzanie zdjęciami\+: dodawanie, usuwanie, podgląd miniatur.
+\item Obsługa trybów\+: dodawanie nowego rekordu, edycja istniejącego, klonowanie rekordu.
+\item Zapisywanie danych do bazy danych My\+SQL i emitowanie sygnału po zapisie.
+\item Otwieranie dialogów do dodawania nowych wartości słownikowych. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja konstruktora i destruktora}
+\mbox{\Hypertarget{class_main_window_a996c5a2b6f77944776856f08ec30858d}\label{class_main_window_a996c5a2b6f77944776856f08ec30858d}} 
+\index{MainWindow@{MainWindow}!MainWindow@{MainWindow}}
+\index{MainWindow@{MainWindow}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{MainWindow()}{MainWindow()}}
+{\footnotesize\ttfamily Main\+Window\+::\+Main\+Window (\begin{DoxyParamCaption}\item[{QWidget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Konstruktor klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget. Domyślnie nullptr.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje okno formularza, ustanawia połączenie z bazą danych, konfiguruje interfejs użytkownika, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie nowych wartości do słowników.
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget. Domyślnie nullptr.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych, ładuje dane do combo boxów, podłącza sygnały i sloty dla przycisków oraz konfiguruje automatyczne dodawanie nowych wartości do słowników. Ustawia początkowy stan formularza (brak edycji, brak wybranego zdjęcia). Oto graf wywołań dla tej funkcji\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_main_window_a996c5a2b6f77944776856f08ec30858d_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{class_main_window_ae98d00a93bc118200eeef9f9bba1dba7}\label{class_main_window_ae98d00a93bc118200eeef9f9bba1dba7}} 
+\index{MainWindow@{MainWindow}!````~MainWindow@{$\sim$MainWindow}}
+\index{````~MainWindow@{$\sim$MainWindow}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{$\sim$MainWindow()}{~MainWindow()}}
+{\footnotesize\ttfamily Main\+Window\+::$\sim$\+Main\+Window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destruktor klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}. 
+
+\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Zwalnia zasoby interfejsu użytkownika, zamyka połączenie z bazą danych i usuwa obiekty dynamiczne.\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Zamyka połączenie z bazą danych, jeśli jest otwarte, i zwalnia zasoby interfejsu użytkownika. 
+
+\doxysubsection{Dokumentacja funkcji składowych}
+\mbox{\Hypertarget{class_main_window_aeaecedc36266ab4571b7af2a9fcd5b08}\label{class_main_window_aeaecedc36266ab4571b7af2a9fcd5b08}} 
+\index{MainWindow@{MainWindow}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{eventFilter()}{eventFilter()}}
+{\footnotesize\ttfamily bool Main\+Window\+::event\+Filter (\begin{DoxyParamCaption}\item[{QObject $\ast$}]{obj,  }\item[{QEvent $\ast$}]{event }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Obsługuje zdarzenia filtrowania dla obiektów interfejsu. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em obj} & Obiekt, dla którego przetwarzane jest zdarzenie. \\
+\hline
+{\em event} & Wskaźnik na zdarzenie. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Zwraca}
+true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Przesłania metodę QMain\+Window, aby otwierać listę combo boxa po kliknięciu myszą.
+
+
+\begin{DoxyParams}{Parametry}
+{\em obj} & Obiekt, dla którego przetwarzane jest zdarzenie. \\
+\hline
+{\em event} & Wskaźnik na zdarzenie. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Zwraca}
+true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Otwiera listę combo boxa po kliknięciu myszą, a następnie przekazuje zdarzenie do QMain\+Window dla dalszego przetwarzania. \mbox{\Hypertarget{class_main_window_aafe2704edfa2c18ec9995243af32a9e8}\label{class_main_window_aafe2704edfa2c18ec9995243af32a9e8}} 
+\index{MainWindow@{MainWindow}!getNewItemModelComboBox@{getNewItemModelComboBox}}
+\index{getNewItemModelComboBox@{getNewItemModelComboBox}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{getNewItemModelComboBox()}{getNewItemModelComboBox()}}
+{\footnotesize\ttfamily QCombo\+Box $\ast$ Main\+Window\+::get\+New\+Item\+Model\+Combo\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Zwraca wskaźnik na combo box dla modeli. 
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla modeli.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia dostęp do combo boxa modeli z innych klas (np. dialogów słownikowych).
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla modeli. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_main_window_abd79b32282cd39820ac430d87d90efde}\label{class_main_window_abd79b32282cd39820ac430d87d90efde}} 
+\index{MainWindow@{MainWindow}!getNewItemStatusComboBox@{getNewItemStatusComboBox}}
+\index{getNewItemStatusComboBox@{getNewItemStatusComboBox}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{getNewItemStatusComboBox()}{getNewItemStatusComboBox()}}
+{\footnotesize\ttfamily QCombo\+Box $\ast$ Main\+Window\+::get\+New\+Item\+Status\+Combo\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Zwraca wskaźnik na combo box dla statusów. 
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla statusów.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia dostęp do combo boxa statusów z innych klas (np. dialogów słownikowych).
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla statusów. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_main_window_aaa8bf4b547f55746104ad09c104172c1}\label{class_main_window_aaa8bf4b547f55746104ad09c104172c1}} 
+\index{MainWindow@{MainWindow}!getNewItemStoragePlaceComboBox@{getNewItemStoragePlaceComboBox}}
+\index{getNewItemStoragePlaceComboBox@{getNewItemStoragePlaceComboBox}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{getNewItemStoragePlaceComboBox()}{getNewItemStoragePlaceComboBox()}}
+{\footnotesize\ttfamily QCombo\+Box $\ast$ Main\+Window\+::get\+New\+Item\+Storage\+Place\+Combo\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Zwraca wskaźnik na combo box dla miejsc przechowywania. 
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla miejsc przechowywania.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia dostęp do combo boxa miejsc przechowywania z innych klas.
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla miejsc przechowywania. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_main_window_a3e75c09333690711f6f08433ba18b067}\label{class_main_window_a3e75c09333690711f6f08433ba18b067}} 
+\index{MainWindow@{MainWindow}!getNewItemTypeComboBox@{getNewItemTypeComboBox}}
+\index{getNewItemTypeComboBox@{getNewItemTypeComboBox}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{getNewItemTypeComboBox()}{getNewItemTypeComboBox()}}
+{\footnotesize\ttfamily QCombo\+Box $\ast$ Main\+Window\+::get\+New\+Item\+Type\+Combo\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Zwraca wskaźnik na combo box dla typów. 
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla typów.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia dostęp do combo boxa typów z innych klas (np. dialogów słownikowych).
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla typów. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_main_window_af34e634f7c17fb26afb6144d966755e2}\label{class_main_window_af34e634f7c17fb26afb6144d966755e2}} 
+\index{MainWindow@{MainWindow}!getNewItemVendorComboBox@{getNewItemVendorComboBox}}
+\index{getNewItemVendorComboBox@{getNewItemVendorComboBox}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{getNewItemVendorComboBox()}{getNewItemVendorComboBox()}}
+{\footnotesize\ttfamily QCombo\+Box $\ast$ Main\+Window\+::get\+New\+Item\+Vendor\+Combo\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Zwraca wskaźnik na combo box dla producentów. 
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla producentów.
+\end{DoxyReturn}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia dostęp do combo boxa producentów z innych klas (np. dialogów słownikowych).
+
+\begin{DoxyReturn}{Zwraca}
+Wskaźnik na QCombo\+Box dla producentów. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_main_window_a79c0ca2f9ab3bd891a10d789c5aa5c13}\label{class_main_window_a79c0ca2f9ab3bd891a10d789c5aa5c13}} 
+\index{MainWindow@{MainWindow}!loadComboBoxData@{loadComboBoxData}}
+\index{loadComboBoxData@{loadComboBoxData}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{loadComboBoxData()}{loadComboBoxData()}}
+{\footnotesize\ttfamily void Main\+Window\+::load\+Combo\+Box\+Data (\begin{DoxyParamCaption}\item[{const QString \&}]{table\+Name,  }\item[{QCombo\+Box $\ast$}]{combo\+Box }\end{DoxyParamCaption})}
+
+
+
+Ładuje dane z tabeli do combo boxa. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em table\+Name} & Nazwa tabeli w bazie danych (np. \char`\"{}types\char`\"{}, \char`\"{}vendors\char`\"{}). \\
+\hline
+{\em combo\+Box} & Wskaźnik na QCombo\+Box, do którego ładowane są dane.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Pobiera unikalne wartości z kolumny \char`\"{}name\char`\"{} podanej tabeli i wypełnia nimi combo box, ustawiając ID jako dane użytkownika dla każdej pozycji.
+
+
+\begin{DoxyParams}{Parametry}
+{\em table\+Name} & Nazwa tabeli w bazie danych (np. \char`\"{}types\char`\"{}, \char`\"{}vendors\char`\"{}). \\
+\hline
+{\em combo\+Box} & Wskaźnik na QCombo\+Box, do którego ładowane są dane.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Pobiera unikalne wartości z kolumn \char`\"{}id\char`\"{} i \char`\"{}name\char`\"{} podanej tabeli i wypełnia nimi combo box, ustawiając ID jako dane użytkownika dla każdej pozycji. Wyświetla błędy w konsoli debugowania. Oto graf wywoływań tej funkcji\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_main_window_a79c0ca2f9ab3bd891a10d789c5aa5c13_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{class_main_window_a8531dbd2a1bd4631b23c6ef3aee5f093}\label{class_main_window_a8531dbd2a1bd4631b23c6ef3aee5f093}} 
+\index{MainWindow@{MainWindow}!recordSaved@{recordSaved}}
+\index{recordSaved@{recordSaved}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{recordSaved}{recordSaved}}
+{\footnotesize\ttfamily void Main\+Window\+::record\+Saved (\begin{DoxyParamCaption}\item[{const QString \&}]{record\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [signal]}}
+
+
+
+Sygnał emitowany po zapisaniu nowego lub edytowanego rekordu. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em record\+Id} & ID zapisanego rekordu (np. UUID).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_photo_item_SignalOverview}{}\doxysubsection{Signal\+Overview}\label{class_photo_item_SignalOverview}
+Informuje inne komponenty aplikacji (np. \mbox{\hyperlink{classitem_list}{item\+List}}), że rekord został zapisany w bazie danych, umożliwiając odświeżenie widoku. \mbox{\Hypertarget{class_main_window_ab6be97151407b1267a3f55f937679510}\label{class_main_window_ab6be97151407b1267a3f55f937679510}} 
+\index{MainWindow@{MainWindow}!setCloneMode@{setCloneMode}}
+\index{setCloneMode@{setCloneMode}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{setCloneMode()}{setCloneMode()}}
+{\footnotesize\ttfamily void Main\+Window\+::set\+Clone\+Mode (\begin{DoxyParamCaption}\item[{const QString \&}]{record\+Id }\end{DoxyParamCaption})}
+
+
+
+Ustawia tryb klonowania rekordu. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em record\+Id} & ID rekordu do sklonowania.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Wypełnia formularz danymi istniejącego rekordu, przygotowując go do zapisu jako nowy rekord, z wyczyszczeniem zdjęć i ID rekordu.
+
+
+\begin{DoxyParams}{Parametry}
+{\em record\+Id} & ID rekordu do sklonowania.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Wypełnia formularz danymi istniejącego rekordu, przygotowując go do zapisu jako nowy rekord, z wyczyszczeniem zdjęć, ID rekordu i buforów zdjęć. \mbox{\Hypertarget{class_main_window_a7b0d495e752bc0ffc5612ee5f55309a3}\label{class_main_window_a7b0d495e752bc0ffc5612ee5f55309a3}} 
+\index{MainWindow@{MainWindow}!setEditMode@{setEditMode}}
+\index{setEditMode@{setEditMode}!MainWindow@{MainWindow}}
+\doxysubsubsection{\texorpdfstring{setEditMode()}{setEditMode()}}
+{\footnotesize\ttfamily void Main\+Window\+::set\+Edit\+Mode (\begin{DoxyParamCaption}\item[{bool}]{edit,  }\item[{const QString \&}]{record\+Id = {\ttfamily QString()} }\end{DoxyParamCaption})}
+
+
+
+Ustawia tryb edycji lub dodawania rekordu. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em edit} & true dla trybu edycji, false dla trybu dodawania. \\
+\hline
+{\em record\+Id} & ID rekordu do edycji (puste dla nowego rekordu).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Konfiguruje formularz w trybie edycji istniejącego rekordu lub dodawania nowego, czyszcząc pola i ustawiając domyślne wartości dla statusu i miejsca przechowywania.
+
+
+\begin{DoxyParams}{Parametry}
+{\em edit} & true dla trybu edycji, false dla trybu dodawania. \\
+\hline
+{\em record\+Id} & ID rekordu do edycji (puste dla nowego rekordu).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Konfiguruje formularz w trybie edycji istniejącego rekordu lub dodawania nowego, czyszcząc pola, ustawiając domyślne wartości dla statusu i miejsca przechowywania, oraz włączając autouzupełnianie dla combo boxów. 
+
+Dokumentacja dla tej klasy została wygenerowana z plików\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}\item 
+build/moc\+\_\+mainwindow.\+cpp\item 
+src/\mbox{\hyperlink{mainwindow_8cpp}{mainwindow.\+cpp}}\end{DoxyCompactItemize}

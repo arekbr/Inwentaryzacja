@@ -1,0 +1,81 @@
+.TH "ZoomableGraphicsView" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ZoomableGraphicsView \- Widok graficzny umożliwiający powiększanie i przesuwanie obrazu\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <fullscreenphotoviewer\&.h>\fP
+.PP
+Dziedziczy QGraphicsView\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBZoomableGraphicsView\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy \fBZoomableGraphicsView\fP\&. "
+.in -1c
+.SS "Metody chronione"
+
+.in +1c
+.ti -1c
+.RI "void \fBwheelEvent\fP (QWheelEvent *event) override"
+.br
+.RI "Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Widok graficzny umożliwiający powiększanie i przesuwanie obrazu\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa \fBZoomableGraphicsView\fP dziedziczy po QGraphicsView i dostarcza funkcjonalność powiększania obrazu za pomocą kółka myszy oraz przesuwania przez przeciąganie\&. Ustawia kotwicę transformacji pod kursorem myszy, co zapewnia intuicyjne powiększanie, oraz tryb przeciągania ScrollHandDrag dla przesuwania obrazu\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Obsługa zdarzeń kółka myszy do zmiany skali obrazu\&.
+.IP "\(bu" 2
+Umożliwienie przesuwania obrazu poprzez przeciąganie myszą\&.
+.IP "\(bu" 2
+Przechowywanie bieżącego współczynnika skali\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "ZoomableGraphicsView::ZoomableGraphicsView (QWidget * parent = \fCnullptr\fP)\fC [inline]\fP, \fC [explicit]\fP"
+
+.PP
+Konstruktor klasy \fBZoomableGraphicsView\fP\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje widok graficzny, ustawia kotwicę transformacji pod kursorem myszy (AnchorUnderMouse) oraz tryb przeciągania (ScrollHandDrag)\&. Ustawia początkowy współczynnik skali na 1\&.0\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "void ZoomableGraphicsView::wheelEvent (QWheelEvent * event)\fC [inline]\fP, \fC [override]\fP, \fC [protected]\fP"
+
+.PP
+Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIevent\fP Wskaźnik na zdarzenie kółka myszy\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Przetwarza zdarzenia kółka myszy, zwiększając skalę obrazu o współczynnik 1\&.15 (zoom in) lub zmniejszając o 1/1\&.15 (zoom out) w zależności od kierunku przewijania\&. Aktualizuje zmienną m_scaleFactor i akceptuje zdarzenie, aby zapobiec jego dalszemu przetwarzaniu\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

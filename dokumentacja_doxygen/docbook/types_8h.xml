@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_types_8h" xml:lang="pl">
+<title>Dokumentacja pliku include/types.h</title>
+<indexterm><primary>include/types.h</primary></indexterm>
+<para>
+
+<para>Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &lt;QDialog&gt;
+#include &lt;QSqlDatabase&gt;
+</programlisting>Wykres zależności załączania dla types.h:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="types_8h__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="types_8h__dep__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Komponenty    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_classtypes">types</link></para>
+
+<para>Okno dialogowe do zarządzania typami eksponatów. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej. </para>
+
+<para><formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03 </para>
+</formalpara>
+<formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik zawiera deklarację klasy types, która reprezentuje okno dialogowe do zarządzania typami eksponatów (np. Komputer, Monitor, Drukarka) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie typów w tabeli <computeroutput>types</computeroutput> w bazie danych, a także synchronizację z głównym oknem aplikacji (<computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>) w celu odświeżenia combo boxów po zapisaniu zmian.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Deklarację klasy types</emphasis> – dziedziczy po QDialog.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody publiczne</emphasis> – konstruktor, destruktor, ustawianie <link linkend="_class_main_window">MainWindow</link>.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sloty prywatne</emphasis> – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody prywatne</emphasis> – odświeżanie listy typów.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zmienne prywatne</emphasis> – przechowują interfejs, <link linkend="_class_main_window">MainWindow</link> i połączenie z bazą danych.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QDialog, QSqlDatabase.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>: <link linkend="_mainwindow_8h">mainwindow.h</link> (deklaracja <link linkend="_class_main_window">MainWindow</link>).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Namespace Ui</emphasis>: Zawiera definicję interfejsu użytkownika (<link linkend="_ui__types_8h_source">ui_types.h</link>).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Klasa jest częścią systemu słownikowego, współpracuje z <link linkend="_class_main_window">MainWindow</link> do aktualizacji combo boxów.</para>
+</listitem><listitem>
+<para>Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>). </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

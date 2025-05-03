@@ -1,0 +1,136 @@
+\hypertarget{ui__types_8h_source}{}\doxysection{ui\+\_\+types.\+h}
+\label{ui__types_8h_source}\index{build/ui\_types.h@{build/ui\_types.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{/********************************************************************************}}
+\DoxyCodeLine{2 \textcolor{comment}{** Form generated from reading UI file 'types.ui'}}
+\DoxyCodeLine{3 \textcolor{comment}{**}}
+\DoxyCodeLine{4 \textcolor{comment}{** Created by: Qt User Interface Compiler version 6.8.2}}
+\DoxyCodeLine{5 \textcolor{comment}{**}}
+\DoxyCodeLine{6 \textcolor{comment}{** WARNING! All changes made in this file will be lost when recompiling UI file!}}
+\DoxyCodeLine{7 \textcolor{comment}{********************************************************************************/}}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#ifndef UI\_TYPES\_H}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define UI\_TYPES\_H}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <QtCore/QVariant>}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include <QtWidgets/QAbstractButton>}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <QtWidgets/QApplication>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <QtWidgets/QDialogButtonBox>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <QtWidgets/QLabel>}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <QtWidgets/QLineEdit>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <QtWidgets/QListView>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include <QtWidgets/QPushButton>}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include <QtWidgets/QWidget>}}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22 QT\_BEGIN\_NAMESPACE}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24 \textcolor{keyword}{class }\mbox{\hyperlink{class_ui__types}{Ui\_types}}}
+\DoxyCodeLine{25 \{}
+\DoxyCodeLine{26 \textcolor{keyword}{public}:}
+\DoxyCodeLine{27     QLineEdit *type\_lineEdit;}
+\DoxyCodeLine{28     QLabel *label;}
+\DoxyCodeLine{29     QListView *listView;}
+\DoxyCodeLine{30     QPushButton *pushButton\_add;}
+\DoxyCodeLine{31     QPushButton *pushButton\_edit;}
+\DoxyCodeLine{32     QPushButton *pushButton\_delete;}
+\DoxyCodeLine{33     QDialogButtonBox *buttonBox;}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35     \textcolor{keywordtype}{void} setupUi(QWidget *\mbox{\hyperlink{classtypes}{types}})}
+\DoxyCodeLine{36     \{}
+\DoxyCodeLine{37         \textcolor{keywordflow}{if} (\mbox{\hyperlink{classtypes}{types}}-\/>objectName().isEmpty())}
+\DoxyCodeLine{38             \mbox{\hyperlink{classtypes}{types}}-\/>setObjectName(\textcolor{stringliteral}{"{}types"{}});}
+\DoxyCodeLine{39         \mbox{\hyperlink{classtypes}{types}}-\/>resize(709, 436);}
+\DoxyCodeLine{40         type\_lineEdit = \textcolor{keyword}{new} QLineEdit(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{41         type\_lineEdit-\/>setObjectName(\textcolor{stringliteral}{"{}type\_lineEdit"{}});}
+\DoxyCodeLine{42         type\_lineEdit-\/>setGeometry(QRect(30, 60, 113, 26));}
+\DoxyCodeLine{43         label = \textcolor{keyword}{new} QLabel(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{44         label-\/>setObjectName(\textcolor{stringliteral}{"{}label"{}});}
+\DoxyCodeLine{45         label-\/>setGeometry(QRect(40, 40, 66, 18));}
+\DoxyCodeLine{46         listView = \textcolor{keyword}{new} QListView(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{47         listView-\/>setObjectName(\textcolor{stringliteral}{"{}listView"{}});}
+\DoxyCodeLine{48         listView-\/>setGeometry(QRect(220, 20, 256, 192));}
+\DoxyCodeLine{49         listView-\/>setStyleSheet(QString::fromUtf8(\textcolor{stringliteral}{"{}QListView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{50 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{51 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{52 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{53 \textcolor{stringliteral}{"{}QListView QAbstractItemView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{54 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{55 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{56 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{57 \textcolor{stringliteral}{"{}"{}}));}
+\DoxyCodeLine{58         pushButton\_add = \textcolor{keyword}{new} QPushButton(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{59         pushButton\_add-\/>setObjectName(\textcolor{stringliteral}{"{}pushButton\_add"{}});}
+\DoxyCodeLine{60         pushButton\_add-\/>setGeometry(QRect(30, 140, 100, 32));}
+\DoxyCodeLine{61         pushButton\_add-\/>setStyleSheet(QString::fromUtf8(\textcolor{stringliteral}{"{}QPushButton \{\(\backslash\)n"{}}}
+\DoxyCodeLine{62 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{63 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{64 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{65 \textcolor{stringliteral}{"{}QPushButton QAbstractItemView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{66 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{67 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{68 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{69 \textcolor{stringliteral}{"{}"{}}));}
+\DoxyCodeLine{70         pushButton\_edit = \textcolor{keyword}{new} QPushButton(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{71         pushButton\_edit-\/>setObjectName(\textcolor{stringliteral}{"{}pushButton\_edit"{}});}
+\DoxyCodeLine{72         pushButton\_edit-\/>setGeometry(QRect(30, 190, 100, 32));}
+\DoxyCodeLine{73         pushButton\_edit-\/>setStyleSheet(QString::fromUtf8(\textcolor{stringliteral}{"{}QPushButton \{\(\backslash\)n"{}}}
+\DoxyCodeLine{74 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{75 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{76 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{77 \textcolor{stringliteral}{"{}QPushButton QAbstractItemView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{78 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{79 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{80 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{81 \textcolor{stringliteral}{"{}"{}}));}
+\DoxyCodeLine{82         pushButton\_delete = \textcolor{keyword}{new} QPushButton(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{83         pushButton\_delete-\/>setObjectName(\textcolor{stringliteral}{"{}pushButton\_delete"{}});}
+\DoxyCodeLine{84         pushButton\_delete-\/>setGeometry(QRect(30, 240, 100, 32));}
+\DoxyCodeLine{85         pushButton\_delete-\/>setStyleSheet(QString::fromUtf8(\textcolor{stringliteral}{"{}QPushButton \{\(\backslash\)n"{}}}
+\DoxyCodeLine{86 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{87 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{88 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{89 \textcolor{stringliteral}{"{}QPushButton QAbstractItemView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{90 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{91 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{92 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{93 \textcolor{stringliteral}{"{}"{}}));}
+\DoxyCodeLine{94         buttonBox = \textcolor{keyword}{new} QDialogButtonBox(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{95         buttonBox-\/>setObjectName(\textcolor{stringliteral}{"{}buttonBox"{}});}
+\DoxyCodeLine{96         buttonBox-\/>setGeometry(QRect(260, 240, 191, 61));}
+\DoxyCodeLine{97         buttonBox-\/>setStyleSheet(QString::fromUtf8(\textcolor{stringliteral}{"{}QPushButton \{\(\backslash\)n"{}}}
+\DoxyCodeLine{98 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{99 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{100 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{101 \textcolor{stringliteral}{"{}QPushButton QAbstractItemView \{\(\backslash\)n"{}}}
+\DoxyCodeLine{102 \textcolor{stringliteral}{"{}    background-\/color: white;\(\backslash\)n"{}}}
+\DoxyCodeLine{103 \textcolor{stringliteral}{"{}    color: black;\(\backslash\)n"{}}}
+\DoxyCodeLine{104 \textcolor{stringliteral}{"{}\}\(\backslash\)n"{}}}
+\DoxyCodeLine{105 \textcolor{stringliteral}{"{}"{}}));}
+\DoxyCodeLine{106         buttonBox-\/>setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108         retranslateUi(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{110         QMetaObject::connectSlotsByName(\mbox{\hyperlink{classtypes}{types}});}
+\DoxyCodeLine{111     \} \textcolor{comment}{// setupUi}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113     \textcolor{keywordtype}{void} retranslateUi(QWidget *\mbox{\hyperlink{classtypes}{types}})}
+\DoxyCodeLine{114     \{}
+\DoxyCodeLine{115         \mbox{\hyperlink{classtypes}{types}}-\/>setWindowTitle(QCoreApplication::translate(\textcolor{stringliteral}{"{}types"{}}, \textcolor{stringliteral}{"{}Form"{}}, \textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{116         label-\/>setText(QCoreApplication::translate(\textcolor{stringliteral}{"{}types"{}}, \textcolor{stringliteral}{"{}Typ"{}}, \textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{117         pushButton\_add-\/>setText(QCoreApplication::translate(\textcolor{stringliteral}{"{}types"{}}, \textcolor{stringliteral}{"{}dodaj"{}}, \textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{118         pushButton\_edit-\/>setText(QCoreApplication::translate(\textcolor{stringliteral}{"{}types"{}}, \textcolor{stringliteral}{"{}edytuj"{}}, \textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{119         pushButton\_delete-\/>setText(QCoreApplication::translate(\textcolor{stringliteral}{"{}types"{}}, \textcolor{stringliteral}{"{}skasuj"{}}, \textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{120     \} \textcolor{comment}{// retranslateUi}}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 \};}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124 \textcolor{keyword}{namespace }Ui \{}
+\DoxyCodeLine{125     \textcolor{keyword}{class }\mbox{\hyperlink{class_ui_1_1types}{types}}: \textcolor{keyword}{public} \mbox{\hyperlink{class_ui__types}{Ui\_types}} \{\};}
+\DoxyCodeLine{126 \} \textcolor{comment}{// namespace Ui}}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128 QT\_END\_NAMESPACE}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// UI\_TYPES\_H}}
+
+\end{DoxyCode}

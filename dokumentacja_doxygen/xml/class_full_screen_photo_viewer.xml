@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_full_screen_photo_viewer" kind="class" language="C++" prot="public">
+    <compoundname>FullScreenPhotoViewer</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">QMainWindow</basecompoundref>
+    <includes refid="fullscreenphotoviewer_8h" local="no">fullscreenphotoviewer.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_full_screen_photo_viewer_1a4b4795dd09796ad8c97f052c09d7cf1f" prot="private" static="no" mutable="no">
+        <type>QGraphicsScene *</type>
+        <definition>QGraphicsScene* FullScreenPhotoViewer::m_scene</definition>
+        <argsstring></argsstring>
+        <name>m_scene</name>
+        <qualifiedname>FullScreenPhotoViewer::m_scene</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na scenę graficzną zawierającą zdjęcie. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/fullscreenphotoviewer.h" line="177" column="20" bodyfile="include/fullscreenphotoviewer.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_full_screen_photo_viewer_1a48fa48606bd07a9ec0487145f71248b2" prot="private" static="no" mutable="no">
+        <type><ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref> *</type>
+        <definition>ZoomableGraphicsView* FullScreenPhotoViewer::m_view</definition>
+        <argsstring></argsstring>
+        <name>m_view</name>
+        <qualifiedname>FullScreenPhotoViewer::m_view</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na widok graficzny obsługujący powiększanie i przesuwanie. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/fullscreenphotoviewer.h" line="179" column="26" bodyfile="include/fullscreenphotoviewer.h" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_full_screen_photo_viewer_1ac0295a004ff560cd3704cca8694c83a8" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>FullScreenPhotoViewer::FullScreenPhotoViewer</definition>
+        <argsstring>(const QPixmap &amp;pixmap, QWidget *parent=nullptr)</argsstring>
+        <name>FullScreenPhotoViewer</name>
+        <qualifiedname>FullScreenPhotoViewer::FullScreenPhotoViewer</qualifiedname>
+        <param>
+          <type>const QPixmap &amp;</type>
+          <declname>pixmap</declname>
+        </param>
+        <param>
+          <type>QWidget *</type>
+          <declname>parent</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Konstruktor klasy <ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pixmap</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Obiekt QPixmap zawierający zdjęcie do wyświetlenia. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje bezramkowe okno pełnoekranowe z flagami FramelessWindowHint i WindowStaysOnTopHint. Ustawia modalność (ApplicationModal) i automatyczne usuwanie po zamknięciu (WA_DeleteOnClose). Tworzy scenę graficzną, dodaje do niej zdjęcie, konfiguruje <ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref> jako centralny widget i wyświetla okno w trybie pełnoekranowym. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/fullscreenphotoviewer.h" line="136" column="14" bodyfile="include/fullscreenphotoviewer.h" bodystart="136" bodyend="155"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_full_screen_photo_viewer_1a792b6b8e610940c1c91bea6fd05f4f26" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FullScreenPhotoViewer::keyPressEvent</definition>
+        <argsstring>(QKeyEvent *event) override</argsstring>
+        <name>keyPressEvent</name>
+        <qualifiedname>FullScreenPhotoViewer::keyPressEvent</qualifiedname>
+        <param>
+          <type>QKeyEvent *</type>
+          <declname>event</declname>
+        </param>
+        <briefdescription>
+<para>Obsługuje zdarzenia naciśnięcia klawiszy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na zdarzenie klawiatury.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zamyka okno po naciśnięciu klawisza Escape, wywołując metodę close(). Dla innych klawiszy przekazuje zdarzenie do metody bazowej QMainWindow::keyPressEvent. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/fullscreenphotoviewer.h" line="166" column="10" bodyfile="include/fullscreenphotoviewer.h" bodystart="166" bodyend="173"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Okno pełnoekranowe do wyświetlania zdjęć. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+<para>Klasa <ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref> dziedziczy po QMainWindow i tworzy bezramkowe, modalne okno pełnoekranowe do wyświetlania zdjęcia w obiekcie QPixmap. Wykorzystuje <ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref> do obsługi powiększania i przesuwania obrazu. Okno zamyka się po naciśnięciu klawisza Escape i automatycznie usuwa się po zamknięciu (WA_DeleteOnClose).</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+<para><itemizedlist>
+<listitem><para>Wyświetlanie zdjęcia w trybie pełnoekranowym.</para>
+</listitem><listitem><para>Obsługa zamykania okna klawiszem Escape.</para>
+</listitem><listitem><para>Zarządzanie sceną graficzną i widokiem <ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref>. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>FullScreenPhotoViewer</label>
+        <link refid="class_full_screen_photo_viewer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>QMainWindow</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>FullScreenPhotoViewer</label>
+        <link refid="class_full_screen_photo_viewer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>QMainWindow</label>
+      </node>
+    </collaborationgraph>
+    <location file="include/fullscreenphotoviewer.h" line="121" column="1" bodyfile="include/fullscreenphotoviewer.h" bodystart="122" bodyend="180"/>
+    <listofallmembers>
+      <member refid="class_full_screen_photo_viewer_1ac0295a004ff560cd3704cca8694c83a8" prot="public" virt="non-virtual"><scope>FullScreenPhotoViewer</scope><name>FullScreenPhotoViewer</name></member>
+      <member refid="class_full_screen_photo_viewer_1a792b6b8e610940c1c91bea6fd05f4f26" prot="protected" virt="non-virtual"><scope>FullScreenPhotoViewer</scope><name>keyPressEvent</name></member>
+      <member refid="class_full_screen_photo_viewer_1a4b4795dd09796ad8c97f052c09d7cf1f" prot="private" virt="non-virtual"><scope>FullScreenPhotoViewer</scope><name>m_scene</name></member>
+      <member refid="class_full_screen_photo_viewer_1a48fa48606bd07a9ec0487145f71248b2" prot="private" virt="non-virtual"><scope>FullScreenPhotoViewer</scope><name>m_view</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

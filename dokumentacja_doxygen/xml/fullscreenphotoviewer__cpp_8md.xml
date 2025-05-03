@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="fullscreenphotoviewer__cpp_8md" kind="file" language="Markdown">
+    <compoundname>fullscreenphotoviewer_cpp.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`fullscreenphotoviewer.cpp`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>fullscreenphotoviewer.cpp</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`fullscreenphotoviewer.cpp`<sp/>jest<sp/>pusty,<sp/>ponieważ<sp/>cała<sp/>implementacja<sp/>klas<sp/>`ZoomableGraphicsView`<sp/>i<sp/>`FullScreenPhotoViewer`<sp/>znajduje<sp/>się<sp/>w<sp/>pliku<sp/>nagłówkowym<sp/>`fullscreenphotoviewer.h`,<sp/>gdzie<sp/>metody<sp/>są<sp/>zdefiniowane<sp/>inline.<sp/>Plik<sp/>istnieje<sp/>dla<sp/>kompletności<sp/>struktury<sp/>projektu<sp/>i<sp/>zgodności<sp/>z<sp/>konwencją<sp/>oddzielania<sp/>deklaracji<sp/>od<sp/>implementacji<sp/>w<sp/>projektach<sp/>Qt.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>zawiera<sp/>jedynie:</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Zakomentowane<sp/>włączenie<sp/>nagłówka<sp/>(`#include<sp/>&quot;fullscreenphotoviewer.h&quot;<sp/>//<sp/>NOLINT`).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Komentarz<sp/>wskazujący,<sp/>że<sp/>plik<sp/>może<sp/>być<sp/>pusty,<sp/>jeśli<sp/>nie<sp/>ma<sp/>dodatkowych<sp/>metod.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Plik<sp/>nie<sp/>zawiera<sp/>żadnego<sp/>kodu<sp/>wykonywalnego,<sp/>ponieważ<sp/>cała<sp/>logika<sp/>została<sp/>zaimplementowana<sp/>w<sp/>pliku<sp/>`fullscreenphotoviewer.h`.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Funkcjonalność<sp/>klas<sp/>`ZoomableGraphicsView`<sp/>(powiększanie<sp/>i<sp/>przesuwanie<sp/>obrazu)<sp/>oraz<sp/>`FullScreenPhotoViewer`<sp/>(pełnoekranowe<sp/>wyświetlanie<sp/>zdjęcia)<sp/>jest<sp/>w<sp/>pełni<sp/>opisana<sp/>w<sp/>dokumentacji<sp/>pliku<sp/>nagłówkowego.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Nagłówek**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`fullscreenphotoviewer.h`<sp/>(zakomentowane<sp/>włączenie,<sp/>nieużywane<sp/>w<sp/>praktyce).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Brak<sp/>zależności<sp/>od<sp/>zasobów<sp/>Qt.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Plik<sp/>jest<sp/>pusty<sp/>z<sp/>wyjątkiem<sp/>zakomentowanego<sp/>`#include`,<sp/>co<sp/>jest<sp/>zgodne<sp/>z<sp/>oryginalnym<sp/>kodem.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Dokumentacja<sp/>w<sp/>pliku<sp/>`fullscreenphotoviewer_h.md`<sp/>w<sp/>pełni<sp/>opisuje<sp/>funkcjonalność<sp/>klas<sp/>`ZoomableGraphicsView`<sp/>i<sp/>`FullScreenPhotoViewer`.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Obecność<sp/>pliku<sp/>.cpp<sp/>jest<sp/>zgodna<sp/>z<sp/>konwencją<sp/>projektową,<sp/>mimo<sp/>braku<sp/>dodatkowej<sp/>implementacji.</highlight></codeline>
+    </programlisting>
+    <location file="documentation/fullscreenphotoviewer_cpp.md"/>
+  </compounddef>
+</doxygen>

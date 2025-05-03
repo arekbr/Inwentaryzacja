@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_vendors_8cpp" xml:lang="pl">
+<title>Dokumentacja pliku src/vendors.cpp</title>
+<indexterm><primary>src/vendors.cpp</primary></indexterm>
+<para>
+
+<para>Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &quot;vendors.h&quot;
+#include &lt;QInputDialog&gt;
+#include &lt;QMessageBox&gt;
+#include &lt;QSqlError&gt;
+#include &lt;QSqlQuery&gt;
+#include &lt;QSqlQueryModel&gt;
+#include &lt;QUuid&gt;
+#include &quot;mainwindow.h&quot;
+#include &quot;ui_vendors.h&quot;
+</programlisting>Wykres zależności załączania dla vendors.cpp:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="vendors_8cpp__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej. </para>
+
+<para><formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03 </para>
+</formalpara>
+<formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik zawiera implementację metod klasy vendors, odpowiedzialnej za zarządzanie producentami sprzętu (np. Commodore, IBM, Apple) w bazie danych (tabela <computeroutput>vendors</computeroutput>). Klasa umożliwia dodawanie, edytowanie i usuwanie producentów, współpracując z interfejsem użytkownika (QListView, QLineEdit) oraz klasą <link linkend="_class_main_window">MainWindow</link> w celu odświeżania combo boxów po zapisaniu zmian.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Kod jest podzielony na następujące sekcje:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Konstruktor</emphasis> – inicjalizuje interfejs, połączenie z bazą danych, sloty.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Destruktor</emphasis> – zwalnia zasoby.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody publiczne</emphasis> – ustawianie <link linkend="_class_main_window">MainWindow</link>.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sloty prywatne</emphasis> – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody prywatne</emphasis> – odświeżanie listy producentów.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QMessageBox, QSqlQuery, QSqlQueryModel, QInputDialog, QUuid.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>: <link linkend="_vendors_8h">vendors.h</link>, <link linkend="_mainwindow_8h">mainwindow.h</link>.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Interfejs użytkownika</emphasis>: <link linkend="_ui__vendors_8h_source">ui_vendors.h</link>.</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Klasa jest częścią systemu słownikowego, integruje się z <link linkend="_class_main_window">MainWindow</link>.</para>
+</listitem><listitem>
+<para>Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>). </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

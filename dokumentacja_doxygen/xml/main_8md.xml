@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="main_8md" kind="file" language="Markdown">
+    <compoundname>main.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`main.cpp`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>main.cpp</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`main.cpp`<sp/>jest<sp/>głównym<sp/>punktem<sp/>wejścia<sp/>aplikacji<sp/>inwentaryzacyjnej<sp/>opartej<sp/>na<sp/>bibliotece<sp/>Qt.<sp/>Odpowiada<sp/>za<sp/>inicjalizację<sp/>aplikacji,<sp/>ustawienie<sp/>jej<sp/>podstawowych<sp/>właściwości<sp/>(nazwa,<sp/>wersja,<sp/>ikona),<sp/>ładowanie<sp/>tłumaczeń<sp/>językowych,<sp/>wyświetlanie<sp/>okna<sp/>konfiguracji<sp/>bazy<sp/>danych<sp/>oraz<sp/>nawiązywanie<sp/>połączenia<sp/>z<sp/>wybraną<sp/>bazą<sp/>danych<sp/>(SQLite<sp/>lub<sp/>MySQL).<sp/>Po<sp/>poprawnym<sp/>skonfigurowaniu<sp/>środowiska<sp/>uruchamia<sp/>główne<sp/>okno<sp/>aplikacji<sp/>reprezentowane<sp/>przez<sp/>klasę<sp/>`itemList`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Kod<sp/>jest<sp/>zorganizowany<sp/>w<sp/>następujące<sp/>sekcje<sp/>funkcjonalne:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**Inicjalizacja<sp/>aplikacji<sp/>Qt**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Tworzy<sp/>instancję<sp/>`QApplication`<sp/>i<sp/>ustawia<sp/>styl<sp/>graficzny<sp/>&quot;Fusion&quot;<sp/>dla<sp/>spójnego<sp/>wyglądu.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Ustawia<sp/>nazwę<sp/>aplikacji<sp/>(&quot;Inwentaryzacja&quot;)<sp/>i<sp/>wersję<sp/>(1.2.2).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Ładuje<sp/>i<sp/>ustawia<sp/>ikonę<sp/>aplikacji<sp/>z<sp/>zasobów<sp/>Qt<sp/>(`:/images/icon.png`).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Ładowanie<sp/>tłumaczeń**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Wczytuje<sp/>tłumaczenia<sp/>językowe<sp/>na<sp/>podstawie<sp/>języka<sp/>systemowego<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Pliki<sp/>tłumaczeń<sp/>(`Inwentaryzacja_*.qm`)<sp/>znajdują<sp/>się<sp/>w<sp/>zasobach<sp/>Qt<sp/>(`:/i18n/`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Po<sp/>znalezieniu<sp/>odpowiedniego<sp/>pliku<sp/>tłumaczenia,<sp/>instaluje<sp/>go<sp/>w<sp/>aplikacji.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Konfiguracja<sp/>bazy<sp/>danych**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Wyświetla<sp/>okno<sp/>dialogowe<sp/>`DatabaseConfigDialog`,<sp/>w<sp/>którym<sp/>użytkownik<sp/>wybiera<sp/>typ<sp/>bazy<sp/>danych<sp/>(SQLite<sp/>lub<sp/>MySQL)<sp/>i<sp/>wprowadza<sp/>parametry<sp/>połączenia.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Jeśli<sp/>użytkownik<sp/>anuluje<sp/>konfigurację,<sp/>aplikacja<sp/>kończy<sp/>działanie.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>**Nawiązywanie<sp/>połączenia<sp/>z<sp/>bazą<sp/>danych**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Pobiera<sp/>wybrany<sp/>typ<sp/>bazy<sp/>danych<sp/>i<sp/>odpowiednie<sp/>parametry<sp/>z<sp/>`DatabaseConfigDialog`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Obsługuje<sp/>dwa<sp/>typy<sp/>baz<sp/>danych:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>-<sp/>**SQLite**:<sp/>Sprawdza<sp/>ścieżkę<sp/>do<sp/>pliku<sp/>bazy<sp/>i<sp/>wywołuje<sp/>funkcję<sp/>`setupDatabase`<sp/>z<sp/>parametrem<sp/>ścieżki.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>-<sp/>**MySQL**:<sp/>Przekazuje<sp/>dane<sp/>dostępowe<sp/>(host,<sp/>nazwa<sp/>bazy,<sp/>użytkownik,<sp/>hasło,<sp/>port)<sp/>do<sp/>funkcji<sp/>`setupDatabase`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Loguje<sp/>błędy<sp/>w<sp/>przypadku<sp/>niepoprawnego<sp/>typu<sp/>bazy<sp/>danych<sp/>lub<sp/>nieudanego<sp/>połączenia.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">5.<sp/>**Uruchamianie<sp/>głównego<sp/>okna**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Tworzy<sp/>i<sp/>wyświetla<sp/>główne<sp/>okno<sp/>aplikacji<sp/>(`itemList`),<sp/>które<sp/>zawiera<sp/>interfejs<sp/>użytkownika<sp/>do<sp/>zarządzania<sp/>inwentaryzacją.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">6.<sp/>**Pętla<sp/>zdarzeń<sp/>Qt**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Uruchamia<sp/>główną<sp/>pętlę<sp/>zdarzeń<sp/>Qt<sp/>za<sp/>pomocą<sp/>`QApplication::exec()`,<sp/>obsługującą<sp/>interakcje<sp/>użytkownika<sp/>i<sp/>zdarzenia<sp/>systemowe.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">1.<sp/>**Inicjalizacja**:<sp/>Po<sp/>uruchomieniu<sp/>aplikacji<sp/>tworzona<sp/>jest<sp/>instancja<sp/>`QApplication`,<sp/>która<sp/>zarządza<sp/>cyklem<sp/>życia<sp/>aplikacji<sp/>Qt.<sp/>Styl<sp/>&quot;Fusion&quot;<sp/>zapewnia<sp/>spójny<sp/>wygląd<sp/>na<sp/>różnych<sp/>platformach.</highlight></codeline>
+<codeline><highlight class="normal">2.<sp/>**Tłumaczenia**:<sp/>Aplikacja<sp/>próbuje<sp/>załadować<sp/>tłumaczenia<sp/>na<sp/>podstawie<sp/>języka<sp/>systemowego,<sp/>co<sp/>umożliwia<sp/>lokalizację<sp/>interfejsu<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">3.<sp/>**Konfiguracja<sp/>bazy<sp/>danych**:<sp/>Użytkownik<sp/>musi<sp/>skonfigurować<sp/>połączenie<sp/>z<sp/>bazą<sp/>danych<sp/>za<sp/>pomocą<sp/>okna<sp/>`DatabaseConfigDialog`.<sp/>Jeśli<sp/>konfiguracja<sp/>zostanie<sp/>anulowana,<sp/>aplikacja<sp/>kończy<sp/>działanie.</highlight></codeline>
+<codeline><highlight class="normal">4.<sp/>**Połączenie<sp/>z<sp/>bazą<sp/>danych**:<sp/>Funkcja<sp/>`setupDatabase`<sp/>(zdefiniowana<sp/>w<sp/>`utils.h`)<sp/>jest<sp/>wywoływana<sp/>z<sp/>odpowiednimi<sp/>parametrami<sp/>w<sp/>zależności<sp/>od<sp/>typu<sp/>bazy<sp/>danych.<sp/>W<sp/>przypadku<sp/>niepowodzenia<sp/>aplikacja<sp/>kończy<sp/>działanie.</highlight></codeline>
+<codeline><highlight class="normal">5.<sp/>**Główne<sp/>okno**:<sp/>Po<sp/>pomyślnym<sp/>połączeniu<sp/>z<sp/>bazą<sp/>danych<sp/>wyświetlane<sp/>jest<sp/>główne<sp/>okno<sp/>aplikacji,<sp/>które<sp/>umożliwia<sp/>użytkownikowi<sp/>interakcję<sp/>z<sp/>danymi<sp/>inwentaryzacyjnymi.</highlight></codeline>
+<codeline><highlight class="normal">6.<sp/>**Pętla<sp/>zdarzeń**:<sp/>Aplikacja<sp/>przechodzi<sp/>w<sp/>tryb<sp/>oczekiwania<sp/>na<sp/>zdarzenia<sp/>użytkownika,<sp/>takie<sp/>jak<sp/>kliknięcia<sp/>czy<sp/>wprowadzanie<sp/>danych.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Biblioteki<sp/>Qt**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QApplication`:<sp/>Zarządzanie<sp/>aplikacją<sp/>i<sp/>cyklem<sp/>zdarzeń.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QCoreApplication`:<sp/>Ustawianie<sp/>metadanych<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QDebug`:<sp/>Logowanie<sp/>komunikatów<sp/>diagnostycznych.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QDirIterator`:<sp/>(Nieużywane<sp/>wprost,<sp/>ale<sp/>włączone<sp/>w<sp/>pliku).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QTranslator`:<sp/>Obsługa<sp/>tłumaczeń<sp/>językowych.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QIcon`:<sp/>Ustawianie<sp/>ikony<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Nagłówki<sp/>aplikacji**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`DatabaseConfigDialog.h`:<sp/>Okno<sp/>konfiguracji<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`itemList.h`:<sp/>Główne<sp/>okno<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`utils.h`:<sp/>Funkcje<sp/>pomocnicze,<sp/>w<sp/>tym<sp/>`setupDatabase`.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Ikona<sp/>aplikacji<sp/>(`:/images/icon.png`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Pliki<sp/>tłumaczeń<sp/>(`:/i18n/Inwentaryzacja_*.qm`).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Aplikacja<sp/>wymaga<sp/>poprawnego<sp/>skonfigurowania<sp/>bazy<sp/>danych,<sp/>aby<sp/>przejść<sp/>do<sp/>głównego<sp/>okna.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Styl<sp/>graficzny<sp/>i<sp/>czcionki<sp/>są<sp/>zarządzane<sp/>przez<sp/>`DatabaseConfigDialog`<sp/>po<sp/>zatwierdzeniu<sp/>ustawień.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>W<sp/>przypadku<sp/>błędów<sp/>(np.<sp/>brak<sp/>pliku<sp/>SQLite<sp/>lub<sp/>niepoprawny<sp/>typ<sp/>bazy<sp/>danych)<sp/>aplikacja<sp/>loguje<sp/>komunikaty<sp/>za<sp/>pomocą<sp/>`qDebug`<sp/>i<sp/>kończy<sp/>działanie.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Wartości<sp/>zwracane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**0**:<sp/>Aplikacja<sp/>zakończyła<sp/>się<sp/>pomyślnie<sp/>lub<sp/>użytkownik<sp/>anulował<sp/>konfigurację.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Inne**:<sp/>Błąd<sp/>podczas<sp/>nawiązywania<sp/>połączenia<sp/>z<sp/>bazą<sp/>danych<sp/>lub<sp/>nieznany<sp/>typ<sp/>bazy<sp/>danych.</highlight></codeline>
+    </programlisting>
+    <location file="documentation/main.md"/>
+  </compounddef>
+</doxygen>

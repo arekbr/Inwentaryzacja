@@ -1,0 +1,105 @@
+\hypertarget{md_documentation_mainwindow_h_autotoc_md79}{}\doxysection{Metadane}\label{md_documentation_mainwindow_h_autotoc_md79}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_mainwindow_h_autotoc_md80}{}\doxysection{Przegląd}\label{md_documentation_mainwindow_h_autotoc_md80}
+Plik {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}} definiuje klasę {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, która reprezentuje główne okno formularza do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych My\+SQL. Emituje sygnał {\ttfamily record\+Saved} po zapisaniu rekordu i zawiera sloty do obsługi akcji użytkownika, takich jak zapis, anulowanie czy dodawanie zdjęć.\hypertarget{md_documentation_mainwindow_h_autotoc_md81}{}\doxysection{Struktura kodu}\label{md_documentation_mainwindow_h_autotoc_md81}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QMain\+Window}.
+\item Używa makra {\ttfamily Q\+\_\+\+OBJECT} dla wsparcia mechanizmu sygnałów i slotów Qt.
+\end{DoxyItemize}
+\item {\bfseries{Metody publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje interfejs, połączenie z bazą danych i combo boxy.
+\item Destruktor\+: Zwalnia zasoby.
+\item {\ttfamily load\+Combo\+Box\+Data}\+: Ładuje dane z tabeli do combo boxa.
+\item {\ttfamily event\+Filter}\+: Obsługuje zdarzenia dla combo boxów (otwieranie listy po kliknięciu).
+\item {\ttfamily set\+Edit\+Mode}\+: Ustawia tryb edycji lub dodawania rekordu.
+\item {\ttfamily set\+Clone\+Mode}\+: Ustawia tryb klonowania rekordu.
+\item {\ttfamily get\+New\+Item\+Vendor\+Combo\+Box}, {\ttfamily get\+New\+Item\+Model\+Combo\+Box}, {\ttfamily get\+New\+Item\+Storage\+Place\+Combo\+Box}, {\ttfamily get\+New\+Item\+Type\+Combo\+Box}, {\ttfamily get\+New\+Item\+Status\+Combo\+Box}\+: Zwracają wskaźniki na combo boxy.
+\end{DoxyItemize}
+\item {\bfseries{Sygnały}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily record\+Saved}\+: Emitowany po zapisaniu rekordu, przekazuje ID rekordu.
+\end{DoxyItemize}
+\item {\bfseries{Sloty prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily on\+Save\+Clicked}\+: Zapisuje dane do bazy danych i emituje sygnał {\ttfamily record\+Saved}.
+\item {\ttfamily on\+Cancel\+Clicked}\+: Zamyka okno bez zapisywania zmian.
+\item {\ttfamily on\+Add\+Photo\+Clicked}\+: Dodaje nowe zdjęcie do rekordu.
+\item {\ttfamily on\+Remove\+Photo\+Clicked}\+: Usuwa wybrane zdjęcie.
+\item {\ttfamily on\+Photo\+Clicked}\+: Obsługuje kliknięcie w miniaturę zdjęcia.
+\item {\ttfamily on\+Add\+Type\+Clicked}, {\ttfamily on\+Add\+Vendor\+Clicked}, {\ttfamily on\+Add\+Model\+Clicked}, {\ttfamily on\+Add\+Status\+Clicked}, {\ttfamily on\+Add\+Storage\+Place\+Clicked}\+: Otwierają okna dialogowe dla słowników.
+\end{DoxyItemize}
+\item {\bfseries{Metody prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily load\+Record}\+: Wczytuje dane rekordu do formularza.
+\item {\ttfamily load\+Photos}\+: Wczytuje zdjęcia powiązane z rekordem.
+\item {\ttfamily load\+Photos\+From\+Buffer}\+: Wczytuje zdjęcia z bufora pamięci.
+\end{DoxyItemize}
+\item {\bfseries{Zmienne prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily db}\+: Połączenie z bazą danych My\+SQL.
+\item {\ttfamily ui}\+: Wskaźnik na interfejs użytkownika.
+\item {\ttfamily m\+\_\+edit\+Mode}\+: Flaga trybu edycji (true) lub dodawania (false).
+\item {\ttfamily m\+\_\+record\+Id}\+: ID edytowanego rekordu.
+\item {\ttfamily m\+\_\+selected\+Photo\+Index}\+: Indeks wybranej miniatury zdjęcia.
+\item {\ttfamily m\+\_\+photo\+Buffer}\+: Bufor dla zdjęć niezapisanych rekordów.
+\item {\ttfamily m\+\_\+photo\+Paths\+Buffer}\+: Bufor ścieżek do zdjęć przed zapisem.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_mainwindow_h_autotoc_md82}{}\doxysection{Opis działania}\label{md_documentation_mainwindow_h_autotoc_md82}
+
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Konstruktor konfiguruje interfejs, łączy się z bazą danych, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie wartości do słowników.
+\item {\bfseries{Formularz}}\+: Wyświetla pola tekstowe (nazwa, numer seryjny, opis, itp.), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar dla miniatur zdjęć.
+\item {\bfseries{Tryby pracy}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Dodawanie}}\+: Czyści pola, ustawia domyślne wartości (\char`\"{}brak\char`\"{} dla statusu i miejsca przechowywania).
+\item {\bfseries{Edycja}}\+: Wczytuje dane rekordu i zdjęcia na podstawie ID.
+\item {\bfseries{Klonowanie}}\+: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć).
+\end{DoxyItemize}
+\item {\bfseries{Zdjęcia}}\+: Obsługuje dodawanie zdjęć (do bufora lub bazy), usuwanie (z bazy po potwierdzeniu) i wybór miniatur w {\ttfamily QGraphics\+View}.
+\item {\bfseries{Słowniki}}\+: Umożliwia dodawanie nowych wartości do tabel {\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places} przez dialogi lub automatycznie po wpisaniu w combo boxie.
+\item {\bfseries{Zapis}}\+: Waliduje dane, zapisuje rekord w tabeli {\ttfamily eksponaty}, przenosi zdjęcia do tabeli {\ttfamily photos} i katalogu \char`\"{}gotowe\char`\"{}, emituje {\ttfamily record\+Saved}.
+\end{DoxyItemize}\hypertarget{md_documentation_mainwindow_h_autotoc_md83}{}\doxysection{Zależności}\label{md_documentation_mainwindow_h_autotoc_md83}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QMain\+Window}, {\ttfamily QSql\+Database}, {\ttfamily QCombo\+Box}, {\ttfamily QList}\+: Obsługa interfejsu, bazy danych i danych.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{photoitem_8h}{photoitem.\+h}}}\+: Klasa dla miniatur zdjęć (forward-\/deklaracja).
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{ui__mainwindow_8h_source}{ui\+\_\+mainwindow.\+h}}}\+: Plik generowany przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_mainwindow_h_autotoc_md84}{}\doxysection{Uwagi}\label{md_documentation_mainwindow_h_autotoc_md84}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Klasa integruje formularz z bazą danych i dialogami słownikowymi, będąc kluczowym elementem edycji danych.
+\item Automatyczne dodawanie wartości do słowników wymaga wybrania producenta dla modeli, co zapewnia spójność danych.
+\item Zdjęcia są przechowywane jako {\ttfamily LONGBLOB} w tabeli {\ttfamily photos}, co może wpłynąć na wydajność przy dużej liczbie rekordów.
+\item Połączenie z bazą danych ({\ttfamily default\+\_\+connection}) jest współdzielone z innymi komponentami (np. {\ttfamily \mbox{\hyperlink{classitem_list}{item\+List}}}). 
+\end{DoxyItemize}

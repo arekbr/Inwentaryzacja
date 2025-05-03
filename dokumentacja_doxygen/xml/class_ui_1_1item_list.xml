@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui_1_1item_list" kind="class" language="C++" prot="public">
+    <compoundname>Ui::itemList</compoundname>
+    <basecompoundref refid="class_ui__item_list" prot="public" virt="non-virtual">Ui_itemList</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Ui::itemList</label>
+        <link refid="class_ui_1_1item_list"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_itemList</label>
+        <link refid="class_ui__item_list"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Ui::itemList</label>
+        <link refid="class_ui_1_1item_list"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_itemList</label>
+        <link refid="class_ui__item_list"/>
+      </node>
+    </collaborationgraph>
+    <location file="build/ui_itemList.h" line="200" column="5" bodyfile="build/ui_itemList.h" bodystart="200" bodyend="200"/>
+    <listofallmembers>
+      <member refid="class_ui__item_list_1abd42c588922c73a623c3c6400c7d8a4a" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>bottomLayout</name></member>
+      <member refid="class_ui__item_list_1a20e1994082ef360d88b27e330af05a3d" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>buttonsLayout</name></member>
+      <member refid="class_ui__item_list_1ad262fb66e78df7a6ee9f569fa480e1b9" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterLayout</name></member>
+      <member refid="class_ui__item_list_1ac03185ff5a5ae2eb9faadb8963cec5f7" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterModelComboBox</name></member>
+      <member refid="class_ui__item_list_1a18a25651aa080611fb48b94e97a19d2e" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterStatusComboBox</name></member>
+      <member refid="class_ui__item_list_1a01f854ff538252acd8e4ffd73ec585a4" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterStorageComboBox</name></member>
+      <member refid="class_ui__item_list_1a8672aea5fde21d96a2e9f245e99e85f2" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterTypeComboBox</name></member>
+      <member refid="class_ui__item_list_1af325d025c58eac1af812120c37d91fc1" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>filterVendorComboBox</name></member>
+      <member refid="class_ui__item_list_1a16f8697d767516428a2005fbe46721b6" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>headerLabel</name></member>
+      <member refid="class_ui__item_list_1a3d7a1e02a8f63cd4e61d9bc46450ae02" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_graphicsView</name></member>
+      <member refid="class_ui__item_list_1aa484b7d243fc94742c266682eb7beaae" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_about</name></member>
+      <member refid="class_ui__item_list_1a0a61a914039754bd7f42643b6d3a409b" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_clone</name></member>
+      <member refid="class_ui__item_list_1a928f0c02c36340c4171e021ddc14fec9" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_delete</name></member>
+      <member refid="class_ui__item_list_1a47858e1986a69a64d44c5e0da34b3a6e" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_edit</name></member>
+      <member refid="class_ui__item_list_1a32f2430c2f1441436fbb55306efe1ae0" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_end</name></member>
+      <member refid="class_ui__item_list_1abfe224ef47c69f30184e37bea1e38c74" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_pushButton_new</name></member>
+      <member refid="class_ui__item_list_1ab6eb8d52ca42dcd38b51efc6de8320f0" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>itemList_tableView</name></member>
+      <member refid="class_ui__item_list_1a115d3004c5437ceb3f07e2f68faadc93" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>labelFilterModel</name></member>
+      <member refid="class_ui__item_list_1aaba7bcf43a968ee485c151b770ba0646" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>labelFilterStatus</name></member>
+      <member refid="class_ui__item_list_1a68b350259c134a5e9fb152b107a1c441" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>labelFilterStorage</name></member>
+      <member refid="class_ui__item_list_1afbdd51d99defd8cc6e05f502c49b3e26" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>labelFilterType</name></member>
+      <member refid="class_ui__item_list_1a18e0c6e02d3ad80e22412b6c7eb16b78" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>labelFilterVendor</name></member>
+      <member refid="class_ui__item_list_1a414fee36b337dfd8a02b84ee20b6ecf2" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>mainLayout</name></member>
+      <member refid="class_ui__item_list_1a7a2206468f2baf5ccf939b5db27ef9dd" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__item_list_1a5716e4cdd6a59fca74158b434320b4b2" prot="public" virt="non-virtual"><scope>Ui::itemList</scope><name>setupUi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

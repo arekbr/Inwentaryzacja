@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja pliku src/types.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('types_8cpp.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja pliku types.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Implementacja klasy types do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.  
+<a href="#details">Więcej...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="types_8h_source.html">types.h</a>&quot;</code><br />
+<code>#include &lt;QInputDialog&gt;</code><br />
+<code>#include &lt;QMessageBox&gt;</code><br />
+<code>#include &lt;QSqlError&gt;</code><br />
+<code>#include &lt;QSqlQuery&gt;</code><br />
+<code>#include &lt;QSqlQueryModel&gt;</code><br />
+<code>#include &lt;QUuid&gt;</code><br />
+<code>#include &quot;<a class="el" href="mainwindow_8h_source.html">mainwindow.h</a>&quot;</code><br />
+<code>#include &quot;ui_types.h&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Wykres zależności załączania dla types.cpp:</div>
+<div class="dyncontent">
+<div class="center"><img src="types_8cpp__incl.png" border="0" usemap="#asrc_2types_8cpp" alt=""/></div>
+<map name="asrc_2types_8cpp" id="asrc_2types_8cpp">
+<area shape="rect" title="Implementacja klasy types do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej." alt="" coords="470,5,578,32"/>
+<area shape="rect" href="types_8h.html" title="Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej." alt="" coords="7,80,78,107"/>
+<area shape="rect" title=" " alt="" coords="103,80,209,107"/>
+<area shape="rect" title=" " alt="" coords="233,80,348,107"/>
+<area shape="rect" title=" " alt="" coords="372,80,455,107"/>
+<area shape="rect" title=" " alt="" coords="479,80,569,107"/>
+<area shape="rect" title=" " alt="" coords="593,80,724,107"/>
+<area shape="rect" title=" " alt="" coords="749,80,811,107"/>
+<area shape="rect" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów." alt="" coords="835,80,951,107"/>
+<area shape="rect" href="ui__types_8h_source.html" title=" " alt="" coords="1770,80,1859,107"/>
+<area shape="rect" title=" " alt="" coords="5,155,80,181"/>
+<area shape="rect" title=" " alt="" coords="352,155,467,181"/>
+<area shape="rect" title=" " alt="" coords="685,155,787,181"/>
+<area shape="rect" title=" " alt="" coords="811,155,866,181"/>
+<area shape="rect" title=" " alt="" coords="890,155,1006,181"/>
+<area shape="rect" title=" " alt="" coords="1030,155,1157,181"/>
+<area shape="rect" title=" " alt="" coords="1181,155,1382,181"/>
+<area shape="rect" title=" " alt="" coords="1406,155,1583,181"/>
+<area shape="rect" title=" " alt="" coords="1607,155,1822,181"/>
+<area shape="rect" title=" " alt="" coords="1847,155,1985,181"/>
+<area shape="rect" title=" " alt="" coords="2010,155,2166,181"/>
+<area shape="rect" title=" " alt="" coords="2190,155,2349,181"/>
+<area shape="rect" title=" " alt="" coords="2373,155,2552,181"/>
+<area shape="rect" title=" " alt="" coords="2577,155,2727,181"/>
+</map>
+</div>
+</div><a name="details" id="details"></a><h2 class="groupheader">Opis szczegółowy</h2>
+<div class="textblock"><p >Implementacja klasy types do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej. </p>
+<dl class="section version"><dt>Wersja</dt><dd>1.2.2 </dd></dl>
+<dl class="section date"><dt>Data</dt><dd>2025-05-03 </dd></dl>
+<dl class="section author"><dt>Autor</dt><dd>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</dd></dl>
+<h1><a class="anchor" id="Overview"></a>
+Overview</h1>
+<p >Plik zawiera implementację metod klasy types, odpowiedzialnej za zarządzanie typami eksponatów (np. Komputer, Monitor, Drukarka) w bazie danych (tabela <code>types</code>). Klasa umożliwia dodawanie, edytowanie i usuwanie typów, współpracując z interfejsem użytkownika (QListView, QLineEdit) oraz klasą <a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a> w celu odświeżania combo boxów po zapisaniu zmian.</p>
+<h1><a class="anchor" id="Structure"></a>
+Structure</h1>
+<p >Kod jest podzielony na następujące sekcje:</p><ol type="1">
+<li><b>Konstruktor</b> – inicjalizuje interfejs, połączenie z bazą danych, sloty.</li>
+<li><b>Destruktor</b> – zwalnia zasoby.</li>
+<li><b>Metody publiczne</b> – ustawianie <a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a>.</li>
+<li><b>Sloty prywatne</b> – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).</li>
+<li><b>Metody prywatne</b> – odświeżanie listy typów.</li>
+</ol>
+<h1><a class="anchor" id="Dependencies"></a>
+Dependencies</h1>
+<ul>
+<li><b>Qt Framework</b>: Używa klas QMessageBox, QSqlQuery, QSqlQueryModel, QInputDialog, QUuid.</li>
+<li><b>Nagłówki aplikacji</b>: <a class="el" href="types_8h.html" title="Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.">types.h</a>, <a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a>.</li>
+<li><b>Interfejs użytkownika</b>: <a class="el" href="ui__types_8h_source.html">ui_types.h</a>.</li>
+</ul>
+<h1><a class="anchor" id="Notes"></a>
+Notes</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</li>
+<li>Klasa jest częścią systemu słownikowego, integruje się z <a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a>.</li>
+<li>Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a>). </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="types_8cpp.html">types.cpp</a></li>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

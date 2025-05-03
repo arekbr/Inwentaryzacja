@@ -1,0 +1,62 @@
+\hypertarget{_item_filter_proxy_model_8h}{}\doxysection{Dokumentacja pliku include/\+Item\+Filter\+Proxy\+Model.h}
+\label{_item_filter_proxy_model_8h}\index{include/ItemFilterProxyModel.h@{include/ItemFilterProxyModel.h}}
+
+
+Deklaracja klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}} do filtrowania listy eksponatów.  
+
+
+{\ttfamily \#include $<$QSort\+Filter\+Proxy\+Model$>$}\newline
+Wykres zależności załączania dla Item\+Filter\+Proxy\+Model.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=249pt]{_item_filter_proxy_model_8h__incl}
+\end{center}
+\end{figure}
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_item_filter_proxy_model_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Komponenty}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}
+\begin{DoxyCompactList}\small\item\em Model proxy do filtrowania listy eksponatów. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Deklaracja klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}} do filtrowania listy eksponatów. 
+
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03
+\end{DoxyDate}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik \mbox{\hyperlink{_item_filter_proxy_model_8h}{Item\+Filter\+Proxy\+Model.\+h}} definiuje klasę \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}, która dziedziczy po QSort\+Filter\+Proxy\+Model i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia ustawienie filtrów dla różnych atrybutów eksponatu (typ, producent, model, status, miejsce przechowywania) i kontroluje, które wiersze modelu źródłowego (np. QSql\+Relational\+Table\+Model) są wyświetlane w widoku.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Plik nagłówkowy zawiera\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklarację klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}}} – dziedziczy po QSort\+Filter\+Proxy\+Model.
+\item {\bfseries{Metody publiczne}} – konstruktor i metody do ustawiania filtrów.
+\item {\bfseries{Metoda chroniona}} – filter\+Accepts\+Row, realizująca logikę filtrowania.
+\item {\bfseries{Zmienne prywatne}} – przechowują wartości filtrów dla każdego atrybutu.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klasy QSort\+Filter\+Proxy\+Model do filtrowania i sortowania danych.
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Klasa jest zaprojektowana do współpracy z modelem źródłowym, takim jak QSql\+Relational\+Table\+Model, w kontekście aplikacji inwentaryzacyjnej.
+\item Filtry są dynamiczne i mogą być ustawiane niezależnie dla każdego atrybutu. 
+\end{DoxyItemize}

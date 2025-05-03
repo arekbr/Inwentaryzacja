@@ -4,6 +4,34 @@ Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym p
 
 Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), a projekt stosuje [Wersjonowanie Semantyczne](https://semver.org/lang/pl/).
 
+## [1.2.2] - 2025-05-03
+
+### Dodano
+- **Predefiniowane skórki (motywy wizualne)**:
+  - Wprowadzenie obsługi trzech wbudowanych skórek: *Amiga*, *ZX Spectrum* i *Standard*.
+  - Motywy zmieniają styl QSS, zestaw czcionek (np. Topaz, ZX Spectrum) oraz ikony.
+  - Wybór motywu dynamicznie stosowany w GUI (obsługa stylów, ikon, fontów).
+- **Rozbudowana dokumentacja techniczna**:
+  - Nowe pliki `.md` dokumentujące poszczególne komponenty aplikacji (GUI i logikę).
+  - Opis interfejsów i zależności między plikami źródłowymi.
+  - Dołączono przykłady użycia i scenariusze działania.
+
+### Zmieniono
+- **Komentarze w kodzie źródłowym**:
+  - Dodano komentarze do większości klas, metod i sekcji funkcjonalnych.
+  - Ułatwiono zrozumienie architektury projektu przez nowych programistów.
+- **Struktura pliku `.pro`**:
+  - Uporządkowano `DISTFILES`, eliminując duplikaty i wprowadzając logiczne grupowanie.
+  - Dodano komentarze z podziałem na sekcje (obrazy, style, biblioteki, dokumentacja itd.).
+  - Przygotowano plik pod automatyczne narzędzia pakujące.
+
+### Poprawiono
+- **Dokumentacja generowana przez Doxygen**:
+  - Skonfigurowano `Doxyfile` do generowania dokumentacji HTML i LaTeX.
+  - Zintegrowano z oznaczonymi w kodzie komentarzami Doxygen (`/** ... */`).
+  - Wygenerowana dokumentacja obejmuje klasy, funkcje, struktury danych i zależności.
+
+
 ## [1.2.0] - 2025-04-15
 
 ### Dodano

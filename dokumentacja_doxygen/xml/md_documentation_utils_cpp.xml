@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_utils_cpp" kind="page">
+    <compoundname>md_documentation_utils_cpp</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;utils.cpp&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md156">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="utils_8cpp" kindref="compound">utils.cpp</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md157">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="utils_8cpp" kindref="compound">utils.cpp</ref></computeroutput> zawiera implementację funkcji <computeroutput>setupDatabase</computeroutput>, która konfiguruje i otwiera połączenie z bazą danych SQLite lub MySQL w aplikacji inwentaryzacyjnej. Funkcja rejestruje połączenie pod nazwą &quot;default_connection&quot;, używaną przez inne komponenty aplikacji (np. <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>, <computeroutput>types</computeroutput>, <computeroutput>status</computeroutput>). Dla SQLite automatycznie tworzy schemat bazy danych (tabele i dane początkowe), co zapewnia gotowość bazy do pracy po pierwszym uruchomieniu.</para>
+</sect1>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md158">
+<title>Struktura kodu</title>
+<para>Kod jest podzielony na następujące sekcje:</para>
+<para><orderedlist>
+<listitem><para><bold>Sekcja implementacji funkcji <computeroutput>setupDatabase</computeroutput></bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Konfiguruje połączenie, otwiera bazę i obsługuje błędy.</para>
+</listitem><listitem><para>Dla SQLite tworzy schemat bazy i przykładowe dane.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja tworzenia schematu SQLite</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Definiuje tabele: <computeroutput>eksponaty</computeroutput>, <computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>models</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput>, <computeroutput>photos</computeroutput>.</para>
+</listitem><listitem><para>Wypełnia tabele słownikowe przykładowymi danymi (np. &quot;Komputer&quot;, &quot;Atari&quot;, &quot;Sprawny&quot;).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md159">
+<title>Opis działania</title>
+<para><orderedlist>
+<listitem><para><bold>Inicjalizacja połączenia</bold>:<itemizedlist>
+<listitem><para>Usuwa istniejące połączenie &quot;default_connection&quot; (<computeroutput>QSqlDatabase::removeDatabase</computeroutput>).</para>
+</listitem><listitem><para>Tworzy nowe połączenie z driverem <computeroutput>QSQLITE</computeroutput> (dla <computeroutput>dbType=&quot;SQLite3&quot;</computeroutput>) lub <computeroutput>QMYSQL</computeroutput> (dla <computeroutput>dbType=&quot;MySQL&quot;</computeroutput>).</para>
+</listitem><listitem><para>Konfiguruje parametry:<itemizedlist>
+<listitem><para><bold>MySQL</bold>: Ustawia <computeroutput>host</computeroutput>, <computeroutput>dbSource</computeroutput> (nazwa bazy), <computeroutput>user</computeroutput>, <computeroutput>password</computeroutput>, <computeroutput>port</computeroutput>.</para>
+</listitem><listitem><para><bold>SQLite</bold>: Ustawia <computeroutput>dbSource</computeroutput> jako ścieżkę do pliku bazy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>Próbuje otworzyć połączenie, wyświetlając <computeroutput>QMessageBox</computeroutput> z błędem w przypadku niepowodzenia.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Tworzenie schematu dla SQLite</bold>:<itemizedlist>
+<listitem><para>Sprawdza, czy wszystkie wymagane tabele (<computeroutput>eksponaty</computeroutput>, <computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>models</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput>, <computeroutput>photos</computeroutput>) istnieją.</para>
+</listitem><listitem><para>Jeśli brakuje którejkolwiek tabeli, wykonuje zapytania SQL:<itemizedlist>
+<listitem><para><bold>Tabela <computeroutput>eksponaty</computeroutput></bold>: Przechowuje dane eksponatów (np. nazwa, typ, producent, status).</para>
+</listitem><listitem><para><bold>Tabele słownikowe</bold> (<computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>models</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput>): Przechowują unikalne nazwy z UUID jako kluczem.</para>
+</listitem><listitem><para><bold>Tabela <computeroutput>photos</computeroutput></bold>: Przechowuje zdjęcia powiązane z eksponatami (BLOB).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>Wypełnia tabele słownikowe przykładowymi danymi:<itemizedlist>
+<listitem><para>Typy: &quot;Komputer&quot;, &quot;Monitor&quot;, &quot;Kabel&quot;.</para>
+</listitem><listitem><para>Producenci: &quot;Atari&quot;, &quot;Commodore&quot;, &quot;Sinclair&quot;.</para>
+</listitem><listitem><para>Modele: &quot;Atari 800XL&quot;, &quot;Amiga 500&quot;, &quot;ZX Spectrum&quot;.</para>
+</listitem><listitem><para>Statusy: &quot;Sprawny&quot;, &quot;Uszkodzony&quot;, &quot;W naprawie&quot;.</para>
+</listitem><listitem><para>Miejsce przechowywania: &quot;Magazyn 1&quot;, &quot;Półka B3&quot;.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>Używa <computeroutput>QUuid</computeroutput> do generowania unikalnych identyfikatorów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zwracana wartość</bold>:<itemizedlist>
+<listitem><para>Zwraca <computeroutput>true</computeroutput> po pomyślnym nawiązaniu połączenia i (dla SQLite) utworzeniu schematu.</para>
+</listitem><listitem><para>Zwraca <computeroutput>false</computeroutput> w przypadku błędu połączenia.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md160">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QMessageBox</computeroutput>: Wyświetlanie błędów połączenia.</para>
+</listitem><listitem><para><computeroutput>QSqlDatabase</computeroutput>, <computeroutput>QSqlError</computeroutput>, <computeroutput>QSqlQuery</computeroutput>: Obsługa połączenia i zapytań SQL.</para>
+</listitem><listitem><para><computeroutput>QUuid</computeroutput>: Generowanie unikalnych identyfikatorów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para>Brak zależności od innych nagłówków aplikacji (tylko Qt).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_utils_cpp_1autotoc_md161">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Funkcja <computeroutput>setupDatabase</computeroutput> jest centralnym elementem konfiguracji bazy danych, używanym przez inne komponenty aplikacji.</para>
+</listitem><listitem><para>Dla SQLite automatyczne tworzenie schematu i danych początkowych zapewnia gotowość bazy, ale brak podobnego mechanizmu dla MySQL (zakłada, że schemat już istnieje).</para>
+</listitem><listitem><para>Schemat bazy używa UUID jako kluczy głównych, co zapewnia unikalność, ale operacje CRUD w innych klasach (np. <computeroutput>types</computeroutput>, <computeroutput>status</computeroutput>) opierają się na nazwach, co może powodować problemy przy duplikatach.</para>
+</listitem><listitem><para>Połączenie &quot;default_connection&quot; jest współdzielone, co wymaga ostrożnego zarządzania w przypadku wielokrotnego wywoływania funkcji.</para>
+</listitem><listitem><para>Przykładowe dane są zorientowane na retro sprzęt komputerowy, co odzwierciedla kontekst aplikacji. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/utils_cpp.md"/>
+  </compounddef>
+</doxygen>

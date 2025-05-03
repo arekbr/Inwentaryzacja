@@ -1,0 +1,82 @@
+.TH "include/models.h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/models.h \- Deklaracja klasy models do zarządzania modelami eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <QDialog>\fP
+.br
+\fC#include <QSqlDatabase>\fP
+.br
+
+.SS "Komponenty"
+
+.in +1c
+.ti -1c
+.RI "class \fBmodels\fP"
+.br
+.RI "Okno dialogowe do zarządzania modelami eksponatów\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Deklaracja klasy models do zarządzania modelami eksponatów\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik zawiera deklarację klasy models, która reprezentuje okno dialogowe do zarządzania modelami eksponatów w aplikacji inwentaryzacyjnej\&. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli 'models' w bazie danych, a także odświeżanie listy modeli w głównym oknie aplikacji\&. Obsługuje identyfikator producenta (vendorId) jako QString\&.
+.SH "Structure"
+.PP
+Plik nagłówkowy zawiera:
+.IP "1." 4
+\fBDeklarację klasy models\fP – dziedziczy po QDialog\&.
+.IP "2." 4
+\fBMetody publiczne\fP – konstruktor, destruktor, metody ustawiające \fBMainWindow\fP i vendorId\&.
+.IP "3." 4
+\fBSloty prywatne\fP – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie)\&.
+.IP "4." 4
+\fBMetody prywatne\fP – odświeżanie listy modeli\&.
+.IP "5." 4
+\fBZmienne prywatne\fP – przechowują interfejs, połączenie z bazą danych, \fBMainWindow\fP i vendorId\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas QDialog, QSqlDatabase\&.
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP: \fBmainwindow\&.h\fP (deklaracja \fBMainWindow\fP)\&.
+.IP "\(bu" 2
+\fBNamespace Ui\fP: Zawiera definicję interfejsu użytkownika (\fBui_models\&.h\fP)\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Klasa jest częścią systemu słownikowego, współpracuje z \fBMainWindow\fP do aktualizacji combo boxów\&.
+.IP "\(bu" 2
+Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w \fBDatabaseConfigDialog\fP)\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_ui__storage_8h_source" xml:lang="pl">
+<title>ui_storage.h</title>
+<indexterm><primary>build/ui_storage.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">1 <emphasis role="comment">/********************************************************************************</emphasis>
+2 <emphasis role="comment">**&#32;Form&#32;generated&#32;from&#32;reading&#32;UI&#32;file&#32;&apos;storage.ui&apos;</emphasis>
+3 <emphasis role="comment">**</emphasis>
+4 <emphasis role="comment">**&#32;Created&#32;by:&#32;Qt&#32;User&#32;Interface&#32;Compiler&#32;version&#32;6.8.2</emphasis>
+5 <emphasis role="comment">**</emphasis>
+6 <emphasis role="comment">**&#32;WARNING!&#32;All&#32;changes&#32;made&#32;in&#32;this&#32;file&#32;will&#32;be&#32;lost&#32;when&#32;recompiling&#32;UI&#32;file!</emphasis>
+7 <emphasis role="comment">********************************************************************************/</emphasis>
+8 
+9 <emphasis role="preprocessor">#ifndef&#32;UI_STORAGE_H</emphasis>
+10 <emphasis role="preprocessor">#define&#32;UI_STORAGE_H</emphasis>
+11 
+12 <emphasis role="preprocessor">#include&#32;&lt;QtCore/QVariant&gt;</emphasis>
+13 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QAbstractButton&gt;</emphasis>
+14 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QApplication&gt;</emphasis>
+15 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QDialogButtonBox&gt;</emphasis>
+16 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QLabel&gt;</emphasis>
+17 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QLineEdit&gt;</emphasis>
+18 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QListView&gt;</emphasis>
+19 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QPushButton&gt;</emphasis>
+20 <emphasis role="preprocessor">#include&#32;&lt;QtWidgets/QWidget&gt;</emphasis>
+21 
+22 QT_BEGIN_NAMESPACE
+23 
+24 <emphasis role="keyword">class&#32;</emphasis><link linkend="_class_ui__storage">Ui_storage</link>
+25 {
+26 <emphasis role="keyword">public</emphasis>:
+27 &#32;&#32;&#32;&#32;QLabel&#32;*label;
+28 &#32;&#32;&#32;&#32;QLineEdit&#32;*lineEdit;
+29 &#32;&#32;&#32;&#32;QPushButton&#32;*pushButton_add;
+30 &#32;&#32;&#32;&#32;QPushButton&#32;*pushButton_edit;
+31 &#32;&#32;&#32;&#32;QPushButton&#32;*pushButton_delete;
+32 &#32;&#32;&#32;&#32;QListView&#32;*listView;
+33 &#32;&#32;&#32;&#32;QDialogButtonBox&#32;*buttonBox;
+34 
+35 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;setupUi(QWidget&#32;*<link linkend="_classstorage">storage</link>)
+36 &#32;&#32;&#32;&#32;{
+37 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="keywordflow">if</emphasis>&#32;(<link linkend="_classstorage">storage</link>-&gt;objectName().isEmpty())
+38 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_classstorage">storage</link>-&gt;setObjectName(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>);
+39 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_classstorage">storage</link>-&gt;resize(661,&#32;412);
+40 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;label&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QLabel(<link linkend="_classstorage">storage</link>);
+41 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;label-&gt;setObjectName(<emphasis role="stringliteral">&quot;label&quot;</emphasis>);
+42 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;label-&gt;setGeometry(QRect(20,&#32;20,&#32;171,&#32;18));
+43 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;lineEdit&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QLineEdit(<link linkend="_classstorage">storage</link>);
+44 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;lineEdit-&gt;setObjectName(<emphasis role="stringliteral">&quot;lineEdit&quot;</emphasis>);
+45 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;lineEdit-&gt;setGeometry(QRect(10,&#32;50,&#32;113,&#32;26));
+46 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_add&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QPushButton(<link linkend="_classstorage">storage</link>);
+47 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_add-&gt;setObjectName(<emphasis role="stringliteral">&quot;pushButton_add&quot;</emphasis>);
+48 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_add-&gt;setGeometry(QRect(30,&#32;170,&#32;100,&#32;32));
+49 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_add-&gt;setStyleSheet(QString::fromUtf8(<emphasis role="stringliteral">&quot;QPushButton&#32;{\n&quot;</emphasis>
+50 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+51 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+52 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+53 <emphasis role="stringliteral">&quot;QPushButton&#32;QAbstractItemView&#32;{\n&quot;</emphasis>
+54 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+55 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+56 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+57 <emphasis role="stringliteral">&quot;&quot;</emphasis>));
+58 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_edit&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QPushButton(<link linkend="_classstorage">storage</link>);
+59 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_edit-&gt;setObjectName(<emphasis role="stringliteral">&quot;pushButton_edit&quot;</emphasis>);
+60 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_edit-&gt;setGeometry(QRect(30,&#32;210,&#32;100,&#32;32));
+61 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_edit-&gt;setStyleSheet(QString::fromUtf8(<emphasis role="stringliteral">&quot;QPushButton&#32;{\n&quot;</emphasis>
+62 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+63 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+64 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+65 <emphasis role="stringliteral">&quot;QPushButton&#32;QAbstractItemView&#32;{\n&quot;</emphasis>
+66 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+67 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+68 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+69 <emphasis role="stringliteral">&quot;&quot;</emphasis>));
+70 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_delete&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QPushButton(<link linkend="_classstorage">storage</link>);
+71 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_delete-&gt;setObjectName(<emphasis role="stringliteral">&quot;pushButton_delete&quot;</emphasis>);
+72 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_delete-&gt;setGeometry(QRect(30,&#32;250,&#32;100,&#32;32));
+73 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_delete-&gt;setStyleSheet(QString::fromUtf8(<emphasis role="stringliteral">&quot;QPushButton&#32;{\n&quot;</emphasis>
+74 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+75 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+76 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+77 <emphasis role="stringliteral">&quot;QPushButton&#32;QAbstractItemView&#32;{\n&quot;</emphasis>
+78 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+79 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+80 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+81 <emphasis role="stringliteral">&quot;&quot;</emphasis>));
+82 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;listView&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QListView(<link linkend="_classstorage">storage</link>);
+83 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;listView-&gt;setObjectName(<emphasis role="stringliteral">&quot;listView&quot;</emphasis>);
+84 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;listView-&gt;setGeometry(QRect(200,&#32;10,&#32;256,&#32;192));
+85 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;listView-&gt;setStyleSheet(QString::fromUtf8(<emphasis role="stringliteral">&quot;QListView&#32;{\n&quot;</emphasis>
+86 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+87 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+88 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+89 <emphasis role="stringliteral">&quot;QListView&#32;QAbstractItemView&#32;{\n&quot;</emphasis>
+90 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+91 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+92 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+93 <emphasis role="stringliteral">&quot;&quot;</emphasis>));
+94 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;buttonBox&#32;=&#32;<emphasis role="keyword">new</emphasis>&#32;QDialogButtonBox(<link linkend="_classstorage">storage</link>);
+95 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;buttonBox-&gt;setObjectName(<emphasis role="stringliteral">&quot;buttonBox&quot;</emphasis>);
+96 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;buttonBox-&gt;setGeometry(QRect(210,&#32;240,&#32;191,&#32;61));
+97 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;buttonBox-&gt;setStyleSheet(QString::fromUtf8(<emphasis role="stringliteral">&quot;QPushButton&#32;{\n&quot;</emphasis>
+98 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+99 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+100 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+101 <emphasis role="stringliteral">&quot;QPushButton&#32;QAbstractItemView&#32;{\n&quot;</emphasis>
+102 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;background-color:&#32;white;\n&quot;</emphasis>
+103 <emphasis role="stringliteral">&quot;&#32;&#32;&#32;&#32;color:&#32;black;\n&quot;</emphasis>
+104 <emphasis role="stringliteral">&quot;}\n&quot;</emphasis>
+105 <emphasis role="stringliteral">&quot;&quot;</emphasis>));
+106 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;buttonBox-&gt;setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+107 
+108 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;retranslateUi(<link linkend="_classstorage">storage</link>);
+109 
+110 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;QMetaObject::connectSlotsByName(<link linkend="_classstorage">storage</link>);
+111 &#32;&#32;&#32;&#32;}&#32;<emphasis role="comment">//&#32;setupUi</emphasis>
+112 
+113 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;retranslateUi(QWidget&#32;*<link linkend="_classstorage">storage</link>)
+114 &#32;&#32;&#32;&#32;{
+115 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_classstorage">storage</link>-&gt;setWindowTitle(QCoreApplication::translate(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>,&#32;<emphasis role="stringliteral">&quot;Zarz\304\205dzanie&#32;miejscami&#32;przechowywania&quot;</emphasis>,&#32;<emphasis role="keyword">nullptr</emphasis>));
+116 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;label-&gt;setText(QCoreApplication::translate(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>,&#32;<emphasis role="stringliteral">&quot;Miejsce&#32;przechowywania&quot;</emphasis>,&#32;<emphasis role="keyword">nullptr</emphasis>));
+117 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_add-&gt;setText(QCoreApplication::translate(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>,&#32;<emphasis role="stringliteral">&quot;Dodaj&quot;</emphasis>,&#32;<emphasis role="keyword">nullptr</emphasis>));
+118 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_edit-&gt;setText(QCoreApplication::translate(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>,&#32;<emphasis role="stringliteral">&quot;Edytuj&quot;</emphasis>,&#32;<emphasis role="keyword">nullptr</emphasis>));
+119 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;pushButton_delete-&gt;setText(QCoreApplication::translate(<emphasis role="stringliteral">&quot;storage&quot;</emphasis>,&#32;<emphasis role="stringliteral">&quot;Usu\305\204&quot;</emphasis>,&#32;<emphasis role="keyword">nullptr</emphasis>));
+120 &#32;&#32;&#32;&#32;}&#32;<emphasis role="comment">//&#32;retranslateUi</emphasis>
+121 
+122 };
+123 
+124 <emphasis role="keyword">namespace&#32;</emphasis>Ui&#32;{
+125 &#32;&#32;&#32;&#32;<emphasis role="keyword">class&#32;</emphasis><link linkend="_class_ui_1_1storage">storage</link>:&#32;<emphasis role="keyword">public</emphasis>&#32;<link linkend="_class_ui__storage">Ui_storage</link>&#32;{};
+126 }&#32;<emphasis role="comment">//&#32;namespace&#32;Ui</emphasis>
+127 
+128 QT_END_NAMESPACE
+129 
+130 <emphasis role="preprocessor">#endif&#32;</emphasis><emphasis role="comment">//&#32;UI_STORAGE_H</emphasis>
+</programlisting></section>

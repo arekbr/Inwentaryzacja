@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_full_screen_photo_viewer" xml:lang="pl">
+<title>Dokumentacja klasy FullScreenPhotoViewer</title>
+<indexterm><primary>FullScreenPhotoViewer</primary></indexterm>
+<para>
+
+<para>Okno pełnoekranowe do wyświetlania zdjęć. </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;fullscreenphotoviewer.h&gt;</computeroutput>
+</para>
+Diagram dziedziczenia dla FullScreenPhotoViewer<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_full_screen_photo_viewer__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Diagram współpracy dla FullScreenPhotoViewer:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_full_screen_photo_viewer__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_full_screen_photo_viewer_1ac0295a004ff560cd3704cca8694c83a8">FullScreenPhotoViewer</link> (const QPixmap &amp;pixmap, QWidget *parent=nullptr)</para>
+
+<para>Konstruktor klasy <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link>. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Metody chronione    </title>
+        <itemizedlist>
+            <listitem><para>void <link linkend="_class_full_screen_photo_viewer_1a792b6b8e610940c1c91bea6fd05f4f26">keyPressEvent</link> (QKeyEvent *event) override</para>
+
+<para>Obsługuje zdarzenia naciśnięcia klawiszy. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Okno pełnoekranowe do wyświetlania zdjęć. </para>
+
+
+<section xml:id="_class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+
+<para>Klasa <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link> dziedziczy po QMainWindow i tworzy bezramkowe, modalne okno pełnoekranowe do wyświetlania zdjęcia w obiekcie QPixmap. Wykorzystuje <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> do obsługi powiększania i przesuwania obrazu. Okno zamyka się po naciśnięciu klawisza Escape i automatycznie usuwa się po zamknięciu (WA_DeleteOnClose).</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Wyświetlanie zdjęcia w trybie pełnoekranowym.</para>
+</listitem><listitem>
+<para>Obsługa zamykania okna klawiszem Escape.</para>
+</listitem><listitem>
+<para>Zarządzanie sceną graficzną i widokiem <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link>. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section>
+<title>Dokumentacja konstruktora i destruktora</title>
+<anchor xml:id="_class_full_screen_photo_viewer_1ac0295a004ff560cd3704cca8694c83a8"/><section>
+    <title>FullScreenPhotoViewer()</title>
+<indexterm><primary>FullScreenPhotoViewer</primary><secondary>FullScreenPhotoViewer</secondary></indexterm>
+<indexterm><primary>FullScreenPhotoViewer</primary><secondary>FullScreenPhotoViewer</secondary></indexterm>
+<para><computeroutput>FullScreenPhotoViewer::FullScreenPhotoViewer (const QPixmap &amp; pixmap, QWidget * parent = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[inline]</computeroutput>, <computeroutput>[explicit]</computeroutput></computeroutput></para><para>
+
+<para>Konstruktor klasy <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link>. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>pixmap</entry><entry>
+<para>Obiekt QPixmap zawierający zdjęcie do wyświetlenia. </para>
+</entry>
+                            </row>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje bezramkowe okno pełnoekranowe z flagami FramelessWindowHint i WindowStaysOnTopHint. Ustawia modalność (ApplicationModal) i automatyczne usuwanie po zamknięciu (WA_DeleteOnClose). Tworzy scenę graficzną, dodaje do niej zdjęcie, konfiguruje <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> jako centralny widget i wyświetla okno w trybie pełnoekranowym. </para>
+</section>
+</section>
+</section>
+<section>
+<title>Dokumentacja funkcji składowych</title>
+<anchor xml:id="_class_full_screen_photo_viewer_1a792b6b8e610940c1c91bea6fd05f4f26"/><section>
+    <title>keyPressEvent()</title>
+<indexterm><primary>keyPressEvent</primary><secondary>FullScreenPhotoViewer</secondary></indexterm>
+<indexterm><primary>FullScreenPhotoViewer</primary><secondary>keyPressEvent</secondary></indexterm>
+<para><computeroutput>void FullScreenPhotoViewer::keyPressEvent (QKeyEvent * event)<computeroutput>[inline]</computeroutput>, <computeroutput>[override]</computeroutput>, <computeroutput>[protected]</computeroutput></computeroutput></para><para>
+
+<para>Obsługuje zdarzenia naciśnięcia klawiszy. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>event</entry><entry>
+<para>Wskaźnik na zdarzenie klawiatury.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zamyka okno po naciśnięciu klawisza Escape, wywołując metodę close(). Dla innych klawiszy przekazuje zdarzenie do metody bazowej QMainWindow::keyPressEvent. </para>
+</section>
+</section>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+include/<link linkend="_fullscreenphotoviewer_8h">fullscreenphotoviewer.h</link></section>
+</section>

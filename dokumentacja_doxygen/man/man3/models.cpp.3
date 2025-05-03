@@ -1,0 +1,90 @@
+.TH "src/models.cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/models.cpp \- Implementacja klasy models do zarządzania modelami eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'models\&.h'\fP
+.br
+\fC#include <QInputDialog>\fP
+.br
+\fC#include <QMessageBox>\fP
+.br
+\fC#include <QSqlError>\fP
+.br
+\fC#include <QSqlQuery>\fP
+.br
+\fC#include <QSqlQueryModel>\fP
+.br
+\fC#include <QUuid>\fP
+.br
+\fC#include 'mainwindow\&.h'\fP
+.br
+\fC#include 'ui_models\&.h'\fP
+.br
+
+.SH "Opis szczegółowy"
+.PP 
+Implementacja klasy models do zarządzania modelami eksponatów\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik zawiera implementację metod klasy models, odpowiedzialnej za zarządzanie modelami eksponatów w bazie danych\&. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli 'models', współpracując z interfejsem użytkownika (QListView, QLineEdit) oraz klasą \fBMainWindow\fP w celu odświeżania combo boxów\&. Obsługuje powiązanie modeli z producentami poprzez vendorId (QString)\&.
+.SH "Structure"
+.PP
+Kod jest podzielony na następujące sekcje:
+.IP "1." 4
+\fBKonstruktor\fP – inicjalizuje interfejs, połączenie z bazą danych, sloty\&.
+.IP "2." 4
+\fBDestruktor\fP – zwalnia zasoby\&.
+.IP "3." 4
+\fBMetody publiczne\fP – ustawianie \fBMainWindow\fP i vendorId\&.
+.IP "4." 4
+\fBSloty prywatne\fP – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie)\&.
+.IP "5." 4
+\fBMetody prywatne\fP – odświeżanie listy modeli\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas QMessageBox, QSqlQuery, QSqlQueryModel, QInputDialog, QUuid\&.
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP: \fBmodels\&.h\fP, \fBmainwindow\&.h\fP\&.
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP: \fBui_models\&.h\fP\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Klasa jest częścią systemu słownikowego, integruje się z \fBMainWindow\fP\&.
+.IP "\(bu" 2
+Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w \fBDatabaseConfigDialog\fP)\&.
+.IP "\(bu" 2
+Lista modeli w QListView nie filtruje po vendorId, co może być rozszerzone w przyszłości\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

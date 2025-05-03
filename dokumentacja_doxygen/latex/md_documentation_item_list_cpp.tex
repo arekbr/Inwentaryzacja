@@ -1,0 +1,110 @@
+\hypertarget{md_documentation_item_list_cpp_autotoc_md50}{}\doxysection{Metadane}\label{md_documentation_item_list_cpp_autotoc_md50}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{item_list_8cpp}{item\+List.\+cpp}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_item_list_cpp_autotoc_md51}{}\doxysection{Przegląd}\label{md_documentation_item_list_cpp_autotoc_md51}
+Plik {\ttfamily \mbox{\hyperlink{item_list_8cpp}{item\+List.\+cpp}}} zawiera implementację metod klasy {\ttfamily \mbox{\hyperlink{classitem_list}{item\+List}}}, która zarządza listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenie z bazą danych My\+SQL, filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz operacje CRUD (dodawanie, edycja, usuwanie, klonowanie rekordów). Skórka graficzna i czcionki są zarządzane przez klasę {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}.\hypertarget{md_documentation_item_list_cpp_autotoc_md52}{}\doxysection{Struktura kodu}\label{md_documentation_item_list_cpp_autotoc_md52}
+Kod jest podzielony na następujące sekcje\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Sekcja konstruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Inicjalizuje interfejs, model danych, model proxy, filtry i połączenia sygnałów-\/slotów.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja destruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Zwalnia zasoby, zatrzymuje timery.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja slotów}} ~\newline
+
+\begin{DoxyItemize}
+\item Obsługuje interakcje użytkownika\+: przyciski (dodaj, edytuj, usuń, klonuj, zakończ, o programie), zmiana zaznaczenia w tabeli, zapis rekordu, interakcje ze zdjęciami (podgląd, pełny ekran), zmiana filtrów.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja metod prywatnych}} ~\newline
+
+\begin{DoxyItemize}
+\item Zarządza schematem bazy danych ({\ttfamily verify\+Database\+Schema}, {\ttfamily create\+Database\+Schema}, {\ttfamily insert\+Sample\+Data}).
+\item Inicjalizuje i odświeża filtry ({\ttfamily init\+Filters}, {\ttfamily refresh\+Filters}, {\ttfamily update\+Filter\+Combo\+Boxes}).
+\item Obsługuje zdarzenia dla okna podglądu zdjęć ({\ttfamily event\+Filter}).
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_item_list_cpp_autotoc_md53}{}\doxysection{Opis działania}\label{md_documentation_item_list_cpp_autotoc_md53}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja}}\+:
+\begin{DoxyItemize}
+\item Konstruktor ustawia interfejs użytkownika ({\ttfamily ui-\/\texorpdfstring{$>$}{>}setup\+Ui}), łączy się z bazą My\+SQL, inicjalizuje model danych ({\ttfamily QSql\+Relational\+Table\+Model}) z relacjami do tabel {\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}.
+\item Konfiguruje model proxy ({\ttfamily \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}}), tabelę ({\ttfamily QTable\+View}) i combo boxy dla filtrów.
+\item Weryfikuje schemat bazy danych, tworząc go i wstawiając przykładowe dane, jeśli nie istnieje.
+\item Ustawia połączenia sygnałów-\/slotów dla przycisków, tabeli i filtrów.
+\end{DoxyItemize}
+\item {\bfseries{Filtrowanie}}\+:
+\begin{DoxyItemize}
+\item Metoda {\ttfamily on\+Filter\+Changed} aktualizuje filtry w modelu proxy na podstawie wybranych wartości w combo boxach.
+\item {\ttfamily update\+Filter\+Combo\+Boxes} odbudowuje listy combo boxów z uwzględnieniem kaskadowego filtrowania, pobierając unikalne wartości z bazy danych.
+\item {\ttfamily init\+Filters} i {\ttfamily refresh\+Filters} wypełniają i odświeżają combo boxy danymi z bazy.
+\end{DoxyItemize}
+\item {\bfseries{Operacje CRUD}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily on\+New\+Button\+Clicked}, {\ttfamily on\+Edit\+Button\+Clicked}, {\ttfamily on\+Clone\+Button\+Clicked}\+: Otwierają okno {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} w odpowiednim trybie (dodawanie, edycja, klonowanie).
+\item {\ttfamily on\+Delete\+Button\+Clicked}\+: Usuwa rekord po potwierdzeniu, wykonując zapytanie SQL i odświeżając model.
+\item {\ttfamily on\+Record\+Saved}\+: Odświeża listę po zapisaniu rekordu, zaznaczając zapisany rekord.
+\end{DoxyItemize}
+\item {\bfseries{Zdjęcia}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily on\+Table\+View\+Selection\+Changed}\+: Pobiera zdjęcia z tabeli {\ttfamily photos} dla wybranego eksponatu i wyświetla miniatury w {\ttfamily QGraphics\+View}.
+\item {\ttfamily on\+Photo\+Hovered}\+: Pokazuje powiększone zdjęcie w oknie podglądu, pozycjonowanym względem miniatury.
+\item {\ttfamily on\+Photo\+Unhovered} i {\ttfamily event\+Filter}\+: Zamykają okno podglądu, gdy kursor opuszcza miniaturę lub okno.
+\item {\ttfamily on\+Photo\+Clicked}\+: Otwiera zdjęcie w trybie pełnoekranowym za pomocą {\ttfamily \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}}.
+\end{DoxyItemize}
+\item {\bfseries{Baza danych}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily verify\+Database\+Schema}\+: Sprawdza istnienie wymaganych tabel.
+\item {\ttfamily create\+Database\+Schema}\+: Tworzy tabele dla eksponatów, typów, producentów, modeli, statusów, miejsc przechowywania i zdjęć.
+\item {\ttfamily insert\+Sample\+Data}\+: Wstawia przykładowe dane z unikalnymi UUID.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs}}\+:
+\begin{DoxyItemize}
+\item Tabela wyświetla dane z ukrytą kolumną UUID, nagłówkami dostosowanymi do lokalizacji i możliwością zaznaczania wierszy.
+\item Przyciski obsługują operacje CRUD, zakończenie aplikacji i okno \char`\"{}\+O programie\char`\"{}.
+\item Timer {\ttfamily m\+\_\+keep\+Alive\+Timer} wykonuje zapytania SELECT co 30 sekund, aby utrzymać połączenie z My\+SQL.
+\item Timer {\ttfamily m\+\_\+hover\+Check\+Timer} sprawdza pozycję kursora, zamykając okno podglądu, gdy kursor opuszcza odpowiedni obszar.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_item_list_cpp_autotoc_md54}{}\doxysection{Zależności}\label{md_documentation_item_list_cpp_autotoc_md54}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QApplication}, {\ttfamily QSql\+Database}, {\ttfamily QSql\+Query}, {\ttfamily QGraphics\+Scene}, {\ttfamily QMessage\+Box}, {\ttfamily QTimer}, {\ttfamily QCombo\+Box}, {\ttfamily QSql\+Relational\+Table\+Model}, itp.\+: Obsługa interfejsu, bazy danych, zdarzeń i grafiki.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{item_list_8h}{item\+List.\+h}}}\+: Definicja klasy.
+\item {\ttfamily \mbox{\hyperlink{_item_filter_proxy_model_8h}{Item\+Filter\+Proxy\+Model.\+h}}}\+: Model proxy do filtrowania.
+\item {\ttfamily \mbox{\hyperlink{fullscreenphotoviewer_8h}{fullscreenphotoviewer.\+h}}}\+: Pełnoekranowy podgląd zdjęć.
+\item {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}}\+: Okno edycji/dodawania rekordów.
+\item {\ttfamily \mbox{\hyperlink{photoitem_8h}{photoitem.\+h}}}\+: Klasa dla miniatur zdjęć.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{ui__item_list_8h_source}{ui\+\_\+item\+List.\+h}}}\+: Plik generowany przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_item_list_cpp_autotoc_md55}{}\doxysection{Uwagi}\label{md_documentation_item_list_cpp_autotoc_md55}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Implementacja zakłada użycie My\+SQL, ale aplikacja wspiera także SQLite (konfigurowane w {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}).
+\item Filtrowanie kaskadowe wymaga relacyjnej struktury bazy danych z poprawnymi kluczami obcymi.
+\item Zdjęcia są przechowywane jako {\ttfamily LONGBLOB} w tabeli {\ttfamily photos}, co może wpłynąć na wydajność przy dużej liczbie rekordów.
+\item Timer {\ttfamily m\+\_\+keep\+Alive\+Timer} zapobiega timeoutom połączenia My\+SQL, ale zwiększa obciążenie bazy danych.
+\item Okno podglądu zdjęć jest bezramkowe i przezroczyste, co zapewnia estetyczny wygląd, ale wymaga ostrożnego zarządzania zdarzeniami. 
+\end{DoxyItemize}

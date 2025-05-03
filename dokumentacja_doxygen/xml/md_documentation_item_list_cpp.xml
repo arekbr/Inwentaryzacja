@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_item_list_cpp" kind="page">
+    <compoundname>md_documentation_itemList_cpp</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;itemList.cpp&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md50">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="item_list_8cpp" kindref="compound">itemList.cpp</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md51">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="item_list_8cpp" kindref="compound">itemList.cpp</ref></computeroutput> zawiera implementację metod klasy <computeroutput><ref refid="classitem_list" kindref="compound">itemList</ref></computeroutput>, która zarządza listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenie z bazą danych MySQL, filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz operacje CRUD (dodawanie, edycja, usuwanie, klonowanie rekordów). Skórka graficzna i czcionki są zarządzane przez klasę <computeroutput><ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref></computeroutput>.</para>
+</sect1>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md52">
+<title>Struktura kodu</title>
+<para>Kod jest podzielony na następujące sekcje:</para>
+<para><orderedlist>
+<listitem><para><bold>Sekcja konstruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Inicjalizuje interfejs, model danych, model proxy, filtry i połączenia sygnałów-slotów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja destruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Zwalnia zasoby, zatrzymuje timery.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja slotów</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Obsługuje interakcje użytkownika: przyciski (dodaj, edytuj, usuń, klonuj, zakończ, o programie), zmiana zaznaczenia w tabeli, zapis rekordu, interakcje ze zdjęciami (podgląd, pełny ekran), zmiana filtrów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja metod prywatnych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Zarządza schematem bazy danych (<computeroutput>verifyDatabaseSchema</computeroutput>, <computeroutput>createDatabaseSchema</computeroutput>, <computeroutput>insertSampleData</computeroutput>).</para>
+</listitem><listitem><para>Inicjalizuje i odświeża filtry (<computeroutput>initFilters</computeroutput>, <computeroutput>refreshFilters</computeroutput>, <computeroutput>updateFilterComboBoxes</computeroutput>).</para>
+</listitem><listitem><para>Obsługuje zdarzenia dla okna podglądu zdjęć (<computeroutput>eventFilter</computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md53">
+<title>Opis działania</title>
+<para><orderedlist>
+<listitem><para><bold>Inicjalizacja</bold>:<itemizedlist>
+<listitem><para>Konstruktor ustawia interfejs użytkownika (<computeroutput>ui-&gt;setupUi</computeroutput>), łączy się z bazą MySQL, inicjalizuje model danych (<computeroutput>QSqlRelationalTableModel</computeroutput>) z relacjami do tabel <computeroutput>types</computeroutput>, <computeroutput>vendors</computeroutput>, <computeroutput>models</computeroutput>, <computeroutput>statuses</computeroutput>, <computeroutput>storage_places</computeroutput>.</para>
+</listitem><listitem><para>Konfiguruje model proxy (<computeroutput><ref refid="class_item_filter_proxy_model" kindref="compound">ItemFilterProxyModel</ref></computeroutput>), tabelę (<computeroutput>QTableView</computeroutput>) i combo boxy dla filtrów.</para>
+</listitem><listitem><para>Weryfikuje schemat bazy danych, tworząc go i wstawiając przykładowe dane, jeśli nie istnieje.</para>
+</listitem><listitem><para>Ustawia połączenia sygnałów-slotów dla przycisków, tabeli i filtrów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Filtrowanie</bold>:<itemizedlist>
+<listitem><para>Metoda <computeroutput>onFilterChanged</computeroutput> aktualizuje filtry w modelu proxy na podstawie wybranych wartości w combo boxach.</para>
+</listitem><listitem><para><computeroutput>updateFilterComboBoxes</computeroutput> odbudowuje listy combo boxów z uwzględnieniem kaskadowego filtrowania, pobierając unikalne wartości z bazy danych.</para>
+</listitem><listitem><para><computeroutput>initFilters</computeroutput> i <computeroutput>refreshFilters</computeroutput> wypełniają i odświeżają combo boxy danymi z bazy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Operacje CRUD</bold>:<itemizedlist>
+<listitem><para><computeroutput>onNewButtonClicked</computeroutput>, <computeroutput>onEditButtonClicked</computeroutput>, <computeroutput>onCloneButtonClicked</computeroutput>: Otwierają okno <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> w odpowiednim trybie (dodawanie, edycja, klonowanie).</para>
+</listitem><listitem><para><computeroutput>onDeleteButtonClicked</computeroutput>: Usuwa rekord po potwierdzeniu, wykonując zapytanie SQL i odświeżając model.</para>
+</listitem><listitem><para><computeroutput>onRecordSaved</computeroutput>: Odświeża listę po zapisaniu rekordu, zaznaczając zapisany rekord.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zdjęcia</bold>:<itemizedlist>
+<listitem><para><computeroutput>onTableViewSelectionChanged</computeroutput>: Pobiera zdjęcia z tabeli <computeroutput>photos</computeroutput> dla wybranego eksponatu i wyświetla miniatury w <computeroutput>QGraphicsView</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>onPhotoHovered</computeroutput>: Pokazuje powiększone zdjęcie w oknie podglądu, pozycjonowanym względem miniatury.</para>
+</listitem><listitem><para><computeroutput>onPhotoUnhovered</computeroutput> i <computeroutput>eventFilter</computeroutput>: Zamykają okno podglądu, gdy kursor opuszcza miniaturę lub okno.</para>
+</listitem><listitem><para><computeroutput>onPhotoClicked</computeroutput>: Otwiera zdjęcie w trybie pełnoekranowym za pomocą <computeroutput><ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref></computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Baza danych</bold>:<itemizedlist>
+<listitem><para><computeroutput>verifyDatabaseSchema</computeroutput>: Sprawdza istnienie wymaganych tabel.</para>
+</listitem><listitem><para><computeroutput>createDatabaseSchema</computeroutput>: Tworzy tabele dla eksponatów, typów, producentów, modeli, statusów, miejsc przechowywania i zdjęć.</para>
+</listitem><listitem><para><computeroutput>insertSampleData</computeroutput>: Wstawia przykładowe dane z unikalnymi UUID.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs</bold>:<itemizedlist>
+<listitem><para>Tabela wyświetla dane z ukrytą kolumną UUID, nagłówkami dostosowanymi do lokalizacji i możliwością zaznaczania wierszy.</para>
+</listitem><listitem><para>Przyciski obsługują operacje CRUD, zakończenie aplikacji i okno &quot;O programie&quot;.</para>
+</listitem><listitem><para>Timer <computeroutput>m_keepAliveTimer</computeroutput> wykonuje zapytania SELECT co 30 sekund, aby utrzymać połączenie z MySQL.</para>
+</listitem><listitem><para>Timer <computeroutput>m_hoverCheckTimer</computeroutput> sprawdza pozycję kursora, zamykając okno podglądu, gdy kursor opuszcza odpowiedni obszar.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md54">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QApplication</computeroutput>, <computeroutput>QSqlDatabase</computeroutput>, <computeroutput>QSqlQuery</computeroutput>, <computeroutput>QGraphicsScene</computeroutput>, <computeroutput>QMessageBox</computeroutput>, <computeroutput>QTimer</computeroutput>, <computeroutput>QComboBox</computeroutput>, <computeroutput>QSqlRelationalTableModel</computeroutput>, itp.: Obsługa interfejsu, bazy danych, zdarzeń i grafiki.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="item_list_8h" kindref="compound">itemList.h</ref></computeroutput>: Definicja klasy.</para>
+</listitem><listitem><para><computeroutput><ref refid="_item_filter_proxy_model_8h" kindref="compound">ItemFilterProxyModel.h</ref></computeroutput>: Model proxy do filtrowania.</para>
+</listitem><listitem><para><computeroutput><ref refid="fullscreenphotoviewer_8h" kindref="compound">fullscreenphotoviewer.h</ref></computeroutput>: Pełnoekranowy podgląd zdjęć.</para>
+</listitem><listitem><para><computeroutput><ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></computeroutput>: Okno edycji/dodawania rekordów.</para>
+</listitem><listitem><para><computeroutput><ref refid="photoitem_8h" kindref="compound">photoitem.h</ref></computeroutput>: Klasa dla miniatur zdjęć.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui__item_list_8h_source" kindref="compound">ui_itemList.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_item_list_cpp_1autotoc_md55">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <computeroutput><ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref></computeroutput>).</para>
+</listitem><listitem><para>Filtrowanie kaskadowe wymaga relacyjnej struktury bazy danych z poprawnymi kluczami obcymi.</para>
+</listitem><listitem><para>Zdjęcia są przechowywane jako <computeroutput>LONGBLOB</computeroutput> w tabeli <computeroutput>photos</computeroutput>, co może wpłynąć na wydajność przy dużej liczbie rekordów.</para>
+</listitem><listitem><para>Timer <computeroutput>m_keepAliveTimer</computeroutput> zapobiega timeoutom połączenia MySQL, ale zwiększa obciążenie bazy danych.</para>
+</listitem><listitem><para>Okno podglądu zdjęć jest bezramkowe i przezroczyste, co zapewnia estetyczny wygląd, ale wymaga ostrożnego zarządzania zdarzeniami. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/itemList_cpp.md"/>
+  </compounddef>
+</doxygen>

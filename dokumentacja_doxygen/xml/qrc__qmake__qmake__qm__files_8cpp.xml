@@ -1,0 +1,302 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="qrc__qmake__qmake__qm__files_8cpp" kind="file" language="C++">
+    <compoundname>qrc_qmake_qmake_qm_files.cpp</compoundname>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="qrc__qmake__qmake__qm__files_8cpp_1afbfc3bb3cd2fa03dd0a3fc36563480d6" prot="public" static="no">
+        <name>QT_RCC_PREPEND_NAMESPACE</name>
+        <param><defname>name</defname></param>
+        <initializer>name</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="60" column="13" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="qrc__qmake__qmake__qm__files_8cpp_1a590f80ddb226779f6f432d80438ea190" prot="public" static="no">
+        <name>QT_RCC_MANGLE_NAMESPACE</name>
+        <param><defname>name</defname></param>
+        <initializer>name</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="61" column="12" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="qrc__qmake__qmake__qm__files_8cpp_1a67a985282ed24629b630f624b668842b" prot="public" static="yes" mutable="no">
+        <type>const unsigned char</type>
+        <definition>const unsigned char qt_resource_data[]</definition>
+        <argsstring>[]</argsstring>
+        <name>qt_resource_data</name>
+        <initializer>= {
+  
+  0x0,0x0,0x0,0x29,
+  0x3c,
+  0xb8,0x64,0x18,0xca,0xef,0x9c,0x95,0xcd,0x21,0x1c,0xbf,0x60,0xa1,0xbd,0xdd,0xa7,
+  0x0,0x0,0x0,0x5,0x70,0x6c,0x5f,0x50,0x4c,0x88,0x0,0x0,0x0,0xa,0x1,0x1,
+  0xff,0x14,0x2,0x4,0xfd,0x2c,0xa,0x13,
+  
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="14" column="28" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="qrc__qmake__qmake__qm__files_8cpp_1a7931167bf9d7e883e4194a60d031e431" prot="public" static="yes" mutable="no">
+        <type>const unsigned char</type>
+        <definition>const unsigned char qt_resource_name[]</definition>
+        <argsstring>[]</argsstring>
+        <name>qt_resource_name</name>
+        <initializer>= {
+  
+  0x0,0x4,
+  0x0,0x6,0xc4,0xee,
+  0x0,0x69,
+  0x0,0x31,0x0,0x38,0x0,0x6e,
+    
+  0x0,0x17,
+  0xd,0x25,0x73,0xbd,
+  0x0,0x49,
+  0x0,0x6e,0x0,0x77,0x0,0x65,0x0,0x6e,0x0,0x74,0x0,0x61,0x0,0x72,0x0,0x79,0x0,0x7a,0x0,0x61,0x0,0x63,0x0,0x6a,0x0,0x61,0x0,0x5f,0x0,0x70,0x0,0x6c,
+  0x0,0x5f,0x0,0x50,0x0,0x4c,0x0,0x2e,0x0,0x71,0x0,0x6d,
+  
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="24" column="28" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="qrc__qmake__qmake__qm__files_8cpp_1a37a83d7da2ee18badcd100d79aac64d4" prot="public" static="yes" mutable="no">
+        <type>const unsigned char</type>
+        <definition>const unsigned char qt_resource_struct[]</definition>
+        <argsstring>[]</argsstring>
+        <name>qt_resource_struct</name>
+        <initializer>= {
+  
+  0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,
+0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+  
+  0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x2,
+0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
+  
+  0x0,0x0,0x0,0xe,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,
+0x0,0x0,0x1,0x96,0x96,0x8b,0xb2,0x5d,
+
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="39" column="28" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="qrc__qmake__qmake__qm__files_8cpp_1a2ce5a6cde5b318dc75442940471e05f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool qRegisterResourceData</definition>
+        <argsstring>(int, const unsigned char *, const unsigned char *, const unsigned char *)</argsstring>
+        <name>qRegisterResourceData</name>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="70" column="6" declfile="build/qrc_qmake_qmake_qm_files.cpp" declline="70" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="qrc__qmake__qmake__qm__files_8cpp_1a54b96c9f44d004fc0ea13bb581f97a71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool qUnregisterResourceData</definition>
+        <argsstring>(int, const unsigned char *, const unsigned char *, const unsigned char *)</argsstring>
+        <name>qUnregisterResourceData</name>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <param>
+          <type>const unsigned char *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="71" column="6" declfile="build/qrc_qmake_qmake_qm_files.cpp" declline="71" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="qrc__qmake__qmake__qm__files_8cpp_1abb02e96e2e7551da5cc0c99a56f48c56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int QT_RCC_MANGLE_NAMESPACE()</type>
+        <definition>int QT_RCC_MANGLE_NAMESPACE() qInitResources_qmake_qmake_qm_files</definition>
+        <argsstring>()</argsstring>
+        <name>qInitResources_qmake_qmake_qm_files</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="78" column="5" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="78" bodyend="84" declfile="build/qrc_qmake_qmake_qm_files.cpp" declline="77" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="qrc__qmake__qmake__qm__files_8cpp_1af117eea2061de7f747179c18314e2d6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int QT_RCC_MANGLE_NAMESPACE()</type>
+        <definition>int QT_RCC_MANGLE_NAMESPACE() qCleanupResources_qmake_qmake_qm_files</definition>
+        <argsstring>()</argsstring>
+        <name>qCleanupResources_qmake_qmake_qm_files</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/qrc_qmake_qmake_qm_files.cpp" line="87" column="5" bodyfile="build/qrc_qmake_qmake_qm_files.cpp" bodystart="87" bodyend="93" declfile="build/qrc_qmake_qmake_qm_files.cpp" declline="86" declcolumn="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/****************************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">**<sp/>Resource<sp/>object<sp/>code</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">**</highlight></codeline>
+<codeline lineno="4"><highlight class="comment">**<sp/>Created<sp/>by:<sp/>The<sp/>Resource<sp/>Compiler<sp/>for<sp/>Qt<sp/>version<sp/>6.8.2</highlight></codeline>
+<codeline lineno="5"><highlight class="comment">**</highlight></codeline>
+<codeline lineno="6"><highlight class="comment">**<sp/>WARNING!<sp/>All<sp/>changes<sp/>made<sp/>in<sp/>this<sp/>file<sp/>will<sp/>be<sp/>lost!</highlight></codeline>
+<codeline lineno="7"><highlight class="comment">*****************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>_MSC_VER</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>disable<sp/>informational<sp/>message<sp/>&quot;function<sp/>...<sp/>selected<sp/>for<sp/>automatic<sp/>inline<sp/>expansion&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>warning<sp/>(disable:<sp/>4711)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>qt_resource_data[]<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Inwentaryzacja_pl_PL.qm</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/>0x0,0x0,0x0,0x29,</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/>0x3c,</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>0xb8,0x64,0x18,0xca,0xef,0x9c,0x95,0xcd,0x21,0x1c,0xbf,0x60,0xa1,0xbd,0xdd,0xa7,</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>0x0,0x0,0x0,0x5,0x70,0x6c,0x5f,0x50,0x4c,0x88,0x0,0x0,0x0,0xa,0x1,0x1,</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>0xff,0x14,0x2,0x4,0xfd,0x2c,0xa,0x13,</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>qt_resource_name[]<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>i18n</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/>0x0,0x4,</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/>0x0,0x6,0xc4,0xee,</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>0x0,0x69,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>0x0,0x31,0x0,0x38,0x0,0x6e,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Inwentaryzacja_pl_PL.qm</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/>0x0,0x17,</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>0xd,0x25,0x73,0xbd,</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>0x0,0x49,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>0x0,0x6e,0x0,0x77,0x0,0x65,0x0,0x6e,0x0,0x74,0x0,0x61,0x0,0x72,0x0,0x79,0x0,0x7a,0x0,0x61,0x0,0x63,0x0,0x6a,0x0,0x61,0x0,0x5f,0x0,0x70,0x0,0x6c,</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>0x0,0x5f,0x0,0x50,0x0,0x4c,0x0,0x2e,0x0,0x71,0x0,0x6d,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>qt_resource_struct[]<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>:/i18n</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x2,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>:/i18n/Inwentaryzacja_pl_PL.qm</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>0x0,0x0,0x0,0xe,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">0x0,0x0,0x1,0x96,0x96,0x8b,0xb2,0x5d,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>QT_NAMESPACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>QT_RCC_PREPEND_NAMESPACE(name)<sp/>::QT_NAMESPACE::name</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>QT_RCC_MANGLE_NAMESPACE0(x)<sp/>x</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>QT_RCC_MANGLE_NAMESPACE1(a,<sp/>b)<sp/>a##_##b</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>QT_RCC_MANGLE_NAMESPACE2(a,<sp/>b)<sp/>QT_RCC_MANGLE_NAMESPACE1(a,b)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>QT_RCC_MANGLE_NAMESPACE(name)<sp/>QT_RCC_MANGLE_NAMESPACE2(<sp/>\</highlight></codeline>
+<codeline lineno="58"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QT_RCC_MANGLE_NAMESPACE0(name),<sp/>QT_RCC_MANGLE_NAMESPACE0(QT_NAMESPACE))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/>define<sp/>QT_RCC_PREPEND_NAMESPACE(name)<sp/>name</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/>define<sp/>QT_RCC_MANGLE_NAMESPACE(name)<sp/>name</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(QT_INLINE_NAMESPACE)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">QT_NAMESPACE<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(QT_NAMESPACE)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">QT_NAMESPACE<sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>qRegisterResourceData(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>qUnregisterResourceData(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>QT_NAMESPACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>QT_RCC_MANGLE_NAMESPACE(qInitResources_qmake_qmake_qm_files)();</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>QT_RCC_MANGLE_NAMESPACE(qInitResources_qmake_qmake_qm_files)()</highlight></codeline>
+<codeline lineno="79"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version<sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>QT_RCC_PREPEND_NAMESPACE(qRegisterResourceData)</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(version,<sp/>qt_resource_struct,<sp/>qt_resource_name,<sp/>qt_resource_data);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>QT_RCC_MANGLE_NAMESPACE(qCleanupResources_qmake_qmake_qm_files)();</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>QT_RCC_MANGLE_NAMESPACE(qCleanupResources_qmake_qmake_qm_files)()</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version<sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>QT_RCC_PREPEND_NAMESPACE(qUnregisterResourceData)</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(version,<sp/>qt_resource_struct,<sp/>qt_resource_name,<sp/>qt_resource_data);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__clang__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/>pragma<sp/>clang<sp/>diagnostic<sp/>push</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/>pragma<sp/>clang<sp/>diagnostic<sp/>ignored<sp/>&quot;-Wexit-time-destructors&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">initializer<sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>initializer()<sp/>{<sp/>QT_RCC_MANGLE_NAMESPACE(qInitResources_qmake_qmake_qm_files)();<sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~initializer()<sp/>{<sp/>QT_RCC_MANGLE_NAMESPACE(qCleanupResources_qmake_qmake_qm_files)();<sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/>}<sp/>dummy;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__clang__</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/><sp/>pragma<sp/>clang<sp/>diagnostic<sp/>pop</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="build/qrc_qmake_qmake_qm_files.cpp"/>
+  </compounddef>
+</doxygen>

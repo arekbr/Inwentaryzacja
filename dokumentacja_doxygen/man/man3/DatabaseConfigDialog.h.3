@@ -1,0 +1,82 @@
+.TH "include/DatabaseConfigDialog.h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/DatabaseConfigDialog.h \- Deklaracja klasy \fBDatabaseConfigDialog\fP do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <QDialog>\fP
+.br
+\fC#include <QString>\fP
+.br
+
+.SS "Komponenty"
+
+.in +1c
+.ti -1c
+.RI "class \fBDatabaseConfigDialog\fP"
+.br
+.RI "Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Deklaracja klasy \fBDatabaseConfigDialog\fP do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025- istituti-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik \fBDatabaseConfigDialog\&.h\fP definiuje klasę \fBDatabaseConfigDialog\fP, która reprezentuje okno dialogowe służące do konfiguracji parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wyboru skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard)\&. Klasa umożliwia zapis ustawień w QSettings, dynamiczną zmianę stylów i czcionek oraz zapewnia metody dostępowe do parametrów połączenia z bazą danych\&.
+.SH "Structure"
+.PP
+Plik nagłówkowy zawiera:
+.IP "1." 4
+\fBDefinicję klasy \fBDatabaseConfigDialog\fP\fP – dziedziczy po QDialog, zawiera publiczne metody dostępowe, sloty oraz prywatne metody i zmienne\&.
+.IP "2." 4
+\fBDeklaracje metod publicznych\fP – konstruktor, destruktor oraz metody zwracające parametry bazy danych\&.
+.IP "3." 4
+\fBDeklaracje slotów\fP – obsługa zatwierdzania danych i zmiany typu bazy danych lub skórki graficznej\&.
+.IP "4." 4
+\fBDeklaracje metod prywatnych\fP – ładowanie arkuszy stylów i czcionek dla wybranych skórek\&.
+.IP "5." 4
+\fBZmienne prywatne\fP – wskaźnik na interfejs użytkownika oraz identyfikatory załadowanych czcionek\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas QDialog, QString oraz mechanizmów sygnałów i slotów\&.
+.IP "\(bu" 2
+\fBNamespace Ui\fP: Zawiera definicję interfejsu użytkownika (\fBui_DatabaseConfigDialog\&.h\fP)\&.
+.IP "\(bu" 2
+\fBZasoby\fP: Pliki QSS dla stylów (amiga\&.qss, atari8bit\&.qss, zxspectrum\&.qss, default\&.qss) oraz czcionki (topaz\&.ttf, zxspectrum\&.ttf, EightBit Atari-Ataripl\&.ttf)\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dokumentacja i komentarze dodano bez ingerencji w oryginalny kod\&.
+.IP "\(bu" 2
+Klasa obsługuje trwałe przechowywanie ustawień za pomocą QSettings\&.
+.IP "\(bu" 2
+Interfejs użytkownika dynamicznie dostosowuje się do wybranego typu bazy danych (SQLite/MySQL) za pomocą QStackedWidget\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

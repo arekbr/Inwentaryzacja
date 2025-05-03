@@ -1,0 +1,65 @@
+\hypertarget{md_documentation_utils_h_autotoc_md163}{}\doxysection{Metadane}\label{md_documentation_utils_h_autotoc_md163}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{utils_8h}{utils.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_utils_h_autotoc_md164}{}\doxysection{Przegląd}\label{md_documentation_utils_h_autotoc_md164}
+Plik {\ttfamily \mbox{\hyperlink{utils_8h}{utils.\+h}}} definiuje funkcję {\ttfamily setup\+Database}, która jest odpowiedzialna za inicjalizację połączenia z bazą danych w aplikacji inwentaryzacyjnej. Funkcja umożliwia konfigurację połączenia dla baz SQLite (lokalny plik) lub My\+SQL (zdalne połączenie), rejestrując je pod nazwą \char`\"{}default\+\_\+connection\char`\"{}. Jest to kluczowy komponent aplikacji, wykorzystywany na etapie uruchamiania, np. przez {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}, do przygotowania bazy danych dla innych komponentów, takich jak {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, {\ttfamily types}, {\ttfamily status}, {\ttfamily storage} czy {\ttfamily models}.\hypertarget{md_documentation_utils_h_autotoc_md165}{}\doxysection{Struktura kodu}\label{md_documentation_utils_h_autotoc_md165}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja funkcji {\ttfamily setup\+Database}}} ~\newline
+
+\begin{DoxyItemize}
+\item Przyjmuje parametry określające typ bazy, źródło danych, host, użytkownika, hasło i port.
+\item Zwraca {\ttfamily bool} wskazujący sukces lub niepowodzenie połączenia.
+\end{DoxyItemize}
+\item {\bfseries{Zależności}} ~\newline
+
+\begin{DoxyItemize}
+\item Minimalne, tylko {\ttfamily QString} z Qt dla parametrów wejściowych.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_utils_h_autotoc_md166}{}\doxysection{Opis działania}\label{md_documentation_utils_h_autotoc_md166}
+
+\begin{DoxyItemize}
+\item {\bfseries{Cel funkcji}}\+: Utworzenie i zarejestrowanie globalnego połączenia {\ttfamily QSql\+Database} pod nazwą \char`\"{}default\+\_\+connection\char`\"{}, które jest współdzielone przez wszystkie komponenty aplikacji.
+\item {\bfseries{Obsługiwane bazy danych}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{SQLite}} ({\ttfamily QSQLITE})\+: Używa ścieżki do pliku jako {\ttfamily db\+Source}. Automatycznie tworzy schemat bazy i przykładowe dane (implementacja w {\ttfamily \mbox{\hyperlink{utils_8cpp}{utils.\+cpp}}}).
+\item {\bfseries{My\+SQL}} ({\ttfamily QMYSQL})\+: Używa nazwy bazy danych jako {\ttfamily db\+Source}, wymaga parametrów {\ttfamily host}, {\ttfamily user}, {\ttfamily password}, {\ttfamily port}.
+\end{DoxyItemize}
+\item {\bfseries{Parametry}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily db\+Type}\+: Określa typ bazy (\char`\"{}\+SQLite3\char`\"{} lub \char`\"{}\+My\+SQL\char`\"{}).
+\item {\ttfamily db\+Source}\+: Ścieżka do pliku (SQLite) lub nazwa bazy (My\+SQL).
+\item {\ttfamily host}, {\ttfamily user}, {\ttfamily password}, {\ttfamily port}\+: Opcjonalne dla My\+SQL, ignorowane dla SQLite.
+\end{DoxyItemize}
+\item {\bfseries{Zwracana wartość}}\+: {\ttfamily true} po pomyślnym nawiązaniu połączenia, {\ttfamily false} w przypadku błędu (np. nieprawidłowe dane uwierzytelniające, brak pliku bazy).
+\end{DoxyItemize}\hypertarget{md_documentation_utils_h_autotoc_md167}{}\doxysection{Zależności}\label{md_documentation_utils_h_autotoc_md167}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QString}\+: Do obsługi parametrów wejściowych.
+\item Pośrednio\+: {\ttfamily QSql\+Database} (używane w {\ttfamily \mbox{\hyperlink{utils_8cpp}{utils.\+cpp}}}).
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item Brak zależności od innych nagłówków aplikacji.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_utils_h_autotoc_md168}{}\doxysection{Uwagi}\label{md_documentation_utils_h_autotoc_md168}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Funkcja {\ttfamily setup\+Database} jest centralnym punktem konfiguracji bazy danych, używanym przez inne komponenty aplikacji.
+\item Połączenie \char`\"{}default\+\_\+connection\char`\"{} jest współdzielone, co wymaga ostrożnego zarządzania w przypadku wielokrotnego wywoływania funkcji.
+\item Obsługuje zarówno SQLite, jak i My\+SQL, co zwiększa elastyczność aplikacji.
+\item Dokumentacja implementacji (w {\ttfamily \mbox{\hyperlink{utils_8cpp}{utils.\+cpp}}}) zawiera szczegóły dotyczące automatycznego tworzenia schematu dla SQLite. 
+\end{DoxyItemize}

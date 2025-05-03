@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md_documentation_utils_h" xml:lang="pl">
+<section xml:id="_md_documentation_utils_h_1autotoc_md163">
+<title>Metadane</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Plik</emphasis>: <link linkend="_utils_8h">utils.h</link></para>
+</listitem><listitem>
+<para><emphasis role="bold">Wersja</emphasis>: 1.2.2</para>
+</listitem><listitem>
+<para><emphasis role="bold">Data</emphasis>: 2025-05-03</para>
+</listitem><listitem>
+<para><emphasis role="bold">Autorzy</emphasis>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_utils_h_1autotoc_md164">
+<title>Przegląd</title>
+
+<para>Plik <computeroutput><link linkend="_utils_8h">utils.h</link></computeroutput> definiuje funkcję <computeroutput>setupDatabase</computeroutput>, która jest odpowiedzialna za inicjalizację połączenia z bazą danych w aplikacji inwentaryzacyjnej. Funkcja umożliwia konfigurację połączenia dla baz SQLite (lokalny plik) lub MySQL (zdalne połączenie), rejestrując je pod nazwą &quot;default_connection&quot;. Jest to kluczowy komponent aplikacji, wykorzystywany na etapie uruchamiania, np. przez <computeroutput><link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></computeroutput>, do przygotowania bazy danych dla innych komponentów, takich jak <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>, <computeroutput>types</computeroutput>, <computeroutput>status</computeroutput>, <computeroutput>storage</computeroutput> czy <computeroutput>models</computeroutput>.</para>
+</section>
+<section xml:id="_md_documentation_utils_h_1autotoc_md165">
+<title>Struktura kodu</title>
+
+<para>Plik nagłówkowy zawiera następujące elementy:</para>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Deklaracja funkcji <computeroutput>setupDatabase</computeroutput></emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Przyjmuje parametry określające typ bazy, źródło danych, host, użytkownika, hasło i port.</para>
+</listitem><listitem>
+<para>Zwraca <computeroutput>bool</computeroutput> wskazujący sukces lub niepowodzenie połączenia.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zależności</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Minimalne, tylko <computeroutput>QString</computeroutput> z Qt dla parametrów wejściowych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_utils_h_1autotoc_md166">
+<title>Opis działania</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Cel funkcji</emphasis>: Utworzenie i zarejestrowanie globalnego połączenia <computeroutput>QSqlDatabase</computeroutput> pod nazwą &quot;default_connection&quot;, które jest współdzielone przez wszystkie komponenty aplikacji.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Obsługiwane bazy danych</emphasis>:<itemizedlist>
+<listitem>
+<para><emphasis role="bold">SQLite</emphasis> (<computeroutput>QSQLITE</computeroutput>): Używa ścieżki do pliku jako <computeroutput>dbSource</computeroutput>. Automatycznie tworzy schemat bazy i przykładowe dane (implementacja w <computeroutput><link linkend="_utils_8cpp">utils.cpp</link></computeroutput>).</para>
+</listitem><listitem>
+<para><emphasis role="bold">MySQL</emphasis> (<computeroutput>QMYSQL</computeroutput>): Używa nazwy bazy danych jako <computeroutput>dbSource</computeroutput>, wymaga parametrów <computeroutput>host</computeroutput>, <computeroutput>user</computeroutput>, <computeroutput>password</computeroutput>, <computeroutput>port</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Parametry</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>dbType</computeroutput>: Określa typ bazy (&quot;SQLite3&quot; lub &quot;MySQL&quot;).</para>
+</listitem><listitem>
+<para><computeroutput>dbSource</computeroutput>: Ścieżka do pliku (SQLite) lub nazwa bazy (MySQL).</para>
+</listitem><listitem>
+<para><computeroutput>host</computeroutput>, <computeroutput>user</computeroutput>, <computeroutput>password</computeroutput>, <computeroutput>port</computeroutput>: Opcjonalne dla MySQL, ignorowane dla SQLite.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zwracana wartość</emphasis>: <computeroutput>true</computeroutput> po pomyślnym nawiązaniu połączenia, <computeroutput>false</computeroutput> w przypadku błędu (np. nieprawidłowe dane uwierzytelniające, brak pliku bazy).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_utils_h_1autotoc_md167">
+<title>Zależności</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Biblioteki Qt</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>QString</computeroutput>: Do obsługi parametrów wejściowych.</para>
+</listitem><listitem>
+<para>Pośrednio: <computeroutput>QSqlDatabase</computeroutput> (używane w <computeroutput><link linkend="_utils_8cpp">utils.cpp</link></computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>:<itemizedlist>
+<listitem>
+<para>Brak zależności od innych nagłówków aplikacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>:<itemizedlist>
+<listitem>
+<para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_utils_h_1autotoc_md168">
+<title>Uwagi</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem>
+<para>Funkcja <computeroutput>setupDatabase</computeroutput> jest centralnym punktem konfiguracji bazy danych, używanym przez inne komponenty aplikacji.</para>
+</listitem><listitem>
+<para>Połączenie &quot;default_connection&quot; jest współdzielone, co wymaga ostrożnego zarządzania w przypadku wielokrotnego wywoływania funkcji.</para>
+</listitem><listitem>
+<para>Obsługuje zarówno SQLite, jak i MySQL, co zwiększa elastyczność aplikacji.</para>
+</listitem><listitem>
+<para>Dokumentacja implementacji (w <computeroutput><link linkend="_utils_8cpp">utils.cpp</link></computeroutput>) zawiera szczegóły dotyczące automatycznego tworzenia schematu dla SQLite. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>

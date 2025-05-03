@@ -1,0 +1,300 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_classmodels" xml:lang="pl">
+<title>Dokumentacja klasy models</title>
+<indexterm><primary>models</primary></indexterm>
+<para>
+
+<para>Okno dialogowe do zarządzania modelami eksponatów. </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;models.h&gt;</computeroutput>
+</para>
+Diagram dziedziczenia dla models<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="classmodels__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Diagram współpracy dla models:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="classmodels__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_classmodels_1a283a5adef385a6b570304a288ab41f68">models</link> (QWidget *parent=nullptr)</para>
+
+<para>Konstruktor klasy models. </para>
+</listitem>
+            <listitem><para><link linkend="_classmodels_1acbd489c1ea286ed2c5394ee748034093">~models</link> ()</para>
+
+<para>Destruktor klasy models. </para>
+</listitem>
+            <listitem><para>void <link linkend="_classmodels_1a746b5a44fa5828e2b7fa4802b35b6330">setMainWindow</link> (<link linkend="_class_main_window">MainWindow</link> *mainWindow)</para>
+
+<para>Ustawia wskaźnik na główne okno aplikacji. </para>
+</listitem>
+            <listitem><para>void <link linkend="_classmodels_1a6984e77ecf232167c6e7af4f7c397e6f">setVendorId</link> (const QString &amp;vendorId)</para>
+
+<para>Ustawia identyfikator producenta dla modeli. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Okno dialogowe do zarządzania modelami eksponatów. </para>
+
+
+<section xml:id="_class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+
+<para>Klasa models dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania modeli eksponatów w bazie danych. Współpracuje z klasą <link linkend="_class_main_window">MainWindow</link>, aby odświeżyć listę modeli w combo boxie po zapisaniu zmian. Używa QString jako typu dla identyfikatora producenta (vendorId).</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Wyświetlanie listy modeli w QListView.</para>
+</listitem><listitem>
+<para>Dodawanie nowych modeli do tabeli &apos;models&apos; z powiązaniem do producenta.</para>
+</listitem><listitem>
+<para>Edycja istniejących modeli (zmiana nazwy).</para>
+</listitem><listitem>
+<para>Usuwanie modeli po potwierdzeniu użytkownika.</para>
+</listitem><listitem>
+<para>Odświeżanie combo boxa modeli w <link linkend="_class_main_window">MainWindow</link> po zapisaniu zmian. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section>
+<title>Dokumentacja konstruktora i destruktora</title>
+<anchor xml:id="_classmodels_1a283a5adef385a6b570304a288ab41f68"/><section>
+    <title>models()</title>
+<indexterm><primary>models</primary><secondary>models</secondary></indexterm>
+<indexterm><primary>models</primary><secondary>models</secondary></indexterm>
+<para><computeroutput>models::models (QWidget * parent = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[explicit]</computeroutput></computeroutput></para><para>
+
+<para>Konstruktor klasy models. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget (domyślnie nullptr).</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje interfejs graficzny, ustawia tytuł okna, nawiązuje połączenie z bazą danych (&apos;default_connection&apos;), podłącza sloty dla przycisków (dodaj, edytuj, usuń, OK, Anuluj) i odświeża listę modeli w QListView. </para>
+</section>
+</section>
+<anchor xml:id="_classmodels_1acbd489c1ea286ed2c5394ee748034093"/><section>
+    <title>~models()</title>
+<indexterm><primary>~models</primary><secondary>models</secondary></indexterm>
+<indexterm><primary>models</primary><secondary>~models</secondary></indexterm>
+<para><computeroutput>models::~models ( )</computeroutput></para><para>
+
+<para>Destruktor klasy models. </para>
+</para>
+<section xml:id="_classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+
+<para>Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.</para>
+</section>
+<section xml:id="_classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+
+<para>Usuwa obiekt interfejsu użytkownika i zwalnia zasoby. </para>
+</section>
+</section>
+</section>
+<section>
+<title>Dokumentacja funkcji składowych</title>
+<anchor xml:id="_classmodels_1a746b5a44fa5828e2b7fa4802b35b6330"/><section>
+    <title>setMainWindow()</title>
+<indexterm><primary>setMainWindow</primary><secondary>models</secondary></indexterm>
+<indexterm><primary>models</primary><secondary>setMainWindow</secondary></indexterm>
+<para><computeroutput>void models::setMainWindow (<link linkend="_class_main_window">MainWindow</link> * mainWindow)</computeroutput></para><para>
+
+<para>Ustawia wskaźnik na główne okno aplikacji. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>mainWindow</entry><entry>
+<para>Wskaźnik na obiekt <link linkend="_class_main_window">MainWindow</link>.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Umożliwia komunikację z głównym oknem w celu odświeżenia listy modeli w combo boxie po zapisaniu zmian.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>mainWindow</entry><entry>
+<para>Wskaźnik na obiekt <link linkend="_class_main_window">MainWindow</link>.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Przechowuje referencję do <link linkend="_class_main_window">MainWindow</link>, umożliwiając odświeżanie combo boxa modeli po zapisaniu zmian. </para>
+</section>
+</section>
+<anchor xml:id="_classmodels_1a6984e77ecf232167c6e7af4f7c397e6f"/><section>
+    <title>setVendorId()</title>
+<indexterm><primary>setVendorId</primary><secondary>models</secondary></indexterm>
+<indexterm><primary>models</primary><secondary>setVendorId</secondary></indexterm>
+<para><computeroutput>void models::setVendorId (const QString &amp; vendorId)</computeroutput></para><para>
+
+<para>Ustawia identyfikator producenta dla modeli. </para>
+</para>
+
+<para>Ustawia identyfikator producenta, powiązany z modelami.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>vendorId</entry><entry>
+<para>QString zawierający identyfikator producenta (np. UUID).</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Ogranicza listę modeli do tych powiązanych z podanym producentem i ustala vendorId dla nowych modeli.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>vendorId</entry><entry>
+<para>QString zawierający identyfikator producenta (np. UUID).</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Ustawia vendorId dla nowych modeli, używane podczas dodawania modelu w metodzie onAddClicked. </para>
+</section>
+</section>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z plików:</para>
+include/<link linkend="_models_8h">models.h</link>src/<link linkend="_models_8cpp">models.cpp</link></section>
+</section>

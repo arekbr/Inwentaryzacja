@@ -1,0 +1,171 @@
+.TH "md_documentation_mainwindow_h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_mainwindow_h \- Dokumentacja dla pliku \fC\fBmainwindow\&.h\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBmainwindow\&.h\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBmainwindow\&.h\fP\fP definiuje klasę \fC\fBMainWindow\fP\fP, która reprezentuje główne okno formularza do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej\&. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych MySQL\&. Emituje sygnał \fCrecordSaved\fP po zapisaniu rekordu i zawiera sloty do obsługi akcji użytkownika, takich jak zapis, anulowanie czy dodawanie zdjęć\&.
+.SH "Struktura kodu"
+.PP
+Plik nagłówkowy zawiera następujące elementy:
+.PP
+.IP "1." 4
+\fBDeklaracja klasy \fC\fBMainWindow\fP\fP\fP 
+.br
+.IP "  \(bu" 4
+Dziedziczy po \fCQMainWindow\fP\&.
+.IP "  \(bu" 4
+Używa makra \fCQ_OBJECT\fP dla wsparcia mechanizmu sygnałów i slotów Qt\&.
+.PP
+
+.IP "2." 4
+\fBMetody publiczne\fP 
+.br
+.IP "  \(bu" 4
+Konstruktor: Inicjalizuje interfejs, połączenie z bazą danych i combo boxy\&.
+.IP "  \(bu" 4
+Destruktor: Zwalnia zasoby\&.
+.IP "  \(bu" 4
+\fCloadComboBoxData\fP: Ładuje dane z tabeli do combo boxa\&.
+.IP "  \(bu" 4
+\fCeventFilter\fP: Obsługuje zdarzenia dla combo boxów (otwieranie listy po kliknięciu)\&.
+.IP "  \(bu" 4
+\fCsetEditMode\fP: Ustawia tryb edycji lub dodawania rekordu\&.
+.IP "  \(bu" 4
+\fCsetCloneMode\fP: Ustawia tryb klonowania rekordu\&.
+.IP "  \(bu" 4
+\fCgetNewItemVendorComboBox\fP, \fCgetNewItemModelComboBox\fP, \fCgetNewItemStoragePlaceComboBox\fP, \fCgetNewItemTypeComboBox\fP, \fCgetNewItemStatusComboBox\fP: Zwracają wskaźniki na combo boxy\&.
+.PP
+
+.IP "3." 4
+\fBSygnały\fP 
+.br
+.IP "  \(bu" 4
+\fCrecordSaved\fP: Emitowany po zapisaniu rekordu, przekazuje ID rekordu\&.
+.PP
+
+.IP "4." 4
+\fBSloty prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fConSaveClicked\fP: Zapisuje dane do bazy danych i emituje sygnał \fCrecordSaved\fP\&.
+.IP "  \(bu" 4
+\fConCancelClicked\fP: Zamyka okno bez zapisywania zmian\&.
+.IP "  \(bu" 4
+\fConAddPhotoClicked\fP: Dodaje nowe zdjęcie do rekordu\&.
+.IP "  \(bu" 4
+\fConRemovePhotoClicked\fP: Usuwa wybrane zdjęcie\&.
+.IP "  \(bu" 4
+\fConPhotoClicked\fP: Obsługuje kliknięcie w miniaturę zdjęcia\&.
+.IP "  \(bu" 4
+\fConAddTypeClicked\fP, \fConAddVendorClicked\fP, \fConAddModelClicked\fP, \fConAddStatusClicked\fP, \fConAddStoragePlaceClicked\fP: Otwierają okna dialogowe dla słowników\&.
+.PP
+
+.IP "5." 4
+\fBMetody prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCloadRecord\fP: Wczytuje dane rekordu do formularza\&.
+.IP "  \(bu" 4
+\fCloadPhotos\fP: Wczytuje zdjęcia powiązane z rekordem\&.
+.IP "  \(bu" 4
+\fCloadPhotosFromBuffer\fP: Wczytuje zdjęcia z bufora pamięci\&.
+.PP
+
+.IP "6." 4
+\fBZmienne prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCdb\fP: Połączenie z bazą danych MySQL\&.
+.IP "  \(bu" 4
+\fCui\fP: Wskaźnik na interfejs użytkownika\&.
+.IP "  \(bu" 4
+\fCm_editMode\fP: Flaga trybu edycji (true) lub dodawania (false)\&.
+.IP "  \(bu" 4
+\fCm_recordId\fP: ID edytowanego rekordu\&.
+.IP "  \(bu" 4
+\fCm_selectedPhotoIndex\fP: Indeks wybranej miniatury zdjęcia\&.
+.IP "  \(bu" 4
+\fCm_photoBuffer\fP: Bufor dla zdjęć niezapisanych rekordów\&.
+.IP "  \(bu" 4
+\fCm_photoPathsBuffer\fP: Bufor ścieżek do zdjęć przed zapisem\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "\(bu" 2
+\fBInicjalizacja\fP: Konstruktor konfiguruje interfejs, łączy się z bazą danych, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie wartości do słowników\&.
+.IP "\(bu" 2
+\fBFormularz\fP: Wyświetla pola tekstowe (nazwa, numer seryjny, opis, itp\&.), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar dla miniatur zdjęć\&.
+.IP "\(bu" 2
+\fBTryby pracy\fP:
+.IP "  \(bu" 4
+\fBDodawanie\fP: Czyści pola, ustawia domyślne wartości ('brak' dla statusu i miejsca przechowywania)\&.
+.IP "  \(bu" 4
+\fBEdycja\fP: Wczytuje dane rekordu i zdjęcia na podstawie ID\&.
+.IP "  \(bu" 4
+\fBKlonowanie\fP: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć)\&.
+.PP
+
+.IP "\(bu" 2
+\fBZdjęcia\fP: Obsługuje dodawanie zdjęć (do bufora lub bazy), usuwanie (z bazy po potwierdzeniu) i wybór miniatur w \fCQGraphicsView\fP\&.
+.IP "\(bu" 2
+\fBSłowniki\fP: Umożliwia dodawanie nowych wartości do tabel \fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatuses\fP, \fCstorage_places\fP przez dialogi lub automatycznie po wpisaniu w combo boxie\&.
+.IP "\(bu" 2
+\fBZapis\fP: Waliduje dane, zapisuje rekord w tabeli \fCeksponaty\fP, przenosi zdjęcia do tabeli \fCphotos\fP i katalogu 'gotowe', emituje \fCrecordSaved\fP\&.
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQMainWindow\fP, \fCQSqlDatabase\fP, \fCQComboBox\fP, \fCQList\fP: Obsługa interfejsu, bazy danych i danych\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBphotoitem\&.h\fP\fP: Klasa dla miniatur zdjęć (forward-deklaracja)\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_mainwindow\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Klasa integruje formularz z bazą danych i dialogami słownikowymi, będąc kluczowym elementem edycji danych\&.
+.IP "\(bu" 2
+Automatyczne dodawanie wartości do słowników wymaga wybrania producenta dla modeli, co zapewnia spójność danych\&.
+.IP "\(bu" 2
+Zdjęcia są przechowywane jako \fCLONGBLOB\fP w tabeli \fCphotos\fP, co może wpłynąć na wydajność przy dużej liczbie rekordów\&.
+.IP "\(bu" 2
+Połączenie z bazą danych (\fCdefault_connection\fP) jest współdzielone z innymi komponentami (np\&. \fC\fBitemList\fP\fP)\&. 
+.PP
+

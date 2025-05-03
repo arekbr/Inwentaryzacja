@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_utils_8h" xml:lang="pl">
+<title>Dokumentacja pliku include/utils.h</title>
+<indexterm><primary>include/utils.h</primary></indexterm>
+<para>
+
+<para>Deklaracja funkcji pomocniczych wykorzystywanych w aplikacji inwentaryzacyjnej. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &lt;QString&gt;
+</programlisting>Wykres zależności załączania dla utils.h:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="utils_8h__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="utils_8h__dep__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Funkcje    </title>
+        <itemizedlist>
+            <listitem><para>bool <link linkend="_utils_8h_1aa8a57daebb95eff5030a041ef25b0172">setupDatabase</link> (const QString &amp;dbType, const QString &amp;dbSource, const QString &amp;host=QString(), const QString &amp;user=QString(), const QString &amp;password=QString(), int port=0)</para>
+
+<para>Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Deklaracja funkcji pomocniczych wykorzystywanych w aplikacji inwentaryzacyjnej. </para>
+
+<para><formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03 </para>
+</formalpara>
+<formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik zawiera deklarację funkcji <computeroutput>setupDatabase</computeroutput>, odpowiedzialnej za inicjalizację połączenia z bazą danych (SQLite lub MySQL) z wykorzystaniem parametrów takich jak typ bazy, źródło danych, host, port i dane uwierzytelniające. Funkcja jest kluczowym elementem konfiguracji bazy danych w aplikacji inwentaryzacyjnej, ustanawiając globalne połączenie o nazwie &quot;default_connection&quot;, używane przez inne komponenty aplikacji.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Deklarację funkcji <computeroutput>setupDatabase</computeroutput></emphasis> – konfiguruje i otwiera połączenie z bazą danych.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zależności</emphasis> – minimalne, obejmuje tylko <computeroutput>QString</computeroutput> z Qt.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klasy <computeroutput>QString</computeroutput> dla parametrów funkcji.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki Qt</emphasis>: Pośrednio zależne od <computeroutput>QSqlDatabase</computeroutput> (w <computeroutput><link linkend="_utils_8cpp">utils.cpp</link></computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Funkcja <computeroutput>setupDatabase</computeroutput> jest wykorzystywana na etapie uruchamiania aplikacji, np. w <computeroutput><link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></computeroutput>.</para>
+</listitem><listitem>
+<para>Obsługuje zarówno SQLite (lokalny plik bazy), jak i MySQL (zdalne połączenie). </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section>
+<title>Dokumentacja funkcji</title>
+<anchor xml:id="_utils_8h_1aa8a57daebb95eff5030a041ef25b0172"/><section>
+    <title>setupDatabase()</title>
+<indexterm><primary>setupDatabase</primary><secondary>utils.h</secondary></indexterm>
+<indexterm><primary>utils.h</primary><secondary>setupDatabase</secondary></indexterm>
+<para><computeroutput>bool setupDatabase (const QString &amp; dbType, const QString &amp; dbSource, const QString &amp; host, const QString &amp; user, const QString &amp; password, int port)</computeroutput></para><para>
+
+<para>Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów. </para>
+</para>
+<section xml:id="_utils_8cpp_1FunctionOverview">
+<title>FunctionOverview</title>
+
+<para>Funkcja tworzy i rejestruje globalne połączenie <computeroutput>QSqlDatabase</computeroutput> pod nazwą &quot;default_connection&quot;. Obsługuje różne typy baz danych (SQLite poprzez <computeroutput>QSQLITE</computeroutput>, MySQL poprzez <computeroutput>QMYSQL</computeroutput>) i umożliwia konfigurację połączenia lokalnego (plik SQLite) lub zdalnego (MySQL z hostem, portem, użytkownikiem). W przypadku SQLite automatycznie tworzy schemat bazy danych i wypełnia przykładowymi danymi.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>dbType</entry><entry>
+<para>Typ bazy danych (&quot;SQLite3&quot; lub &quot;MySQL&quot;). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>dbSource</entry><entry>
+<para>Ścieżka do pliku bazy (SQLite) lub nazwa bazy danych (MySQL). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>host</entry><entry>
+<para>Adres hosta dla połączeń MySQL (np. &quot;localhost&quot;, opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>user</entry><entry>
+<para>Nazwa użytkownika dla MySQL (opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>password</entry><entry>
+<para>Hasło użytkownika dla MySQL (opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>port</entry><entry>
+<para>Numer portu dla MySQL (domyślnie 3306, opcjonalny). </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>Zwraca</title>
+
+<para>true jeśli połączenie zostało pomyślnie nawiązane, false w przypadku błędu.</para>
+</formalpara>
+Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów.</para>
+</section>
+<section xml:id="_utils_8cpp_1FunctionOverview">
+<title>FunctionOverview</title>
+
+<para>Funkcja konfiguruje połączenie z bazą danych SQLite (<computeroutput>QSQLITE</computeroutput>) lub MySQL (<computeroutput>QMYSQL</computeroutput>). Dla SQLite <computeroutput>dbSource</computeroutput> to ścieżka do pliku bazy, dla MySQL to nazwa bazy danych. Jeśli połączenie &quot;default_connection&quot; istnieje, jest usuwane i tworzone od nowa. Dla SQLite automatycznie tworzy schemat bazy (tabele i dane początkowe) jeśli nie istnieje.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>dbType</entry><entry>
+<para>Typ bazy danych (&quot;SQLite3&quot; lub &quot;MySQL&quot;). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>dbSource</entry><entry>
+<para>Dla SQLite – ścieżka do pliku; dla MySQL – nazwa bazy danych. </para>
+</entry>
+                            </row>
+                            <row>
+<entry>host</entry><entry>
+<para>Adres hosta dla MySQL (np. &quot;localhost&quot;, opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>user</entry><entry>
+<para>Nazwa użytkownika dla MySQL (opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>password</entry><entry>
+<para>Hasło użytkownika dla MySQL (opcjonalny). </para>
+</entry>
+                            </row>
+                            <row>
+<entry>port</entry><entry>
+<para>Numer portu dla MySQL (domyślnie 3306, opcjonalny). </para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>Zwraca</title>
+
+<para><computeroutput>true</computeroutput> jeśli połączenie zostało nawiązane pomyślnie; <computeroutput>false</computeroutput> w przypadku błędu. </para>
+</formalpara>
+</para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="utils_8h_aa8a57daebb95eff5030a041ef25b0172_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+</section>
+</section>

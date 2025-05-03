@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_storage_8h_source" xml:lang="pl">
+<title>storage.h</title>
+<indexterm><primary>include/storage.h</primary></indexterm>
+Idź do dokumentacji tego pliku.<programlisting linenumbering="unnumbered">1 
+34 <emphasis role="preprocessor">#ifndef&#32;STORAGE_H</emphasis>
+35 <emphasis role="preprocessor">#define&#32;STORAGE_H</emphasis>
+36 
+37 <emphasis role="preprocessor">#include&#32;&lt;QDialog&gt;</emphasis>
+38 <emphasis role="preprocessor">#include&#32;&lt;QSqlDatabase&gt;</emphasis>
+39 
+40 <emphasis role="keyword">class&#32;</emphasis><link linkend="_class_main_window">MainWindow</link>;
+41 
+42 <emphasis role="keyword">namespace&#32;</emphasis>Ui&#32;{
+43 <emphasis role="keyword">class&#32;</emphasis><link linkend="_classstorage">storage</link>;
+44 }
+45 
+63 <emphasis role="keyword">class&#32;</emphasis><link linkend="_classstorage">storage</link>&#32;:&#32;<emphasis role="keyword">public</emphasis>&#32;QDialog
+64 {
+65 &#32;&#32;&#32;&#32;Q_OBJECT
+66 
+67 <emphasis role="keyword">public</emphasis>:
+76 &#32;&#32;&#32;&#32;<emphasis role="keyword">explicit</emphasis>&#32;<link linkend="_classstorage_1a28cc22b8d0bbcf9c46d017365966765d">storage</link>(QWidget&#32;*parent&#32;=&#32;<emphasis role="keyword">nullptr</emphasis>);
+77 
+84 &#32;&#32;&#32;&#32;<link linkend="_classstorage_1ac7d5664e97625603e30f649d45231b06">~storage</link>();
+85 
+94 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_classstorage_1a30fc41ae15a27aa5d9ecaaff8ef646ff">setMainWindow</link>(<link linkend="_class_main_window">MainWindow</link>&#32;*mainWindow);
+95 
+96 <emphasis role="keyword">private</emphasis>&#32;slots:
+104 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;onAddClicked();
+105 
+113 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;onEditClicked();
+114 
+122 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;onDeleteClicked();
+123 
+131 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;onOkClicked();
+132 
+133 <emphasis role="keyword">private</emphasis>:
+141 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;refreshList();
+142 
+144 &#32;&#32;&#32;&#32;<link linkend="_class_ui_1_1storage">Ui::storage</link>&#32;*ui;
+145 
+147 &#32;&#32;&#32;&#32;<link linkend="_class_main_window">MainWindow</link>&#32;*m_mainWindow;
+148 
+150 &#32;&#32;&#32;&#32;QSqlDatabase&#32;m_db;
+151 };
+152 
+153 <emphasis role="preprocessor">#endif&#32;</emphasis><emphasis role="comment">//&#32;STORAGE_H</emphasis>
+</programlisting></section>

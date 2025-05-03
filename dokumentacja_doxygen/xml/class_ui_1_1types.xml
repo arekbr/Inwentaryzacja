@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui_1_1types" kind="class" language="C++" prot="public">
+    <compoundname>Ui::types</compoundname>
+    <basecompoundref refid="class_ui__types" prot="public" virt="non-virtual">Ui_types</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Ui::types</label>
+        <link refid="class_ui_1_1types"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_types</label>
+        <link refid="class_ui__types"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Ui::types</label>
+        <link refid="class_ui_1_1types"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_types</label>
+        <link refid="class_ui__types"/>
+      </node>
+    </collaborationgraph>
+    <location file="build/ui_types.h" line="125" column="5" bodyfile="build/ui_types.h" bodystart="125" bodyend="125"/>
+    <listofallmembers>
+      <member refid="class_ui__types_1a6a4566ba3fa9a6830bb202f35b5c54f4" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>buttonBox</name></member>
+      <member refid="class_ui__types_1a00e11d63d7f750427d0f150a95ad7f6e" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>label</name></member>
+      <member refid="class_ui__types_1af88c00e8212f5d329c1acfff5cd29f11" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>listView</name></member>
+      <member refid="class_ui__types_1a043d828242af7318837c468e60c42c20" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>pushButton_add</name></member>
+      <member refid="class_ui__types_1a74f727808b60d8275910f458a01b7190" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>pushButton_delete</name></member>
+      <member refid="class_ui__types_1ac7d20db02c24871f458d60eacad46e14" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>pushButton_edit</name></member>
+      <member refid="class_ui__types_1a54f01e06d0787ed99bc53ec818df1350" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__types_1a7cee6ed0ea9cad2c0ea06c67eaf239b2" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>setupUi</name></member>
+      <member refid="class_ui__types_1a2a1cd9bf6ecdd90eac2b3f308092ffc8" prot="public" virt="non-virtual"><scope>Ui::types</scope><name>type_lineEdit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

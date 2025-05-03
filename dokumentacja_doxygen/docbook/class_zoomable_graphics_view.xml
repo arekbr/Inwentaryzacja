@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_zoomable_graphics_view" xml:lang="pl">
+<title>Dokumentacja klasy ZoomableGraphicsView</title>
+<indexterm><primary>ZoomableGraphicsView</primary></indexterm>
+<para>
+
+<para>Widok graficzny umożliwiający powiększanie i przesuwanie obrazu. </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;fullscreenphotoviewer.h&gt;</computeroutput>
+</para>
+Diagram dziedziczenia dla ZoomableGraphicsView<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_zoomable_graphics_view__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Diagram współpracy dla ZoomableGraphicsView:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_zoomable_graphics_view__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_zoomable_graphics_view_1a3615bbe28257af383607c6076a00ecb0">ZoomableGraphicsView</link> (QWidget *parent=nullptr)</para>
+
+<para>Konstruktor klasy <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link>. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Metody chronione    </title>
+        <itemizedlist>
+            <listitem><para>void <link linkend="_class_zoomable_graphics_view_1ac9369ca9bad87c801280cb80268ded94">wheelEvent</link> (QWheelEvent *event) override</para>
+
+<para>Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Widok graficzny umożliwiający powiększanie i przesuwanie obrazu. </para>
+
+
+<section xml:id="_class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+
+<para>Klasa <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> dziedziczy po QGraphicsView i dostarcza funkcjonalność powiększania obrazu za pomocą kółka myszy oraz przesuwania przez przeciąganie. Ustawia kotwicę transformacji pod kursorem myszy, co zapewnia intuicyjne powiększanie, oraz tryb przeciągania ScrollHandDrag dla przesuwania obrazu.</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Obsługa zdarzeń kółka myszy do zmiany skali obrazu.</para>
+</listitem><listitem>
+<para>Umożliwienie przesuwania obrazu poprzez przeciąganie myszą.</para>
+</listitem><listitem>
+<para>Przechowywanie bieżącego współczynnika skali. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section>
+<title>Dokumentacja konstruktora i destruktora</title>
+<anchor xml:id="_class_zoomable_graphics_view_1a3615bbe28257af383607c6076a00ecb0"/><section>
+    <title>ZoomableGraphicsView()</title>
+<indexterm><primary>ZoomableGraphicsView</primary><secondary>ZoomableGraphicsView</secondary></indexterm>
+<indexterm><primary>ZoomableGraphicsView</primary><secondary>ZoomableGraphicsView</secondary></indexterm>
+<para><computeroutput>ZoomableGraphicsView::ZoomableGraphicsView (QWidget * parent = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[inline]</computeroutput>, <computeroutput>[explicit]</computeroutput></computeroutput></para><para>
+
+<para>Konstruktor klasy <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link>. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje widok graficzny, ustawia kotwicę transformacji pod kursorem myszy (AnchorUnderMouse) oraz tryb przeciągania (ScrollHandDrag). Ustawia początkowy współczynnik skali na 1.0. </para>
+</section>
+</section>
+</section>
+<section>
+<title>Dokumentacja funkcji składowych</title>
+<anchor xml:id="_class_zoomable_graphics_view_1ac9369ca9bad87c801280cb80268ded94"/><section>
+    <title>wheelEvent()</title>
+<indexterm><primary>wheelEvent</primary><secondary>ZoomableGraphicsView</secondary></indexterm>
+<indexterm><primary>ZoomableGraphicsView</primary><secondary>wheelEvent</secondary></indexterm>
+<para><computeroutput>void ZoomableGraphicsView::wheelEvent (QWheelEvent * event)<computeroutput>[inline]</computeroutput>, <computeroutput>[override]</computeroutput>, <computeroutput>[protected]</computeroutput></computeroutput></para><para>
+
+<para>Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>event</entry><entry>
+<para>Wskaźnik na zdarzenie kółka myszy.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Przetwarza zdarzenia kółka myszy, zwiększając skalę obrazu o współczynnik 1.15 (zoom in) lub zmniejszając o 1/1.15 (zoom out) w zależności od kierunku przewijania. Aktualizuje zmienną m_scaleFactor i akceptuje zdarzenie, aby zapobiec jego dalszemu przetwarzaniu. </para>
+</section>
+</section>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+include/<link linkend="_fullscreenphotoviewer_8h">fullscreenphotoviewer.h</link></section>
+</section>

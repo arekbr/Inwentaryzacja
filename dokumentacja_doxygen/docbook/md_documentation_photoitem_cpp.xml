@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md_documentation_photoitem_cpp" xml:lang="pl">
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md100">
+<title>Metadane</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Plik</emphasis>: <link linkend="_photoitem_8cpp">photoitem.cpp</link></para>
+</listitem><listitem>
+<para><emphasis role="bold">Wersja</emphasis>: 1.2.2</para>
+</listitem><listitem>
+<para><emphasis role="bold">Data</emphasis>: 2025-05-03</para>
+</listitem><listitem>
+<para><emphasis role="bold">Autorzy</emphasis>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md101">
+<title>Przegląd</title>
+
+<para>Plik <computeroutput><link linkend="_photoitem_8cpp">photoitem.cpp</link></computeroutput> zawiera implementację metod klasy <computeroutput><link linkend="_class_photo_item">PhotoItem</link></computeroutput>, która reprezentuje interaktywną miniaturę zdjęcia w scenie graficznej Qt (<computeroutput>QGraphicsView</computeroutput>) w aplikacji inwentaryzacyjnej. Klasa rozszerza <computeroutput>QGraphicsPixmapItem</computeroutput> o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po <computeroutput>QObject</computeroutput>, umożliwia emisję sygnałów (<computeroutput>clicked</computeroutput>, <computeroutput>doubleClicked</computeroutput>, <computeroutput>hovered</computeroutput>, <computeroutput>unhovered</computeroutput>) do integracji z logiką aplikacji, np. z klasą <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> dla wyboru lub podglądu zdjęć eksponatów.</para>
+</section>
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md102">
+<title>Struktura kodu</title>
+
+<para>Kod jest podzielony na następujące sekcje:</para>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Sekcja konstruktora</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Inicjalizuje obiekt, ramkę graficzną i włącza zdarzenia hover.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja destruktora</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Zwalnia zasoby ramki.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod publicznych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>setSelected</computeroutput>: Ustawia stan zaznaczenia i aktualizuje ramkę.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod chronionych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>mousePressEvent</computeroutput>: Obsługuje kliknięcia myszą.</para>
+</listitem><listitem>
+<para><computeroutput>mouseDoubleClickEvent</computeroutput>: Obsługuje podwójne kliknięcia.</para>
+</listitem><listitem>
+<para><computeroutput>hoverEnterEvent</computeroutput>: Obsługuje najechanie kursorem.</para>
+</listitem><listitem>
+<para><computeroutput>hoverLeaveEvent</computeroutput>: Obsługuje opuszczenie kursora.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod prywatnych</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para><computeroutput>updateFrame</computeroutput>: Aktualizuje wygląd ramki zaznaczenia.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md103">
+<title>Opis działania</title>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Inicjalizacja</emphasis>:<itemizedlist>
+<listitem>
+<para>Konstruktor tworzy obiekt jako <computeroutput>QObject</computeroutput> i <computeroutput>QGraphicsPixmapItem</computeroutput>, ustawia flagi <computeroutput>m_pressed</computeroutput> i <computeroutput>m_selected</computeroutput> na <computeroutput>false</computeroutput>, tworzy ramkę (<computeroutput>m_frame</computeroutput>) jako dziecko, włącza zdarzenia hover (<computeroutput>setAcceptHoverEvents(true)</computeroutput>), wyłącza zdarzenia dotykowe i ustawia ramkę jako niewidoczną (<computeroutput>Qt::NoPen</computeroutput>, <computeroutput>Qt::NoBrush</computeroutput>).</para>
+</listitem><listitem>
+<para>Ramka ma wyższy priorytet rysowania (<computeroutput>setZValue(1)</computeroutput>), aby była widoczna nad miniaturą.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Interfejs graficzny</emphasis>:<itemizedlist>
+<listitem>
+<para>Wyświetla miniaturę zdjęcia (np. 80x80 pikseli w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>) w <computeroutput>QGraphicsView</computeroutput>.</para>
+</listitem><listitem>
+<para>Przy zaznaczeniu (<computeroutput>m_selected == true</computeroutput>), pokazuje czerwoną ramkę o szerokości 2 piksele, obejmującą miniaturę z marginesem (-2, +2 piksele).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Interakcje</emphasis>:<itemizedlist>
+<listitem>
+<para><emphasis role="bold">Kliknięcia</emphasis> (<computeroutput>mousePressEvent</computeroutput>):<itemizedlist>
+<listitem>
+<para>Prawe kliknięcie emituje <computeroutput>clicked</computeroutput> (np. dla podglądu zdjęcia w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Lewe kliknięcie jest przekazywane do <computeroutput>QGraphicsPixmapItem</computeroutput>, aby umożliwić wykrycie podwójnego kliknięcia.</para>
+</listitem><listitem>
+<para>Inne przyciski są obsługiwane domyślnie.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Podwójne kliknięcia</emphasis> (<computeroutput>mouseDoubleClickEvent</computeroutput>):<itemizedlist>
+<listitem>
+<para>Lewe podwójne kliknięcie emituje <computeroutput>doubleClicked</computeroutput> (np. dla pełnoekranowego podglądu).</para>
+</listitem><listitem>
+<para>Inne przyciski są obsługiwane domyślnie.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Hover</emphasis>:<itemizedlist>
+<listitem>
+<para>Najechanie (<computeroutput>hoverEnterEvent</computeroutput>) emituje <computeroutput>hovered</computeroutput> (np. dla podświetlenia, nieużywane w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Opuszczenie (<computeroutput>hoverLeaveEvent</computeroutput>) emituje <computeroutput>unhovered</computeroutput> (np. dla usunięcia podświetlenia).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>Wszystkie zdarzenia są przekazywane do <computeroutput>QGraphicsPixmapItem</computeroutput> dla domyślnej obsługi.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zaznaczenie</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>setSelected</computeroutput> ustawia <computeroutput>m_selected</computeroutput> i wywołuje <computeroutput>updateFrame</computeroutput>.</para>
+</listitem><listitem>
+<para><computeroutput>updateFrame</computeroutput> rysuje czerwoną ramkę (2 piksele) dla <computeroutput>m_selected == true</computeroutput> lub ukrywa ją (<computeroutput>Qt::NoPen</computeroutput>) dla <computeroutput>m_selected == false</computeroutput>.</para>
+</listitem><listitem>
+<para>Ramka jest dopasowana do granic miniatury (<computeroutput>boundingRect</computeroutput>) z marginesem.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Integracja</emphasis>:<itemizedlist>
+<listitem>
+<para>Sygnał <computeroutput>clicked</computeroutput> jest podłączony w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput> do <computeroutput>onPhotoClicked</computeroutput> dla wyboru miniatury (np. do usunięcia lub podglądu).</para>
+</listitem><listitem>
+<para>Sygnał <computeroutput>doubleClicked</computeroutput> może być użyty do pełnoekranowego podglądu (niezrealizowane w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>).</para>
+</listitem><listitem>
+<para>Sygnały <computeroutput>hovered</computeroutput> i <computeroutput>unhovered</computeroutput> są zdefiniowane, ale nieużywane w obecnej implementacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md104">
+<title>Zależności</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Biblioteki Qt</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>QGraphicsSceneMouseEvent</computeroutput>, <computeroutput>QPainter</computeroutput>, <computeroutput>QPen</computeroutput>, <computeroutput>QUuid</computeroutput>: Obsługa zdarzeń myszy, rysowania i generowania UUID.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput><link linkend="_photoitem_8h">photoitem.h</link></computeroutput>: Definicja klasy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>:<itemizedlist>
+<listitem>
+<para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation_photoitem_cpp_1autotoc_md105">
+<title>Uwagi</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem>
+<para>Klasa jest zoptymalizowana dla miniatur zdjęć w <computeroutput><link linkend="_class_main_window">MainWindow</link></computeroutput>, ale sygnały <computeroutput>hovered</computeroutput> i <computeroutput>unhovered</computeroutput> nie są wykorzystywane, co sugeruje możliwość dodania podświetlania lub tooltipów.</para>
+</listitem><listitem>
+<para>Flaga <computeroutput>m_pressed</computeroutput> jest zdefiniowana, ale nieużywana, co może wskazywać na planowane funkcje (np. przeciąganie miniatur).</para>
+</listitem><listitem>
+<para>Ramka zaznaczenia jest statyczna (czerwona, 2 piksele), ale może być dostosowana (np. kolor, grubość) w przyszłych wersjach.</para>
+</listitem><listitem>
+<para>Obsługa prawego przycisku dla <computeroutput>clicked</computeroutput> może być rozszerzona o menu kontekstowe (np. &quot;Usuń&quot;, &quot;Podgląd&quot;).</para>
+</listitem><listitem>
+<para>Klasa nie zależy od bazy danych ani innych komponentów aplikacji, co czyni ją uniwersalną dla scen graficznych Qt. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>

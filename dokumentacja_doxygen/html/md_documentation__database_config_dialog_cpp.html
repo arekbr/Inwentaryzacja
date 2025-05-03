@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;DatabaseConfigDialog.cpp&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation__database_config_dialog_cpp.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="_database_config_dialog_8cpp.html" title="Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki g...">DatabaseConfigDialog.cpp</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md8"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="_database_config_dialog_8cpp.html" title="Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki g...">DatabaseConfigDialog.cpp</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md9"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="_database_config_dialog_8cpp.html" title="Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki g...">DatabaseConfigDialog.cpp</a></code> zawiera implementację metod klasy <code><a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a></code>, odpowiedzialnej za konfigurację parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wybór skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Implementacja obejmuje ładowanie stylów QSS, czcionek, zapis ustawień w <code>QSettings</code> oraz obsługę dynamicznego wyboru pliku SQLite z możliwością tworzenia nowego pliku <code>.db</code>.</p>
+<h1><a class="anchor" id="autotoc_md10"></a>
+Struktura kodu</h1>
+<p >Kod jest podzielony na następujące sekcje:</p>
+<ol type="1">
+<li><b>Sekcja pomocnicza</b> <br  />
+<ul>
+<li>Funkcja <code>getSettings()</code>: Tworzy i zwraca obiekt <code>QSettings</code> dla pliku <code>inwentaryzacja.ini</code>.</li>
+</ul>
+</li>
+<li><b>Sekcja konstruktora</b> <br  />
+<ul>
+<li>Inicjalizuje interfejs użytkownika, combo boxy, wczytuje zapisane ustawienia i ustanawia połączenia sygnałów-slotów.</li>
+</ul>
+</li>
+<li><b>Sekcja destruktora</b> <br  />
+<ul>
+<li>Zwalnia zasoby interfejsu i odrejestrowuje czcionki.</li>
+</ul>
+</li>
+<li><b>Sekcja metod publicznych</b> <br  />
+<ul>
+<li>Metody dostępowe do parametrów bazy danych.</li>
+<li>Metoda <code>accept()</code>: Zapisuje ustawienia i zamyka okno dialogowe.</li>
+</ul>
+</li>
+<li><b>Sekcja slotów prywatnych</b> <br  />
+<ul>
+<li><code>onDatabaseTypeChanged(int index)</code>: Przełącza interfejs w zależności od typu bazy danych.</li>
+<li><code>onSkinChanged(const QString &amp;skin)</code>: Aktualizuje styl i czcionkę dla wybranej skórki.</li>
+</ul>
+</li>
+<li><b>Sekcja metod prywatnych</b> <br  />
+<ul>
+<li><code>loadStyleSheet(const QString &amp;skin)</code>: Ładuje plik QSS dla wybranej skórki.</li>
+<li><code>loadFont(const QString &amp;skin)</code>: Ładuje czcionkę dla wybranej skórki.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md11"></a>
+Opis działania</h1>
+<ol type="1">
+<li><b>Inicjalizacja</b>:<ul>
+<li>Konstruktor konfiguruje interfejs użytkownika (<code>ui-&gt;setupUi</code>), wypełnia combo boxy opcjami bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard).</li>
+<li>Wczytuje zapisane ustawienia z <code>QSettings</code> i ustawia początkowe wartości pól (np. ścieżka SQLite, dane MySQL, wybrana skórka).</li>
+<li>Ustanawia połączenia sygnałów-slotów dla przycisków, combo boxów i wyboru pliku SQLite.</li>
+</ul>
+</li>
+<li><b>Wybór pliku SQLite</b>:<ul>
+<li>Przycisk <code>selectFileButton</code> otwiera okno dialogowe <code>QFileDialog::getSaveFileName</code>, umożliwiając wybór istniejącego lub nowego pliku <code>.db</code>.</li>
+<li>Jeśli wybrany plik nie istnieje, tworzony jest pusty plik.</li>
+</ul>
+</li>
+<li><b>Zmiana typu bazy danych</b>:<ul>
+<li>Slot <code>onDatabaseTypeChanged</code> przełącza strony w <code>QStackedWidget</code>, pokazując pola odpowiednie dla SQLite lub MySQL.</li>
+</ul>
+</li>
+<li><b>Zmiana skórki graficznej</b>:<ul>
+<li>Slot <code>onSkinChanged</code> wywołuje <code>loadStyleSheet</code> i <code>loadFont</code>, aktualizując styl i czcionkę aplikacji.</li>
+<li>Wybór skórki jest zapisywany w <code>QSettings</code>.</li>
+</ul>
+</li>
+<li><b>Zatwierdzanie ustawień</b>:<ul>
+<li>Metoda <code>accept</code> zapisuje wszystkie parametry (baza danych, skórka) w <code>QSettings</code> i zamyka okno dialogowe.</li>
+</ul>
+</li>
+<li><b>Ładowanie stylów i czcionek</b>:<ul>
+<li><code>loadStyleSheet</code> wczytuje plik QSS z zasobów Qt i stosuje go za pomocą <code>qApp-&gt;setStyleSheet</code>.</li>
+<li><code>loadFont</code> ładuje czcionkę (np. <code>topaz.ttf</code> dla Amigi) za pomocą <code>QFontDatabase</code>, ustawia ją dla aplikacji i resetuje paletę/styl dla propagacji zmian.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md12"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QApplication</code>: Ustawianie stylów i czcionek dla aplikacji.</li>
+<li><code>QDebug</code>, <code>qWarning</code>: Logowanie komunikatów diagnostycznych.</li>
+<li><code>QDir</code>, <code>QFile</code>: Obsługa plików konfiguracyjnych i zasobów.</li>
+<li><code>QFileDialog</code>: Wybór pliku SQLite.</li>
+<li><code>QFontDatabase</code>: Ładowanie i zarządzanie czcionkami.</li>
+<li><code>QPushButton</code>, <code>QSettings</code>: Obsługa interfejsu i zapisu ustawień.</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li><code><a class="el" href="ui___database_config_dialog_8h_source.html">ui_DatabaseConfigDialog.h</a></code>: Plik generowany przez Qt Designer.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Pliki QSS (<code>:/styles/amiga.qss</code>, <code>:/styles/atari8bit.qss</code>, <code>:/styles/zxspectrum.qss</code>, <code>:/styles/default.qss</code>).</li>
+<li>Czcionki (<code>:/fonts/topaz.ttf</code>, <code>:/fonts/zxspectrum.ttf</code>, <code>:/fonts/EightBit Atari-Ataripl.ttf</code>).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md13"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Ustawienia są zapisywane w pliku <code>inwentaryzacja.ini</code> w katalogu aplikacji.</li>
+<li>W przypadku błędów ładowania zasobów (np. czcionek lub QSS) aplikacja przechodzi na domyślne ustawienia i loguje ostrzeżenia.</li>
+<li>Czcionki są odrejestrowywane w destruktorze, aby zapobiec wyciekom pamięci. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

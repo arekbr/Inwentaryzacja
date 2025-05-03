@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;storage.h&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation_storage_h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="storage_8h.html" title="Deklaracja klasy storage służącej do zarządzania miejscami przechowywania eksponatów w aplikacji inwe...">storage.h</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md135"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="storage_8h.html" title="Deklaracja klasy storage służącej do zarządzania miejscami przechowywania eksponatów w aplikacji inwe...">storage.h</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md136"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="storage_8h.html" title="Deklaracja klasy storage służącej do zarządzania miejscami przechowywania eksponatów w aplikacji inwe...">storage.h</a></code> definiuje klasę <code>storage</code>, która reprezentuje okno dialogowe do zarządzania miejscami przechowywania eksponatów (np. magazyny, półki, pokoje) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie lokalizacji w tabeli <code>storage_places</code> w bazie danych oraz synchronizację z głównym oknem (<code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>) w celu odświeżenia combo boxów lokalizacji po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy <code>models</code>, <code>status</code> czy <code>vendors</code>.</p>
+<h1><a class="anchor" id="autotoc_md137"></a>
+Struktura kodu</h1>
+<p >Plik nagłówkowy zawiera następujące elementy:</p>
+<ol type="1">
+<li><b>Deklaracja klasy <code>storage</code></b> <br  />
+<ul>
+<li>Dziedziczy po <code>QDialog</code>.</li>
+<li>Używa makra <code>Q_OBJECT</code> dla wsparcia mechanizmu sygnałów i slotów Qt.</li>
+</ul>
+</li>
+<li><b>Metody publiczne</b> <br  />
+<ul>
+<li>Konstruktor: Inicjalizuje okno dialogowe, interfejs i połączenie z bazą danych.</li>
+<li>Destruktor: Zwalnia zasoby.</li>
+<li><code>setMainWindow</code>: Ustawia referencję do <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> dla odświeżania combo boxów.</li>
+</ul>
+</li>
+<li><b>Sloty prywatne</b> <br  />
+<ul>
+<li><code>onAddClicked</code>: Dodaje nową lokalizację do tabeli <code>storage_places</code>.</li>
+<li><code>onEditClicked</code>: Edytuje nazwę istniejącej lokalizacji.</li>
+<li><code>onDeleteClicked</code>: Usuwa wybraną lokalizację po potwierdzeniu.</li>
+<li><code>onOkClicked</code>: Odświeża combo box w <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> i zamyka okno.</li>
+</ul>
+</li>
+<li><b>Metody prywatne</b> <br  />
+<ul>
+<li><code>refreshList</code>: Odświeża listę lokalizacji w <code>QListView</code>.</li>
+</ul>
+</li>
+<li><b>Zmienne prywatne</b> <br  />
+<ul>
+<li><code>ui</code>: Wskaźnik na interfejs użytkownika.</li>
+<li><code>m_mainWindow</code>: Wskaźnik na główne okno aplikacji.</li>
+<li><code>m_db</code>: Połączenie z bazą danych MySQL.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md138"></a>
+Opis działania</h1>
+<ul>
+<li><b>Inicjalizacja</b>: Konstruktor konfiguruje interfejs (<code>ui-&gt;setupUi</code>), ustala połączenie z bazą danych (<code>default_connection</code>), ustawia tytuł okna ("Zarządzanie miejscami przechowywania"), podłącza sloty dla przycisków i odświeża listę lokalizacji.</li>
+<li><b>Interfejs</b>: Zawiera <code>QListView</code> do wyświetlania lokalizacji, <code>QLineEdit</code> do wprowadzania nazwy lokalizacji oraz przyciski (Dodaj, Edytuj, Usuń, OK, Anuluj).</li>
+<li><b>Zarządzanie lokalizacjami</b>:<ul>
+<li><b>Dodawanie</b>: Pobiera nazwę z <code>QLineEdit</code>, generuje UUID, zapisuje lokalizację w tabeli <code>storage_places</code>.</li>
+<li><b>Edycja</b>: Otwiera <code>QInputDialog</code> dla wybranej nazwy lokalizacji, aktualizuje rekord w bazie.</li>
+<li><b>Usuwanie</b>: Usuwa lokalizację po potwierdzeniu, wykonując zapytanie <code>DELETE</code>.</li>
+</ul>
+</li>
+<li><b>Integracja z <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code></b>: Po zatwierdzeniu zmian (<code>onOkClicked</code>), odświeża combo box lokalizacji w głównym oknie, jeśli <code>m_mainWindow</code> jest ustawione.</li>
+<li><b>Baza danych</b>: Operuje na tabeli <code>storage_places</code> z polami <code>id</code> (UUID) i <code>name</code> (nazwa lokalizacji).</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md139"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QDialog</code>, <code>QSqlDatabase</code>: Obsługa okna dialogowego i bazy danych.</li>
+</ul>
+</li>
+<li><b>Nagłówki aplikacji</b>:<ul>
+<li><code><a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a></code>: Deklaracja klasy <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code> dla komunikacji.</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li><code><a class="el" href="ui__storage_8h_source.html">ui_storage.h</a></code>: Plik generowany przez Qt Designer.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md140"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Klasa jest częścią systemu słownikowego, wspiera zarządzanie lokalizacjami w kontekście eksponatów.</li>
+<li>Połączenie z bazą danych (<code>default_connection</code>) jest współdzielone z innymi komponentami (np. <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>, <code>models</code>).</li>
+<li>Operacje CRUD (Create, Read, Update, Delete) opierają się na nazwie lokalizacji, co może powodować problemy przy duplikatach (brak unikalności w schemacie bazy).</li>
+<li>Klasa nie filtruje lokalizacji (np. po typie magazynu), co może być rozszerzone w przyszłości. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

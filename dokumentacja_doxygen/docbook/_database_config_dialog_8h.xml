@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__database_config_dialog_8h" xml:lang="pl">
+<title>Dokumentacja pliku include/DatabaseConfigDialog.h</title>
+<indexterm><primary>include/DatabaseConfigDialog.h</primary></indexterm>
+<para>
+
+<para>Deklaracja klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link> do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &lt;QDialog&gt;
+#include &lt;QString&gt;
+</programlisting>Wykres zależności załączania dla DatabaseConfigDialog.h:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="_database_config_dialog_8h__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="_database_config_dialog_8h__dep__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Komponenty    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></para>
+
+<para>Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Deklaracja klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link> do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej. </para>
+
+<para><formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </para>
+</formalpara>
+<formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025- istituti-03</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik <link linkend="__database_config_dialog_8h">DatabaseConfigDialog.h</link> definiuje klasę <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>, która reprezentuje okno dialogowe służące do konfiguracji parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wyboru skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Klasa umożliwia zapis ustawień w QSettings, dynamiczną zmianę stylów i czcionek oraz zapewnia metody dostępowe do parametrów połączenia z bazą danych.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Definicję klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link></emphasis> – dziedziczy po QDialog, zawiera publiczne metody dostępowe, sloty oraz prywatne metody i zmienne.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Deklaracje metod publicznych</emphasis> – konstruktor, destruktor oraz metody zwracające parametry bazy danych.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Deklaracje slotów</emphasis> – obsługa zatwierdzania danych i zmiany typu bazy danych lub skórki graficznej.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Deklaracje metod prywatnych</emphasis> – ładowanie arkuszy stylów i czcionek dla wybranych skórek.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zmienne prywatne</emphasis> – wskaźnik na interfejs użytkownika oraz identyfikatory załadowanych czcionek.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QDialog, QString oraz mechanizmów sygnałów i slotów.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Namespace Ui</emphasis>: Zawiera definicję interfejsu użytkownika (<link linkend="_ui___database_config_dialog_8h_source">ui_DatabaseConfigDialog.h</link>).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>: Pliki QSS dla stylów (amiga.qss, atari8bit.qss, zxspectrum.qss, default.qss) oraz czcionki (topaz.ttf, zxspectrum.ttf, EightBit Atari-Ataripl.ttf).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dokumentacja i komentarze dodano bez ingerencji w oryginalny kod.</para>
+</listitem><listitem>
+<para>Klasa obsługuje trwałe przechowywanie ustawień za pomocą QSettings.</para>
+</listitem><listitem>
+<para>Interfejs użytkownika dynamicznie dostosowuje się do wybranego typu bazy danych (SQLite/MySQL) za pomocą QStackedWidget. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

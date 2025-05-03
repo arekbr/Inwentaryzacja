@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="dir_d44c64559bbebec7f509842c48db8b23" kind="dir">
+    <compoundname>include</compoundname>
+    <innerfile refid="_database_config_dialog_8h">DatabaseConfigDialog.h</innerfile>
+    <innerfile refid="fullscreenphotoviewer_8h">fullscreenphotoviewer.h</innerfile>
+    <innerfile refid="_item_filter_proxy_model_8h">ItemFilterProxyModel.h</innerfile>
+    <innerfile refid="item_list_8h">itemList.h</innerfile>
+    <innerfile refid="mainwindow_8h">mainwindow.h</innerfile>
+    <innerfile refid="models_8h">models.h</innerfile>
+    <innerfile refid="photoitem_8h">photoitem.h</innerfile>
+    <innerfile refid="status_8h">status.h</innerfile>
+    <innerfile refid="storage_8h">storage.h</innerfile>
+    <innerfile refid="types_8h">types.h</innerfile>
+    <innerfile refid="utils_8h">utils.h</innerfile>
+    <innerfile refid="vendors_8h">vendors.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/"/>
+  </compounddef>
+</doxygen>

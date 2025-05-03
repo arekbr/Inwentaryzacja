@@ -1,0 +1,99 @@
+\hypertarget{md_documentation_main_autotoc_md64}{}\doxysection{Metadane}\label{md_documentation_main_autotoc_md64}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{main_8cpp}{main.\+cpp}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_main_autotoc_md65}{}\doxysection{Przegląd}\label{md_documentation_main_autotoc_md65}
+Plik {\ttfamily \mbox{\hyperlink{main_8cpp}{main.\+cpp}}} jest głównym punktem wejścia aplikacji inwentaryzacyjnej opartej na bibliotece Qt. Odpowiada za inicjalizację aplikacji, ustawienie jej podstawowych właściwości (nazwa, wersja, ikona), ładowanie tłumaczeń językowych, wyświetlanie okna konfiguracji bazy danych oraz nawiązywanie połączenia z wybraną bazą danych (SQLite lub My\+SQL). Po poprawnym skonfigurowaniu środowiska uruchamia główne okno aplikacji reprezentowane przez klasę {\ttfamily \mbox{\hyperlink{classitem_list}{item\+List}}}.\hypertarget{md_documentation_main_autotoc_md66}{}\doxysection{Struktura kodu}\label{md_documentation_main_autotoc_md66}
+Kod jest zorganizowany w następujące sekcje funkcjonalne\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja aplikacji Qt}} ~\newline
+
+\begin{DoxyItemize}
+\item Tworzy instancję {\ttfamily QApplication} i ustawia styl graficzny \char`\"{}\+Fusion\char`\"{} dla spójnego wyglądu.
+\item Ustawia nazwę aplikacji (\char`\"{}\+Inwentaryzacja\char`\"{}) i wersję (1.\+2.\+2).
+\item Ładuje i ustawia ikonę aplikacji z zasobów Qt ({\ttfamily \+:/images/icon.png}).
+\end{DoxyItemize}
+\item {\bfseries{Ładowanie tłumaczeń}} ~\newline
+
+\begin{DoxyItemize}
+\item Wczytuje tłumaczenia językowe na podstawie języka systemowego użytkownika.
+\item Pliki tłumaczeń ({\ttfamily Inwentaryzacja\+\_\+$\ast$.qm}) znajdują się w zasobach Qt ({\ttfamily \+:/i18n/}).
+\item Po znalezieniu odpowiedniego pliku tłumaczenia, instaluje go w aplikacji.
+\end{DoxyItemize}
+\item {\bfseries{Konfiguracja bazy danych}} ~\newline
+
+\begin{DoxyItemize}
+\item Wyświetla okno dialogowe {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}, w którym użytkownik wybiera typ bazy danych (SQLite lub My\+SQL) i wprowadza parametry połączenia.
+\item Jeśli użytkownik anuluje konfigurację, aplikacja kończy działanie.
+\end{DoxyItemize}
+\item {\bfseries{Nawiązywanie połączenia z bazą danych}} ~\newline
+
+\begin{DoxyItemize}
+\item Pobiera wybrany typ bazy danych i odpowiednie parametry z {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}.
+\item Obsługuje dwa typy baz danych\+:
+\begin{DoxyItemize}
+\item {\bfseries{SQLite}}\+: Sprawdza ścieżkę do pliku bazy i wywołuje funkcję {\ttfamily setup\+Database} z parametrem ścieżki.
+\item {\bfseries{My\+SQL}}\+: Przekazuje dane dostępowe (host, nazwa bazy, użytkownik, hasło, port) do funkcji {\ttfamily setup\+Database}.
+\end{DoxyItemize}
+\item Loguje błędy w przypadku niepoprawnego typu bazy danych lub nieudanego połączenia.
+\end{DoxyItemize}
+\item {\bfseries{Uruchamianie głównego okna}} ~\newline
+
+\begin{DoxyItemize}
+\item Tworzy i wyświetla główne okno aplikacji ({\ttfamily \mbox{\hyperlink{classitem_list}{item\+List}}}), które zawiera interfejs użytkownika do zarządzania inwentaryzacją.
+\end{DoxyItemize}
+\item {\bfseries{Pętla zdarzeń Qt}} ~\newline
+
+\begin{DoxyItemize}
+\item Uruchamia główną pętlę zdarzeń Qt za pomocą {\ttfamily QApplication\+::exec()}, obsługującą interakcje użytkownika i zdarzenia systemowe.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_main_autotoc_md67}{}\doxysection{Opis działania}\label{md_documentation_main_autotoc_md67}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja}}\+: Po uruchomieniu aplikacji tworzona jest instancja {\ttfamily QApplication}, która zarządza cyklem życia aplikacji Qt. Styl \char`\"{}\+Fusion\char`\"{} zapewnia spójny wygląd na różnych platformach.
+\item {\bfseries{Tłumaczenia}}\+: Aplikacja próbuje załadować tłumaczenia na podstawie języka systemowego, co umożliwia lokalizację interfejsu użytkownika.
+\item {\bfseries{Konfiguracja bazy danych}}\+: Użytkownik musi skonfigurować połączenie z bazą danych za pomocą okna {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}. Jeśli konfiguracja zostanie anulowana, aplikacja kończy działanie.
+\item {\bfseries{Połączenie z bazą danych}}\+: Funkcja {\ttfamily setup\+Database} (zdefiniowana w {\ttfamily \mbox{\hyperlink{utils_8h}{utils.\+h}}}) jest wywoływana z odpowiednimi parametrami w zależności od typu bazy danych. W przypadku niepowodzenia aplikacja kończy działanie.
+\item {\bfseries{Główne okno}}\+: Po pomyślnym połączeniu z bazą danych wyświetlane jest główne okno aplikacji, które umożliwia użytkownikowi interakcję z danymi inwentaryzacyjnymi.
+\item {\bfseries{Pętla zdarzeń}}\+: Aplikacja przechodzi w tryb oczekiwania na zdarzenia użytkownika, takie jak kliknięcia czy wprowadzanie danych.
+\end{DoxyEnumerate}\hypertarget{md_documentation_main_autotoc_md68}{}\doxysection{Zależności}\label{md_documentation_main_autotoc_md68}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QApplication}\+: Zarządzanie aplikacją i cyklem zdarzeń.
+\item {\ttfamily QCore\+Application}\+: Ustawianie metadanych aplikacji.
+\item {\ttfamily QDebug}\+: Logowanie komunikatów diagnostycznych.
+\item {\ttfamily QDir\+Iterator}\+: (Nieużywane wprost, ale włączone w pliku).
+\item {\ttfamily QTranslator}\+: Obsługa tłumaczeń językowych.
+\item {\ttfamily QIcon}\+: Ustawianie ikony aplikacji.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{_database_config_dialog_8h}{Database\+Config\+Dialog.\+h}}}\+: Okno konfiguracji bazy danych.
+\item {\ttfamily \mbox{\hyperlink{item_list_8h}{item\+List.\+h}}}\+: Główne okno aplikacji.
+\item {\ttfamily \mbox{\hyperlink{utils_8h}{utils.\+h}}}\+: Funkcje pomocnicze, w tym {\ttfamily setup\+Database}.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Ikona aplikacji ({\ttfamily \+:/images/icon.png}).
+\item Pliki tłumaczeń ({\ttfamily \+:/i18n/\+Inwentaryzacja\+\_\+$\ast$.qm}).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_main_autotoc_md69}{}\doxysection{Uwagi}\label{md_documentation_main_autotoc_md69}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Aplikacja wymaga poprawnego skonfigurowania bazy danych, aby przejść do głównego okna.
+\item Styl graficzny i czcionki są zarządzane przez {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}} po zatwierdzeniu ustawień.
+\item W przypadku błędów (np. brak pliku SQLite lub niepoprawny typ bazy danych) aplikacja loguje komunikaty za pomocą {\ttfamily q\+Debug} i kończy działanie.
+\end{DoxyItemize}\hypertarget{md_documentation_main_autotoc_md70}{}\doxysection{Wartości zwracane}\label{md_documentation_main_autotoc_md70}
+
+\begin{DoxyItemize}
+\item {\bfseries{0}}\+: Aplikacja zakończyła się pomyślnie lub użytkownik anulował konfigurację.
+\item {\bfseries{Inne}}\+: Błąd podczas nawiązywania połączenia z bazą danych lub nieznany typ bazy danych. 
+\end{DoxyItemize}

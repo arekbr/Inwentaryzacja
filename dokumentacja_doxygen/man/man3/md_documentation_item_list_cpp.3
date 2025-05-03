@@ -1,0 +1,177 @@
+.TH "md_documentation_item_list_cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_item_list_cpp \- Dokumentacja dla pliku \fC\fBitemList\&.cpp\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBitemList\&.cpp\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBitemList\&.cpp\fP\fP zawiera implementację metod klasy \fC\fBitemList\fP\fP, która zarządza listą eksponatów w aplikacji inwentaryzacyjnej\&. Obsługuje połączenie z bazą danych MySQL, filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz operacje CRUD (dodawanie, edycja, usuwanie, klonowanie rekordów)\&. Skórka graficzna i czcionki są zarządzane przez klasę \fC\fBDatabaseConfigDialog\fP\fP\&.
+.SH "Struktura kodu"
+.PP
+Kod jest podzielony na następujące sekcje:
+.PP
+.IP "1." 4
+\fBSekcja konstruktora\fP 
+.br
+.IP "  \(bu" 4
+Inicjalizuje interfejs, model danych, model proxy, filtry i połączenia sygnałów-slotów\&.
+.PP
+
+.IP "2." 4
+\fBSekcja destruktora\fP 
+.br
+.IP "  \(bu" 4
+Zwalnia zasoby, zatrzymuje timery\&.
+.PP
+
+.IP "3." 4
+\fBSekcja slotów\fP 
+.br
+.IP "  \(bu" 4
+Obsługuje interakcje użytkownika: przyciski (dodaj, edytuj, usuń, klonuj, zakończ, o programie), zmiana zaznaczenia w tabeli, zapis rekordu, interakcje ze zdjęciami (podgląd, pełny ekran), zmiana filtrów\&.
+.PP
+
+.IP "4." 4
+\fBSekcja metod prywatnych\fP 
+.br
+.IP "  \(bu" 4
+Zarządza schematem bazy danych (\fCverifyDatabaseSchema\fP, \fCcreateDatabaseSchema\fP, \fCinsertSampleData\fP)\&.
+.IP "  \(bu" 4
+Inicjalizuje i odświeża filtry (\fCinitFilters\fP, \fCrefreshFilters\fP, \fCupdateFilterComboBoxes\fP)\&.
+.IP "  \(bu" 4
+Obsługuje zdarzenia dla okna podglądu zdjęć (\fCeventFilter\fP)\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "1." 4
+\fBInicjalizacja\fP:
+.IP "  \(bu" 4
+Konstruktor ustawia interfejs użytkownika (\fCui->setupUi\fP), łączy się z bazą MySQL, inicjalizuje model danych (\fCQSqlRelationalTableModel\fP) z relacjami do tabel \fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatuses\fP, \fCstorage_places\fP\&.
+.IP "  \(bu" 4
+Konfiguruje model proxy (\fC\fBItemFilterProxyModel\fP\fP), tabelę (\fCQTableView\fP) i combo boxy dla filtrów\&.
+.IP "  \(bu" 4
+Weryfikuje schemat bazy danych, tworząc go i wstawiając przykładowe dane, jeśli nie istnieje\&.
+.IP "  \(bu" 4
+Ustawia połączenia sygnałów-slotów dla przycisków, tabeli i filtrów\&.
+.PP
+
+.IP "2." 4
+\fBFiltrowanie\fP:
+.IP "  \(bu" 4
+Metoda \fConFilterChanged\fP aktualizuje filtry w modelu proxy na podstawie wybranych wartości w combo boxach\&.
+.IP "  \(bu" 4
+\fCupdateFilterComboBoxes\fP odbudowuje listy combo boxów z uwzględnieniem kaskadowego filtrowania, pobierając unikalne wartości z bazy danych\&.
+.IP "  \(bu" 4
+\fCinitFilters\fP i \fCrefreshFilters\fP wypełniają i odświeżają combo boxy danymi z bazy\&.
+.PP
+
+.IP "3." 4
+\fBOperacje CRUD\fP:
+.IP "  \(bu" 4
+\fConNewButtonClicked\fP, \fConEditButtonClicked\fP, \fConCloneButtonClicked\fP: Otwierają okno \fC\fBMainWindow\fP\fP w odpowiednim trybie (dodawanie, edycja, klonowanie)\&.
+.IP "  \(bu" 4
+\fConDeleteButtonClicked\fP: Usuwa rekord po potwierdzeniu, wykonując zapytanie SQL i odświeżając model\&.
+.IP "  \(bu" 4
+\fConRecordSaved\fP: Odświeża listę po zapisaniu rekordu, zaznaczając zapisany rekord\&.
+.PP
+
+.IP "4." 4
+\fBZdjęcia\fP:
+.IP "  \(bu" 4
+\fConTableViewSelectionChanged\fP: Pobiera zdjęcia z tabeli \fCphotos\fP dla wybranego eksponatu i wyświetla miniatury w \fCQGraphicsView\fP\&.
+.IP "  \(bu" 4
+\fConPhotoHovered\fP: Pokazuje powiększone zdjęcie w oknie podglądu, pozycjonowanym względem miniatury\&.
+.IP "  \(bu" 4
+\fConPhotoUnhovered\fP i \fCeventFilter\fP: Zamykają okno podglądu, gdy kursor opuszcza miniaturę lub okno\&.
+.IP "  \(bu" 4
+\fConPhotoClicked\fP: Otwiera zdjęcie w trybie pełnoekranowym za pomocą \fC\fBFullScreenPhotoViewer\fP\fP\&.
+.PP
+
+.IP "5." 4
+\fBBaza danych\fP:
+.IP "  \(bu" 4
+\fCverifyDatabaseSchema\fP: Sprawdza istnienie wymaganych tabel\&.
+.IP "  \(bu" 4
+\fCcreateDatabaseSchema\fP: Tworzy tabele dla eksponatów, typów, producentów, modeli, statusów, miejsc przechowywania i zdjęć\&.
+.IP "  \(bu" 4
+\fCinsertSampleData\fP: Wstawia przykładowe dane z unikalnymi UUID\&.
+.PP
+
+.IP "6." 4
+\fBInterfejs\fP:
+.IP "  \(bu" 4
+Tabela wyświetla dane z ukrytą kolumną UUID, nagłówkami dostosowanymi do lokalizacji i możliwością zaznaczania wierszy\&.
+.IP "  \(bu" 4
+Przyciski obsługują operacje CRUD, zakończenie aplikacji i okno 'O programie'\&.
+.IP "  \(bu" 4
+Timer \fCm_keepAliveTimer\fP wykonuje zapytania SELECT co 30 sekund, aby utrzymać połączenie z MySQL\&.
+.IP "  \(bu" 4
+Timer \fCm_hoverCheckTimer\fP sprawdza pozycję kursora, zamykając okno podglądu, gdy kursor opuszcza odpowiedni obszar\&.
+.PP
+
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQApplication\fP, \fCQSqlDatabase\fP, \fCQSqlQuery\fP, \fCQGraphicsScene\fP, \fCQMessageBox\fP, \fCQTimer\fP, \fCQComboBox\fP, \fCQSqlRelationalTableModel\fP, itp\&.: Obsługa interfejsu, bazy danych, zdarzeń i grafiki\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBitemList\&.h\fP\fP: Definicja klasy\&.
+.IP "  \(bu" 4
+\fC\fBItemFilterProxyModel\&.h\fP\fP: Model proxy do filtrowania\&.
+.IP "  \(bu" 4
+\fC\fBfullscreenphotoviewer\&.h\fP\fP: Pełnoekranowy podgląd zdjęć\&.
+.IP "  \(bu" 4
+\fC\fBmainwindow\&.h\fP\fP: Okno edycji/dodawania rekordów\&.
+.IP "  \(bu" 4
+\fC\fBphotoitem\&.h\fP\fP: Klasa dla miniatur zdjęć\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_itemList\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w \fC\fBDatabaseConfigDialog\fP\fP)\&.
+.IP "\(bu" 2
+Filtrowanie kaskadowe wymaga relacyjnej struktury bazy danych z poprawnymi kluczami obcymi\&.
+.IP "\(bu" 2
+Zdjęcia są przechowywane jako \fCLONGBLOB\fP w tabeli \fCphotos\fP, co może wpłynąć na wydajność przy dużej liczbie rekordów\&.
+.IP "\(bu" 2
+Timer \fCm_keepAliveTimer\fP zapobiega timeoutom połączenia MySQL, ale zwiększa obciążenie bazy danych\&.
+.IP "\(bu" 2
+Okno podglądu zdjęć jest bezramkowe i przezroczyste, co zapewnia estetyczny wygląd, ale wymaga ostrożnego zarządzania zdarzeniami\&. 
+.PP
+

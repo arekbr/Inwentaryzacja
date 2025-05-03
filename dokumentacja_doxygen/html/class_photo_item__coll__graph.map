@@ -1,0 +1,5 @@
+<map id="PhotoItem" name="PhotoItem">
+<area shape="rect" id="node1" title="Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych." alt="" coords="70,80,159,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,80,32"/>
+<area shape="rect" id="node3" title=" " alt="" coords="104,5,272,32"/>
+</map>

@@ -1,0 +1,126 @@
+\hypertarget{classstorage}{}\doxysection{Dokumentacja klasy storage}
+\label{classstorage}\index{storage@{storage}}
+
+
+Okno dialogowe do zarządzania miejscami przechowywania eksponatów.  
+
+
+
+
+{\ttfamily \#include $<$storage.\+h$>$}
+
+
+
+Diagram dziedziczenia dla storage
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=136pt]{classstorage__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Diagram współpracy dla storage\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=136pt]{classstorage__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Metody publiczne}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classstorage_a28cc22b8d0bbcf9c46d017365966765d}{storage}} (QWidget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Konstruktor klasy storage. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classstorage_ac7d5664e97625603e30f649d45231b06}{$\sim$storage}} ()
+\begin{DoxyCompactList}\small\item\em Destruktor klasy storage. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classstorage_a30fc41ae15a27aa5d9ecaaff8ef646ff}{set\+Main\+Window}} (\mbox{\hyperlink{class_main_window}{Main\+Window}} $\ast$main\+Window)
+\begin{DoxyCompactList}\small\item\em Ustawia wskaźnik na główne okno aplikacji. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Okno dialogowe do zarządzania miejscami przechowywania eksponatów. 
+
+\hypertarget{class_zoomable_graphics_view_ClassOverview}{}\doxysubsection{Class\+Overview}\label{class_zoomable_graphics_view_ClassOverview}
+Klasa storage dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania miejsc przechowywania eksponatów (np. regały, magazyny) w bazie danych (tabela {\ttfamily storage\+\_\+places}). Współpracuje z klasą \mbox{\hyperlink{class_main_window}{Main\+Window}}, aby odświeżyć listę lokalizacji w combo boxie po zapisaniu zmian.\hypertarget{class_zoomable_graphics_view_Responsibilities}{}\doxysubsection{Responsibilities}\label{class_zoomable_graphics_view_Responsibilities}
+
+\begin{DoxyItemize}
+\item Wyświetlanie listy lokalizacji w QList\+View.
+\item Dodawanie nowych lokalizacji do tabeli {\ttfamily storage\+\_\+places} z unikalnym UUID.
+\item Edycja istniejących lokalizacji (zmiana nazwy).
+\item Usuwanie lokalizacji po potwierdzeniu użytkownika.
+\item Odświeżanie combo boxa lokalizacji w \mbox{\hyperlink{class_main_window}{Main\+Window}} po zapisaniu zmian. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja konstruktora i destruktora}
+\mbox{\Hypertarget{classstorage_a28cc22b8d0bbcf9c46d017365966765d}\label{classstorage_a28cc22b8d0bbcf9c46d017365966765d}} 
+\index{storage@{storage}!storage@{storage}}
+\index{storage@{storage}!storage@{storage}}
+\doxysubsubsection{\texorpdfstring{storage()}{storage()}}
+{\footnotesize\ttfamily storage\+::storage (\begin{DoxyParamCaption}\item[{QWidget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Konstruktor klasy storage. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget (domyślnie nullptr).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na widget nadrzędny (domyślnie nullptr).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych (\textquotesingle{}default\+\_\+connection\textquotesingle{}), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę lokalizacji w QList\+View. \mbox{\Hypertarget{classstorage_ac7d5664e97625603e30f649d45231b06}\label{classstorage_ac7d5664e97625603e30f649d45231b06}} 
+\index{storage@{storage}!````~storage@{$\sim$storage}}
+\index{````~storage@{$\sim$storage}!storage@{storage}}
+\doxysubsubsection{\texorpdfstring{$\sim$storage()}{~storage()}}
+{\footnotesize\ttfamily storage\+::$\sim$storage (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destruktor klasy storage. 
+
+\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Usuwa obiekt interfejsu użytkownika i zwalnia zasoby. 
+
+\doxysubsection{Dokumentacja funkcji składowych}
+\mbox{\Hypertarget{classstorage_a30fc41ae15a27aa5d9ecaaff8ef646ff}\label{classstorage_a30fc41ae15a27aa5d9ecaaff8ef646ff}} 
+\index{storage@{storage}!setMainWindow@{setMainWindow}}
+\index{setMainWindow@{setMainWindow}!storage@{storage}}
+\doxysubsubsection{\texorpdfstring{setMainWindow()}{setMainWindow()}}
+{\footnotesize\ttfamily void storage\+::set\+Main\+Window (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_main_window}{Main\+Window}} $\ast$}]{main\+Window }\end{DoxyParamCaption})}
+
+
+
+Ustawia wskaźnik na główne okno aplikacji. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em main\+Window} & Wskaźnik na obiekt klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia komunikację z głównym oknem w celu odświeżenia listy lokalizacji w combo boxie po zapisaniu zmian.
+
+
+\begin{DoxyParams}{Parametry}
+{\em main\+Window} & Wskaźnik do instancji klasy \mbox{\hyperlink{class_main_window}{Main\+Window}}.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Przechowuje referencję do \mbox{\hyperlink{class_main_window}{Main\+Window}}, umożliwiając odświeżanie combo boxa lokalizacji po zapisaniu zmian. 
+
+Dokumentacja dla tej klasy została wygenerowana z plików\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{storage_8h}{storage.\+h}}\item 
+src/\mbox{\hyperlink{storage_8cpp}{storage.\+cpp}}\end{DoxyCompactItemize}

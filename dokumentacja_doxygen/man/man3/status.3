@@ -1,0 +1,113 @@
+.TH "status" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+status \- Okno dialogowe do zarządzania statusami eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <status\&.h>\fP
+.PP
+Dziedziczy QDialog\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBstatus\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy status\&. "
+.ti -1c
+.RI "\fB~status\fP ()"
+.br
+.RI "Destruktor klasy status\&. "
+.ti -1c
+.RI "void \fBsetMainWindow\fP (\fBMainWindow\fP *mainWindow)"
+.br
+.RI "Ustawia wskaźnik na główne okno aplikacji\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Okno dialogowe do zarządzania statusami eksponatów\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa status dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania statusów eksponatów w bazie danych (tabela \fCstatuses\fP)\&. Współpracuje z klasą \fBMainWindow\fP, aby odświeżyć listę statusów w combo boxie po zapisaniu zmian\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie listy statusów w QListView\&.
+.IP "\(bu" 2
+Dodawanie nowych statusów do tabeli \fCstatuses\fP z unikalnym UUID\&.
+.IP "\(bu" 2
+Edycja istniejących statusów (zmiana nazwy)\&.
+.IP "\(bu" 2
+Usuwanie statusów po potwierdzeniu użytkownika\&.
+.IP "\(bu" 2
+Odświeżanie combo boxa statusów w \fBMainWindow\fP po zapisaniu zmian\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "status::status (QWidget * parent = \fCnullptr\fP)\fC [explicit]\fP"
+
+.PP
+Konstruktor klasy status\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget (domyślnie nullptr)\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget, domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych ('default_connection'), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę statusów w QListView\&. 
+.SS "status::~status ()"
+
+.PP
+Destruktor klasy status\&. 
+.SH "DestructorOverview"
+.PP
+Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne\&.
+.SH "DestructorOverview"
+.PP
+Usuwa obiekt interfejsu użytkownika i zwalnia zasoby\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "void status::setMainWindow (\fBMainWindow\fP * mainWindow)"
+
+.PP
+Ustawia wskaźnik na główne okno aplikacji\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik na obiekt \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia komunikację z głównym oknem w celu odświeżenia listy statusów w combo boxie po zapisaniu zmian\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik do obiektu \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Przechowuje referencję do \fBMainWindow\fP, umożliwiając odświeżanie combo boxa statusów po zapisaniu zmian\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

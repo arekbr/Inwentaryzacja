@@ -1,0 +1,413 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui__item_list" kind="class" language="C++" prot="public">
+    <compoundname>Ui_itemList</compoundname>
+    <derivedcompoundref refid="class_ui_1_1item_list" prot="public" virt="non-virtual">Ui::itemList</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_ui__item_list_1a414fee36b337dfd8a02b84ee20b6ecf2" prot="public" static="no" mutable="no">
+        <type>QVBoxLayout *</type>
+        <definition>QVBoxLayout* Ui_itemList::mainLayout</definition>
+        <argsstring></argsstring>
+        <name>mainLayout</name>
+        <qualifiedname>Ui_itemList::mainLayout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="29" column="17" bodyfile="build/ui_itemList.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a16f8697d767516428a2005fbe46721b6" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::headerLabel</definition>
+        <argsstring></argsstring>
+        <name>headerLabel</name>
+        <qualifiedname>Ui_itemList::headerLabel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="30" column="12" bodyfile="build/ui_itemList.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1ad262fb66e78df7a6ee9f569fa480e1b9" prot="public" static="no" mutable="no">
+        <type>QHBoxLayout *</type>
+        <definition>QHBoxLayout* Ui_itemList::filterLayout</definition>
+        <argsstring></argsstring>
+        <name>filterLayout</name>
+        <qualifiedname>Ui_itemList::filterLayout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="31" column="17" bodyfile="build/ui_itemList.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1afbdd51d99defd8cc6e05f502c49b3e26" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::labelFilterType</definition>
+        <argsstring></argsstring>
+        <name>labelFilterType</name>
+        <qualifiedname>Ui_itemList::labelFilterType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="32" column="12" bodyfile="build/ui_itemList.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a8672aea5fde21d96a2e9f245e99e85f2" prot="public" static="no" mutable="no">
+        <type>QComboBox *</type>
+        <definition>QComboBox* Ui_itemList::filterTypeComboBox</definition>
+        <argsstring></argsstring>
+        <name>filterTypeComboBox</name>
+        <qualifiedname>Ui_itemList::filterTypeComboBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="33" column="15" bodyfile="build/ui_itemList.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a18e0c6e02d3ad80e22412b6c7eb16b78" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::labelFilterVendor</definition>
+        <argsstring></argsstring>
+        <name>labelFilterVendor</name>
+        <qualifiedname>Ui_itemList::labelFilterVendor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="34" column="12" bodyfile="build/ui_itemList.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1af325d025c58eac1af812120c37d91fc1" prot="public" static="no" mutable="no">
+        <type>QComboBox *</type>
+        <definition>QComboBox* Ui_itemList::filterVendorComboBox</definition>
+        <argsstring></argsstring>
+        <name>filterVendorComboBox</name>
+        <qualifiedname>Ui_itemList::filterVendorComboBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="35" column="15" bodyfile="build/ui_itemList.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a115d3004c5437ceb3f07e2f68faadc93" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::labelFilterModel</definition>
+        <argsstring></argsstring>
+        <name>labelFilterModel</name>
+        <qualifiedname>Ui_itemList::labelFilterModel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="36" column="12" bodyfile="build/ui_itemList.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1ac03185ff5a5ae2eb9faadb8963cec5f7" prot="public" static="no" mutable="no">
+        <type>QComboBox *</type>
+        <definition>QComboBox* Ui_itemList::filterModelComboBox</definition>
+        <argsstring></argsstring>
+        <name>filterModelComboBox</name>
+        <qualifiedname>Ui_itemList::filterModelComboBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="37" column="15" bodyfile="build/ui_itemList.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1aaba7bcf43a968ee485c151b770ba0646" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::labelFilterStatus</definition>
+        <argsstring></argsstring>
+        <name>labelFilterStatus</name>
+        <qualifiedname>Ui_itemList::labelFilterStatus</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="38" column="12" bodyfile="build/ui_itemList.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a18a25651aa080611fb48b94e97a19d2e" prot="public" static="no" mutable="no">
+        <type>QComboBox *</type>
+        <definition>QComboBox* Ui_itemList::filterStatusComboBox</definition>
+        <argsstring></argsstring>
+        <name>filterStatusComboBox</name>
+        <qualifiedname>Ui_itemList::filterStatusComboBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="39" column="15" bodyfile="build/ui_itemList.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a68b350259c134a5e9fb152b107a1c441" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_itemList::labelFilterStorage</definition>
+        <argsstring></argsstring>
+        <name>labelFilterStorage</name>
+        <qualifiedname>Ui_itemList::labelFilterStorage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="40" column="12" bodyfile="build/ui_itemList.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a01f854ff538252acd8e4ffd73ec585a4" prot="public" static="no" mutable="no">
+        <type>QComboBox *</type>
+        <definition>QComboBox* Ui_itemList::filterStorageComboBox</definition>
+        <argsstring></argsstring>
+        <name>filterStorageComboBox</name>
+        <qualifiedname>Ui_itemList::filterStorageComboBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="41" column="15" bodyfile="build/ui_itemList.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1ab6eb8d52ca42dcd38b51efc6de8320f0" prot="public" static="no" mutable="no">
+        <type>QTableView *</type>
+        <definition>QTableView* Ui_itemList::itemList_tableView</definition>
+        <argsstring></argsstring>
+        <name>itemList_tableView</name>
+        <qualifiedname>Ui_itemList::itemList_tableView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="42" column="16" bodyfile="build/ui_itemList.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1abd42c588922c73a623c3c6400c7d8a4a" prot="public" static="no" mutable="no">
+        <type>QHBoxLayout *</type>
+        <definition>QHBoxLayout* Ui_itemList::bottomLayout</definition>
+        <argsstring></argsstring>
+        <name>bottomLayout</name>
+        <qualifiedname>Ui_itemList::bottomLayout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="43" column="17" bodyfile="build/ui_itemList.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a3d7a1e02a8f63cd4e61d9bc46450ae02" prot="public" static="no" mutable="no">
+        <type>QGraphicsView *</type>
+        <definition>QGraphicsView* Ui_itemList::itemList_graphicsView</definition>
+        <argsstring></argsstring>
+        <name>itemList_graphicsView</name>
+        <qualifiedname>Ui_itemList::itemList_graphicsView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="44" column="19" bodyfile="build/ui_itemList.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a20e1994082ef360d88b27e330af05a3d" prot="public" static="no" mutable="no">
+        <type>QVBoxLayout *</type>
+        <definition>QVBoxLayout* Ui_itemList::buttonsLayout</definition>
+        <argsstring></argsstring>
+        <name>buttonsLayout</name>
+        <qualifiedname>Ui_itemList::buttonsLayout</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="45" column="17" bodyfile="build/ui_itemList.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1abfe224ef47c69f30184e37bea1e38c74" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_new</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_new</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_new</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="46" column="17" bodyfile="build/ui_itemList.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a47858e1986a69a64d44c5e0da34b3a6e" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_edit</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_edit</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_edit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="47" column="17" bodyfile="build/ui_itemList.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a0a61a914039754bd7f42643b6d3a409b" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_clone</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_clone</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_clone</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="48" column="17" bodyfile="build/ui_itemList.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a928f0c02c36340c4171e021ddc14fec9" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_delete</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_delete</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_delete</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="49" column="17" bodyfile="build/ui_itemList.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1a32f2430c2f1441436fbb55306efe1ae0" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_end</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_end</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="50" column="17" bodyfile="build/ui_itemList.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__item_list_1aa484b7d243fc94742c266682eb7beaae" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_itemList::itemList_pushButton_about</definition>
+        <argsstring></argsstring>
+        <name>itemList_pushButton_about</name>
+        <qualifiedname>Ui_itemList::itemList_pushButton_about</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="51" column="17" bodyfile="build/ui_itemList.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ui__item_list_1a5716e4cdd6a59fca74158b434320b4b2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_itemList::setupUi</definition>
+        <argsstring>(QWidget *itemList)</argsstring>
+        <name>setupUi</name>
+        <qualifiedname>Ui_itemList::setupUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>itemList</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="53" column="10" bodyfile="build/ui_itemList.h" bodystart="53" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ui__item_list_1a7a2206468f2baf5ccf939b5db27ef9dd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_itemList::retranslateUi</definition>
+        <argsstring>(QWidget *itemList)</argsstring>
+        <name>retranslateUi</name>
+        <qualifiedname>Ui_itemList::retranslateUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>itemList</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_itemList.h" line="180" column="10" bodyfile="build/ui_itemList.h" bodystart="180" bodyend="195"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Ui::itemList</label>
+        <link refid="class_ui_1_1item_list"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Ui_itemList</label>
+        <link refid="class_ui__item_list"/>
+      </node>
+    </inheritancegraph>
+    <location file="build/ui_itemList.h" line="26" column="1" bodyfile="build/ui_itemList.h" bodystart="27" bodyend="197"/>
+    <listofallmembers>
+      <member refid="class_ui__item_list_1abd42c588922c73a623c3c6400c7d8a4a" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>bottomLayout</name></member>
+      <member refid="class_ui__item_list_1a20e1994082ef360d88b27e330af05a3d" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>buttonsLayout</name></member>
+      <member refid="class_ui__item_list_1ad262fb66e78df7a6ee9f569fa480e1b9" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterLayout</name></member>
+      <member refid="class_ui__item_list_1ac03185ff5a5ae2eb9faadb8963cec5f7" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterModelComboBox</name></member>
+      <member refid="class_ui__item_list_1a18a25651aa080611fb48b94e97a19d2e" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterStatusComboBox</name></member>
+      <member refid="class_ui__item_list_1a01f854ff538252acd8e4ffd73ec585a4" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterStorageComboBox</name></member>
+      <member refid="class_ui__item_list_1a8672aea5fde21d96a2e9f245e99e85f2" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterTypeComboBox</name></member>
+      <member refid="class_ui__item_list_1af325d025c58eac1af812120c37d91fc1" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>filterVendorComboBox</name></member>
+      <member refid="class_ui__item_list_1a16f8697d767516428a2005fbe46721b6" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>headerLabel</name></member>
+      <member refid="class_ui__item_list_1a3d7a1e02a8f63cd4e61d9bc46450ae02" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_graphicsView</name></member>
+      <member refid="class_ui__item_list_1aa484b7d243fc94742c266682eb7beaae" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_about</name></member>
+      <member refid="class_ui__item_list_1a0a61a914039754bd7f42643b6d3a409b" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_clone</name></member>
+      <member refid="class_ui__item_list_1a928f0c02c36340c4171e021ddc14fec9" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_delete</name></member>
+      <member refid="class_ui__item_list_1a47858e1986a69a64d44c5e0da34b3a6e" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_edit</name></member>
+      <member refid="class_ui__item_list_1a32f2430c2f1441436fbb55306efe1ae0" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_end</name></member>
+      <member refid="class_ui__item_list_1abfe224ef47c69f30184e37bea1e38c74" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_pushButton_new</name></member>
+      <member refid="class_ui__item_list_1ab6eb8d52ca42dcd38b51efc6de8320f0" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>itemList_tableView</name></member>
+      <member refid="class_ui__item_list_1a115d3004c5437ceb3f07e2f68faadc93" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>labelFilterModel</name></member>
+      <member refid="class_ui__item_list_1aaba7bcf43a968ee485c151b770ba0646" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>labelFilterStatus</name></member>
+      <member refid="class_ui__item_list_1a68b350259c134a5e9fb152b107a1c441" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>labelFilterStorage</name></member>
+      <member refid="class_ui__item_list_1afbdd51d99defd8cc6e05f502c49b3e26" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>labelFilterType</name></member>
+      <member refid="class_ui__item_list_1a18e0c6e02d3ad80e22412b6c7eb16b78" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>labelFilterVendor</name></member>
+      <member refid="class_ui__item_list_1a414fee36b337dfd8a02b84ee20b6ecf2" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>mainLayout</name></member>
+      <member refid="class_ui__item_list_1a7a2206468f2baf5ccf939b5db27ef9dd" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__item_list_1a5716e4cdd6a59fca74158b434320b4b2" prot="public" virt="non-virtual"><scope>Ui_itemList</scope><name>setupUi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,91 @@
+\hypertarget{md_documentation_photoitem_h_autotoc_md107}{}\doxysection{Metadane}\label{md_documentation_photoitem_h_autotoc_md107}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{photoitem_8h}{photoitem.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_photoitem_h_autotoc_md108}{}\doxysection{Przegląd}\label{md_documentation_photoitem_h_autotoc_md108}
+Plik {\ttfamily \mbox{\hyperlink{photoitem_8h}{photoitem.\+h}}} definiuje klasę {\ttfamily \mbox{\hyperlink{class_photo_item}{Photo\+Item}}}, która reprezentuje interaktywny element graficzny (miniaturę zdjęcia) w scenie graficznej Qt (używany w {\ttfamily QGraphics\+View}). Klasa rozszerza {\ttfamily QGraphics\+Pixmap\+Item} o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie kursora), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po {\ttfamily QObject}, umożliwia emisję sygnałów ({\ttfamily clicked}, {\ttfamily double\+Clicked}, {\ttfamily hovered}, {\ttfamily unhovered}), co pozwala na integrację z logiką aplikacji, np. z klasą {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} w aplikacji inwentaryzacyjnej.\hypertarget{md_documentation_photoitem_h_autotoc_md109}{}\doxysection{Struktura kodu}\label{md_documentation_photoitem_h_autotoc_md109}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_photo_item}{Photo\+Item}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QObject} i {\ttfamily QGraphics\+Pixmap\+Item}.
+\item Używa makra {\ttfamily Q\+\_\+\+OBJECT} dla wsparcia mechanizmu sygnałów i slotów Qt.
+\end{DoxyItemize}
+\item {\bfseries{Metody publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje obiekt, ramkę graficzną i włącza zdarzenia hover.
+\item Destruktor\+: Zwalnia zasoby ramki.
+\item {\ttfamily set\+Selected}\+: Ustawia stan zaznaczenia (wyświetla/ukrywa ramkę).
+\end{DoxyItemize}
+\item {\bfseries{Sygnały}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily clicked}\+: Emitowany po kliknięciu (np. prawym przyciskiem) dla wyboru/podglądu zdjęcia.
+\item {\ttfamily double\+Clicked}\+: Emitowany po podwójnym kliknięciu (lewym przyciskiem) dla pełnoekranowego podglądu.
+\item {\ttfamily hovered}\+: Emitowany po najechaniu kursorem na miniaturę.
+\item {\ttfamily unhovered}\+: Emitowany po opuszczeniu miniatury kursorem.
+\end{DoxyItemize}
+\item {\bfseries{Metody chronione}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily mouse\+Press\+Event}\+: Obsługuje kliknięcia myszą.
+\item {\ttfamily mouse\+Double\+Click\+Event}\+: Obsługuje podwójne kliknięcia.
+\item {\ttfamily hover\+Enter\+Event}\+: Obsługuje najechanie kursorem.
+\item {\ttfamily hover\+Leave\+Event}\+: Obsługuje opuszczenie kursora.
+\end{DoxyItemize}
+\item {\bfseries{Metody prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily update\+Frame}\+: Aktualizuje wygląd ramki zaznaczenia.
+\end{DoxyItemize}
+\item {\bfseries{Zmienne prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily m\+\_\+pressed}\+: Flaga kliknięcia (obecnie nieużywana).
+\item {\ttfamily m\+\_\+selected}\+: Flaga zaznaczenia (kontroluje ramkę).
+\item {\ttfamily m\+\_\+frame}\+: Obiekt {\ttfamily QGraphics\+Rect\+Item} dla ramki zaznaczenia.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_photoitem_h_autotoc_md110}{}\doxysection{Opis działania}\label{md_documentation_photoitem_h_autotoc_md110}
+
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Konstruktor tworzy obiekt jako element graficzny ({\ttfamily QGraphics\+Pixmap\+Item}) i obiekt sygnałowy ({\ttfamily QObject}), ustawia flagi {\ttfamily m\+\_\+pressed} i {\ttfamily m\+\_\+selected} na {\ttfamily false}, tworzy ramkę ({\ttfamily m\+\_\+frame}) jako dziecko, włącza zdarzenia hover i konfiguruje ramkę jako niewidoczną.
+\item {\bfseries{Interfejs graficzny}}\+: Wyświetla miniaturę zdjęcia (np. 80x80 pikseli w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}) w {\ttfamily QGraphics\+View}, z możliwością zaznaczenia czerwoną ramką o szerokości 2 piksele.
+\item {\bfseries{Interakcje}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Kliknięcia}}\+: Prawe kliknięcie emituje {\ttfamily clicked} (np. dla podglądu), lewe jest przekazywane dla podwójnego kliknięcia.
+\item {\bfseries{Podwójne kliknięcia}}\+: Lewe podwójne kliknięcie emituje {\ttfamily double\+Clicked} (np. dla pełnego ekranu).
+\item {\bfseries{Hover}}\+: Najechanie emituje {\ttfamily hovered}, opuszczenie {\ttfamily unhovered} (np. dla podświetlenia).
+\end{DoxyItemize}
+\item {\bfseries{Zaznaczenie}}\+: Metoda {\ttfamily set\+Selected} włącza/wyłącza czerwoną ramkę poprzez {\ttfamily update\+Frame}, co jest używane w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} do wskazywania wybranego zdjęcia.
+\item {\bfseries{Integracja}}\+: Sygnały są podłączane w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} do slotów, np. {\ttfamily on\+Photo\+Clicked}, dla wyboru lub podglądu zdjęcia.
+\end{DoxyItemize}\hypertarget{md_documentation_photoitem_h_autotoc_md111}{}\doxysection{Zależności}\label{md_documentation_photoitem_h_autotoc_md111}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QGraphics\+Pixmap\+Item}, {\ttfamily QObject}, {\ttfamily QGraphics\+Rect\+Item}, {\ttfamily QGraphics\+Scene\+Hover\+Event}, {\ttfamily QGraphics\+Scene\+Mouse\+Event}\+: Obsługa grafiki, sygnałów i zdarzeń.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item Brak zależności od innych nagłówków aplikacji (np. {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}}).
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_photoitem_h_autotoc_md112}{}\doxysection{Uwagi}\label{md_documentation_photoitem_h_autotoc_md112}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Klasa jest kluczowym elementem dla interaktywnych miniatur zdjęć w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}.
+\item Flaga {\ttfamily m\+\_\+pressed} jest zdefiniowana, ale nieużywana, co sugeruje możliwość przyszłych rozszerzeń (np. obsługa przeciągania).
+\item Sygnały {\ttfamily hovered} i {\ttfamily unhovered} nie są obecnie wykorzystywane w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, ale mogą służyć do podświetlania lub tooltipów.
+\item Ramka zaznaczenia jest prosta (czerwona, 2 piksele), ale może być dostosowana (np. kolor, styl) w przyszłych wersjach. 
+\end{DoxyItemize}

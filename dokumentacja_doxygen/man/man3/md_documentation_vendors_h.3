@@ -1,0 +1,138 @@
+.TH "md_documentation_vendors_h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_vendors_h \- Dokumentacja dla pliku \fC\fBvendors\&.h\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBvendors\&.h\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBvendors\&.h\fP\fP definiuje klasę \fCvendors\fP, która reprezentuje okno dialogowe do zarządzania producentami sprzętu (np\&. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej\&. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli \fCvendors\fP w bazie danych oraz synchronizację z głównym oknem (\fC\fBMainWindow\fP\fP) w celu odświeżenia combo boxów producentów po zapisaniu zmian\&. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy \fCmodels\fP, \fCstatus\fP, \fCstorage\fP czy \fCtypes\fP\&.
+.SH "Struktura kodu"
+.PP
+Plik nagłówkowy zawiera następujące elementy:
+.PP
+.IP "1." 4
+\fBDeklaracja klasy \fCvendors\fP\fP 
+.br
+.IP "  \(bu" 4
+Dziedziczy po \fCQDialog\fP\&.
+.IP "  \(bu" 4
+Używa makra \fCQ_OBJECT\fP dla wsparcia mechanizmu sygnałów i slotów Qt\&.
+.PP
+
+.IP "2." 4
+\fBMetody publiczne\fP 
+.br
+.IP "  \(bu" 4
+Konstruktor: Inicjalizuje okno dialogowe, interfejs i połączenie z bazą danych\&.
+.IP "  \(bu" 4
+Destruktor: Zwalnia zasoby\&.
+.IP "  \(bu" 4
+\fCsetMainWindow\fP: Ustawia referencję do \fC\fBMainWindow\fP\fP dla odświeżania combo boxów\&.
+.PP
+
+.IP "3." 4
+\fBSloty prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fConAddClicked\fP: Dodaje nowego producenta do tabeli \fCvendors\fP\&.
+.IP "  \(bu" 4
+\fConEditClicked\fP: Edytuje nazwę istniejącego producenta\&.
+.IP "  \(bu" 4
+\fConDeleteClicked\fP: Usuwa wybranego producenta po potwierdzeniu\&.
+.IP "  \(bu" 4
+\fConOkClicked\fP: Odświeża combo box w \fC\fBMainWindow\fP\fP i zamyka okno\&.
+.PP
+
+.IP "4." 4
+\fBMetody prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCrefreshList\fP: Odświeża listę producentów w \fCQListView\fP\&.
+.PP
+
+.IP "5." 4
+\fBZmienne prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCui\fP: Wskaźnik na interfejs użytkownika\&.
+.IP "  \(bu" 4
+\fCm_mainWindow\fP: Wskaźnik na główne okno aplikacji\&.
+.IP "  \(bu" 4
+\fCm_db\fP: Połączenie z bazą danych MySQL\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "\(bu" 2
+\fBInicjalizacja\fP: Konstruktor konfiguruje interfejs (\fCui->setupUi\fP), ustala połączenie z bazą danych (\fCdefault_connection\fP), ustawia tytuł okna ('Zarządzanie producentami'), podłącza sloty dla przycisków i odświeża listę producentów\&.
+.IP "\(bu" 2
+\fBInterfejs\fP: Zawiera \fCQListView\fP do wyświetlania producentów, \fCQLineEdit\fP do wprowadzania nazwy producenta oraz przyciski (Dodaj, Edytuj, Usuń, OK, Anuluj)\&.
+.IP "\(bu" 2
+\fBZarządzanie producentami\fP:
+.IP "  \(bu" 4
+\fBDodawanie\fP: Pobiera nazwę z \fCQLineEdit\fP, generuje UUID, zapisuje producenta w tabeli \fCvendors\fP\&.
+.IP "  \(bu" 4
+\fBEdycja\fP: Otwiera \fCQInputDialog\fP dla wybranej nazwy producenta, aktualizuje rekord w bazie\&.
+.IP "  \(bu" 4
+\fBUsuwanie\fP: Usuwa producenta po potwierdzeniu, wykonując zapytanie \fCDELETE\fP\&.
+.PP
+
+.IP "\(bu" 2
+\fBIntegracja z \fC\fBMainWindow\fP\fP\fP: Po zatwierdzeniu zmian (\fConOkClicked\fP), odświeża combo box producentów w głównym oknie, jeśli \fCm_mainWindow\fP jest ustawione\&.
+.IP "\(bu" 2
+\fBBaza danych\fP: Operuje na tabeli \fCvendors\fP z polami \fCid\fP (UUID) i \fCname\fP (nazwa producenta)\&.
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQDialog\fP, \fCQSqlDatabase\fP: Obsługa okna dialogowego i bazy danych\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBmainwindow\&.h\fP\fP: Deklaracja klasy \fC\fBMainWindow\fP\fP dla komunikacji\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_vendors\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Klasa jest częścią systemu słownikowego, wspiera zarządzanie producentami w kontekście eksponatów\&.
+.IP "\(bu" 2
+Połączenie z bazą danych (\fCdefault_connection\fP) jest współdzielone z innymi komponentami (np\&. \fC\fBMainWindow\fP\fP, \fCmodels\fP)\&.
+.IP "\(bu" 2
+Operacje CRUD (Create, Read, Update, Delete) opierają się na nazwie producenta, co może powodować problemy przy duplikatach (brak unikalności w schemacie bazy)\&.
+.IP "\(bu" 2
+Klasa nie filtruje producentów (np\&. po kategorii), co może być rozszerzone w przyszłości\&. 
+.PP
+

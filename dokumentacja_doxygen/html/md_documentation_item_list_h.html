@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;itemList.h&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation_item_list_h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="item_list_8h.html" title="Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyj...">itemList.h</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md57"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="item_list_8h.html" title="Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyj...">itemList.h</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md58"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="item_list_8h.html" title="Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyj...">itemList.h</a></code> definiuje klasę <code><a class="el" href="classitem_list.html" title="Widget zarządzający listą eksponatów z interfejsem użytkownika.">itemList</a></code>, która jest głównym widgetem aplikacji inwentaryzacyjnej, odpowiedzialnym za wyświetlanie i zarządzanie listą eksponatów. Klasa obsługuje filtrowanie kaskadowe, operacje CRUD (Create, Read, Update, Delete), wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz interakcje użytkownika. Skórka graficzna i czcionki są zarządzane przez klasę <code><a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a></code>.</p>
+<h1><a class="anchor" id="autotoc_md59"></a>
+Struktura kodu</h1>
+<p >Plik nagłówkowy zawiera następujące elementy:</p>
+<ol type="1">
+<li><b>Deklaracja klasy <code><a class="el" href="classitem_list.html" title="Widget zarządzający listą eksponatów z interfejsem użytkownika.">itemList</a></code></b> <br  />
+<ul>
+<li>Dziedziczy po <code>QWidget</code>.</li>
+<li>Używa makra <code>Q_OBJECT</code> dla wsparcia mechanizmu sygnałów i slotów Qt.</li>
+</ul>
+</li>
+<li><b>Metody publiczne</b> <br  />
+<ul>
+<li>Konstruktor: Inicjalizuje interfejs, model danych i filtry.</li>
+<li>Destruktor: Zwalnia zasoby.</li>
+</ul>
+</li>
+<li><b>Sloty prywatne</b> <br  />
+<ul>
+<li><code>onNewButtonClicked</code>: Otwiera okno dodawania nowego eksponatu.</li>
+<li><code>onEditButtonClicked</code>: Otwiera okno edycji wybranego eksponatu.</li>
+<li><code>onEndButtonClicked</code>: Zamyka aplikację.</li>
+<li><code>onDeleteButtonClicked</code>: Usuwa wybrany eksponat.</li>
+<li><code>onAboutClicked</code>: Wyświetla okno "O programie".</li>
+<li><code>onTableViewSelectionChanged</code>: Aktualizuje miniatury zdjęć dla wybranego eksponatu.</li>
+<li><code>onRecordSaved</code>: Odświeża listę po zapisaniu rekordu.</li>
+<li><code>refreshList</code>: Odświeża listę eksponatów.</li>
+<li><code>onPhotoHovered</code>: Wyświetla podgląd zdjęcia.</li>
+<li><code>onPhotoUnhovered</code>: Ukrywa podgląd zdjęcia.</li>
+<li><code>onPhotoClicked</code>: Otwiera zdjęcie w trybie pełnoekranowym.</li>
+<li><code>onCloneButtonClicked</code>: Otwiera okno klonowania eksponatu.</li>
+<li><code>onFilterChanged</code>: Aktualizuje filtry combo boxów.</li>
+</ul>
+</li>
+<li><b>Metody prywatne</b> <br  />
+<ul>
+<li><code>verifyDatabaseSchema</code>: Weryfikuje schemat bazy danych.</li>
+<li><code>createDatabaseSchema</code>: Tworzy schemat bazy danych.</li>
+<li><code>insertSampleData</code>: Wstawia przykładowe dane.</li>
+<li><code>initFilters</code>: Inicjalizuje filtry combo boxów.</li>
+<li><code>refreshFilters</code>: Odświeża filtry combo boxów.</li>
+<li><code>updateFilterComboBoxes</code>: Odbudowuje listy combo boxów dla filtrowania kaskadowego.</li>
+<li><code>eventFilter</code>: Obsługuje zdarzenia dla okna podglądu zdjęć.</li>
+</ul>
+</li>
+<li><b>Zmienne prywatne</b> <br  />
+<ul>
+<li><code>ui</code>: Wskaźnik na interfejs użytkownika.</li>
+<li><code>m_sourceModel</code>: Model źródłowy (<code>QSqlRelationalTableModel</code>).</li>
+<li><code>m_proxyModel</code>: Model proxy (<code><a class="el" href="class_item_filter_proxy_model.html" title="Model proxy do filtrowania listy eksponatów.">ItemFilterProxyModel</a></code>).</li>
+<li><code>filterTypeComboBox</code>, <code>filterVendorComboBox</code>, <code>filterModelComboBox</code>, <code>filterStatusComboBox</code>, <code>filterStorageComboBox</code>: Combo boxy dla filtrów.</li>
+<li><code>m_currentRecordId</code>: ID wybranego rekordu.</li>
+<li><code>m_previewWindow</code>: Okno podglądu zdjęcia.</li>
+<li><code>m_previewHovered</code>: Flaga stanu podglądu.</li>
+<li><code>m_currentHoveredItem</code>: Aktualnie podświetlony element zdjęcia.</li>
+<li><code>m_hoverCheckTimer</code>: Timer sprawdzania pozycji kursora.</li>
+<li><code>m_keepAliveTimer</code>: Timer utrzymujący połączenie z bazą danych.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md60"></a>
+Opis działania</h1>
+<ul>
+<li><b>Inicjalizacja</b>: Konstruktor ustawia interfejs użytkownika, model danych, model proxy, filtry i połączenia sygnałów-slotów. Weryfikuje schemat bazy danych, a w razie potrzeby tworzy go i wstawia przykładowe dane.</li>
+<li><b>Filtrowanie</b>: Używa <code><a class="el" href="class_item_filter_proxy_model.html" title="Model proxy do filtrowania listy eksponatów.">ItemFilterProxyModel</a></code> do dynamicznego filtrowania danych za pomocą combo boxów. Filtrowanie kaskadowe aktualizuje dostępne opcje w combo boxach.</li>
+<li><b>Operacje CRUD</b>: Obsługuje dodawanie, edytowanie, usuwanie i klonowanie rekordów poprzez okna <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>.</li>
+<li><b>Zdjęcia</b>: Wyświetla miniatury zdjęć w <code>QGraphicsView</code>, umożliwia podgląd po najechaniu i pełnoekranowy widok po kliknięciu (<code><a class="el" href="class_full_screen_photo_viewer.html" title="Okno pełnoekranowe do wyświetlania zdjęć.">FullScreenPhotoViewer</a></code>).</li>
+<li><b>Interfejs</b>: Tabela (<code>QTableView</code>) wyświetla przefiltrowane dane, z ukrytą kolumną UUID i nagłówkami dostosowanymi do lokalizacji.</li>
+<li><b>Baza danych</b>: Współpracuje z MySQL (lub SQLite, skonfigurowanym w <code><a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a></code>), zarządzając schematem i danymi.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md61"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QWidget</code>, <code>QComboBox</code>, <code>QSqlRelationalTableModel</code>, <code>QSettings</code>, <code>QLabel</code>, <code>QItemSelection</code>: Obsługa interfejsu, danych i interakcji.</li>
+</ul>
+</li>
+<li><b>Nagłówki aplikacji</b>:<ul>
+<li><code><a class="el" href="_item_filter_proxy_model_8h.html" title="Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.">ItemFilterProxyModel.h</a></code>: Model proxy do filtrowania.</li>
+<li><code><a class="el" href="photoitem_8h.html" title="Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia.">photoitem.h</a></code>: Klasa dla miniatur zdjęć.</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li><code><a class="el" href="ui__item_list_8h_source.html">ui_itemList.h</a></code>: Plik generowany przez Qt Designer.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md62"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Klasa integruje wiele komponentów aplikacji, będąc jej centralnym elementem.</li>
+<li>Filtrowanie kaskadowe wymaga poprawnego schematu bazy danych z relacjami.</li>
+<li>Timer <code>m_keepAliveTimer</code> zapobiega rozłączeniu z bazą MySQL w przypadku długiej bezczynności.</li>
+<li>Zdjęcia są przechowywane jako BLOB w tabeli <code>photos</code>. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

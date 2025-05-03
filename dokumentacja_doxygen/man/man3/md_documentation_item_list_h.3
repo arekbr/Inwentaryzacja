@@ -1,0 +1,176 @@
+.TH "md_documentation_item_list_h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_item_list_h \- Dokumentacja dla pliku \fC\fBitemList\&.h\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBitemList\&.h\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBitemList\&.h\fP\fP definiuje klasę \fC\fBitemList\fP\fP, która jest głównym widgetem aplikacji inwentaryzacyjnej, odpowiedzialnym za wyświetlanie i zarządzanie listą eksponatów\&. Klasa obsługuje filtrowanie kaskadowe, operacje CRUD (Create, Read, Update, Delete), wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz interakcje użytkownika\&. Skórka graficzna i czcionki są zarządzane przez klasę \fC\fBDatabaseConfigDialog\fP\fP\&.
+.SH "Struktura kodu"
+.PP
+Plik nagłówkowy zawiera następujące elementy:
+.PP
+.IP "1." 4
+\fBDeklaracja klasy \fC\fBitemList\fP\fP\fP 
+.br
+.IP "  \(bu" 4
+Dziedziczy po \fCQWidget\fP\&.
+.IP "  \(bu" 4
+Używa makra \fCQ_OBJECT\fP dla wsparcia mechanizmu sygnałów i slotów Qt\&.
+.PP
+
+.IP "2." 4
+\fBMetody publiczne\fP 
+.br
+.IP "  \(bu" 4
+Konstruktor: Inicjalizuje interfejs, model danych i filtry\&.
+.IP "  \(bu" 4
+Destruktor: Zwalnia zasoby\&.
+.PP
+
+.IP "3." 4
+\fBSloty prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fConNewButtonClicked\fP: Otwiera okno dodawania nowego eksponatu\&.
+.IP "  \(bu" 4
+\fConEditButtonClicked\fP: Otwiera okno edycji wybranego eksponatu\&.
+.IP "  \(bu" 4
+\fConEndButtonClicked\fP: Zamyka aplikację\&.
+.IP "  \(bu" 4
+\fConDeleteButtonClicked\fP: Usuwa wybrany eksponat\&.
+.IP "  \(bu" 4
+\fConAboutClicked\fP: Wyświetla okno 'O programie'\&.
+.IP "  \(bu" 4
+\fConTableViewSelectionChanged\fP: Aktualizuje miniatury zdjęć dla wybranego eksponatu\&.
+.IP "  \(bu" 4
+\fConRecordSaved\fP: Odświeża listę po zapisaniu rekordu\&.
+.IP "  \(bu" 4
+\fCrefreshList\fP: Odświeża listę eksponatów\&.
+.IP "  \(bu" 4
+\fConPhotoHovered\fP: Wyświetla podgląd zdjęcia\&.
+.IP "  \(bu" 4
+\fConPhotoUnhovered\fP: Ukrywa podgląd zdjęcia\&.
+.IP "  \(bu" 4
+\fConPhotoClicked\fP: Otwiera zdjęcie w trybie pełnoekranowym\&.
+.IP "  \(bu" 4
+\fConCloneButtonClicked\fP: Otwiera okno klonowania eksponatu\&.
+.IP "  \(bu" 4
+\fConFilterChanged\fP: Aktualizuje filtry combo boxów\&.
+.PP
+
+.IP "4." 4
+\fBMetody prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCverifyDatabaseSchema\fP: Weryfikuje schemat bazy danych\&.
+.IP "  \(bu" 4
+\fCcreateDatabaseSchema\fP: Tworzy schemat bazy danych\&.
+.IP "  \(bu" 4
+\fCinsertSampleData\fP: Wstawia przykładowe dane\&.
+.IP "  \(bu" 4
+\fCinitFilters\fP: Inicjalizuje filtry combo boxów\&.
+.IP "  \(bu" 4
+\fCrefreshFilters\fP: Odświeża filtry combo boxów\&.
+.IP "  \(bu" 4
+\fCupdateFilterComboBoxes\fP: Odbudowuje listy combo boxów dla filtrowania kaskadowego\&.
+.IP "  \(bu" 4
+\fCeventFilter\fP: Obsługuje zdarzenia dla okna podglądu zdjęć\&.
+.PP
+
+.IP "5." 4
+\fBZmienne prywatne\fP 
+.br
+.IP "  \(bu" 4
+\fCui\fP: Wskaźnik na interfejs użytkownika\&.
+.IP "  \(bu" 4
+\fCm_sourceModel\fP: Model źródłowy (\fCQSqlRelationalTableModel\fP)\&.
+.IP "  \(bu" 4
+\fCm_proxyModel\fP: Model proxy (\fC\fBItemFilterProxyModel\fP\fP)\&.
+.IP "  \(bu" 4
+\fCfilterTypeComboBox\fP, \fCfilterVendorComboBox\fP, \fCfilterModelComboBox\fP, \fCfilterStatusComboBox\fP, \fCfilterStorageComboBox\fP: Combo boxy dla filtrów\&.
+.IP "  \(bu" 4
+\fCm_currentRecordId\fP: ID wybranego rekordu\&.
+.IP "  \(bu" 4
+\fCm_previewWindow\fP: Okno podglądu zdjęcia\&.
+.IP "  \(bu" 4
+\fCm_previewHovered\fP: Flaga stanu podglądu\&.
+.IP "  \(bu" 4
+\fCm_currentHoveredItem\fP: Aktualnie podświetlony element zdjęcia\&.
+.IP "  \(bu" 4
+\fCm_hoverCheckTimer\fP: Timer sprawdzania pozycji kursora\&.
+.IP "  \(bu" 4
+\fCm_keepAliveTimer\fP: Timer utrzymujący połączenie z bazą danych\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "\(bu" 2
+\fBInicjalizacja\fP: Konstruktor ustawia interfejs użytkownika, model danych, model proxy, filtry i połączenia sygnałów-slotów\&. Weryfikuje schemat bazy danych, a w razie potrzeby tworzy go i wstawia przykładowe dane\&.
+.IP "\(bu" 2
+\fBFiltrowanie\fP: Używa \fC\fBItemFilterProxyModel\fP\fP do dynamicznego filtrowania danych za pomocą combo boxów\&. Filtrowanie kaskadowe aktualizuje dostępne opcje w combo boxach\&.
+.IP "\(bu" 2
+\fBOperacje CRUD\fP: Obsługuje dodawanie, edytowanie, usuwanie i klonowanie rekordów poprzez okna \fC\fBMainWindow\fP\fP\&.
+.IP "\(bu" 2
+\fBZdjęcia\fP: Wyświetla miniatury zdjęć w \fCQGraphicsView\fP, umożliwia podgląd po najechaniu i pełnoekranowy widok po kliknięciu (\fC\fBFullScreenPhotoViewer\fP\fP)\&.
+.IP "\(bu" 2
+\fBInterfejs\fP: Tabela (\fCQTableView\fP) wyświetla przefiltrowane dane, z ukrytą kolumną UUID i nagłówkami dostosowanymi do lokalizacji\&.
+.IP "\(bu" 2
+\fBBaza danych\fP: Współpracuje z MySQL (lub SQLite, skonfigurowanym w \fC\fBDatabaseConfigDialog\fP\fP), zarządzając schematem i danymi\&.
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQWidget\fP, \fCQComboBox\fP, \fCQSqlRelationalTableModel\fP, \fCQSettings\fP, \fCQLabel\fP, \fCQItemSelection\fP: Obsługa interfejsu, danych i interakcji\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBItemFilterProxyModel\&.h\fP\fP: Model proxy do filtrowania\&.
+.IP "  \(bu" 4
+\fC\fBphotoitem\&.h\fP\fP: Klasa dla miniatur zdjęć\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_itemList\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Klasa integruje wiele komponentów aplikacji, będąc jej centralnym elementem\&.
+.IP "\(bu" 2
+Filtrowanie kaskadowe wymaga poprawnego schematu bazy danych z relacjami\&.
+.IP "\(bu" 2
+Timer \fCm_keepAliveTimer\fP zapobiega rozłączeniu z bazą MySQL w przypadku długiej bezczynności\&.
+.IP "\(bu" 2
+Zdjęcia są przechowywane jako BLOB w tabeli \fCphotos\fP\&. 
+.PP
+

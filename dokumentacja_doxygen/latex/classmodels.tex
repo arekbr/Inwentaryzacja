@@ -1,0 +1,154 @@
+\hypertarget{classmodels}{}\doxysection{Dokumentacja klasy models}
+\label{classmodels}\index{models@{models}}
+
+
+Okno dialogowe do zarządzania modelami eksponatów.  
+
+
+
+
+{\ttfamily \#include $<$models.\+h$>$}
+
+
+
+Diagram dziedziczenia dla models
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=136pt]{classmodels__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Diagram współpracy dla models\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=136pt]{classmodels__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Metody publiczne}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classmodels_a283a5adef385a6b570304a288ab41f68}{models}} (QWidget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Konstruktor klasy models. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classmodels_acbd489c1ea286ed2c5394ee748034093}{$\sim$models}} ()
+\begin{DoxyCompactList}\small\item\em Destruktor klasy models. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classmodels_a746b5a44fa5828e2b7fa4802b35b6330}{set\+Main\+Window}} (\mbox{\hyperlink{class_main_window}{Main\+Window}} $\ast$main\+Window)
+\begin{DoxyCompactList}\small\item\em Ustawia wskaźnik na główne okno aplikacji. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classmodels_a6984e77ecf232167c6e7af4f7c397e6f}{set\+Vendor\+Id}} (const QString \&vendor\+Id)
+\begin{DoxyCompactList}\small\item\em Ustawia identyfikator producenta dla modeli. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Okno dialogowe do zarządzania modelami eksponatów. 
+
+\hypertarget{class_zoomable_graphics_view_ClassOverview}{}\doxysubsection{Class\+Overview}\label{class_zoomable_graphics_view_ClassOverview}
+Klasa models dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania modeli eksponatów w bazie danych. Współpracuje z klasą \mbox{\hyperlink{class_main_window}{Main\+Window}}, aby odświeżyć listę modeli w combo boxie po zapisaniu zmian. Używa QString jako typu dla identyfikatora producenta (vendor\+Id).\hypertarget{class_zoomable_graphics_view_Responsibilities}{}\doxysubsection{Responsibilities}\label{class_zoomable_graphics_view_Responsibilities}
+
+\begin{DoxyItemize}
+\item Wyświetlanie listy modeli w QList\+View.
+\item Dodawanie nowych modeli do tabeli \textquotesingle{}models\textquotesingle{} z powiązaniem do producenta.
+\item Edycja istniejących modeli (zmiana nazwy).
+\item Usuwanie modeli po potwierdzeniu użytkownika.
+\item Odświeżanie combo boxa modeli w \mbox{\hyperlink{class_main_window}{Main\+Window}} po zapisaniu zmian. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja konstruktora i destruktora}
+\mbox{\Hypertarget{classmodels_a283a5adef385a6b570304a288ab41f68}\label{classmodels_a283a5adef385a6b570304a288ab41f68}} 
+\index{models@{models}!models@{models}}
+\index{models@{models}!models@{models}}
+\doxysubsubsection{\texorpdfstring{models()}{models()}}
+{\footnotesize\ttfamily models\+::models (\begin{DoxyParamCaption}\item[{QWidget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Konstruktor klasy models. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget. Domyślnie nullptr.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget (domyślnie nullptr).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje interfejs graficzny, ustawia tytuł okna, nawiązuje połączenie z bazą danych (\textquotesingle{}default\+\_\+connection\textquotesingle{}), podłącza sloty dla przycisków (dodaj, edytuj, usuń, OK, Anuluj) i odświeża listę modeli w QList\+View. \mbox{\Hypertarget{classmodels_acbd489c1ea286ed2c5394ee748034093}\label{classmodels_acbd489c1ea286ed2c5394ee748034093}} 
+\index{models@{models}!````~models@{$\sim$models}}
+\index{````~models@{$\sim$models}!models@{models}}
+\doxysubsubsection{\texorpdfstring{$\sim$models()}{~models()}}
+{\footnotesize\ttfamily models\+::$\sim$models (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Destruktor klasy models. 
+
+\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.\hypertarget{classvendors_DestructorOverview}{}\doxysubsection{Destructor\+Overview}\label{classvendors_DestructorOverview}
+Usuwa obiekt interfejsu użytkownika i zwalnia zasoby. 
+
+\doxysubsection{Dokumentacja funkcji składowych}
+\mbox{\Hypertarget{classmodels_a746b5a44fa5828e2b7fa4802b35b6330}\label{classmodels_a746b5a44fa5828e2b7fa4802b35b6330}} 
+\index{models@{models}!setMainWindow@{setMainWindow}}
+\index{setMainWindow@{setMainWindow}!models@{models}}
+\doxysubsubsection{\texorpdfstring{setMainWindow()}{setMainWindow()}}
+{\footnotesize\ttfamily void models\+::set\+Main\+Window (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_main_window}{Main\+Window}} $\ast$}]{main\+Window }\end{DoxyParamCaption})}
+
+
+
+Ustawia wskaźnik na główne okno aplikacji. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em main\+Window} & Wskaźnik na obiekt \mbox{\hyperlink{class_main_window}{Main\+Window}}.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Umożliwia komunikację z głównym oknem w celu odświeżenia listy modeli w combo boxie po zapisaniu zmian.
+
+
+\begin{DoxyParams}{Parametry}
+{\em main\+Window} & Wskaźnik na obiekt \mbox{\hyperlink{class_main_window}{Main\+Window}}.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Przechowuje referencję do \mbox{\hyperlink{class_main_window}{Main\+Window}}, umożliwiając odświeżanie combo boxa modeli po zapisaniu zmian. \mbox{\Hypertarget{classmodels_a6984e77ecf232167c6e7af4f7c397e6f}\label{classmodels_a6984e77ecf232167c6e7af4f7c397e6f}} 
+\index{models@{models}!setVendorId@{setVendorId}}
+\index{setVendorId@{setVendorId}!models@{models}}
+\doxysubsubsection{\texorpdfstring{setVendorId()}{setVendorId()}}
+{\footnotesize\ttfamily void models\+::set\+Vendor\+Id (\begin{DoxyParamCaption}\item[{const QString \&}]{vendor\+Id }\end{DoxyParamCaption})}
+
+
+
+Ustawia identyfikator producenta dla modeli. 
+
+Ustawia identyfikator producenta, powiązany z modelami.
+
+
+\begin{DoxyParams}{Parametry}
+{\em vendor\+Id} & QString zawierający identyfikator producenta (np. UUID).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Ogranicza listę modeli do tych powiązanych z podanym producentem i ustala vendor\+Id dla nowych modeli.
+
+
+\begin{DoxyParams}{Parametry}
+{\em vendor\+Id} & QString zawierający identyfikator producenta (np. UUID).\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Ustawia vendor\+Id dla nowych modeli, używane podczas dodawania modelu w metodzie on\+Add\+Clicked. 
+
+Dokumentacja dla tej klasy została wygenerowana z plików\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{models_8h}{models.\+h}}\item 
+src/\mbox{\hyperlink{models_8cpp}{models.\+cpp}}\end{DoxyCompactItemize}

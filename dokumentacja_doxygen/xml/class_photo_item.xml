@@ -1,0 +1,620 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_photo_item" kind="class" language="C++" prot="public">
+    <compoundname>PhotoItem</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">QObject</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">QGraphicsPixmapItem</basecompoundref>
+    <includes refid="photoitem_8h" local="no">photoitem.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_photo_item_1ae42e571e1d6c7210bf87cb04cdca3ee3" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool PhotoItem::m_pressed</definition>
+        <argsstring></argsstring>
+        <name>m_pressed</name>
+        <qualifiedname>PhotoItem::m_pressed</qualifiedname>
+        <briefdescription>
+<para>Flaga oznaczająca, czy obiekt został kliknięty. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="class_photo_item_1VariableOverview">
+<title>VariableOverview</title>
+<para>Obecnie nieużywana w implementacji, zachowana dla potencjalnych rozszerzeń. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="177" column="10" bodyfile="include/photoitem.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_photo_item_1a7976bd31a59da62030d7cf638bdb7b2e" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool PhotoItem::m_selected</definition>
+        <argsstring></argsstring>
+        <name>m_selected</name>
+        <qualifiedname>PhotoItem::m_selected</qualifiedname>
+        <briefdescription>
+<para>Flaga oznaczająca, czy obiekt jest zaznaczony. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="class_photo_item_1VariableOverview">
+<title>VariableOverview</title>
+<para>Kontroluje, czy ramka zaznaczenia (m_frame) jest wyświetlana. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="185" column="10" bodyfile="include/photoitem.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_photo_item_1a3b2124f324acb8cd93ab5d2013763d28" prot="private" static="no" mutable="no">
+        <type>QGraphicsRectItem *</type>
+        <definition>QGraphicsRectItem* PhotoItem::m_frame</definition>
+        <argsstring></argsstring>
+        <name>m_frame</name>
+        <qualifiedname>PhotoItem::m_frame</qualifiedname>
+        <briefdescription>
+<para>Ramka graficzna wykorzystywana do oznaczania zaznaczenia. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="class_photo_item_1VariableOverview">
+<title>VariableOverview</title>
+<para>Obiekt QGraphicsRectItem wyświetlający czerwoną ramkę wokół miniatury przy zaznaczeniu (m_selected == true). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="194" column="23" bodyfile="include/photoitem.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_photo_item_1ac6474d1b4369f9da47e3e30e2ddf2726" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PhotoItem::PhotoItem</definition>
+        <argsstring>(QGraphicsItem *parent=nullptr)</argsstring>
+        <name>PhotoItem</name>
+        <qualifiedname>PhotoItem::PhotoItem</qualifiedname>
+        <param>
+          <type>QGraphicsItem *</type>
+          <declname>parent</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Konstruktor klasy <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Opcjonalny wskaźnik na element nadrzędny QGraphicsItem.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje obiekt, ustawia domyślne właściwości (brak zaznaczenia, obsługa hover), tworzy ramkę graficzną dla zaznaczenia i konfiguruje jej początkowy stan.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na opcjonalny element nadrzędny w hierarchii QGraphicsItem.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje obiekt jako QObject i QGraphicsPixmapItem, ustawia flagi m_pressed i m_selected na false, tworzy ramkę graficzną (m_frame) jako dziecko, włącza obsługę zdarzeń hover i ustawia początkowy stan ramki (niewidoczna). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="72" column="14" bodyfile="src/photoitem.cpp" bodystart="49" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="class_photo_item_1a74bb86d54e14b664dd88429812b50f84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>PhotoItem::~PhotoItem</definition>
+        <argsstring>()</argsstring>
+        <name>~PhotoItem</name>
+        <qualifiedname>PhotoItem::~PhotoItem</qualifiedname>
+        <briefdescription>
+<para>Destruktor klasy <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Usuwa dynamicznie alokowaną ramkę zaznaczenia (m_frame).</para>
+</sect1>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Usuwa dynamicznie alokowaną ramkę graficzną (m_frame). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="80" column="5" bodyfile="src/photoitem.cpp" bodystart="70" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="class_photo_item_1a927e8fc7719f5f8f5ba2b1efa218ce19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::setSelected</definition>
+        <argsstring>(bool selected)</argsstring>
+        <name>setSelected</name>
+        <qualifiedname>PhotoItem::setSelected</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>selected</declname>
+        </param>
+        <briefdescription>
+<para>Ustawia stan zaznaczenia obiektu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Ustawia flagę zaznaczenia obiektu i aktualizuje jego ramkę.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>selected</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wartość true zaznacza element, false odznacza.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Aktualizuje stan zaznaczenia (m_selected) i wywołuje updateFrame() w celu zmiany wyglądu ramki graficznej.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>selected</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Jeśli true — obiekt będzie wizualnie zaznaczony ramką.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Aktualizuje stan m_selected i wywołuje updateFrame, aby wyświetlić lub ukryć czerwoną ramkę wokół miniatury. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="90" column="10" bodyfile="src/photoitem.cpp" bodystart="121" bodyend="125"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="signal">
+      <memberdef kind="signal" id="class_photo_item_1a167c852e4f6b27d8d20943da2d0a91a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::clicked</definition>
+        <argsstring>(PhotoItem *item)</argsstring>
+        <name>clicked</name>
+        <qualifiedname>PhotoItem::clicked</qualifiedname>
+        <param>
+          <type><ref refid="class_photo_item" kindref="compound">PhotoItem</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Sygnał emitowany po jednokrotnym kliknięciu lewym przyciskiem myszy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na kliknięty element <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_photo_item_1SignalOverview">
+<title>SignalOverview</title>
+<para>Używany w <ref refid="class_main_window" kindref="compound">MainWindow</ref> do wyboru miniatury zdjęcia w celu np. podglądu lub przygotowania do usunięcia. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="101" column="10" bodyfile="build/moc_photoitem.cpp" bodystart="218" bodyend="222"/>
+        <referencedby refid="class_photo_item_1a5a553036f675f90cf78f59e9e5ef487f" compoundref="photoitem_8cpp" startline="84" endline="94">mousePressEvent</referencedby>
+      </memberdef>
+      <memberdef kind="signal" id="class_photo_item_1a1b1e9d8e4d9d6777fa01174e4066d020" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::doubleClicked</definition>
+        <argsstring>(PhotoItem *item)</argsstring>
+        <name>doubleClicked</name>
+        <qualifiedname>PhotoItem::doubleClicked</qualifiedname>
+        <param>
+          <type><ref refid="class_photo_item" kindref="compound">PhotoItem</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Sygnał emitowany po dwukrotnym kliknięciu lewym przyciskiem myszy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na kliknięty element <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_photo_item_1SignalOverview">
+<title>SignalOverview</title>
+<para>Używany do otwierania zdjęcia w trybie pełnoekranowym z możliwością powiększania i przesuwania. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="111" column="10" bodyfile="build/moc_photoitem.cpp" bodystart="225" bodyend="229"/>
+        <referencedby refid="class_photo_item_1a79a5040519c8fa7888f3e70b3d3de013" compoundref="photoitem_8cpp" startline="104" endline="111">mouseDoubleClickEvent</referencedby>
+      </memberdef>
+      <memberdef kind="signal" id="class_photo_item_1ad5d04b7adebd306183b6acaf1c68e344" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::hovered</definition>
+        <argsstring>(PhotoItem *item)</argsstring>
+        <name>hovered</name>
+        <qualifiedname>PhotoItem::hovered</qualifiedname>
+        <param>
+          <type><ref refid="class_photo_item" kindref="compound">PhotoItem</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Sygnał emitowany po najechaniu kursorem na obiekt. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik do obiektu <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>, na który najechano.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_photo_item_1SignalOverview">
+<title>SignalOverview</title>
+<para>Może być używany do podświetlania miniatury lub wyświetlania informacji. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="120" column="10" bodyfile="build/moc_photoitem.cpp" bodystart="232" bodyend="236"/>
+        <referencedby refid="class_photo_item_1aa3bbf72ca782081f170868e542dbeacf" compoundref="photoitem_8cpp" startline="153" endline="157">hoverEnterEvent</referencedby>
+      </memberdef>
+      <memberdef kind="signal" id="class_photo_item_1a7e4d4f7a93904b60a50fb2f646264e20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::unhovered</definition>
+        <argsstring>(PhotoItem *item)</argsstring>
+        <name>unhovered</name>
+        <qualifiedname>PhotoItem::unhovered</qualifiedname>
+        <param>
+          <type><ref refid="class_photo_item" kindref="compound">PhotoItem</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Sygnał emitowany po opuszczeniu kursora z obiektu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik do obiektu <ref refid="class_photo_item" kindref="compound">PhotoItem</ref>, który przestał być hoverowany.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_photo_item_1SignalOverview">
+<title>SignalOverview</title>
+<para>Może być używany do usuwania podświetlenia miniatury. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="129" column="10" bodyfile="build/moc_photoitem.cpp" bodystart="239" bodyend="243"/>
+        <referencedby refid="class_photo_item_1a6e7aafa8208b3a6e3c0d9b2acf807dd7" compoundref="photoitem_8cpp" startline="167" endline="171">hoverLeaveEvent</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_photo_item_1a5a553036f675f90cf78f59e9e5ef487f" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::mousePressEvent</definition>
+        <argsstring>(QGraphicsSceneMouseEvent *event) override</argsstring>
+        <name>mousePressEvent</name>
+        <qualifiedname>PhotoItem::mousePressEvent</qualifiedname>
+        <param>
+          <type>QGraphicsSceneMouseEvent *</type>
+          <declname>event</declname>
+        </param>
+        <briefdescription>
+<para>Obsługa zdarzenia kliknięcia myszy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje kliknięcie myszy na obiekt.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Obiekt zawierający dane o zdarzeniu myszy.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Przechwytuje kliknięcia (prawy przycisk emituje clicked, lewy przekazywany dla podwójnego kliknięcia) i przekazuje zdarzenie do QGraphicsPixmapItem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zdarzenie myszy typu QGraphicsSceneMouseEvent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał clicked dla prawego przycisku myszy (np. do podglądu zdjęcia). Lewy przycisk jest przekazywany do QGraphicsPixmapItem, aby umożliwić wykrycie podwójnego kliknięcia. Inne przyciski są obsługiwane domyślnie. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="140" column="10" bodyfile="src/photoitem.cpp" bodystart="84" bodyend="94"/>
+        <references refid="class_photo_item_1a167c852e4f6b27d8d20943da2d0a91a7" compoundref="moc__photoitem_8cpp" startline="218" endline="222">clicked</references>
+      </memberdef>
+      <memberdef kind="function" id="class_photo_item_1a79a5040519c8fa7888f3e70b3d3de013" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::mouseDoubleClickEvent</definition>
+        <argsstring>(QGraphicsSceneMouseEvent *event) override</argsstring>
+        <name>mouseDoubleClickEvent</name>
+        <qualifiedname>PhotoItem::mouseDoubleClickEvent</qualifiedname>
+        <param>
+          <type>QGraphicsSceneMouseEvent *</type>
+          <declname>event</declname>
+        </param>
+        <briefdescription>
+<para>Obsługa zdarzenia podwójnego kliknięcia myszy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje podwójne kliknięcie lewym przyciskiem myszy na obiekt.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Obiekt zawierający dane o zdarzeniu podwójnego kliknięcia.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Przechwytuje podwójne kliknięcia lewym przyciskiem, emituje sygnał doubleClicked i przekazuje zdarzenie do QGraphicsPixmapItem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zdarzenie myszy typu QGraphicsSceneMouseEvent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał doubleClicked dla lewego przycisku (np. do pełnoekranowego podglądu zdjęcia). Inne przyciski są obsługiwane przez QGraphicsPixmapItem. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="150" column="10" bodyfile="src/photoitem.cpp" bodystart="104" bodyend="111"/>
+        <references refid="class_photo_item_1a1b1e9d8e4d9d6777fa01174e4066d020" compoundref="moc__photoitem_8cpp" startline="225" endline="229">doubleClicked</references>
+      </memberdef>
+      <memberdef kind="function" id="class_photo_item_1aa3bbf72ca782081f170868e542dbeacf" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::hoverEnterEvent</definition>
+        <argsstring>(QGraphicsSceneHoverEvent *event) override</argsstring>
+        <name>hoverEnterEvent</name>
+        <qualifiedname>PhotoItem::hoverEnterEvent</qualifiedname>
+        <param>
+          <type>QGraphicsSceneHoverEvent *</type>
+          <declname>event</declname>
+        </param>
+        <briefdescription>
+<para>Obsługa zdarzenia najechania kursora. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje zdarzenie najechania kursora myszy na obiekt.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Obiekt zawierający dane o zdarzeniu hover enter.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał hovered i przekazuje zdarzenie do QGraphicsPixmapItem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zdarzenie typu QGraphicsSceneHoverEvent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał hovered (np. do podświetlenia miniatury) i przekazuje zdarzenie do QGraphicsPixmapItem. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="159" column="10" bodyfile="src/photoitem.cpp" bodystart="153" bodyend="157"/>
+        <references refid="class_photo_item_1ad5d04b7adebd306183b6acaf1c68e344" compoundref="moc__photoitem_8cpp" startline="232" endline="236">hovered</references>
+      </memberdef>
+      <memberdef kind="function" id="class_photo_item_1a6e7aafa8208b3a6e3c0d9b2acf807dd7" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::hoverLeaveEvent</definition>
+        <argsstring>(QGraphicsSceneHoverEvent *event) override</argsstring>
+        <name>hoverLeaveEvent</name>
+        <qualifiedname>PhotoItem::hoverLeaveEvent</qualifiedname>
+        <param>
+          <type>QGraphicsSceneHoverEvent *</type>
+          <declname>event</declname>
+        </param>
+        <briefdescription>
+<para>Obsługa zdarzenia opuszczenia kursora. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje zdarzenie opuszczenia kursora z obiektu.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Obiekt zawierający dane o zdarzeniu hover leave.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał unhovered i przekazuje zdarzenie do QGraphicsPixmapItem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zdarzenie typu QGraphicsSceneHoverEvent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Emituje sygnał unhovered (np. do usunięcia podświetlenia) i przekazuje zdarzenie do QGraphicsPixmapItem. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="168" column="10" bodyfile="src/photoitem.cpp" bodystart="167" bodyend="171"/>
+        <references refid="class_photo_item_1a7e4d4f7a93904b60a50fb2f646264e20" compoundref="moc__photoitem_8cpp" startline="239" endline="243">unhovered</references>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_photo_item_1a32f52e031b5153cde8190b8096ffcdca" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhotoItem::updateFrame</definition>
+        <argsstring>()</argsstring>
+        <name>updateFrame</name>
+        <qualifiedname>PhotoItem::updateFrame</qualifiedname>
+        <briefdescription>
+<para>Aktualizuje wygląd ramki zaznaczenia w zależności od stanu. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Aktualizuje wygląd ramki zaznaczenia w zależności od stanu zaznaczenia.</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Ustawia czerwoną ramkę o szerokości 2 piksele, gdy obiekt jest zaznaczony, lub ukrywa ramkę, gdy nie jest zaznaczony.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Jeśli m_selected jest true, ustawia czerwoną ramkę o szerokości 2 piksele wokół miniatury (z marginesem -2, +2 piksele). W przeciwnym razie ukrywa ramkę poprzez ustawienie Qt::NoPen. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/photoitem.h" line="203" column="10" bodyfile="src/photoitem.cpp" bodystart="135" bodyend="143"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+<para>Klasa <ref refid="class_photo_item" kindref="compound">PhotoItem</ref> dziedziczy po QGraphicsPixmapItem i QObject, co umożliwia wyświetlanie grafiki na scenie graficznej Qt oraz emitowanie sygnałów Qt. Umożliwia reagowanie na kliknięcia i zdarzenia kursora myszy (hover), wizualne oznaczenie zaznaczenia oraz emitowanie sygnałów do logiki aplikacji, np. <ref refid="class_main_window" kindref="compound">MainWindow</ref>, dla podglądu zdjęć lub ich usuwania.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+<para><itemizedlist>
+<listitem><para>Wyświetlanie miniatury zdjęcia w QGraphicsView.</para>
+</listitem><listitem><para>Obsługa kliknięć (pojedynczych i podwójnych) oraz zdarzeń hover.</para>
+</listitem><listitem><para>Wizualne zaznaczanie miniatury za pomocą czerwonej ramki.</para>
+</listitem><listitem><para>Emitowanie sygnałów dla interakcji użytkownika (clicked, doubleClicked, hovered, unhovered). </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>PhotoItem</label>
+        <link refid="class_photo_item"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>QGraphicsPixmapItem</label>
+      </node>
+      <node id="2">
+        <label>QObject</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>PhotoItem</label>
+        <link refid="class_photo_item"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>QGraphicsPixmapItem</label>
+      </node>
+      <node id="2">
+        <label>QObject</label>
+      </node>
+    </collaborationgraph>
+    <location file="include/photoitem.h" line="59" column="1" bodyfile="include/photoitem.h" bodystart="60" bodyend="204"/>
+    <listofallmembers>
+      <member refid="class_photo_item_1a167c852e4f6b27d8d20943da2d0a91a7" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>clicked</name></member>
+      <member refid="class_photo_item_1a1b1e9d8e4d9d6777fa01174e4066d020" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>doubleClicked</name></member>
+      <member refid="class_photo_item_1ad5d04b7adebd306183b6acaf1c68e344" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>hovered</name></member>
+      <member refid="class_photo_item_1aa3bbf72ca782081f170868e542dbeacf" prot="protected" virt="non-virtual"><scope>PhotoItem</scope><name>hoverEnterEvent</name></member>
+      <member refid="class_photo_item_1a6e7aafa8208b3a6e3c0d9b2acf807dd7" prot="protected" virt="non-virtual"><scope>PhotoItem</scope><name>hoverLeaveEvent</name></member>
+      <member refid="class_photo_item_1a3b2124f324acb8cd93ab5d2013763d28" prot="private" virt="non-virtual"><scope>PhotoItem</scope><name>m_frame</name></member>
+      <member refid="class_photo_item_1ae42e571e1d6c7210bf87cb04cdca3ee3" prot="private" virt="non-virtual"><scope>PhotoItem</scope><name>m_pressed</name></member>
+      <member refid="class_photo_item_1a7976bd31a59da62030d7cf638bdb7b2e" prot="private" virt="non-virtual"><scope>PhotoItem</scope><name>m_selected</name></member>
+      <member refid="class_photo_item_1a79a5040519c8fa7888f3e70b3d3de013" prot="protected" virt="non-virtual"><scope>PhotoItem</scope><name>mouseDoubleClickEvent</name></member>
+      <member refid="class_photo_item_1a5a553036f675f90cf78f59e9e5ef487f" prot="protected" virt="non-virtual"><scope>PhotoItem</scope><name>mousePressEvent</name></member>
+      <member refid="class_photo_item_1ac6474d1b4369f9da47e3e30e2ddf2726" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>PhotoItem</name></member>
+      <member refid="class_photo_item_1a927e8fc7719f5f8f5ba2b1efa218ce19" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>setSelected</name></member>
+      <member refid="class_photo_item_1a7e4d4f7a93904b60a50fb2f646264e20" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>unhovered</name></member>
+      <member refid="class_photo_item_1a32f52e031b5153cde8190b8096ffcdca" prot="private" virt="non-virtual"><scope>PhotoItem</scope><name>updateFrame</name></member>
+      <member refid="class_photo_item_1a74bb86d54e14b664dd88429812b50f84" prot="public" virt="non-virtual"><scope>PhotoItem</scope><name>~PhotoItem</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

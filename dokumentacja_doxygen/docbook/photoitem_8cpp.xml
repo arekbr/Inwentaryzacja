@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_photoitem_8cpp" xml:lang="pl">
+<title>Dokumentacja pliku src/photoitem.cpp</title>
+<indexterm><primary>src/photoitem.cpp</primary></indexterm>
+<para>
+
+<para>Implementacja klasy <link linkend="_class_photo_item">PhotoItem</link>, interaktywnego elementu graficznego dla zdjęć. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &quot;photoitem.h&quot;
+#include &lt;QGraphicsSceneMouseEvent&gt;
+#include &lt;QPainter&gt;
+#include &lt;QPen&gt;
+#include &lt;QUuid&gt;
+</programlisting>Wykres zależności załączania dla photoitem.cpp:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="photoitem_8cpp__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Implementacja klasy <link linkend="_class_photo_item">PhotoItem</link>, interaktywnego elementu graficznego dla zdjęć. </para>
+
+<para><formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </para>
+</formalpara>
+<formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik zawiera implementację metod klasy <link linkend="_class_photo_item">PhotoItem</link>, która reprezentuje miniaturę zdjęcia w scenie graficznej Qt (QGraphicsView). Klasa rozszerza QGraphicsPixmapItem o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po QObject umożliwia emisję sygnałów (clicked, doubleClicked, hovered, unhovered) do integracji z logiką aplikacji, np. <link linkend="_class_main_window">MainWindow</link> w aplikacji inwentaryzacyjnej.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Kod jest podzielony na następujące sekcje:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Konstruktor</emphasis> – inicjalizuje obiekt, ramkę i zdarzenia.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Destruktor</emphasis> – zwalnia zasoby ramki.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody publiczne</emphasis> – ustawianie stanu zaznaczenia.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody chronione</emphasis> – obsługa zdarzeń myszy i hover.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody prywatne</emphasis> – aktualizacja ramki zaznaczenia.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QGraphicsSceneMouseEvent, QPainter, QPen, QUuid.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>: <link linkend="_photoitem_8h">photoitem.h</link>.</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Klasa jest używana w <link linkend="_class_main_window">MainWindow</link> do wyświetlania i interakcji z miniaturami zdjęć eksponatów.</para>
+</listitem><listitem>
+<para>Flaga m_pressed jest obecnie nieużywana, ale zachowana dla potencjalnych rozszerzeń. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_index" xml:lang="pl">
+    <info>
+    <title>Inwentaryzacja</title>
+    </info>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;fullscreenphotoviewer.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_fullscreenphotoviewer_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;fullscreenphotoviewer.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_fullscreenphotoviewer_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;main.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_main.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;mainwindow.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_mainwindow_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;mainwindow.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_mainwindow_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;models.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_models_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;models.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_models_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;photoitem.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_photoitem_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;photoitem.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_photoitem_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;status.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_status_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;status.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_status_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;storage.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_storage_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;storage.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_storage_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;types.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_types_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;types.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_types_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;utils.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_utils_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;utils.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_utils_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;vendors.cpp&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_vendors_cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja dla pliku &lt;tt&gt;vendors.h&lt;/tt&gt;</title>
+    <xi:include href="md_documentation_vendors_h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja klas</title>
+    <xi:include href="class_database_config_dialog.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1_database_config_dialog.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_full_screen_photo_viewer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_item_filter_proxy_model.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classitem_list.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1item_list.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_main_window.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1_main_window.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classmodels.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1models.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_photo_item.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n10_main_window_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n20_database_config_dialog_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n20_item_filter_proxy_model_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n20_zoomable_graphics_view_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n5types_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n6models_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n6status_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n7storage_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n7vendors_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n8item_list_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_q_t___w_a_r_n_i_n_g___d_i_s_a_b_l_e___d_e_p_r_e_c_a_t_e_d_1_1qt__meta__tag___z_n9_photo_item_e__t.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classstatus.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1status.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classstorage.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1storage.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classtypes.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui___database_config_dialog.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__item_list.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui___main_window.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__models.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__status.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__storage.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui__vendors.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_ui_1_1vendors.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="classvendors.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_zoomable_graphics_view.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Dokumentacja plików</title>
+    <xi:include href="moc__predefs_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui___database_config_dialog_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__item_list_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__mainwindow_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__models_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__status_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__storage_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__types_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="ui__vendors_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_database_config_dialog_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_database_config_dialog_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="fullscreenphotoviewer_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="fullscreenphotoviewer_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_item_filter_proxy_model_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_item_filter_proxy_model_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="item_list_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="item_list_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="mainwindow_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="mainwindow_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="models_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="models_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="photoitem_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="photoitem_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="status_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="status_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="storage_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="storage_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="types_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="types_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="utils_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="utils_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="vendors_8h.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="vendors_8h_source.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_database_config_dialog_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="fullscreenphotoviewer_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="_item_filter_proxy_model_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="item_list_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="main_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="mainwindow_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="models_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="photoitem_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="status_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="storage_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="types_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="utils_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="vendors_8cpp.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<index/>
+</book>

@@ -1,0 +1,113 @@
+.TH "types" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+types \- Okno dialogowe do zarządzania typami eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <types\&.h>\fP
+.PP
+Dziedziczy QDialog\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBtypes\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy types\&. "
+.ti -1c
+.RI "\fB~types\fP ()"
+.br
+.RI "Destruktor klasy types\&. "
+.ti -1c
+.RI "void \fBsetMainWindow\fP (\fBMainWindow\fP *mainWindow)"
+.br
+.RI "Ustawia wskaźnik na główne okno aplikacji\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Okno dialogowe do zarządzania typami eksponatów\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa types dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania typów eksponatów (np\&. Komputer, Monitor) w bazie danych (tabela \fCtypes\fP)\&. Współpracuje z klasą \fBMainWindow\fP, aby odświeżyć listę typów w combo boxie po zapisaniu zmian\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie listy typów w QListView\&.
+.IP "\(bu" 2
+Dodawanie nowych typów do tabeli \fCtypes\fP z unikalnym UUID\&.
+.IP "\(bu" 2
+Edycja istniejących typów (zmiana nazwy)\&.
+.IP "\(bu" 2
+Usuwanie typów po potwierdzeniu użytkownika\&.
+.IP "\(bu" 2
+Odświeżanie combo boxa typów w \fBMainWindow\fP po zapisaniu zmian\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "types::types (QWidget * parent = \fCnullptr\fP)\fC [explicit]\fP"
+
+.PP
+Konstruktor klasy types\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget (domyślnie nullptr)\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget (domyślnie nullptr)\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych ('default_connection'), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę typów w QListView\&. 
+.SS "types::~types ()"
+
+.PP
+Destruktor klasy types\&. 
+.SH "DestructorOverview"
+.PP
+Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne\&.
+.SH "DestructorOverview"
+.PP
+Usuwa obiekt interfejsu użytkownika i zwalnia zasoby\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "void types::setMainWindow (\fBMainWindow\fP * mainWindow)"
+
+.PP
+Ustawia wskaźnik na główne okno aplikacji\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik do obiektu klasy \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia komunikację z głównym oknem w celu odświeżenia listy typów w combo boxie po zapisaniu zmian\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik do instancji klasy \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Przechowuje referencję do \fBMainWindow\fP, umożliwiając odświeżanie combo boxa typów po zapisaniu zmian\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

@@ -1,0 +1,68 @@
+\hypertarget{photoitem_8h}{}\doxysection{Dokumentacja pliku include/photoitem.h}
+\label{photoitem_8h}\index{include/photoitem.h@{include/photoitem.h}}
+
+
+Deklaracja klasy \mbox{\hyperlink{class_photo_item}{Photo\+Item}} reprezentującej interaktywny element graficzny zdjęcia.  
+
+
+{\ttfamily \#include $<$QGraphics\+Pixmap\+Item$>$}\newline
+{\ttfamily \#include $<$QGraphics\+Rect\+Item$>$}\newline
+{\ttfamily \#include $<$QGraphics\+Scene\+Hover\+Event$>$}\newline
+{\ttfamily \#include $<$QGraphics\+Scene\+Mouse\+Event$>$}\newline
+{\ttfamily \#include $<$QObject$>$}\newline
+Wykres zależności załączania dla photoitem.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{photoitem_8h__incl}
+\end{center}
+\end{figure}
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{photoitem_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Komponenty}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_photo_item}{Photo\+Item}}
+\begin{DoxyCompactList}\small\item\em Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Deklaracja klasy \mbox{\hyperlink{class_photo_item}{Photo\+Item}} reprezentującej interaktywny element graficzny zdjęcia. 
+
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03
+\end{DoxyDate}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik zawiera deklarację klasy \mbox{\hyperlink{class_photo_item}{Photo\+Item}}, która rozszerza funkcjonalność QGraphics\+Pixmap\+Item o obsługę interakcji użytkownika (kliknięcia, najechanie kursorem, opuszczenie kursora) oraz możliwość wizualnego zaznaczenia elementu za pomocą ramki. Klasa jest używana w aplikacji inwentaryzacyjnej do wyświetlania miniatur zdjęć eksponatów w QGraphics\+View.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Plik nagłówkowy zawiera\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklarację klasy \mbox{\hyperlink{class_photo_item}{Photo\+Item}}}} – dziedziczy po QObject i QGraphics\+Pixmap\+Item.
+\item {\bfseries{Metody publiczne}} – konstruktor, destruktor, ustawianie zaznaczenia.
+\item {\bfseries{Sygnały}} – emitowane dla kliknięć, podwójnych kliknięć i zdarzeń hover.
+\item {\bfseries{Metody chronione}} – obsługa zdarzeń myszy i hover.
+\item {\bfseries{Metody prywatne}} – aktualizacja ramki zaznaczenia.
+\item {\bfseries{Zmienne prywatne}} – flagi stanu i ramka graficzna.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas QGraphics\+Pixmap\+Item, QObject, QGraphics\+Rect\+Item, QGraphics\+Scene\+Hover\+Event, QGraphics\+Scene\+Mouse\+Event.
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Klasa jest kluczowym komponentem do interaktywnego wyświetlania miniatur zdjęć w \mbox{\hyperlink{class_main_window}{Main\+Window}}.
+\item Sygnały umożliwiają integrację z \mbox{\hyperlink{class_main_window}{Main\+Window}} dla podglądu zdjęć lub ich usuwania. 
+\end{DoxyItemize}

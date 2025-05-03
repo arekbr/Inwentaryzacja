@@ -1,0 +1,99 @@
+\hypertarget{utils_8cpp}{}\doxysection{Dokumentacja pliku src/utils.cpp}
+\label{utils_8cpp}\index{src/utils.cpp@{src/utils.cpp}}
+
+
+Implementacja funkcji pomocniczej {\ttfamily setup\+Database} odpowiedzialnej za konfigurację połączenia z bazą danych w aplikacji inwentaryzacyjnej.  
+
+
+{\ttfamily \#include $<$QMessage\+Box$>$}\newline
+{\ttfamily \#include $<$QSql\+Database$>$}\newline
+{\ttfamily \#include $<$QSql\+Error$>$}\newline
+{\ttfamily \#include $<$QSql\+Query$>$}\newline
+{\ttfamily \#include $<$QUuid$>$}\newline
+Wykres zależności załączania dla utils.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utils_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Funkcje}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{utils_8cpp_a4a0ce1236cf9e6f9a9fd0a4475d1c5ff}{setup\+Database}} (const QString \&db\+Type, const QString \&db\+Source, const QString \&host, const QString \&user, const QString \&password, int port)
+\begin{DoxyCompactList}\small\item\em Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą \char`\"{}default\+\_\+connection\char`\"{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Implementacja funkcji pomocniczej {\ttfamily setup\+Database} odpowiedzialnej za konfigurację połączenia z bazą danych w aplikacji inwentaryzacyjnej. 
+
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03 
+\end{DoxyDate}
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyAuthor}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik zawiera implementację funkcji {\ttfamily setup\+Database}, która konfiguruje i otwiera połączenie z bazą danych typu SQLite lub My\+SQL, zapisując je pod nazwą \char`\"{}default\+\_\+connection\char`\"{}. Funkcja obsługuje parametry dla połączeń lokalnych (SQLite) i zdalnych (My\+SQL), a dla SQLite automatycznie tworzy schemat bazy danych i wypełnia go przykładowymi danymi słownikowymi.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Kod zawiera\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Implementację funkcji {\ttfamily setup\+Database}}} – konfiguruje połączenie, otwiera bazę i tworzy schemat dla SQLite.
+\item {\bfseries{Tworzenie schematu SQLite}} – definiuje tabele i dane początkowe.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas {\ttfamily QMessage\+Box}, {\ttfamily QSql\+Database}, {\ttfamily QSql\+Error}, {\ttfamily QSql\+Query}, {\ttfamily QUuid}.
+\item {\bfseries{Nagłówki aplikacji}}\+: Brak (tylko Qt).
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Funkcja jest kluczowa dla inicjalizacji bazy danych w aplikacji, wywoływana np. przez {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}.
+\item Schemat SQLite obejmuje tabele\+: {\ttfamily eksponaty}, {\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}, {\ttfamily photos}.
+\item Przykładowe dane słownikowe obejmują typowe wartości dla retro sprzętu komputerowego. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja funkcji}
+\mbox{\Hypertarget{utils_8cpp_a4a0ce1236cf9e6f9a9fd0a4475d1c5ff}\label{utils_8cpp_a4a0ce1236cf9e6f9a9fd0a4475d1c5ff}} 
+\index{utils.cpp@{utils.cpp}!setupDatabase@{setupDatabase}}
+\index{setupDatabase@{setupDatabase}!utils.cpp@{utils.cpp}}
+\doxysubsubsection{\texorpdfstring{setupDatabase()}{setupDatabase()}}
+{\footnotesize\ttfamily bool setup\+Database (\begin{DoxyParamCaption}\item[{const QString \&}]{db\+Type,  }\item[{const QString \&}]{db\+Source,  }\item[{const QString \&}]{host,  }\item[{const QString \&}]{user,  }\item[{const QString \&}]{password,  }\item[{int}]{port }\end{DoxyParamCaption})}
+
+
+
+Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą \char`\"{}default\+\_\+connection\char`\"{}. 
+
+Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów.\hypertarget{utils_8cpp_FunctionOverview}{}\doxysubsection{Function\+Overview}\label{utils_8cpp_FunctionOverview}
+Funkcja konfiguruje połączenie z bazą danych SQLite ({\ttfamily QSQLITE}) lub My\+SQL ({\ttfamily QMYSQL}). Dla SQLite {\ttfamily db\+Source} to ścieżka do pliku bazy, dla My\+SQL to nazwa bazy danych. Jeśli połączenie \char`\"{}default\+\_\+connection\char`\"{} istnieje, jest usuwane i tworzone od nowa. Dla SQLite automatycznie tworzy schemat bazy (tabele i dane początkowe) jeśli nie istnieje.
+
+
+\begin{DoxyParams}{Parametry}
+{\em db\+Type} & Typ bazy danych (\char`\"{}\+SQLite3\char`\"{} lub \char`\"{}\+My\+SQL\char`\"{}). \\
+\hline
+{\em db\+Source} & Dla SQLite – ścieżka do pliku; dla My\+SQL – nazwa bazy danych. \\
+\hline
+{\em host} & Adres hosta dla My\+SQL (np. \char`\"{}localhost\char`\"{}, opcjonalny). \\
+\hline
+{\em user} & Nazwa użytkownika dla My\+SQL (opcjonalny). \\
+\hline
+{\em password} & Hasło użytkownika dla My\+SQL (opcjonalny). \\
+\hline
+{\em port} & Numer portu dla My\+SQL (domyślnie 3306, opcjonalny). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Zwraca}
+{\ttfamily true} jeśli połączenie zostało nawiązane pomyślnie; {\ttfamily false} w przypadku błędu. 
+\end{DoxyReturn}
+Oto graf wywoływań tej funkcji\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=247pt]{utils_8cpp_a4a0ce1236cf9e6f9a9fd0a4475d1c5ff_icgraph}
+\end{center}
+\end{figure}

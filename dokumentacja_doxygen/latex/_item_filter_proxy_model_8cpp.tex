@@ -1,0 +1,50 @@
+\hypertarget{_item_filter_proxy_model_8cpp}{}\doxysection{Dokumentacja pliku src/\+Item\+Filter\+Proxy\+Model.cpp}
+\label{_item_filter_proxy_model_8cpp}\index{src/ItemFilterProxyModel.cpp@{src/ItemFilterProxyModel.cpp}}
+
+
+Implementacja klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}} do filtrowania listy eksponatów.  
+
+
+{\ttfamily \#include \char`\"{}Item\+Filter\+Proxy\+Model.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$QModel\+Index$>$}\newline
+Wykres zależności załączania dla Item\+Filter\+Proxy\+Model.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{_item_filter_proxy_model_8cpp__incl}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Opis szczegółowy}
+Implementacja klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}} do filtrowania listy eksponatów. 
+
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03
+\end{DoxyDate}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik \mbox{\hyperlink{_item_filter_proxy_model_8cpp}{Item\+Filter\+Proxy\+Model.\+cpp}} zawiera implementację metod klasy \mbox{\hyperlink{class_item_filter_proxy_model}{Item\+Filter\+Proxy\+Model}}, która umożliwia dynamiczne filtrowanie listy eksponatów na podstawie atrybutów takich jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu QSort\+Filter\+Proxy\+Model, umożliwiając filtrowanie wierszy modelu źródłowego (np. QSql\+Relational\+Table\+Model) z ignorowaniem wielkości liter.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Kod jest podzielony na następujące sekcje\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Konstruktor}} – inicjalizuje model proxy i konfiguruje filtrowanie.
+\item {\bfseries{Metody ustawiania filtrów}} – zapisują wartości filtrów i odświeżają widok.
+\item {\bfseries{Metoda filter\+Accepts\+Row}} – implementuje logikę filtrowania wierszy.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas QSort\+Filter\+Proxy\+Model, QModel\+Index, QAbstract\+Item\+Model.
+\item {\bfseries{Nagłówek}}\+: \mbox{\hyperlink{_item_filter_proxy_model_8h}{Item\+Filter\+Proxy\+Model.\+h}}.
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Filtrowanie jest niezależne od wielkości liter, co ułatwia dopasowanie wartości.
+\item Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2). 
+\end{DoxyItemize}

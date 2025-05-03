@@ -1,0 +1,98 @@
+\hypertarget{class_full_screen_photo_viewer}{}\doxysection{Dokumentacja klasy Full\+Screen\+Photo\+Viewer}
+\label{class_full_screen_photo_viewer}\index{FullScreenPhotoViewer@{FullScreenPhotoViewer}}
+
+
+Okno pełnoekranowe do wyświetlania zdjęć.  
+
+
+
+
+{\ttfamily \#include $<$fullscreenphotoviewer.\+h$>$}
+
+
+
+Diagram dziedziczenia dla Full\+Screen\+Photo\+Viewer
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{class_full_screen_photo_viewer__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Diagram współpracy dla Full\+Screen\+Photo\+Viewer\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=208pt]{class_full_screen_photo_viewer__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Metody publiczne}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_full_screen_photo_viewer_ac0295a004ff560cd3704cca8694c83a8}{Full\+Screen\+Photo\+Viewer}} (const QPixmap \&pixmap, QWidget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Konstruktor klasy \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Metody chronione}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_full_screen_photo_viewer_a792b6b8e610940c1c91bea6fd05f4f26}{key\+Press\+Event}} (QKey\+Event $\ast$event) override
+\begin{DoxyCompactList}\small\item\em Obsługuje zdarzenia naciśnięcia klawiszy. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Okno pełnoekranowe do wyświetlania zdjęć. 
+
+\hypertarget{class_zoomable_graphics_view_ClassOverview}{}\doxysubsection{Class\+Overview}\label{class_zoomable_graphics_view_ClassOverview}
+Klasa \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}} dziedziczy po QMain\+Window i tworzy bezramkowe, modalne okno pełnoekranowe do wyświetlania zdjęcia w obiekcie QPixmap. Wykorzystuje \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}} do obsługi powiększania i przesuwania obrazu. Okno zamyka się po naciśnięciu klawisza Escape i automatycznie usuwa się po zamknięciu (WA\+\_\+\+Delete\+On\+Close).\hypertarget{class_zoomable_graphics_view_Responsibilities}{}\doxysubsection{Responsibilities}\label{class_zoomable_graphics_view_Responsibilities}
+
+\begin{DoxyItemize}
+\item Wyświetlanie zdjęcia w trybie pełnoekranowym.
+\item Obsługa zamykania okna klawiszem Escape.
+\item Zarządzanie sceną graficzną i widokiem \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja konstruktora i destruktora}
+\mbox{\Hypertarget{class_full_screen_photo_viewer_ac0295a004ff560cd3704cca8694c83a8}\label{class_full_screen_photo_viewer_ac0295a004ff560cd3704cca8694c83a8}} 
+\index{FullScreenPhotoViewer@{FullScreenPhotoViewer}!FullScreenPhotoViewer@{FullScreenPhotoViewer}}
+\index{FullScreenPhotoViewer@{FullScreenPhotoViewer}!FullScreenPhotoViewer@{FullScreenPhotoViewer}}
+\doxysubsubsection{\texorpdfstring{FullScreenPhotoViewer()}{FullScreenPhotoViewer()}}
+{\footnotesize\ttfamily Full\+Screen\+Photo\+Viewer\+::\+Full\+Screen\+Photo\+Viewer (\begin{DoxyParamCaption}\item[{const QPixmap \&}]{pixmap,  }\item[{QWidget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+Konstruktor klasy \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em pixmap} & Obiekt QPixmap zawierający zdjęcie do wyświetlenia. \\
+\hline
+{\em parent} & Wskaźnik na nadrzędny widget. Domyślnie nullptr.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje bezramkowe okno pełnoekranowe z flagami Frameless\+Window\+Hint i Window\+Stays\+On\+Top\+Hint. Ustawia modalność (Application\+Modal) i automatyczne usuwanie po zamknięciu (WA\+\_\+\+Delete\+On\+Close). Tworzy scenę graficzną, dodaje do niej zdjęcie, konfiguruje \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}} jako centralny widget i wyświetla okno w trybie pełnoekranowym. 
+
+\doxysubsection{Dokumentacja funkcji składowych}
+\mbox{\Hypertarget{class_full_screen_photo_viewer_a792b6b8e610940c1c91bea6fd05f4f26}\label{class_full_screen_photo_viewer_a792b6b8e610940c1c91bea6fd05f4f26}} 
+\index{FullScreenPhotoViewer@{FullScreenPhotoViewer}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!FullScreenPhotoViewer@{FullScreenPhotoViewer}}
+\doxysubsubsection{\texorpdfstring{keyPressEvent()}{keyPressEvent()}}
+{\footnotesize\ttfamily void Full\+Screen\+Photo\+Viewer\+::key\+Press\+Event (\begin{DoxyParamCaption}\item[{QKey\+Event $\ast$}]{event }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}}
+
+
+
+Obsługuje zdarzenia naciśnięcia klawiszy. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em event} & Wskaźnik na zdarzenie klawiatury.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Zamyka okno po naciśnięciu klawisza Escape, wywołując metodę close(). Dla innych klawiszy przekazuje zdarzenie do metody bazowej QMain\+Window\+::key\+Press\+Event. 
+
+Dokumentacja dla tej klasy została wygenerowana z pliku\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{fullscreenphotoviewer_8h}{fullscreenphotoviewer.\+h}}\end{DoxyCompactItemize}

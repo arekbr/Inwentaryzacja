@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="classstorage" kind="class" language="C++" prot="public">
+    <compoundname>storage</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">QDialog</basecompoundref>
+    <includes refid="storage_8h" local="no">storage.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classstorage_1ae45263fa244248f685655628b0ab4c0b" prot="private" static="no" mutable="no">
+        <type><ref refid="class_ui_1_1storage" kindref="compound">Ui::storage</ref> *</type>
+        <definition>Ui::storage* storage::ui</definition>
+        <argsstring></argsstring>
+        <name>ui</name>
+        <qualifiedname>storage::ui</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na interfejs graficzny okna dialogowego. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="144" column="17" bodyfile="include/storage.h" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classstorage_1a84d27971cb6ffdae30d6c1b374032950" prot="private" static="no" mutable="no">
+        <type><ref refid="class_main_window" kindref="compound">MainWindow</ref> *</type>
+        <definition>MainWindow* storage::m_mainWindow</definition>
+        <argsstring></argsstring>
+        <name>m_mainWindow</name>
+        <qualifiedname>storage::m_mainWindow</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na główne okno aplikacji (do synchronizacji danych). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="147" column="16" bodyfile="include/storage.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classstorage_1adfd49e0dcb9f5c49b63050f16e8a7421" prot="private" static="no" mutable="no">
+        <type>QSqlDatabase</type>
+        <definition>QSqlDatabase storage::m_db</definition>
+        <argsstring></argsstring>
+        <name>m_db</name>
+        <qualifiedname>storage::m_db</qualifiedname>
+        <briefdescription>
+<para>Obiekt połączenia z bazą danych. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="150" column="18" bodyfile="include/storage.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classstorage_1a28cc22b8d0bbcf9c46d017365966765d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>storage::storage</definition>
+        <argsstring>(QWidget *parent=nullptr)</argsstring>
+        <name>storage</name>
+        <qualifiedname>storage::storage</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>parent</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Konstruktor klasy storage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget (domyślnie nullptr).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na widget nadrzędny (domyślnie nullptr).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych (&apos;default_connection&apos;), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę lokalizacji w QListView. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="76" column="14" bodyfile="src/storage.cpp" bodystart="54" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classstorage_1ac7d5664e97625603e30f649d45231b06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>storage::~storage</definition>
+        <argsstring>()</argsstring>
+        <name>~storage</name>
+        <qualifiedname>storage::~storage</qualifiedname>
+        <briefdescription>
+<para>Destruktor klasy storage. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.</para>
+</sect1>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Usuwa obiekt interfejsu użytkownika i zwalnia zasoby. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="84" column="5" bodyfile="src/storage.cpp" bodystart="79" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classstorage_1a30fc41ae15a27aa5d9ecaaff8ef646ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::setMainWindow</definition>
+        <argsstring>(MainWindow *mainWindow)</argsstring>
+        <name>setMainWindow</name>
+        <qualifiedname>storage::setMainWindow</qualifiedname>
+        <param>
+          <type><ref refid="class_main_window" kindref="compound">MainWindow</ref> *</type>
+          <declname>mainWindow</declname>
+        </param>
+        <briefdescription>
+<para>Ustawia wskaźnik na główne okno aplikacji. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mainWindow</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na obiekt klasy <ref refid="class_main_window" kindref="compound">MainWindow</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Umożliwia komunikację z głównym oknem w celu odświeżenia listy lokalizacji w combo boxie po zapisaniu zmian.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mainWindow</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik do instancji klasy <ref refid="class_main_window" kindref="compound">MainWindow</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Przechowuje referencję do <ref refid="class_main_window" kindref="compound">MainWindow</ref>, umożliwiając odświeżanie combo boxa lokalizacji po zapisaniu zmian. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="94" column="10" bodyfile="src/storage.cpp" bodystart="92" bodyend="95"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-slot">
+      <memberdef kind="slot" id="classstorage_1ada26e4c4a34b17ec894ce6d6f939313a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::onAddClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onAddClicked</name>
+        <qualifiedname>storage::onAddClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Dodaj”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje dodawanie nowej lokalizacji magazynowej.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera nazwę lokalizacji z pola tekstowego, generuje UUID, zapisuje lokalizację w tabeli <computeroutput>storage_places</computeroutput> i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera nazwę lokalizacji z QLineEdit, waliduje (niepusta), generuje UUID, wstawia lokalizację do tabeli <computeroutput>storage_places</computeroutput>. Wyświetla ostrzeżenie dla pustej nazwy lub błąd SQL. Odświeża listę i czyści pole tekstowe po sukcesie.</para>
+</sect1>
+<sect1 id="classstorage_1Bug">
+<title>Bug</title>
+<para>Linia <computeroutput>QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput> generuje UUID, ale wynik nie jest przypisywany. Poprawiona wersja powinna używać zmiennej (np. <computeroutput>QString storageId = QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput>). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="104" column="10" bodyfile="src/storage.cpp" bodystart="132" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstorage_1adf4d466feab690731bcc425c25b517f7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::onEditClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onEditClicked</name>
+        <qualifiedname>storage::onEditClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Edytuj”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje edycję aktualnie zaznaczonej lokalizacji.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybraną lokalizację, otwiera okno dialogowe do edycji nazwy, aktualizuje rekord w tabeli <computeroutput>storage_places</computeroutput> i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybraną lokalizację z QListView, otwiera QInputDialog do edycji nazwy, aktualizuje rekord w tabeli <computeroutput>storage_places</computeroutput> za pomocą ID lokalizacji. Wyświetla informację, jeśli lokalizacja nie jest wybrana, lub błąd SQL. Odświeża listę po sukcesie. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="113" column="10" bodyfile="src/storage.cpp" bodystart="167" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstorage_1a5dbdcc0e310b5a4f286645ac0efed376" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::onDeleteClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onDeleteClicked</name>
+        <qualifiedname>storage::onDeleteClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Usuń”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje usunięcie zaznaczonej lokalizacji.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Usuwa wybraną lokalizację z tabeli <computeroutput>storage_places</computeroutput> po potwierdzeniu użytkownika i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybraną lokalizację z QListView, prosi o potwierdzenie usunięcia, wykonuje zapytanie DELETE na tabeli <computeroutput>storage_places</computeroutput> dla nazwy lokalizacji. Wyświetla informację, jeśli lokalizacja nie jest wybrana, lub błąd SQL. Odświeża listę po każdej próbie. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="122" column="10" bodyfile="src/storage.cpp" bodystart="216" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstorage_1a78d84b63be2b4872a670c09f312e73a2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::onOkClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onOkClicked</name>
+        <qualifiedname>storage::onOkClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku OK. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Obsługuje zamknięcie okna i synchronizację danych.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Odświeża listę lokalizacji w combo boxie <ref refid="class_main_window" kindref="compound">MainWindow</ref> (jeśli ustawione), zamyka okno dialogowe z wynikiem zaakceptowania.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Jeśli <ref refid="class_main_window" kindref="compound">MainWindow</ref> jest ustawione, odświeża combo box lokalizacji w głównym oknie poprzez loadComboBoxData. Zamyka okno dialogowe z wynikiem akceptacji (accept). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="131" column="10" bodyfile="src/storage.cpp" bodystart="254" bodyend="261"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classstorage_1a828af779543561fb25ad52b8348db5fc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void storage::refreshList</definition>
+        <argsstring>()</argsstring>
+        <name>refreshList</name>
+        <qualifiedname>storage::refreshList</qualifiedname>
+        <briefdescription>
+<para>Odświeża listę lokalizacji w widoku listy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Odświeża widok listy lokalizacji w interfejsie użytkownika.</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera lokalizacje z tabeli <computeroutput>storage_places</computeroutput>, sortuje alfabetycznie i wyświetla w QListView za pomocą QSqlQueryModel.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera wszystkie lokalizacje z tabeli <computeroutput>storage_places</computeroutput>, sortuje je alfabetycznie i wyświetla w QListView za pomocą QSqlQueryModel. Wyświetla komunikat o błędzie w przypadku niepowodzenia zapytania SQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/storage.h" line="141" column="10" bodyfile="src/storage.cpp" bodystart="105" bodyend="117"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Okno dialogowe do zarządzania miejscami przechowywania eksponatów. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+<para>Klasa storage dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania miejsc przechowywania eksponatów (np. regały, magazyny) w bazie danych (tabela <computeroutput>storage_places</computeroutput>). Współpracuje z klasą <ref refid="class_main_window" kindref="compound">MainWindow</ref>, aby odświeżyć listę lokalizacji w combo boxie po zapisaniu zmian.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+<para><itemizedlist>
+<listitem><para>Wyświetlanie listy lokalizacji w QListView.</para>
+</listitem><listitem><para>Dodawanie nowych lokalizacji do tabeli <computeroutput>storage_places</computeroutput> z unikalnym UUID.</para>
+</listitem><listitem><para>Edycja istniejących lokalizacji (zmiana nazwy).</para>
+</listitem><listitem><para>Usuwanie lokalizacji po potwierdzeniu użytkownika.</para>
+</listitem><listitem><para>Odświeżanie combo boxa lokalizacji w <ref refid="class_main_window" kindref="compound">MainWindow</ref> po zapisaniu zmian. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+      <node id="1">
+        <label>storage</label>
+        <link refid="classstorage"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+      <node id="1">
+        <label>storage</label>
+        <link refid="classstorage"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/storage.h" line="63" column="1" bodyfile="include/storage.h" bodystart="64" bodyend="151"/>
+    <listofallmembers>
+      <member refid="classstorage_1adfd49e0dcb9f5c49b63050f16e8a7421" prot="private" virt="non-virtual"><scope>storage</scope><name>m_db</name></member>
+      <member refid="classstorage_1a84d27971cb6ffdae30d6c1b374032950" prot="private" virt="non-virtual"><scope>storage</scope><name>m_mainWindow</name></member>
+      <member refid="classstorage_1ada26e4c4a34b17ec894ce6d6f939313a" prot="private" virt="non-virtual"><scope>storage</scope><name>onAddClicked</name></member>
+      <member refid="classstorage_1a5dbdcc0e310b5a4f286645ac0efed376" prot="private" virt="non-virtual"><scope>storage</scope><name>onDeleteClicked</name></member>
+      <member refid="classstorage_1adf4d466feab690731bcc425c25b517f7" prot="private" virt="non-virtual"><scope>storage</scope><name>onEditClicked</name></member>
+      <member refid="classstorage_1a78d84b63be2b4872a670c09f312e73a2" prot="private" virt="non-virtual"><scope>storage</scope><name>onOkClicked</name></member>
+      <member refid="classstorage_1a828af779543561fb25ad52b8348db5fc" prot="private" virt="non-virtual"><scope>storage</scope><name>refreshList</name></member>
+      <member refid="classstorage_1a30fc41ae15a27aa5d9ecaaff8ef646ff" prot="public" virt="non-virtual"><scope>storage</scope><name>setMainWindow</name></member>
+      <member refid="classstorage_1a28cc22b8d0bbcf9c46d017365966765d" prot="public" virt="non-virtual"><scope>storage</scope><name>storage</name></member>
+      <member refid="classstorage_1ae45263fa244248f685655628b0ab4c0b" prot="private" virt="non-virtual"><scope>storage</scope><name>ui</name></member>
+      <member refid="classstorage_1ac7d5664e97625603e30f649d45231b06" prot="public" virt="non-virtual"><scope>storage</scope><name>~storage</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

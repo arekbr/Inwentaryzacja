@@ -1,0 +1,66 @@
+\hypertarget{_database_config_dialog_8h}{}\doxysection{Dokumentacja pliku include/\+Database\+Config\+Dialog.h}
+\label{_database_config_dialog_8h}\index{include/DatabaseConfigDialog.h@{include/DatabaseConfigDialog.h}}
+
+
+Deklaracja klasy \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}} do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej.  
+
+
+{\ttfamily \#include $<$QDialog$>$}\newline
+{\ttfamily \#include $<$QString$>$}\newline
+Wykres zależności załączania dla Database\+Config\+Dialog.\+h\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=253pt]{_database_config_dialog_8h__incl}
+\end{center}
+\end{figure}
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{_database_config_dialog_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Komponenty}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}
+\begin{DoxyCompactList}\small\item\em Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Deklaracja klasy \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}} do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej. 
+
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/ istituti-\/03
+\end{DoxyDate}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik \mbox{\hyperlink{_database_config_dialog_8h}{Database\+Config\+Dialog.\+h}} definiuje klasę \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}, która reprezentuje okno dialogowe służące do konfiguracji parametrów połączenia z bazą danych (SQLite lub My\+SQL) oraz wyboru skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Klasa umożliwia zapis ustawień w QSettings, dynamiczną zmianę stylów i czcionek oraz zapewnia metody dostępowe do parametrów połączenia z bazą danych.\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Plik nagłówkowy zawiera\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Definicję klasy \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}} – dziedziczy po QDialog, zawiera publiczne metody dostępowe, sloty oraz prywatne metody i zmienne.
+\item {\bfseries{Deklaracje metod publicznych}} – konstruktor, destruktor oraz metody zwracające parametry bazy danych.
+\item {\bfseries{Deklaracje slotów}} – obsługa zatwierdzania danych i zmiany typu bazy danych lub skórki graficznej.
+\item {\bfseries{Deklaracje metod prywatnych}} – ładowanie arkuszy stylów i czcionek dla wybranych skórek.
+\item {\bfseries{Zmienne prywatne}} – wskaźnik na interfejs użytkownika oraz identyfikatory załadowanych czcionek.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas QDialog, QString oraz mechanizmów sygnałów i slotów.
+\item {\bfseries{Namespace Ui}}\+: Zawiera definicję interfejsu użytkownika (\mbox{\hyperlink{ui___database_config_dialog_8h_source}{ui\+\_\+\+Database\+Config\+Dialog.\+h}}).
+\item {\bfseries{Zasoby}}\+: Pliki QSS dla stylów (amiga.\+qss, atari8bit.\+qss, zxspectrum.\+qss, default.\+qss) oraz czcionki (topaz.\+ttf, zxspectrum.\+ttf, Eight\+Bit Atari-\/\+Ataripl.\+ttf).
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dokumentacja i komentarze dodano bez ingerencji w oryginalny kod.
+\item Klasa obsługuje trwałe przechowywanie ustawień za pomocą QSettings.
+\item Interfejs użytkownika dynamicznie dostosowuje się do wybranego typu bazy danych (SQLite/\+My\+SQL) za pomocą QStacked\+Widget. 
+\end{DoxyItemize}

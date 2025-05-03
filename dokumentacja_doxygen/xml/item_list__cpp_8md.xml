@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="item_list__cpp_8md" kind="file" language="Markdown">
+    <compoundname>itemList_cpp.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`itemList.cpp`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>itemList.cpp</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`itemList.cpp`<sp/>zawiera<sp/>implementację<sp/>metod<sp/>klasy<sp/>`itemList`,<sp/>która<sp/>zarządza<sp/>listą<sp/>eksponatów<sp/>w<sp/>aplikacji<sp/>inwentaryzacyjnej.<sp/>Obsługuje<sp/>połączenie<sp/>z<sp/>bazą<sp/>danych<sp/>MySQL,<sp/>filtrowanie<sp/>kaskadowe,<sp/>wyświetlanie<sp/>miniatur<sp/>zdjęć,<sp/>podgląd<sp/>pełnoekranowy<sp/>oraz<sp/>operacje<sp/>CRUD<sp/>(dodawanie,<sp/>edycja,<sp/>usuwanie,<sp/>klonowanie<sp/>rekordów).<sp/>Skórka<sp/>graficzna<sp/>i<sp/>czcionki<sp/>są<sp/>zarządzane<sp/>przez<sp/>klasę<sp/>`DatabaseConfigDialog`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Kod<sp/>jest<sp/>podzielony<sp/>na<sp/>następujące<sp/>sekcje:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**Sekcja<sp/>konstruktora**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Inicjalizuje<sp/>interfejs,<sp/>model<sp/>danych,<sp/>model<sp/>proxy,<sp/>filtry<sp/>i<sp/>połączenia<sp/>sygnałów-slotów.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Sekcja<sp/>destruktora**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Zwalnia<sp/>zasoby,<sp/>zatrzymuje<sp/>timery.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Sekcja<sp/>slotów**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Obsługuje<sp/>interakcje<sp/>użytkownika:<sp/>przyciski<sp/>(dodaj,<sp/>edytuj,<sp/>usuń,<sp/>klonuj,<sp/>zakończ,<sp/>o<sp/>programie),<sp/>zmiana<sp/>zaznaczenia<sp/>w<sp/>tabeli,<sp/>zapis<sp/>rekordu,<sp/>interakcje<sp/>ze<sp/>zdjęciami<sp/>(podgląd,<sp/>pełny<sp/>ekran),<sp/>zmiana<sp/>filtrów.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>**Sekcja<sp/>metod<sp/>prywatnych**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Zarządza<sp/>schematem<sp/>bazy<sp/>danych<sp/>(`verifyDatabaseSchema`,<sp/>`createDatabaseSchema`,<sp/>`insertSampleData`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Inicjalizuje<sp/>i<sp/>odświeża<sp/>filtry<sp/>(`initFilters`,<sp/>`refreshFilters`,<sp/>`updateFilterComboBoxes`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Obsługuje<sp/>zdarzenia<sp/>dla<sp/>okna<sp/>podglądu<sp/>zdjęć<sp/>(`eventFilter`).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">1.<sp/>**Inicjalizacja**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Konstruktor<sp/>ustawia<sp/>interfejs<sp/>użytkownika<sp/>(`ui-&gt;setupUi`),<sp/>łączy<sp/>się<sp/>z<sp/>bazą<sp/>MySQL,<sp/>inicjalizuje<sp/>model<sp/>danych<sp/>(`QSqlRelationalTableModel`)<sp/>z<sp/>relacjami<sp/>do<sp/>tabel<sp/>`types`,<sp/>`vendors`,<sp/>`models`,<sp/>`statuses`,<sp/>`storage_places`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Konfiguruje<sp/>model<sp/>proxy<sp/>(`ItemFilterProxyModel`),<sp/>tabelę<sp/>(`QTableView`)<sp/>i<sp/>combo<sp/>boxy<sp/>dla<sp/>filtrów.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Weryfikuje<sp/>schemat<sp/>bazy<sp/>danych,<sp/>tworząc<sp/>go<sp/>i<sp/>wstawiając<sp/>przykładowe<sp/>dane,<sp/>jeśli<sp/>nie<sp/>istnieje.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Ustawia<sp/>połączenia<sp/>sygnałów-slotów<sp/>dla<sp/>przycisków,<sp/>tabeli<sp/>i<sp/>filtrów.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Filtrowanie**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Metoda<sp/>`onFilterChanged`<sp/>aktualizuje<sp/>filtry<sp/>w<sp/>modelu<sp/>proxy<sp/>na<sp/>podstawie<sp/>wybranych<sp/>wartości<sp/>w<sp/>combo<sp/>boxach.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`updateFilterComboBoxes`<sp/>odbudowuje<sp/>listy<sp/>combo<sp/>boxów<sp/>z<sp/>uwzględnieniem<sp/>kaskadowego<sp/>filtrowania,<sp/>pobierając<sp/>unikalne<sp/>wartości<sp/>z<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`initFilters`<sp/>i<sp/>`refreshFilters`<sp/>wypełniają<sp/>i<sp/>odświeżają<sp/>combo<sp/>boxy<sp/>danymi<sp/>z<sp/>bazy.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Operacje<sp/>CRUD**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onNewButtonClicked`,<sp/>`onEditButtonClicked`,<sp/>`onCloneButtonClicked`:<sp/>Otwierają<sp/>okno<sp/>`MainWindow`<sp/>w<sp/>odpowiednim<sp/>trybie<sp/>(dodawanie,<sp/>edycja,<sp/>klonowanie).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onDeleteButtonClicked`:<sp/>Usuwa<sp/>rekord<sp/>po<sp/>potwierdzeniu,<sp/>wykonując<sp/>zapytanie<sp/>SQL<sp/>i<sp/>odświeżając<sp/>model.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onRecordSaved`:<sp/>Odświeża<sp/>listę<sp/>po<sp/>zapisaniu<sp/>rekordu,<sp/>zaznaczając<sp/>zapisany<sp/>rekord.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>**Zdjęcia**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onTableViewSelectionChanged`:<sp/>Pobiera<sp/>zdjęcia<sp/>z<sp/>tabeli<sp/>`photos`<sp/>dla<sp/>wybranego<sp/>eksponatu<sp/>i<sp/>wyświetla<sp/>miniatury<sp/>w<sp/>`QGraphicsView`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onPhotoHovered`:<sp/>Pokazuje<sp/>powiększone<sp/>zdjęcie<sp/>w<sp/>oknie<sp/>podglądu,<sp/>pozycjonowanym<sp/>względem<sp/>miniatury.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onPhotoUnhovered`<sp/>i<sp/>`eventFilter`:<sp/>Zamykają<sp/>okno<sp/>podglądu,<sp/>gdy<sp/>kursor<sp/>opuszcza<sp/>miniaturę<sp/>lub<sp/>okno.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onPhotoClicked`:<sp/>Otwiera<sp/>zdjęcie<sp/>w<sp/>trybie<sp/>pełnoekranowym<sp/>za<sp/>pomocą<sp/>`FullScreenPhotoViewer`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">5.<sp/>**Baza<sp/>danych**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`verifyDatabaseSchema`:<sp/>Sprawdza<sp/>istnienie<sp/>wymaganych<sp/>tabel.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`createDatabaseSchema`:<sp/>Tworzy<sp/>tabele<sp/>dla<sp/>eksponatów,<sp/>typów,<sp/>producentów,<sp/>modeli,<sp/>statusów,<sp/>miejsc<sp/>przechowywania<sp/>i<sp/>zdjęć.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`insertSampleData`:<sp/>Wstawia<sp/>przykładowe<sp/>dane<sp/>z<sp/>unikalnymi<sp/>UUID.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">6.<sp/>**Interfejs**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Tabela<sp/>wyświetla<sp/>dane<sp/>z<sp/>ukrytą<sp/>kolumną<sp/>UUID,<sp/>nagłówkami<sp/>dostosowanymi<sp/>do<sp/>lokalizacji<sp/>i<sp/>możliwością<sp/>zaznaczania<sp/>wierszy.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Przyciski<sp/>obsługują<sp/>operacje<sp/>CRUD,<sp/>zakończenie<sp/>aplikacji<sp/>i<sp/>okno<sp/>&quot;O<sp/>programie&quot;.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Timer<sp/>`m_keepAliveTimer`<sp/>wykonuje<sp/>zapytania<sp/>SELECT<sp/>co<sp/>30<sp/>sekund,<sp/>aby<sp/>utrzymać<sp/>połączenie<sp/>z<sp/>MySQL.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Timer<sp/>`m_hoverCheckTimer`<sp/>sprawdza<sp/>pozycję<sp/>kursora,<sp/>zamykając<sp/>okno<sp/>podglądu,<sp/>gdy<sp/>kursor<sp/>opuszcza<sp/>odpowiedni<sp/>obszar.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Biblioteki<sp/>Qt**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QApplication`,<sp/>`QSqlDatabase`,<sp/>`QSqlQuery`,<sp/>`QGraphicsScene`,<sp/>`QMessageBox`,<sp/>`QTimer`,<sp/>`QComboBox`,<sp/>`QSqlRelationalTableModel`,<sp/>itp.:<sp/>Obsługa<sp/>interfejsu,<sp/>bazy<sp/>danych,<sp/>zdarzeń<sp/>i<sp/>grafiki.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Nagłówki<sp/>aplikacji**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`itemList.h`:<sp/>Definicja<sp/>klasy.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`ItemFilterProxyModel.h`:<sp/>Model<sp/>proxy<sp/>do<sp/>filtrowania.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`fullscreenphotoviewer.h`:<sp/>Pełnoekranowy<sp/>podgląd<sp/>zdjęć.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`mainwindow.h`:<sp/>Okno<sp/>edycji/dodawania<sp/>rekordów.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`photoitem.h`:<sp/>Klasa<sp/>dla<sp/>miniatur<sp/>zdjęć.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Interfejs<sp/>użytkownika**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`ui_itemList.h`:<sp/>Plik<sp/>generowany<sp/>przez<sp/>Qt<sp/>Designer.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Brak<sp/>bezpośrednich<sp/>zależności<sp/>od<sp/>zasobów<sp/>Qt<sp/>(np.<sp/>QSS,<sp/>czcionek).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Implementacja<sp/>zakłada<sp/>użycie<sp/>MySQL,<sp/>ale<sp/>aplikacja<sp/>wspiera<sp/>także<sp/>SQLite<sp/>(konfigurowane<sp/>w<sp/>`DatabaseConfigDialog`).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Filtrowanie<sp/>kaskadowe<sp/>wymaga<sp/>relacyjnej<sp/>struktury<sp/>bazy<sp/>danych<sp/>z<sp/>poprawnymi<sp/>kluczami<sp/>obcymi.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Zdjęcia<sp/>są<sp/>przechowywane<sp/>jako<sp/>`LONGBLOB`<sp/>w<sp/>tabeli<sp/>`photos`,<sp/>co<sp/>może<sp/>wpłynąć<sp/>na<sp/>wydajność<sp/>przy<sp/>dużej<sp/>liczbie<sp/>rekordów.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Timer<sp/>`m_keepAliveTimer`<sp/>zapobiega<sp/>timeoutom<sp/>połączenia<sp/>MySQL,<sp/>ale<sp/>zwiększa<sp/>obciążenie<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Okno<sp/>podglądu<sp/>zdjęć<sp/>jest<sp/>bezramkowe<sp/>i<sp/>przezroczyste,<sp/>co<sp/>zapewnia<sp/>estetyczny<sp/>wygląd,<sp/>ale<sp/>wymaga<sp/>ostrożnego<sp/>zarządzania<sp/>zdarzeniami.</highlight></codeline>
+    </programlisting>
+    <location file="documentation/itemList_cpp.md"/>
+  </compounddef>
+</doxygen>

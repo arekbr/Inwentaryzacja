@@ -1,0 +1,87 @@
+\hypertarget{md_documentation_vendors_h_autotoc_md177}{}\doxysection{Metadane}\label{md_documentation_vendors_h_autotoc_md177}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{vendors_8h}{vendors.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_vendors_h_autotoc_md178}{}\doxysection{Przegląd}\label{md_documentation_vendors_h_autotoc_md178}
+Plik {\ttfamily \mbox{\hyperlink{vendors_8h}{vendors.\+h}}} definiuje klasę {\ttfamily vendors}, która reprezentuje okno dialogowe do zarządzania producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli {\ttfamily vendors} w bazie danych oraz synchronizację z głównym oknem ({\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}) w celu odświeżenia combo boxów producentów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy {\ttfamily models}, {\ttfamily status}, {\ttfamily storage} czy {\ttfamily types}.\hypertarget{md_documentation_vendors_h_autotoc_md179}{}\doxysection{Struktura kodu}\label{md_documentation_vendors_h_autotoc_md179}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily vendors}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QDialog}.
+\item Używa makra {\ttfamily Q\+\_\+\+OBJECT} dla wsparcia mechanizmu sygnałów i slotów Qt.
+\end{DoxyItemize}
+\item {\bfseries{Metody publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje okno dialogowe, interfejs i połączenie z bazą danych.
+\item Destruktor\+: Zwalnia zasoby.
+\item {\ttfamily set\+Main\+Window}\+: Ustawia referencję do {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} dla odświeżania combo boxów.
+\end{DoxyItemize}
+\item {\bfseries{Sloty prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily on\+Add\+Clicked}\+: Dodaje nowego producenta do tabeli {\ttfamily vendors}.
+\item {\ttfamily on\+Edit\+Clicked}\+: Edytuje nazwę istniejącego producenta.
+\item {\ttfamily on\+Delete\+Clicked}\+: Usuwa wybranego producenta po potwierdzeniu.
+\item {\ttfamily on\+Ok\+Clicked}\+: Odświeża combo box w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} i zamyka okno.
+\end{DoxyItemize}
+\item {\bfseries{Metody prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily refresh\+List}\+: Odświeża listę producentów w {\ttfamily QList\+View}.
+\end{DoxyItemize}
+\item {\bfseries{Zmienne prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily ui}\+: Wskaźnik na interfejs użytkownika.
+\item {\ttfamily m\+\_\+main\+Window}\+: Wskaźnik na główne okno aplikacji.
+\item {\ttfamily m\+\_\+db}\+: Połączenie z bazą danych My\+SQL.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_vendors_h_autotoc_md180}{}\doxysection{Opis działania}\label{md_documentation_vendors_h_autotoc_md180}
+
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Konstruktor konfiguruje interfejs ({\ttfamily ui-\/\texorpdfstring{$>$}{>}setup\+Ui}), ustala połączenie z bazą danych ({\ttfamily default\+\_\+connection}), ustawia tytuł okna (\char`\"{}\+Zarządzanie producentami\char`\"{}), podłącza sloty dla przycisków i odświeża listę producentów.
+\item {\bfseries{Interfejs}}\+: Zawiera {\ttfamily QList\+View} do wyświetlania producentów, {\ttfamily QLine\+Edit} do wprowadzania nazwy producenta oraz przyciski (Dodaj, Edytuj, Usuń, OK, Anuluj).
+\item {\bfseries{Zarządzanie producentami}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Dodawanie}}\+: Pobiera nazwę z {\ttfamily QLine\+Edit}, generuje UUID, zapisuje producenta w tabeli {\ttfamily vendors}.
+\item {\bfseries{Edycja}}\+: Otwiera {\ttfamily QInput\+Dialog} dla wybranej nazwy producenta, aktualizuje rekord w bazie.
+\item {\bfseries{Usuwanie}}\+: Usuwa producenta po potwierdzeniu, wykonując zapytanie {\ttfamily DELETE}.
+\end{DoxyItemize}
+\item {\bfseries{Integracja z {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}}}\+: Po zatwierdzeniu zmian ({\ttfamily on\+Ok\+Clicked}), odświeża combo box producentów w głównym oknie, jeśli {\ttfamily m\+\_\+main\+Window} jest ustawione.
+\item {\bfseries{Baza danych}}\+: Operuje na tabeli {\ttfamily vendors} z polami {\ttfamily id} (UUID) i {\ttfamily name} (nazwa producenta).
+\end{DoxyItemize}\hypertarget{md_documentation_vendors_h_autotoc_md181}{}\doxysection{Zależności}\label{md_documentation_vendors_h_autotoc_md181}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QDialog}, {\ttfamily QSql\+Database}\+: Obsługa okna dialogowego i bazy danych.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}}\+: Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} dla komunikacji.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{ui__vendors_8h_source}{ui\+\_\+vendors.\+h}}}\+: Plik generowany przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_vendors_h_autotoc_md182}{}\doxysection{Uwagi}\label{md_documentation_vendors_h_autotoc_md182}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Klasa jest częścią systemu słownikowego, wspiera zarządzanie producentami w kontekście eksponatów.
+\item Połączenie z bazą danych ({\ttfamily default\+\_\+connection}) jest współdzielone z innymi komponentami (np. {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, {\ttfamily models}).
+\item Operacje CRUD (Create, Read, Update, Delete) opierają się na nazwie producenta, co może powodować problemy przy duplikatach (brak unikalności w schemacie bazy).
+\item Klasa nie filtruje producentów (np. po kategorii), co może być rozszerzone w przyszłości. 
+\end{DoxyItemize}

@@ -1,0 +1,112 @@
+\hypertarget{md_documentation_mainwindow_cpp_autotoc_md72}{}\doxysection{Metadane}\label{md_documentation_mainwindow_cpp_autotoc_md72}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{mainwindow_8cpp}{mainwindow.\+cpp}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_mainwindow_cpp_autotoc_md73}{}\doxysection{Przegląd}\label{md_documentation_mainwindow_cpp_autotoc_md73}
+Plik {\ttfamily \mbox{\hyperlink{mainwindow_8cpp}{mainwindow.\+cpp}}} zawiera implementację metod klasy {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, odpowiedzialnej za formularz do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), zapisywanie rekordów w bazie danych My\+SQL oraz otwieranie dialogów słownikowych. Implementacja obejmuje również automatyczne dodawanie nowych wartości do słowników po ich wpisaniu w combo boxach.\hypertarget{md_documentation_mainwindow_cpp_autotoc_md74}{}\doxysection{Struktura kodu}\label{md_documentation_mainwindow_cpp_autotoc_md74}
+Kod jest podzielony na następujące sekcje\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Sekcja konstruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Inicjalizuje interfejs, połączenie z bazą danych, combo boxy, sloty i automatyczne dodawanie wartości do słowników.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja destruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Zamyka połączenie z bazą danych i zwalnia zasoby.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja metod publicznych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily load\+Combo\+Box\+Data}\+: Ładuje dane do combo boxów.
+\item {\ttfamily event\+Filter}\+: Obsługuje kliknięcia w combo boxy.
+\item {\ttfamily set\+Edit\+Mode}, {\ttfamily set\+Clone\+Mode}\+: Konfigurują tryby formularza.
+\item {\ttfamily get\+New\+Item$\ast$\+Combo\+Box}\+: Zwracają wskaźniki na combo boxy.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja slotów prywatnych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily on\+Save\+Clicked}\+: Zapisuje rekord i zdjęcia.
+\item {\ttfamily on\+Cancel\+Clicked}\+: Zamyka okno.
+\item {\ttfamily on\+Add\+Photo\+Clicked}, {\ttfamily on\+Remove\+Photo\+Clicked}, {\ttfamily on\+Photo\+Clicked}\+: Zarządzają zdjęciami.
+\item {\ttfamily on\+Add$\ast$\+Clicked}\+: Otwierają dialogi słownikowe.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja metod prywatnych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily load\+Record}\+: Wczytuje dane rekordu.
+\item {\ttfamily load\+Photos}, {\ttfamily load\+Photos\+From\+Buffer}\+: Wczytują zdjęcia z bazy lub bufora.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_mainwindow_cpp_autotoc_md75}{}\doxysection{Opis działania}\label{md_documentation_mainwindow_cpp_autotoc_md75}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja}}\+:
+\begin{DoxyItemize}
+\item Konstruktor ustawia interfejs ({\ttfamily ui-\/\texorpdfstring{$>$}{>}setup\+Ui}), pobiera istniejące połączenie z bazą My\+SQL ({\ttfamily default\+\_\+connection}), ładuje dane do combo boxów ({\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}), podłącza sloty dla przycisków i konfiguruje automatyczne dodawanie wartości do słowników poprzez sygnał {\ttfamily editing\+Finished} dla pól edycyjnych combo boxów.
+\item Ustawia początkowy stan\+: brak trybu edycji, brak wybranego zdjęcia.
+\end{DoxyItemize}
+\item {\bfseries{Formularz}}\+:
+\begin{DoxyItemize}
+\item Zawiera pola tekstowe (nazwa, numer seryjny, part number, rewizja, opis, wartość), pole daty (rok produkcji), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar {\ttfamily QGraphics\+View} dla miniatur zdjęć.
+\item Combo boxy są edytowalne z autouzupełnianiem ({\ttfamily QCompleter}).
+\end{DoxyItemize}
+\item {\bfseries{Tryby pracy}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Dodawanie}}\+: Czyści pola, ustawia domyślne wartości (\char`\"{}brak\char`\"{} dla statusu i miejsca przechowywania), przechowuje zdjęcia w buforze.
+\item {\bfseries{Edycja}}\+: Wczytuje dane rekordu i zdjęcia na podstawie ID, zapisuje zmiany w istniejącym rekordzie.
+\item {\bfseries{Klonowanie}}\+: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć).
+\end{DoxyItemize}
+\item {\bfseries{Zdjęcia}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily on\+Add\+Photo\+Clicked}\+: Otwiera okno wyboru plików, ładuje zdjęcia do bufora ({\ttfamily m\+\_\+photo\+Buffer}) dla nowych rekordów lub do bazy ({\ttfamily photos}) dla edycji, przenosi pliki do katalogu \char`\"{}gotowe\char`\"{}.
+\item {\ttfamily on\+Remove\+Photo\+Clicked}\+: Usuwa zdjęcie z bazy po potwierdzeniu, odświeżając podgląd.
+\item {\ttfamily on\+Photo\+Clicked}\+: Ustawia wybraną miniaturę jako aktywną, aktualizując {\ttfamily m\+\_\+selected\+Photo\+Index}.
+\item Miniatury (80x80 pikseli) są wyświetlane w {\ttfamily QGraphics\+View} z zachowaniem proporcji.
+\end{DoxyItemize}
+\item {\bfseries{Słowniki}}\+:
+\begin{DoxyItemize}
+\item Automatyczne dodawanie\+: Po wpisaniu nowej wartości w combo boxie, zapisuje ją do odpowiedniej tabeli ({\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}) z nowym UUID. Dla modeli wymaga wybranego producenta.
+\item Dialogi słownikowe ({\ttfamily on\+Add$\ast$\+Clicked})\+: Otwierają okna ({\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily status}, {\ttfamily storage}), przekazują referencję do {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} i odświeżają combo boxy po dodaniu wartości.
+\end{DoxyItemize}
+\item {\bfseries{Zapis}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily on\+Save\+Clicked}\+: Waliduje dane, wykonuje {\ttfamily INSERT} (nowy rekord) lub {\ttfamily UPDATE} (edycja) w tabeli {\ttfamily eksponaty}, zapisuje zdjęcia z bufora do tabeli {\ttfamily photos}, przenosi pliki do katalogu \char`\"{}gotowe\char`\"{}, emituje {\ttfamily record\+Saved} i zamyka okno.
+\item Używa domyślnych UUID dla pustych wartości combo boxów (np. {\ttfamily unknown\+\_\+status\+\_\+uuid}).
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_mainwindow_cpp_autotoc_md76}{}\doxysection{Zależności}\label{md_documentation_mainwindow_cpp_autotoc_md76}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QSql\+Query}, {\ttfamily QFile\+Dialog}, {\ttfamily QMessage\+Box}, {\ttfamily QGraphics\+Scene}, {\ttfamily QCompleter}, {\ttfamily QDir}, {\ttfamily QUuid}, itp.\+: Obsługa bazy danych, plików, interfejsu i grafik.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}}\+: Definicja klasy.
+\item {\ttfamily \mbox{\hyperlink{photoitem_8h}{photoitem.\+h}}}\+: Klasa dla miniatur zdjęć.
+\item {\ttfamily \mbox{\hyperlink{types_8h}{types.\+h}}}, {\ttfamily \mbox{\hyperlink{vendors_8h}{vendors.\+h}}}, {\ttfamily \mbox{\hyperlink{models_8h}{models.\+h}}}, {\ttfamily \mbox{\hyperlink{status_8h}{status.\+h}}}, {\ttfamily \mbox{\hyperlink{storage_8h}{storage.\+h}}}\+: Dialogi słownikowe.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{ui__mainwindow_8h_source}{ui\+\_\+mainwindow.\+h}}}\+: Plik generowany przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_mainwindow_cpp_autotoc_md77}{}\doxysection{Uwagi}\label{md_documentation_mainwindow_cpp_autotoc_md77}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Implementacja zakłada użycie My\+SQL, ale aplikacja wspiera także SQLite (konfigurowane w {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}).
+\item Automatyczne dodawanie wartości do słowników zwiększa wygodę, ale wymaga walidacji (np. producent dla modeli).
+\item Zdjęcia przechowywane jako {\ttfamily LONGBLOB} mogą obciążać bazę przy dużej liczbie rekordów.
+\item Katalog \char`\"{}gotowe\char`\"{} jest tworzony w ścieżce źródłowej zdjęć, co wymaga uprawnień do zapisu.
+\item Połączenie z bazą danych ({\ttfamily default\+\_\+connection}) jest współdzielone z innymi komponentami (np. {\ttfamily \mbox{\hyperlink{classitem_list}{item\+List}}}). 
+\end{DoxyItemize}

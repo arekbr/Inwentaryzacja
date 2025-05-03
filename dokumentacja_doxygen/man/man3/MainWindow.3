@@ -1,0 +1,356 @@
+.TH "MainWindow" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+MainWindow \- Główne okno formularza do zarządzania eksponatami\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <mainwindow\&.h>\fP
+.PP
+Dziedziczy QMainWindow\&.
+.SS "Sygnały"
+
+.in +1c
+.ti -1c
+.RI "void \fBrecordSaved\fP (const QString &recordId)"
+.br
+.RI "Sygnał emitowany po zapisaniu nowego lub edytowanego rekordu\&. "
+.in -1c
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBMainWindow\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy \fBMainWindow\fP\&. "
+.ti -1c
+.RI "\fB~MainWindow\fP ()"
+.br
+.RI "Destruktor klasy \fBMainWindow\fP\&. "
+.ti -1c
+.RI "void \fBloadComboBoxData\fP (const QString &tableName, QComboBox *comboBox)"
+.br
+.RI "Ładuje dane z tabeli do combo boxa\&. "
+.ti -1c
+.RI "bool \fBeventFilter\fP (QObject *obj, QEvent *event) override"
+.br
+.RI "Obsługuje zdarzenia filtrowania dla obiektów interfejsu\&. "
+.ti -1c
+.RI "void \fBsetEditMode\fP (bool edit, const QString &recordId=QString())"
+.br
+.RI "Ustawia tryb edycji lub dodawania rekordu\&. "
+.ti -1c
+.RI "void \fBsetCloneMode\fP (const QString &recordId)"
+.br
+.RI "Ustawia tryb klonowania rekordu\&. "
+.ti -1c
+.RI "QComboBox * \fBgetNewItemVendorComboBox\fP () const"
+.br
+.RI "Zwraca wskaźnik na combo box dla producentów\&. "
+.ti -1c
+.RI "QComboBox * \fBgetNewItemModelComboBox\fP () const"
+.br
+.RI "Zwraca wskaźnik na combo box dla modeli\&. "
+.ti -1c
+.RI "QComboBox * \fBgetNewItemStoragePlaceComboBox\fP () const"
+.br
+.RI "Zwraca wskaźnik na combo box dla miejsc przechowywania\&. "
+.ti -1c
+.RI "QComboBox * \fBgetNewItemTypeComboBox\fP () const"
+.br
+.RI "Zwraca wskaźnik na combo box dla typów\&. "
+.ti -1c
+.RI "QComboBox * \fBgetNewItemStatusComboBox\fP () const"
+.br
+.RI "Zwraca wskaźnik na combo box dla statusów\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Główne okno formularza do zarządzania eksponatami\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa \fBMainWindow\fP dziedziczy po QMainWindow i odpowiada za interfejs użytkownika do dodawania, edycji i klonowania rekordów eksponatów\&. Obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych\&. Emituje sygnał recordSaved po zapisaniu rekordu\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie formularza do wprowadzania danych eksponatu\&.
+.IP "\(bu" 2
+Ładowanie danych słownikowych (typy, producenci, modele, statusy, miejsca przechowywania) do combo boxów\&.
+.IP "\(bu" 2
+Zarządzanie zdjęciami: dodawanie, usuwanie, podgląd miniatur\&.
+.IP "\(bu" 2
+Obsługa trybów: dodawanie nowego rekordu, edycja istniejącego, klonowanie rekordu\&.
+.IP "\(bu" 2
+Zapisywanie danych do bazy danych MySQL i emitowanie sygnału po zapisie\&.
+.IP "\(bu" 2
+Otwieranie dialogów do dodawania nowych wartości słownikowych\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "MainWindow::MainWindow (QWidget * parent = \fCnullptr\fP)\fC [explicit]\fP"
+
+.PP
+Konstruktor klasy \fBMainWindow\fP\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje okno formularza, ustanawia połączenie z bazą danych, konfiguruje interfejs użytkownika, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie nowych wartości do słowników\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych, ładuje dane do combo boxów, podłącza sygnały i sloty dla przycisków oraz konfiguruje automatyczne dodawanie nowych wartości do słowników\&. Ustawia początkowy stan formularza (brak edycji, brak wybranego zdjęcia)\&. 
+.SS "MainWindow::~MainWindow ()"
+
+.PP
+Destruktor klasy \fBMainWindow\fP\&. 
+.SH "DestructorOverview"
+.PP
+Zwalnia zasoby interfejsu użytkownika, zamyka połączenie z bazą danych i usuwa obiekty dynamiczne\&.
+.SH "DestructorOverview"
+.PP
+Zamyka połączenie z bazą danych, jeśli jest otwarte, i zwalnia zasoby interfejsu użytkownika\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "bool MainWindow::eventFilter (QObject * obj, QEvent * event)\fC [override]\fP"
+
+.PP
+Obsługuje zdarzenia filtrowania dla obiektów interfejsu\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIobj\fP Obiekt, dla którego przetwarzane jest zdarzenie\&. 
+.br
+\fIevent\fP Wskaźnik na zdarzenie\&. 
+.RE
+.PP
+\fBZwraca\fP
+.RS 4
+true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Przesłania metodę QMainWindow, aby otwierać listę combo boxa po kliknięciu myszą\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIobj\fP Obiekt, dla którego przetwarzane jest zdarzenie\&. 
+.br
+\fIevent\fP Wskaźnik na zdarzenie\&. 
+.RE
+.PP
+\fBZwraca\fP
+.RS 4
+true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Otwiera listę combo boxa po kliknięciu myszą, a następnie przekazuje zdarzenie do QMainWindow dla dalszego przetwarzania\&. 
+.SS "QComboBox * MainWindow::getNewItemModelComboBox () const"
+
+.PP
+Zwraca wskaźnik na combo box dla modeli\&. 
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla modeli\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia dostęp do combo boxa modeli z innych klas (np\&. dialogów słownikowych)\&.
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla modeli\&. 
+.RE
+.PP
+
+.SS "QComboBox * MainWindow::getNewItemStatusComboBox () const"
+
+.PP
+Zwraca wskaźnik na combo box dla statusów\&. 
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla statusów\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia dostęp do combo boxa statusów z innych klas (np\&. dialogów słownikowych)\&.
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla statusów\&. 
+.RE
+.PP
+
+.SS "QComboBox * MainWindow::getNewItemStoragePlaceComboBox () const"
+
+.PP
+Zwraca wskaźnik na combo box dla miejsc przechowywania\&. 
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla miejsc przechowywania\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia dostęp do combo boxa miejsc przechowywania z innych klas\&.
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla miejsc przechowywania\&. 
+.RE
+.PP
+
+.SS "QComboBox * MainWindow::getNewItemTypeComboBox () const"
+
+.PP
+Zwraca wskaźnik na combo box dla typów\&. 
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla typów\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia dostęp do combo boxa typów z innych klas (np\&. dialogów słownikowych)\&.
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla typów\&. 
+.RE
+.PP
+
+.SS "QComboBox * MainWindow::getNewItemVendorComboBox () const"
+
+.PP
+Zwraca wskaźnik na combo box dla producentów\&. 
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla producentów\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia dostęp do combo boxa producentów z innych klas (np\&. dialogów słownikowych)\&.
+.PP
+\fBZwraca\fP
+.RS 4
+Wskaźnik na QComboBox dla producentów\&. 
+.RE
+.PP
+
+.SS "void MainWindow::loadComboBoxData (const QString & tableName, QComboBox * comboBox)"
+
+.PP
+Ładuje dane z tabeli do combo boxa\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fItableName\fP Nazwa tabeli w bazie danych (np\&. 'types', 'vendors')\&. 
+.br
+\fIcomboBox\fP Wskaźnik na QComboBox, do którego ładowane są dane\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Pobiera unikalne wartości z kolumny 'name' podanej tabeli i wypełnia nimi combo box, ustawiając ID jako dane użytkownika dla każdej pozycji\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fItableName\fP Nazwa tabeli w bazie danych (np\&. 'types', 'vendors')\&. 
+.br
+\fIcomboBox\fP Wskaźnik na QComboBox, do którego ładowane są dane\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Pobiera unikalne wartości z kolumn 'id' i 'name' podanej tabeli i wypełnia nimi combo box, ustawiając ID jako dane użytkownika dla każdej pozycji\&. Wyświetla błędy w konsoli debugowania\&. 
+.SS "void MainWindow::recordSaved (const QString & recordId)\fC [signal]\fP"
+
+.PP
+Sygnał emitowany po zapisaniu nowego lub edytowanego rekordu\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIrecordId\fP ID zapisanego rekordu (np\&. UUID)\&.
+.RE
+.PP
+.SH "SignalOverview"
+.PP
+Informuje inne komponenty aplikacji (np\&. \fBitemList\fP), że rekord został zapisany w bazie danych, umożliwiając odświeżenie widoku\&. 
+.SS "void MainWindow::setCloneMode (const QString & recordId)"
+
+.PP
+Ustawia tryb klonowania rekordu\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIrecordId\fP ID rekordu do sklonowania\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Wypełnia formularz danymi istniejącego rekordu, przygotowując go do zapisu jako nowy rekord, z wyczyszczeniem zdjęć i ID rekordu\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIrecordId\fP ID rekordu do sklonowania\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Wypełnia formularz danymi istniejącego rekordu, przygotowując go do zapisu jako nowy rekord, z wyczyszczeniem zdjęć, ID rekordu i buforów zdjęć\&. 
+.SS "void MainWindow::setEditMode (bool edit, const QString & recordId = \fCQString()\fP)"
+
+.PP
+Ustawia tryb edycji lub dodawania rekordu\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIedit\fP true dla trybu edycji, false dla trybu dodawania\&. 
+.br
+\fIrecordId\fP ID rekordu do edycji (puste dla nowego rekordu)\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Konfiguruje formularz w trybie edycji istniejącego rekordu lub dodawania nowego, czyszcząc pola i ustawiając domyślne wartości dla statusu i miejsca przechowywania\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIedit\fP true dla trybu edycji, false dla trybu dodawania\&. 
+.br
+\fIrecordId\fP ID rekordu do edycji (puste dla nowego rekordu)\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Konfiguruje formularz w trybie edycji istniejącego rekordu lub dodawania nowego, czyszcząc pola, ustawiając domyślne wartości dla statusu i miejsca przechowywania, oraz włączając autouzupełnianie dla combo boxów\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;utils.h&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation_utils_h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="utils_8h.html" title="Deklaracja funkcji pomocniczych wykorzystywanych w aplikacji inwentaryzacyjnej.">utils.h</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md163"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="utils_8h.html" title="Deklaracja funkcji pomocniczych wykorzystywanych w aplikacji inwentaryzacyjnej.">utils.h</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md164"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="utils_8h.html" title="Deklaracja funkcji pomocniczych wykorzystywanych w aplikacji inwentaryzacyjnej.">utils.h</a></code> definiuje funkcję <code>setupDatabase</code>, która jest odpowiedzialna za inicjalizację połączenia z bazą danych w aplikacji inwentaryzacyjnej. Funkcja umożliwia konfigurację połączenia dla baz SQLite (lokalny plik) lub MySQL (zdalne połączenie), rejestrując je pod nazwą "default_connection". Jest to kluczowy komponent aplikacji, wykorzystywany na etapie uruchamiania, np. przez <code><a class="el" href="class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.">DatabaseConfigDialog</a></code>, do przygotowania bazy danych dla innych komponentów, takich jak <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>, <code>types</code>, <code>status</code>, <code>storage</code> czy <code>models</code>.</p>
+<h1><a class="anchor" id="autotoc_md165"></a>
+Struktura kodu</h1>
+<p >Plik nagłówkowy zawiera następujące elementy:</p>
+<ol type="1">
+<li><b>Deklaracja funkcji <code>setupDatabase</code></b> <br  />
+<ul>
+<li>Przyjmuje parametry określające typ bazy, źródło danych, host, użytkownika, hasło i port.</li>
+<li>Zwraca <code>bool</code> wskazujący sukces lub niepowodzenie połączenia.</li>
+</ul>
+</li>
+<li><b>Zależności</b> <br  />
+<ul>
+<li>Minimalne, tylko <code>QString</code> z Qt dla parametrów wejściowych.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md166"></a>
+Opis działania</h1>
+<ul>
+<li><b>Cel funkcji</b>: Utworzenie i zarejestrowanie globalnego połączenia <code>QSqlDatabase</code> pod nazwą "default_connection", które jest współdzielone przez wszystkie komponenty aplikacji.</li>
+<li><b>Obsługiwane bazy danych</b>:<ul>
+<li><b>SQLite</b> (<code>QSQLITE</code>): Używa ścieżki do pliku jako <code>dbSource</code>. Automatycznie tworzy schemat bazy i przykładowe dane (implementacja w <code><a class="el" href="utils_8cpp.html" title="Implementacja funkcji pomocniczej setupDatabase odpowiedzialnej za konfigurację połączenia z bazą dan...">utils.cpp</a></code>).</li>
+<li><b>MySQL</b> (<code>QMYSQL</code>): Używa nazwy bazy danych jako <code>dbSource</code>, wymaga parametrów <code>host</code>, <code>user</code>, <code>password</code>, <code>port</code>.</li>
+</ul>
+</li>
+<li><b>Parametry</b>:<ul>
+<li><code>dbType</code>: Określa typ bazy ("SQLite3" lub "MySQL").</li>
+<li><code>dbSource</code>: Ścieżka do pliku (SQLite) lub nazwa bazy (MySQL).</li>
+<li><code>host</code>, <code>user</code>, <code>password</code>, <code>port</code>: Opcjonalne dla MySQL, ignorowane dla SQLite.</li>
+</ul>
+</li>
+<li><b>Zwracana wartość</b>: <code>true</code> po pomyślnym nawiązaniu połączenia, <code>false</code> w przypadku błędu (np. nieprawidłowe dane uwierzytelniające, brak pliku bazy).</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md167"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QString</code>: Do obsługi parametrów wejściowych.</li>
+<li>Pośrednio: <code>QSqlDatabase</code> (używane w <code><a class="el" href="utils_8cpp.html" title="Implementacja funkcji pomocniczej setupDatabase odpowiedzialnej za konfigurację połączenia z bazą dan...">utils.cpp</a></code>).</li>
+</ul>
+</li>
+<li><b>Nagłówki aplikacji</b>:<ul>
+<li>Brak zależności od innych nagłówków aplikacji.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md168"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Funkcja <code>setupDatabase</code> jest centralnym punktem konfiguracji bazy danych, używanym przez inne komponenty aplikacji.</li>
+<li>Połączenie "default_connection" jest współdzielone, co wymaga ostrożnego zarządzania w przypadku wielokrotnego wywoływania funkcji.</li>
+<li>Obsługuje zarówno SQLite, jak i MySQL, co zwiększa elastyczność aplikacji.</li>
+<li>Dokumentacja implementacji (w <code><a class="el" href="utils_8cpp.html" title="Implementacja funkcji pomocniczej setupDatabase odpowiedzialnej za konfigurację połączenia z bazą dan...">utils.cpp</a></code>) zawiera szczegóły dotyczące automatycznego tworzenia schematu dla SQLite. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<map id="include/status.h" name="include/status.h">
+<area shape="rect" id="node1" title="Deklaracja klasy status służącej do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej." alt="" coords="99,5,224,32"/>
+<area shape="rect" id="node2" href="$mainwindow_8cpp.html" title="Implementacja klasy MainWindow do zarządzania formularzem eksponatów." alt="" coords="5,80,160,107"/>
+<area shape="rect" id="node3" href="$status_8cpp.html" title="Implementacja klasy status do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej." alt="" coords="184,80,296,107"/>
+</map>

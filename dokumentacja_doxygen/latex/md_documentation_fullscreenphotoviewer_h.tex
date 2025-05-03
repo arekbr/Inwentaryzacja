@@ -1,0 +1,76 @@
+\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md29}{}\doxysection{Metadane}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md29}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{fullscreenphotoviewer_8h}{fullscreenphotoviewer.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md30}{}\doxysection{Przegląd}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md30}
+Plik {\ttfamily \mbox{\hyperlink{fullscreenphotoviewer_8h}{fullscreenphotoviewer.\+h}}} definiuje dwie klasy\+: {\ttfamily \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}} oraz {\ttfamily \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}}, używane w aplikacji inwentaryzacyjnej do pełnoekranowego podglądu zdjęć eksponatów. {\ttfamily \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}} umożliwia powiększanie i przesuwanie obrazu za pomocą kółka myszy i przeciągania, natomiast {\ttfamily \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}} tworzy bezramkowe, modalne okno pełnoekranowe z możliwością zamknięcia klawiszem Escape.\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md31}{}\doxysection{Struktura kodu}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md31}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QGraphics\+View}.
+\item Metody\+:
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje widok z trybem przeciągania i kotwicą transformacji.
+\item {\ttfamily wheel\+Event}\+: Obsługuje powiększanie/pomniejszanie obrazu kółkiem myszy.
+\end{DoxyItemize}
+\item Zmienna\+: {\ttfamily m\+\_\+scale\+Factor} (bieżący współczynnik skali).
+\end{DoxyItemize}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Dziedziczy po {\ttfamily QMain\+Window}.
+\item Metody\+:
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje okno pełnoekranowe, ustawia zdjęcie i widok.
+\item {\ttfamily key\+Press\+Event}\+: Obsługuje zamykanie okna klawiszem Escape.
+\end{DoxyItemize}
+\item Zmienne\+: {\ttfamily m\+\_\+scene} (scena graficzna), {\ttfamily m\+\_\+view} (widok \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}).
+\end{DoxyItemize}
+\item {\bfseries{Metody inline}} ~\newline
+
+\begin{DoxyItemize}
+\item Wszystkie metody są zdefiniowane w pliku nagłówkowym, co eliminuje potrzebę osobnego pliku .cpp.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md32}{}\doxysection{Opis działania}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md32}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{\mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Ustawia kotwicę transformacji pod kursorem myszy ({\ttfamily Anchor\+Under\+Mouse}) i tryb przeciągania ({\ttfamily Scroll\+Hand\+Drag}), umożliwiając intuicyjne powiększanie i przesuwanie obrazu.
+\item {\bfseries{Powiększanie}}\+: Kółko myszy zwiększa skalę o 1.\+15 (zoom in) lub zmniejsza o 1/1.\+15 (zoom out). Współczynnik skali jest aktualizowany w zmiennej {\ttfamily m\+\_\+scale\+Factor}.
+\item {\bfseries{Przesuwanie}}\+: Tryb Scroll\+Hand\+Drag pozwala na przesuwanie obrazu przez przeciąganie myszą.
+\end{DoxyItemize}
+\item {\bfseries{\mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Inicjalizacja}}\+: Tworzy bezramkowe okno pełnoekranowe z flagami {\ttfamily Frameless\+Window\+Hint} i {\ttfamily Window\+Stays\+On\+Top\+Hint}. Ustawia modalność ({\ttfamily Application\+Modal}) i automatyczne usuwanie po zamknięciu ({\ttfamily WA\+\_\+\+Delete\+On\+Close}).
+\item {\bfseries{Wyświetlanie zdjęcia}}\+: Zdjęcie ({\ttfamily QPixmap}) jest dodawane do sceny graficznej ({\ttfamily QGraphics\+Scene}), która jest wyświetlana w {\ttfamily \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}} ustawionym jako centralny widget.
+\item {\bfseries{Zamykanie}}\+: Okno zamyka się po naciśnięciu klawisza Escape, co jest obsługiwane w metodzie {\ttfamily key\+Press\+Event}.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md33}{}\doxysection{Zależności}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md33}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QMain\+Window}\+: Bazowa klasa dla okna pełnoekranowego.
+\item {\ttfamily QGraphics\+View}, {\ttfamily QGraphics\+Scene}\+: Obsługa widoku i sceny graficznej.
+\item {\ttfamily QKey\+Event}, {\ttfamily QWheel\+Event}\+: Obsługa zdarzeń klawiatury i kółka myszy.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_fullscreenphotoviewer_h_autotoc_md34}{}\doxysection{Uwagi}\label{md_documentation_fullscreenphotoviewer_h_autotoc_md34}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Implementacja inline w pliku nagłówkowym zapewnia prostotę i wydajność.
+\item {\ttfamily \mbox{\hyperlink{class_full_screen_photo_viewer}{Full\+Screen\+Photo\+Viewer}}} jest modalny, co blokuje interakcję z innymi oknami aplikacji podczas wyświetlania zdjęcia.
+\item Automatyczne usuwanie po zamknięciu ({\ttfamily WA\+\_\+\+Delete\+On\+Close}) zapobiega wyciekom pamięci. 
+\end{DoxyItemize}

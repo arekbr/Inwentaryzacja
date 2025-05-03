@@ -1,0 +1,92 @@
+.TH "src/DatabaseConfigDialog.cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/DatabaseConfigDialog.cpp \- Implementacja klasy \fBDatabaseConfigDialog\fP z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki graficznej aplikacji\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'DatabaseConfigDialog\&.h'\fP
+.br
+\fC#include <QApplication>\fP
+.br
+\fC#include <QDebug>\fP
+.br
+\fC#include <QDir>\fP
+.br
+\fC#include <QFile>\fP
+.br
+\fC#include <QFileDialog>\fP
+.br
+\fC#include <QFontDatabase>\fP
+.br
+\fC#include <QPushButton>\fP
+.br
+\fC#include <QSettings>\fP
+.br
+\fC#include 'ui_DatabaseConfigDialog\&.h'\fP
+.br
+
+.SH "Opis szczegółowy"
+.PP 
+Implementacja klasy \fBDatabaseConfigDialog\fP z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki graficznej aplikacji\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik \fBDatabaseConfigDialog\&.cpp\fP zawiera implementację metod klasy \fBDatabaseConfigDialog\fP, która zarządza oknem dialogowym do konfiguracji połączenia z bazą danych (SQLite lub MySQL) oraz wyboru skórki graficznej (Amiga, Atari 8bit, ZX Spectrum, Standard)\&. Implementacja obejmuje ładowanie stylów QSS, czcionek, zapis ustawień w QSettings oraz obsługę dynamicznego wyboru pliku SQLite z możliwością tworzenia nowego pliku \&.db\&.
+.SH "Structure"
+.PP
+Kod jest podzielony na następujące sekcje:
+.IP "1." 4
+\fBSekcja pomocnicza\fP – funkcja getSettings do tworzenia i zwracania obiektu QSettings\&.
+.IP "2." 4
+\fBSekcja konstruktora\fP – inicjalizacja interfejsu, combo boxów, ustawień i połączeń sygnałów-slotów\&.
+.IP "3." 4
+\fBSekcja destruktora\fP – zwalnianie zasobów i czcionek\&.
+.IP "4." 4
+\fBSekcja metod publicznych\fP – metody dostępowe do parametrów bazy danych oraz metoda accept\&.
+.IP "5." 4
+\fBSekcja slotów prywatnych\fP – obsługa zmiany typu bazy danych i skórki graficznej\&.
+.IP "6." 4
+\fBSekcja metod prywatnych\fP – ładowanie stylów QSS i czcionek dla skórek\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas QApplication, QDebug, QDir, QFile, QFileDialog, QFontDatabase, QPushButton, QSettings\&.
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP: \fBui_DatabaseConfigDialog\&.h\fP generowany przez Qt Designer\&.
+.IP "\(bu" 2
+\fBZasoby\fP: Pliki QSS (:/styles/\&.qss), czcionki (:/fonts/\&.ttf)\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Ustawienia są zapisywane w pliku inwentaryzacja\&.ini w katalogu aplikacji\&.
+.IP "\(bu" 2
+Obsługa błędów obejmuje logowanie komunikatów w przypadku problemów z ładowaniem zasobów\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

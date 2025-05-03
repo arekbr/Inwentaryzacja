@@ -1,0 +1,83 @@
+.TH "FullScreenPhotoViewer" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FullScreenPhotoViewer \- Okno pełnoekranowe do wyświetlania zdjęć\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <fullscreenphotoviewer\&.h>\fP
+.PP
+Dziedziczy QMainWindow\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBFullScreenPhotoViewer\fP (const QPixmap &pixmap, QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy \fBFullScreenPhotoViewer\fP\&. "
+.in -1c
+.SS "Metody chronione"
+
+.in +1c
+.ti -1c
+.RI "void \fBkeyPressEvent\fP (QKeyEvent *event) override"
+.br
+.RI "Obsługuje zdarzenia naciśnięcia klawiszy\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Okno pełnoekranowe do wyświetlania zdjęć\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa \fBFullScreenPhotoViewer\fP dziedziczy po QMainWindow i tworzy bezramkowe, modalne okno pełnoekranowe do wyświetlania zdjęcia w obiekcie QPixmap\&. Wykorzystuje \fBZoomableGraphicsView\fP do obsługi powiększania i przesuwania obrazu\&. Okno zamyka się po naciśnięciu klawisza Escape i automatycznie usuwa się po zamknięciu (WA_DeleteOnClose)\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie zdjęcia w trybie pełnoekranowym\&.
+.IP "\(bu" 2
+Obsługa zamykania okna klawiszem Escape\&.
+.IP "\(bu" 2
+Zarządzanie sceną graficzną i widokiem \fBZoomableGraphicsView\fP\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "FullScreenPhotoViewer::FullScreenPhotoViewer (const QPixmap & pixmap, QWidget * parent = \fCnullptr\fP)\fC [inline]\fP, \fC [explicit]\fP"
+
+.PP
+Konstruktor klasy \fBFullScreenPhotoViewer\fP\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIpixmap\fP Obiekt QPixmap zawierający zdjęcie do wyświetlenia\&. 
+.br
+\fIparent\fP Wskaźnik na nadrzędny widget\&. Domyślnie nullptr\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje bezramkowe okno pełnoekranowe z flagami FramelessWindowHint i WindowStaysOnTopHint\&. Ustawia modalność (ApplicationModal) i automatyczne usuwanie po zamknięciu (WA_DeleteOnClose)\&. Tworzy scenę graficzną, dodaje do niej zdjęcie, konfiguruje \fBZoomableGraphicsView\fP jako centralny widget i wyświetla okno w trybie pełnoekranowym\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "void FullScreenPhotoViewer::keyPressEvent (QKeyEvent * event)\fC [inline]\fP, \fC [override]\fP, \fC [protected]\fP"
+
+.PP
+Obsługuje zdarzenia naciśnięcia klawiszy\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIevent\fP Wskaźnik na zdarzenie klawiatury\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Zamyka okno po naciśnięciu klawisza Escape, wywołując metodę close()\&. Dla innych klawiszy przekazuje zdarzenie do metody bazowej QMainWindow::keyPressEvent\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

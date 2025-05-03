@@ -1,0 +1,132 @@
+.TH "src/itemList.cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+src/itemList.cpp \- Implementacja klasy \fBitemList\fP do zarządzania listą eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'itemList\&.h'\fP
+.br
+\fC#include 'ItemFilterProxyModel\&.h'\fP
+.br
+\fC#include 'fullscreenphotoviewer\&.h'\fP
+.br
+\fC#include 'mainwindow\&.h'\fP
+.br
+\fC#include 'photoitem\&.h'\fP
+.br
+\fC#include 'ui_itemList\&.h'\fP
+.br
+\fC#include <QApplication>\fP
+.br
+\fC#include <QComboBox>\fP
+.br
+\fC#include <QCoreApplication>\fP
+.br
+\fC#include <QDebug>\fP
+.br
+\fC#include <QDir>\fP
+.br
+\fC#include <QFile>\fP
+.br
+\fC#include <QFileDialog>\fP
+.br
+\fC#include <QGraphicsPixmapItem>\fP
+.br
+\fC#include <QGraphicsScene>\fP
+.br
+\fC#include <QGuiApplication>\fP
+.br
+\fC#include <QItemSelectionModel>\fP
+.br
+\fC#include <QMessageBox>\fP
+.br
+\fC#include <QPixmap>\fP
+.br
+\fC#include <QPushButton>\fP
+.br
+\fC#include <QScreen>\fP
+.br
+\fC#include <QSettings>\fP
+.br
+\fC#include <QSqlDatabase>\fP
+.br
+\fC#include <QSqlError>\fP
+.br
+\fC#include <QSqlQuery>\fP
+.br
+\fC#include <QSqlRelation>\fP
+.br
+\fC#include <QSqlRelationalDelegate>\fP
+.br
+\fC#include <QSqlRelationalTableModel>\fP
+.br
+\fC#include <QTimer>\fP
+.br
+\fC#include <QUuid>\fP
+.br
+\fC#include <QtMath>\fP
+.br
+\fC#include <functional>\fP
+.br
+
+.SH "Opis szczegółowy"
+.PP 
+Implementacja klasy \fBitemList\fP do zarządzania listą eksponatów\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik zawiera implementację metod klasy \fBitemList\fP, odpowiedzialnej za wyświetlanie i zarządzanie listą eksponatów w aplikacji inwentaryzacyjnej\&. Obsługuje połączenia z bazą danych MySQL, filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, interakcje użytkownika (dodawanie, edycja, usuwanie, klonowanie rekordów)\&. Skórka graficzna i czcionki są zarządzane przez klasę \fBDatabaseConfigDialog\fP\&.
+.SH "Structure"
+.PP
+Kod jest podzielony na następujące sekcje:
+.IP "1." 4
+\fBKonstruktor\fP – inicjalizuje interfejs, model danych, filtry i połączenia sygnałów-slotów\&.
+.IP "2." 4
+\fBDestruktor\fP – zwalnia zasoby\&.
+.IP "3." 4
+\fBMetody slotów\fP – obsługują interakcje użytkownika (przyciski, tabela, zdjęcia)\&.
+.IP "4." 4
+\fBMetody prywatne\fP – zarządzają schematem bazy danych, filtrami i zdarzeniami\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klas QApplication, QSqlDatabase, QSqlQuery, QGraphicsScene, QMessageBox, QTimer, itp\&.
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP: \fBitemList\&.h\fP, \fBItemFilterProxyModel\&.h\fP, \fBfullscreenphotoviewer\&.h\fP, \fBmainwindow\&.h\fP, \fBphotoitem\&.h\fP\&.
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP: \fBui_itemList\&.h\fP\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Klasa obsługuje tylko MySQL w tej implementacji, choć aplikacja wspiera także SQLite (konfigurowane w \fBDatabaseConfigDialog\fP)\&.
+.IP "\(bu" 2
+Filtrowanie kaskadowe zapewnia dynamiczną aktualizację combo boxów w zależności od wybranych filtrów\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

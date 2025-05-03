@@ -1,0 +1,108 @@
+.TH "md_documentation__item_filter_proxy_model_cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation__item_filter_proxy_model_cpp \- Dokumentacja dla pliku \fC\fBItemFilterProxyModel\&.cpp\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBItemFilterProxyModel\&.cpp\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBItemFilterProxyModel\&.cpp\fP\fP zawiera implementację metod klasy \fC\fBItemFilterProxyModel\fP\fP, która umożliwia dynamiczne filtrowanie listy eksponatów w aplikacji inwentaryzacyjnej na podstawie atrybutów takich jak typ, producent, model, status i miejsce przechowywania\&. Klasa korzysta z mechanizmu \fCQSortFilterProxyModel\fP, zapewniając filtrowanie wierszy modelu źródłowego (np\&. \fCQSqlRelationalTableModel\fP) z ignorowaniem wielkości liter\&.
+.SH "Struktura kodu"
+.PP
+Kod jest podzielony na następujące sekcje:
+.PP
+.IP "1." 4
+\fBSekcja konstruktora\fP 
+.br
+.IP "  \(bu" 4
+Inicjalizuje model proxy i konfiguruje filtrowanie bez uwzględnienia wielkości liter\&.
+.PP
+
+.IP "2." 4
+\fBSekcja metod ustawiania filtrów\fP 
+.br
+.IP "  \(bu" 4
+Metody \fCsetTypeFilter\fP, \fCsetVendorFilter\fP, \fCsetModelFilter\fP, \fCsetStatusFilter\fP, \fCsetStorageFilter\fP zapisują wartości filtrów i odświeżają widok\&.
+.PP
+
+.IP "3." 4
+\fBSekcja metody filterAcceptsRow\fP 
+.br
+.IP "  \(bu" 4
+Implementuje logikę filtrowania, sprawdzając zgodność wierszy modelu źródłowego z filtrami\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "1." 4
+\fBInicjalizacja\fP:
+.IP "  \(bu" 4
+Konstruktor ustawia model proxy jako dziecko podanego rodzica i konfiguruje filtrowanie z ignorowaniem wielkości liter (\fCQt::CaseInsensitive\fP)\&.
+.PP
+
+.IP "2." 4
+\fBUstawianie filtrów\fP:
+.IP "  \(bu" 4
+Każda metoda ustawiania filtru (\fCsetTypeFilter\fP, \fCsetVendorFilter\fP itp\&.) zapisuje wartość filtru w odpowiedniej zmiennej prywatnej (\fCm_type\fP, \fCm_vendor\fP itp\&.) i wywołuje \fCinvalidateFilter()\fP, co odświeża widok z uwzględnieniem nowego filtru\&.
+.IP "  \(bu" 4
+Pusty ciąg jako wartość filtru oznacza brak ograniczeń dla danego atrybutu\&.
+.PP
+
+.IP "3." 4
+\fBFiltrowanie\fP:
+.IP "  \(bu" 4
+Metoda \fCfilterAcceptsRow\fP sprawdza, czy wartości w kolumnach modelu źródłowego (2: typ, 3: producent, 4: model, 9: status, 10: miejsce przechowywania) odpowiadają ustawionym filtrom\&.
+.IP "  \(bu" 4
+Używa lambdy \fCpasuje\fP, która porównuje wartość w kolumnie z wartością filtru\&. Jeśli filtr jest pusty, wszystkie wartości dla tej kolumny są akceptowane\&.
+.IP "  \(bu" 4
+Wiersz jest widoczny tylko wtedy, gdy spełnia wszystkie aktywne filtry\&.
+.PP
+
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQSortFilterProxyModel\fP: Bazowa klasa dla filtrowania i sortowania\&.
+.IP "  \(bu" 4
+\fCQModelIndex\fP, \fCQAbstractItemModel\fP: Obsługa indeksów i danych modelu źródłowego\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówek\fP:
+.IP "  \(bu" 4
+\fC\fBItemFilterProxyModel\&.h\fP\fP: Definicja klasy\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak zależności od zasobów Qt\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Filtrowanie ignoruje wielkość liter, co ułatwia dopasowanie wartości\&.
+.IP "\(bu" 2
+Struktura kolumn (2, 3, 4, 9, 10) jest zgodna z modelem \fCQSqlRelationalTableModel\fP używanym w aplikacji\&.
+.IP "\(bu" 2
+Wywołanie \fCinvalidateFilter()\fP po każdej zmianie filtru zapewnia natychmiastowe odświeżenie widoku\&. 
+.PP
+

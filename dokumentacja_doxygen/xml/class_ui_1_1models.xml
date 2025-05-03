@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui_1_1models" kind="class" language="C++" prot="public">
+    <compoundname>Ui::models</compoundname>
+    <basecompoundref refid="class_ui__models" prot="public" virt="non-virtual">Ui_models</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Ui::models</label>
+        <link refid="class_ui_1_1models"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_models</label>
+        <link refid="class_ui__models"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Ui::models</label>
+        <link refid="class_ui_1_1models"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Ui_models</label>
+        <link refid="class_ui__models"/>
+      </node>
+    </collaborationgraph>
+    <location file="build/ui_models.h" line="125" column="5" bodyfile="build/ui_models.h" bodystart="125" bodyend="125"/>
+    <listofallmembers>
+      <member refid="class_ui__models_1ae977d21450fc1528d827297ace10db6a" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>buttonBox</name></member>
+      <member refid="class_ui__models_1a2cf2defd56163f155a1d1fb14e2f07de" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>label</name></member>
+      <member refid="class_ui__models_1ac5466432891f0e02ac69a156c09b5949" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>lineEdit</name></member>
+      <member refid="class_ui__models_1ac741703da9d9fd74234be688e2f4120c" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>listView</name></member>
+      <member refid="class_ui__models_1a8d9062a3a7a13eccec8ff9795f8ae007" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>pushButton_add</name></member>
+      <member refid="class_ui__models_1a8e937f0087f956101aecff0dc945db4c" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>pushButton_delete</name></member>
+      <member refid="class_ui__models_1ad2d051ac57bb19813780b78f9720163b" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>pushButton_edit</name></member>
+      <member refid="class_ui__models_1a8dadc2f898f2c9451e291b5e372fc1e3" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__models_1a4e105635279b500ac4dce3b819dbba1d" prot="public" virt="non-virtual"><scope>Ui::models</scope><name>setupUi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_ui___main_window" xml:lang="pl">
+<title>Dokumentacja klasy Ui_MainWindow</title>
+<indexterm><primary>Ui_MainWindow</primary></indexterm>
+Diagram dziedziczenia dla Ui_MainWindow<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_ui___main_window__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1acf4a0872c4c77d8f43a2ec66ed849b58"/>void <emphasis role="strong">setupUi</emphasis> (QMainWindow *<link linkend="_class_main_window">MainWindow</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a097dd160c3534a204904cb374412c618"/>void <emphasis role="strong">retranslateUi</emphasis> (QMainWindow *<link linkend="_class_main_window">MainWindow</link>)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Atrybuty publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a356f1cf3ebda15f1fac59467ee081b74"/>QWidget * <emphasis role="strong">centralwidget</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a71e629cae3a3d68297477ea3e963cadb"/>QHBoxLayout * <emphasis role="strong">mainLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a1d036951d491a966492b2d0395ba936c"/>QVBoxLayout * <emphasis role="strong">leftLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a0a26782161273e013d81e5017ccdebee"/>QLabel * <emphasis role="strong">basicInfoLabel</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a3547d5c140fc98cab193edcb84d1b3a9"/>QFormLayout * <emphasis role="strong">basicInfoForm</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a2e2516d755e4dd53fc905dabddf2738a"/>QLabel * <emphasis role="strong">label_2</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a7e935c22215b8b649d45fded991302f6"/>QLineEdit * <emphasis role="strong">New_item_name</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a4f12a71b4a2fb6f85df2300d83b5ed3e"/>QLabel * <emphasis role="strong">label_11</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1adad6bb7d25a9082daa727dfc24bbc5ac"/>QLineEdit * <emphasis role="strong">New_item_partNumber</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1aa2621565827195e88436fb54220bb48d"/>QLabel * <emphasis role="strong">label_12</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af56d40de970cebd7fa2cb7033da44f68"/>QLineEdit * <emphasis role="strong">New_item_revision</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ac1cbc41e9dbaeb3d0bdc2189d8e9ee1d"/>QLabel * <emphasis role="strong">label_13</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a148e9530ed9cdcab42c9edca8aa46546"/>QLineEdit * <emphasis role="strong">New_item_value</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a27816ae499b41d5fd2f165bb33581b40"/>QLabel * <emphasis role="strong">techDetailsLabel</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a63afef98c5f40f66a05a27892853cbc8"/>QFormLayout * <emphasis role="strong">techDetailsForm</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a0376fd90247280e7c7957cc70628708c"/>QLabel * <emphasis role="strong">label_3</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a31d285ec7c66c071800632d96d856ca4"/>QHBoxLayout * <emphasis role="strong">hboxLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ad156c070d1a4c6210c4c4419d5b5ffce"/>QComboBox * <emphasis role="strong">New_item_type</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a91d17b95c520f38b997d63cad7ef27ed"/>QPushButton * <emphasis role="strong">New_item_addType</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a78c7e10730b43c6700cd7216911ed76a"/>QLabel * <emphasis role="strong">label_4</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a0a5a37019e8a14581803c0b4a813f0c4"/>QHBoxLayout * <emphasis role="strong">hboxLayout1</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a7ed3c3530a1cdb314d251a09068c5666"/>QComboBox * <emphasis role="strong">New_item_vendor</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ae4c2ec4e7a13dcd64767010ca9b07af8"/>QPushButton * <emphasis role="strong">New_item_addVendor</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ad6bab8fb8903b8f41afea1218ee52695"/>QLabel * <emphasis role="strong">label_5</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a03c1c791729c9bad03c14ed130485fe8"/>QHBoxLayout * <emphasis role="strong">hboxLayout2</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a7d9965be6287533b8043ac74e166f1a9"/>QComboBox * <emphasis role="strong">New_item_model</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1aa4434718336dac454c33260d5494c156"/>QPushButton * <emphasis role="strong">New_item_addModel</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a663f728e6244926a795c6e6892673b1d"/>QLabel * <emphasis role="strong">label_6</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a3d4104f813e18bc4f1616d339632d67d"/>QLineEdit * <emphasis role="strong">New_item_serialNumber</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a13936e6f18b1c90402b3c7a3c92b6cdb"/>QLabel * <emphasis role="strong">label_7</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a93090edbc6f8fd85955600bce4ee08d2"/>QDateEdit * <emphasis role="strong">New_item_ProductionDate</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af3af60cf33f72627ea1e61b99ba19494"/>QLabel * <emphasis role="strong">statusLabel</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ae53f894bfe9e52e3a09b8c1c7e86e3d3"/>QFormLayout * <emphasis role="strong">statusForm</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af183bfbfb9f38bbdd60caf92b15e23dc"/>QLabel * <emphasis role="strong">label_8</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a9df21ad129c0ab1c97c8d757bad28ae3"/>QHBoxLayout * <emphasis role="strong">hboxLayout3</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ae4644739afc548c0ea79b33e14c147e2"/>QComboBox * <emphasis role="strong">New_item_status</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a07e23063586f3aad8bd20dd33b8a39f5"/>QPushButton * <emphasis role="strong">New_item_addStatus</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a0e90c7e9ad77386881e0b264ddb9dd22"/>QLabel * <emphasis role="strong">label_9</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af4569b6e56db65e5a7f44e394e8f8e21"/>QHBoxLayout * <emphasis role="strong">hboxLayout4</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a7a47fd2eff00d1fde71186691d16be0f"/>QComboBox * <emphasis role="strong">New_item_storagePlace</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a42baf832d28caf48ca68af54b20a5fc0"/>QPushButton * <emphasis role="strong">New_item_addStoragePlace</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a9fd3fc911323e4f451f0c26b311123c5"/>QVBoxLayout * <emphasis role="strong">rightLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a9dc4dba26b83e0c94aa566e1c564420b"/>QLabel * <emphasis role="strong">label_10</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a84428abc627d1b9d04a6480e1c070e60"/>QPlainTextEdit * <emphasis role="strong">New_item_description</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a713d8e541d9de8389ad4292131dc931a"/>QGraphicsView * <emphasis role="strong">graphicsView</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af122314c86febf1eb9dfe8af76facab3"/>QHBoxLayout * <emphasis role="strong">hboxLayout5</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a2f4e43f9c087ecf918c5f60d73e73df2"/>QPushButton * <emphasis role="strong">New_item_addPhoto</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a3e3f2bacd1f63884a8b6c53b39b78a7f"/>QPushButton * <emphasis role="strong">New_item_removePhoto</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1af000ab66080ffcb4859bb2cc1524ae8f"/>QVBoxLayout * <emphasis role="strong">bottomLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1ac0cdd054b88c0c8a102461a34f59a49c"/>QHBoxLayout * <emphasis role="strong">actionButtonsLayout</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a7871ea8c4b6c595d7ccd53960b344719"/>QSpacerItem * <emphasis role="strong">horizontalSpacer</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a315aac6f4e4262ec53a456e24368bf17"/>QPushButton * <emphasis role="strong">New_item_PushButton_OK</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a81bbf8d87744fb7800d6836f7aed918e"/>QPushButton * <emphasis role="strong">New_item_PushButton_Cancel</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui___main_window_1a1687cceb1e2787aa1f83e50433943a91"/>QStatusBar * <emphasis role="strong">statusbar</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+build/ui_mainwindow.h</section>

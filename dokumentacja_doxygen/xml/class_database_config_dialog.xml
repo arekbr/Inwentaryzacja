@@ -1,0 +1,634 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_database_config_dialog" kind="class" language="C++" prot="public">
+    <compoundname>DatabaseConfigDialog</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">QDialog</basecompoundref>
+    <includes refid="_database_config_dialog_8h" local="no">DatabaseConfigDialog.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_database_config_dialog_1adeca955d77eb39999798e0060f901def" prot="private" static="no" mutable="no">
+        <type><ref refid="class_ui_1_1_database_config_dialog" kindref="compound">Ui::DatabaseConfigDialog</ref> *</type>
+        <definition>Ui::DatabaseConfigDialog* DatabaseConfigDialog::ui</definition>
+        <argsstring></argsstring>
+        <name>ui</name>
+        <qualifiedname>DatabaseConfigDialog::ui</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na obiekt interfejsu użytkownika. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="186" column="30" bodyfile="include/DatabaseConfigDialog.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_database_config_dialog_1a065aa7b192fbb6f21b485437bfe5cae6" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int DatabaseConfigDialog::m_topazFontId</definition>
+        <argsstring></argsstring>
+        <name>m_topazFontId</name>
+        <qualifiedname>DatabaseConfigDialog::m_topazFontId</qualifiedname>
+        <briefdescription>
+<para>ID czcionki Topaz załadowanej z zasobów. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="189" column="9" bodyfile="include/DatabaseConfigDialog.h" bodystart="189" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_database_config_dialog_1abefc16cb002404d49c60436532b89bf3" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int DatabaseConfigDialog::m_zxFontId</definition>
+        <argsstring></argsstring>
+        <name>m_zxFontId</name>
+        <qualifiedname>DatabaseConfigDialog::m_zxFontId</qualifiedname>
+        <briefdescription>
+<para>ID czcionki ZX Spectrum załadowanej z zasobów. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="192" column="9" bodyfile="include/DatabaseConfigDialog.h" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_database_config_dialog_1a7b2ec9789d83218a09b9fa0ee831ed63" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int DatabaseConfigDialog::m_atari8bitFontId</definition>
+        <argsstring></argsstring>
+        <name>m_atari8bitFontId</name>
+        <qualifiedname>DatabaseConfigDialog::m_atari8bitFontId</qualifiedname>
+        <briefdescription>
+<para>ID czcionki Atari 8bit załadowanej z zasobów. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="195" column="9" bodyfile="include/DatabaseConfigDialog.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_database_config_dialog_1abd57d101ca62d53fc719cd89d2e8dd13" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>DatabaseConfigDialog::DatabaseConfigDialog</definition>
+        <argsstring>(QWidget *parent=nullptr)</argsstring>
+        <name>DatabaseConfigDialog</name>
+        <qualifiedname>DatabaseConfigDialog::DatabaseConfigDialog</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>parent</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Konstruktor klasy <ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika (ui), ładuje dostępne skórki graficzne, ustawia opcje combo boxów i wczytuje zapisane ustawienia z QSettings. Ustawia połączenia sygnałów i slotów dla dynamicznej interakcji z użytkownikiem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje interfejs użytkownika, ustawia opcje combo boxów dla typu bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard). Ładuje zapisane ustawienia z QSettings, konfiguruje początkowy stan interfejsu i ustanawia połączenia sygnałów-slotów dla interakcji użytkownika, w tym wybór pliku SQLite. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="65" column="14" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="69" bodyend="153"/>
+        <references refid="class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9" compoundref="_database_config_dialog_8cpp" startline="178" endline="191">accept</references>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a1afdbe78fee40f7f4a1d7a79e18bc5e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>DatabaseConfigDialog::~DatabaseConfigDialog</definition>
+        <argsstring>()</argsstring>
+        <name>~DatabaseConfigDialog</name>
+        <qualifiedname>DatabaseConfigDialog::~DatabaseConfigDialog</qualifiedname>
+        <briefdescription>
+<para>Destruktor klasy <ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Zwalnia zasoby interfejsu użytkownika (ui) oraz usuwa załadowane czcionki z QFontDatabase, aby zapobiec wyciekom pamięci.</para>
+</sect1>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Zwalnia zasoby interfejsu użytkownika (ui) oraz usuwa załadowane czcionki (Topaz, ZX Spectrum, Atari 8bit) z QFontDatabase, aby zapobiec wyciekom pamięci. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="73" column="5" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="161" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a544fd4daddba5cee41f5eb59ebba673c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::selectedDatabaseType</definition>
+        <argsstring>() const</argsstring>
+        <name>selectedDatabaseType</name>
+        <qualifiedname>DatabaseConfigDialog::selectedDatabaseType</qualifiedname>
+        <briefdescription>
+<para>Zwraca wybrany typ bazy danych. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający typ bazy danych (np. &quot;SQLite3&quot; lub &quot;MySQL&quot;).</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera aktualnie wybrany typ bazy danych z combo boxa dbTypeComboBox.</para>
+<para><simplesect kind="return"><para>QString zawierający typ bazy danych.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera tekst wybrany w combo boxie dbTypeComboBox, reprezentujący typ bazy danych (SQLite3 lub MySQL). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="82" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="200" bodyend="203"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a9fbb43790eb73a2213a24ea8f46b7b0d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::sqliteFilePath</definition>
+        <argsstring>() const</argsstring>
+        <name>sqliteFilePath</name>
+        <qualifiedname>DatabaseConfigDialog::sqliteFilePath</qualifiedname>
+        <briefdescription>
+<para>Zwraca ścieżkę do pliku bazy SQLite. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający ścieżkę do pliku SQLite.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca ścieżkę do pliku bazy SQLite wprowadzoną w polu sqlitePathLineEdit.</para>
+<para><simplesect kind="return"><para>QString zawierający ścieżkę do pliku SQLite.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca tekst z pola sqlitePathLineEdit, zawierający ścieżkę do pliku bazy SQLite. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="91" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="212" bodyend="215"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a3c7ab6aed47852a33fcabe8d68c047c5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::mysqlHost</definition>
+        <argsstring>() const</argsstring>
+        <name>mysqlHost</name>
+        <qualifiedname>DatabaseConfigDialog::mysqlHost</qualifiedname>
+        <briefdescription>
+<para>Zwraca adres hosta dla bazy MySQL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający adres hosta MySQL.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca adres hosta MySQL wprowadzony w polu hostLineEdit.</para>
+<para><simplesect kind="return"><para>QString zawierający adres hosta MySQL.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca tekst z pola hostLineEdit, zawierający adres hosta bazy MySQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="100" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="224" bodyend="227"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1ad5a6a7ac2e50e1ea0ee3c83696e5634b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::mysqlDatabase</definition>
+        <argsstring>() const</argsstring>
+        <name>mysqlDatabase</name>
+        <qualifiedname>DatabaseConfigDialog::mysqlDatabase</qualifiedname>
+        <briefdescription>
+<para>Zwraca nazwę bazy danych MySQL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający nazwę bazy danych MySQL.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca nazwę bazy danych MySQL wprowadzoną w polu databaseLineEdit.</para>
+<para><simplesect kind="return"><para>QString zawierający nazwę bazy danych MySQL.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca tekst z pola databaseLineEdit, zawierający nazwę bazy danych MySQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="109" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="236" bodyend="239"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1aad109fe645f948ace8242edeb70d8a67" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::mysqlUser</definition>
+        <argsstring>() const</argsstring>
+        <name>mysqlUser</name>
+        <qualifiedname>DatabaseConfigDialog::mysqlUser</qualifiedname>
+        <briefdescription>
+<para>Zwraca nazwę użytkownika dla bazy MySQL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający nazwę użytkownika MySQL.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca nazwę użytkownika MySQL wprowadzoną w polu userLineEdit.</para>
+<para><simplesect kind="return"><para>QString zawierający nazwę użytkownika MySQL.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca tekst z pola userLineEdit, zawierający nazwę użytkownika bazy MySQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="118" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="248" bodyend="251"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a357702f98c99b2a3ac41862209bbd14a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>QString</type>
+        <definition>QString DatabaseConfigDialog::mysqlPassword</definition>
+        <argsstring>() const</argsstring>
+        <name>mysqlPassword</name>
+        <qualifiedname>DatabaseConfigDialog::mysqlPassword</qualifiedname>
+        <briefdescription>
+<para>Zwraca hasło użytkownika dla bazy MySQL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>QString zawierający hasło użytkownika MySQL.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca hasło użytkownika MySQL wprowadzone w polu passwordLineEdit.</para>
+<para><simplesect kind="return"><para>QString zawierający hasło użytkownika MySQL.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca tekst z pola passwordLineEdit, zawierający hasło użytkownika bazy MySQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="127" column="13" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="260" bodyend="263"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a5336cc0a9b114cd604fbbbd8e8900d00" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int DatabaseConfigDialog::mysqlPort</definition>
+        <argsstring>() const</argsstring>
+        <name>mysqlPort</name>
+        <qualifiedname>DatabaseConfigDialog::mysqlPort</qualifiedname>
+        <briefdescription>
+<para>Zwraca numer portu dla bazy MySQL. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>int zawierający numer portu MySQL.</para>
+</simplesect>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca numer portu MySQL wprowadzony w polu portSpinBox.</para>
+<para><simplesect kind="return"><para>int zawierający numer portu MySQL.</para>
+</simplesect>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zwraca wartość z pola portSpinBox, reprezentującą numer portu bazy MySQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="136" column="9" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="272" bodyend="275"/>
+        <referencedby refid="main_8cpp_1a0ddf1224851353fc92bfbff6f499fa97" compoundref="main_8cpp" startline="66" endline="143">main</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-slot">
+      <memberdef kind="slot" id="class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DatabaseConfigDialog::accept</definition>
+        <argsstring>() override</argsstring>
+        <name>accept</name>
+        <qualifiedname>DatabaseConfigDialog::accept</qualifiedname>
+        <briefdescription>
+<para>Zatwierdza wprowadzone dane i zamyka okno dialogowe. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Przesłania metodę <ref refid="class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9" kindref="member">accept()</ref> klasy QDialog. Zapisuje wszystkie wprowadzone parametry (typ bazy danych, ścieżka SQLite, dane MySQL, wybrana skórka) w QSettings i zamyka okno dialogowe z wynikiem QDialog::Accepted.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Zapisuje wszystkie wprowadzone parametry (typ bazy danych, ścieżka SQLite, dane MySQL, wybrana skórka) w pliku inwentaryzacja.ini za pomocą QSettings, a następnie wywołuje metodę accept klasy QDialog, zamykając okno z wynikiem QDialog::Accepted. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="145" column="10" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="178" bodyend="191"/>
+        <referencedby refid="class_database_config_dialog_1abd57d101ca62d53fc719cd89d2e8dd13" compoundref="_database_config_dialog_8cpp" startline="69" endline="153">DatabaseConfigDialog</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-slot">
+      <memberdef kind="slot" id="class_database_config_dialog_1ae6fdfcc239f562b74f31f0c1bd971791" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DatabaseConfigDialog::onDatabaseTypeChanged</definition>
+        <argsstring>(int index)</argsstring>
+        <name>onDatabaseTypeChanged</name>
+        <qualifiedname>DatabaseConfigDialog::onDatabaseTypeChanged</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Obsługuje zmianę typu bazy danych w combo boxie. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Indeks wybranego typu bazy danych.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Aktualizuje widoczność pól w interfejsie użytkownika (QStackedWidget) w zależności od wybranego typu bazy danych (SQLite lub MySQL).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Indeks wybranego typu bazy danych.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Przełącza aktywną stronę w QStackedWidget, pokazując odpowiednie pola dla wybranego typu bazy danych (SQLite lub MySQL). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="155" column="10" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="284" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="slot" id="class_database_config_dialog_1a4faea6960886147076a53865df12b891" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DatabaseConfigDialog::onSkinChanged</definition>
+        <argsstring>(const QString &amp;skin)</argsstring>
+        <name>onSkinChanged</name>
+        <qualifiedname>DatabaseConfigDialog::onSkinChanged</qualifiedname>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>skin</declname>
+        </param>
+        <briefdescription>
+<para>Obsługuje zmianę skórki graficznej. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa wybranej skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Wywołuje metody loadStyleSheet i loadFont dla wybranej skórki, aktualizuje interfejs aplikacji i zapisuje wybór w QSettings.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa wybranej skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Wywołuje metody loadStyleSheet i loadFont dla wybranej skórki, aktualizuje styl i czcionkę aplikacji, zapisuje wybór w QSettings i loguje zmianę. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="164" column="10" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="296" bodyend="303"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_database_config_dialog_1aafd08fa82702a0a62f69266e2d1f129a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DatabaseConfigDialog::loadStyleSheet</definition>
+        <argsstring>(const QString &amp;skin)</argsstring>
+        <name>loadStyleSheet</name>
+        <qualifiedname>DatabaseConfigDialog::loadStyleSheet</qualifiedname>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>skin</declname>
+        </param>
+        <briefdescription>
+<para>Ładuje arkusz stylów dla wybranej skórki. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Wczytuje odpowiedni plik QSS z zasobów Qt (np. :/styles/amiga.qss) i stosuje go do aplikacji za pomocą qApp-&gt;setStyleSheet. W przypadku błędu loguje ostrzeżenie.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Mapuje nazwę skórki na odpowiedni plik QSS w zasobach Qt (np. :/styles/amiga.qss), wczytuje jego zawartość i stosuje do aplikacji za pomocą qApp-&gt;setStyleSheet. Loguje sukces lub błąd ładowania. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="174" column="10" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="312" bodyend="334"/>
+      </memberdef>
+      <memberdef kind="function" id="class_database_config_dialog_1a04f474f7bf669cc872afbaefab740e65" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void DatabaseConfigDialog::loadFont</definition>
+        <argsstring>(const QString &amp;skin)</argsstring>
+        <name>loadFont</name>
+        <qualifiedname>DatabaseConfigDialog::loadFont</qualifiedname>
+        <param>
+          <type>const QString &amp;</type>
+          <declname>skin</declname>
+        </param>
+        <briefdescription>
+<para>Ładuje czcionkę dla wybranej skórki. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Ładuje odpowiednią czcionkę z zasobów Qt (np. topaz.ttf dla Amigi) za pomocą QFontDatabase i ustawia ją dla aplikacji za pomocą qApp-&gt;setFont. W przypadku Standard używa domyślnej czcionki systemowej.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>skin</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Nazwa skórki (np. &quot;Amiga&quot;, &quot;ZX Spectrum&quot;, &quot;Standard&quot;).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Mapuje nazwę skórki na odpowiednią czcionkę (np. topaz.ttf dla Amigi, zxspectrum.ttf dla ZX Spectrum, EightBit Atari-Ataripl.ttf dla Atari 8bit, domyślna systemowa dla Standard). Ładuje czcionkę za pomocą QFontDatabase, ustawia ją dla aplikacji za pomocą qApp-&gt;setFont i aktualizuje paletę oraz styl, aby zapewnić propagację czcionki. Loguje sukces lub błąd ładowania. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/DatabaseConfigDialog.h" line="183" column="10" bodyfile="src/DatabaseConfigDialog.cpp" bodystart="343" bodyend="447"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+<para>Klasa <ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref> dziedziczy po QDialog i dostarcza interfejs graficzny do wprowadzania parametrów połączenia z bazą danych oraz wyboru skórki graficznej. Obsługuje dwa typy baz danych (SQLite i MySQL) oraz cztery skórki graficzne (Amiga, Atari 8bit, ZX Spectrum, Standard). Po zatwierdzeniu ustawienia są zapisywane w QSettings, a metody dostępowe pozwalają na pobranie parametrów w innych częściach aplikacji.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+<para><itemizedlist>
+<listitem><para>Wyświetlanie i zarządzanie oknem dialogowym z polami do konfiguracji bazy danych.</para>
+</listitem><listitem><para>Dynamiczne przełączanie interfejsu w zależności od typu bazy danych.</para>
+</listitem><listitem><para>Ładowanie i stosowanie arkuszy stylów (QSS) oraz czcionek dla wybranych skórek.</para>
+</listitem><listitem><para>Trwałe przechowywanie ustawień w pliku inwentaryzacja.ini. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>DatabaseConfigDialog</label>
+        <link refid="class_database_config_dialog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>DatabaseConfigDialog</label>
+        <link refid="class_database_config_dialog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+    </collaborationgraph>
+    <location file="include/DatabaseConfigDialog.h" line="53" column="1" bodyfile="include/DatabaseConfigDialog.h" bodystart="54" bodyend="196"/>
+    <listofallmembers>
+      <member refid="class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>accept</name></member>
+      <member refid="class_database_config_dialog_1abd57d101ca62d53fc719cd89d2e8dd13" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>DatabaseConfigDialog</name></member>
+      <member refid="class_database_config_dialog_1a04f474f7bf669cc872afbaefab740e65" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>loadFont</name></member>
+      <member refid="class_database_config_dialog_1aafd08fa82702a0a62f69266e2d1f129a" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>loadStyleSheet</name></member>
+      <member refid="class_database_config_dialog_1a7b2ec9789d83218a09b9fa0ee831ed63" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>m_atari8bitFontId</name></member>
+      <member refid="class_database_config_dialog_1a065aa7b192fbb6f21b485437bfe5cae6" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>m_topazFontId</name></member>
+      <member refid="class_database_config_dialog_1abefc16cb002404d49c60436532b89bf3" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>m_zxFontId</name></member>
+      <member refid="class_database_config_dialog_1ad5a6a7ac2e50e1ea0ee3c83696e5634b" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>mysqlDatabase</name></member>
+      <member refid="class_database_config_dialog_1a3c7ab6aed47852a33fcabe8d68c047c5" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>mysqlHost</name></member>
+      <member refid="class_database_config_dialog_1a357702f98c99b2a3ac41862209bbd14a" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>mysqlPassword</name></member>
+      <member refid="class_database_config_dialog_1a5336cc0a9b114cd604fbbbd8e8900d00" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>mysqlPort</name></member>
+      <member refid="class_database_config_dialog_1aad109fe645f948ace8242edeb70d8a67" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>mysqlUser</name></member>
+      <member refid="class_database_config_dialog_1ae6fdfcc239f562b74f31f0c1bd971791" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>onDatabaseTypeChanged</name></member>
+      <member refid="class_database_config_dialog_1a4faea6960886147076a53865df12b891" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>onSkinChanged</name></member>
+      <member refid="class_database_config_dialog_1a544fd4daddba5cee41f5eb59ebba673c" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>selectedDatabaseType</name></member>
+      <member refid="class_database_config_dialog_1a9fbb43790eb73a2213a24ea8f46b7b0d" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>sqliteFilePath</name></member>
+      <member refid="class_database_config_dialog_1adeca955d77eb39999798e0060f901def" prot="private" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>ui</name></member>
+      <member refid="class_database_config_dialog_1a1afdbe78fee40f7f4a1d7a79e18bc5e6" prot="public" virt="non-virtual"><scope>DatabaseConfigDialog</scope><name>~DatabaseConfigDialog</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

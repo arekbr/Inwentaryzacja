@@ -1,0 +1,516 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_database_config_dialog" xml:lang="pl">
+<title>Dokumentacja klasy DatabaseConfigDialog</title>
+<indexterm><primary>DatabaseConfigDialog</primary></indexterm>
+<para>
+
+<para>Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej. </para>
+ 
+</para>
+<para>
+<computeroutput>#include &lt;DatabaseConfigDialog.h&gt;</computeroutput>
+</para>
+Diagram dziedziczenia dla DatabaseConfigDialog<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Diagram współpracy dla DatabaseConfigDialog:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Sloty publiczne    </title>
+        <itemizedlist>
+            <listitem><para>void <link linkend="_class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9">accept</link> () override</para>
+
+<para>Zatwierdza wprowadzone dane i zamyka okno dialogowe. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_database_config_dialog_1abd57d101ca62d53fc719cd89d2e8dd13">DatabaseConfigDialog</link> (QWidget *parent=nullptr)</para>
+
+<para>Konstruktor klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>. </para>
+</listitem>
+            <listitem><para><link linkend="_class_database_config_dialog_1a1afdbe78fee40f7f4a1d7a79e18bc5e6">~DatabaseConfigDialog</link> ()</para>
+
+<para>Destruktor klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1a544fd4daddba5cee41f5eb59ebba673c">selectedDatabaseType</link> () const</para>
+
+<para>Zwraca wybrany typ bazy danych. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1a9fbb43790eb73a2213a24ea8f46b7b0d">sqliteFilePath</link> () const</para>
+
+<para>Zwraca ścieżkę do pliku bazy SQLite. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1a3c7ab6aed47852a33fcabe8d68c047c5">mysqlHost</link> () const</para>
+
+<para>Zwraca adres hosta dla bazy MySQL. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1ad5a6a7ac2e50e1ea0ee3c83696e5634b">mysqlDatabase</link> () const</para>
+
+<para>Zwraca nazwę bazy danych MySQL. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1aad109fe645f948ace8242edeb70d8a67">mysqlUser</link> () const</para>
+
+<para>Zwraca nazwę użytkownika dla bazy MySQL. </para>
+</listitem>
+            <listitem><para>QString <link linkend="_class_database_config_dialog_1a357702f98c99b2a3ac41862209bbd14a">mysqlPassword</link> () const</para>
+
+<para>Zwraca hasło użytkownika dla bazy MySQL. </para>
+</listitem>
+            <listitem><para>int <link linkend="_class_database_config_dialog_1a5336cc0a9b114cd604fbbbd8e8900d00">mysqlPort</link> () const</para>
+
+<para>Zwraca numer portu dla bazy MySQL. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej. </para>
+
+
+<section xml:id="_class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+
+<para>Klasa <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link> dziedziczy po QDialog i dostarcza interfejs graficzny do wprowadzania parametrów połączenia z bazą danych oraz wyboru skórki graficznej. Obsługuje dwa typy baz danych (SQLite i MySQL) oraz cztery skórki graficzne (Amiga, Atari 8bit, ZX Spectrum, Standard). Po zatwierdzeniu ustawienia są zapisywane w QSettings, a metody dostępowe pozwalają na pobranie parametrów w innych częściach aplikacji.</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Wyświetlanie i zarządzanie oknem dialogowym z polami do konfiguracji bazy danych.</para>
+</listitem><listitem>
+<para>Dynamiczne przełączanie interfejsu w zależności od typu bazy danych.</para>
+</listitem><listitem>
+<para>Ładowanie i stosowanie arkuszy stylów (QSS) oraz czcionek dla wybranych skórek.</para>
+</listitem><listitem>
+<para>Trwałe przechowywanie ustawień w pliku inwentaryzacja.ini. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section>
+<title>Dokumentacja konstruktora i destruktora</title>
+<anchor xml:id="_class_database_config_dialog_1abd57d101ca62d53fc719cd89d2e8dd13"/><section>
+    <title>DatabaseConfigDialog()</title>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<para><computeroutput>DatabaseConfigDialog::DatabaseConfigDialog (QWidget * parent = <computeroutput>nullptr</computeroutput>
+)<computeroutput>[explicit]</computeroutput></computeroutput></para><para>
+
+<para>Konstruktor klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika (ui), ładuje dostępne skórki graficzne, ustawia opcje combo boxów i wczytuje zapisane ustawienia z QSettings. Ustawia połączenia sygnałów i slotów dla dynamicznej interakcji z użytkownikiem.</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parametry</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>parent</entry><entry>
+<para>Wskaźnik na nadrzędny widget. Domyślnie nullptr.</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+
+<para>Inicjalizuje interfejs użytkownika, ustawia opcje combo boxów dla typu bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard). Ładuje zapisane ustawienia z QSettings, konfiguruje początkowy stan interfejsu i ustanawia połączenia sygnałów-slotów dla interakcji użytkownika, w tym wybór pliku SQLite. </para>
+</section>
+Oto graf wywołań dla tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_abd57d101ca62d53fc719cd89d2e8dd13_cgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a1afdbe78fee40f7f4a1d7a79e18bc5e6"/><section>
+    <title>~DatabaseConfigDialog()</title>
+<indexterm><primary>~DatabaseConfigDialog</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>~DatabaseConfigDialog</secondary></indexterm>
+<para><computeroutput>DatabaseConfigDialog::~DatabaseConfigDialog ( )</computeroutput></para><para>
+
+<para>Destruktor klasy <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>. </para>
+</para>
+<section xml:id="_classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+
+<para>Zwalnia zasoby interfejsu użytkownika (ui) oraz usuwa załadowane czcionki z QFontDatabase, aby zapobiec wyciekom pamięci.</para>
+</section>
+<section xml:id="_classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+
+<para>Zwalnia zasoby interfejsu użytkownika (ui) oraz usuwa załadowane czcionki (Topaz, ZX Spectrum, Atari 8bit) z QFontDatabase, aby zapobiec wyciekom pamięci. </para>
+</section>
+</section>
+</section>
+<section>
+<title>Dokumentacja funkcji składowych</title>
+<anchor xml:id="_class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9"/><section>
+    <title>accept</title>
+<indexterm><primary>accept</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>accept</secondary></indexterm>
+<para><computeroutput>void DatabaseConfigDialog::accept ( )<computeroutput>[override]</computeroutput>, <computeroutput>[slot]</computeroutput></computeroutput></para><para>
+
+<para>Zatwierdza wprowadzone dane i zamyka okno dialogowe. </para>
+</para>
+<section xml:id="_classvendors_1SlotOverview">
+<title>SlotOverview</title>
+
+<para>Przesłania metodę <link linkend="_class_database_config_dialog_1aec79b59fc35c01ec7bc6c3a54b1521b9">accept()</link> klasy QDialog. Zapisuje wszystkie wprowadzone parametry (typ bazy danych, ścieżka SQLite, dane MySQL, wybrana skórka) w QSettings i zamyka okno dialogowe z wynikiem QDialog::Accepted.</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zapisuje wszystkie wprowadzone parametry (typ bazy danych, ścieżka SQLite, dane MySQL, wybrana skórka) w pliku inwentaryzacja.ini za pomocą QSettings, a następnie wywołuje metodę accept klasy QDialog, zamykając okno z wynikiem QDialog::Accepted. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_aec79b59fc35c01ec7bc6c3a54b1521b9_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1ad5a6a7ac2e50e1ea0ee3c83696e5634b"/><section>
+    <title>mysqlDatabase()</title>
+<indexterm><primary>mysqlDatabase</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>mysqlDatabase</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::mysqlDatabase ( ) const</computeroutput></para><para>
+
+<para>Zwraca nazwę bazy danych MySQL. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający nazwę bazy danych MySQL.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca nazwę bazy danych MySQL wprowadzoną w polu databaseLineEdit.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający nazwę bazy danych MySQL.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca tekst z pola databaseLineEdit, zawierający nazwę bazy danych MySQL. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_ad5a6a7ac2e50e1ea0ee3c83696e5634b_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a3c7ab6aed47852a33fcabe8d68c047c5"/><section>
+    <title>mysqlHost()</title>
+<indexterm><primary>mysqlHost</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>mysqlHost</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::mysqlHost ( ) const</computeroutput></para><para>
+
+<para>Zwraca adres hosta dla bazy MySQL. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający adres hosta MySQL.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca adres hosta MySQL wprowadzony w polu hostLineEdit.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający adres hosta MySQL.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca tekst z pola hostLineEdit, zawierający adres hosta bazy MySQL. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_a3c7ab6aed47852a33fcabe8d68c047c5_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a357702f98c99b2a3ac41862209bbd14a"/><section>
+    <title>mysqlPassword()</title>
+<indexterm><primary>mysqlPassword</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>mysqlPassword</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::mysqlPassword ( ) const</computeroutput></para><para>
+
+<para>Zwraca hasło użytkownika dla bazy MySQL. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający hasło użytkownika MySQL.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca hasło użytkownika MySQL wprowadzone w polu passwordLineEdit.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający hasło użytkownika MySQL.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca tekst z pola passwordLineEdit, zawierający hasło użytkownika bazy MySQL. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_a357702f98c99b2a3ac41862209bbd14a_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a5336cc0a9b114cd604fbbbd8e8900d00"/><section>
+    <title>mysqlPort()</title>
+<indexterm><primary>mysqlPort</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>mysqlPort</secondary></indexterm>
+<para><computeroutput>int DatabaseConfigDialog::mysqlPort ( ) const</computeroutput></para><para>
+
+<para>Zwraca numer portu dla bazy MySQL. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>int zawierający numer portu MySQL.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca numer portu MySQL wprowadzony w polu portSpinBox.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>int zawierający numer portu MySQL.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca wartość z pola portSpinBox, reprezentującą numer portu bazy MySQL. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_a5336cc0a9b114cd604fbbbd8e8900d00_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1aad109fe645f948ace8242edeb70d8a67"/><section>
+    <title>mysqlUser()</title>
+<indexterm><primary>mysqlUser</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>mysqlUser</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::mysqlUser ( ) const</computeroutput></para><para>
+
+<para>Zwraca nazwę użytkownika dla bazy MySQL. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający nazwę użytkownika MySQL.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca nazwę użytkownika MySQL wprowadzoną w polu userLineEdit.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający nazwę użytkownika MySQL.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca tekst z pola userLineEdit, zawierający nazwę użytkownika bazy MySQL. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_aad109fe645f948ace8242edeb70d8a67_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a544fd4daddba5cee41f5eb59ebba673c"/><section>
+    <title>selectedDatabaseType()</title>
+<indexterm><primary>selectedDatabaseType</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>selectedDatabaseType</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::selectedDatabaseType ( ) const</computeroutput></para><para>
+
+<para>Zwraca wybrany typ bazy danych. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający typ bazy danych (np. &quot;SQLite3&quot; lub &quot;MySQL&quot;).</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Pobiera aktualnie wybrany typ bazy danych z combo boxa dbTypeComboBox.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający typ bazy danych.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Pobiera tekst wybrany w combo boxie dbTypeComboBox, reprezentujący typ bazy danych (SQLite3 lub MySQL). </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_a544fd4daddba5cee41f5eb59ebba673c_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<anchor xml:id="_class_database_config_dialog_1a9fbb43790eb73a2213a24ea8f46b7b0d"/><section>
+    <title>sqliteFilePath()</title>
+<indexterm><primary>sqliteFilePath</primary><secondary>DatabaseConfigDialog</secondary></indexterm>
+<indexterm><primary>DatabaseConfigDialog</primary><secondary>sqliteFilePath</secondary></indexterm>
+<para><computeroutput>QString DatabaseConfigDialog::sqliteFilePath ( ) const</computeroutput></para><para>
+
+<para>Zwraca ścieżkę do pliku bazy SQLite. </para>
+</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający ścieżkę do pliku SQLite.</para>
+</formalpara>
+</para>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca ścieżkę do pliku bazy SQLite wprowadzoną w polu sqlitePathLineEdit.</para>
+
+<para><formalpara><title>Zwraca</title>
+
+<para>QString zawierający ścieżkę do pliku SQLite.</para>
+</formalpara>
+</para>
+</section>
+<section xml:id="_class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+
+<para>Zwraca tekst z pola sqlitePathLineEdit, zawierający ścieżkę do pliku bazy SQLite. </para>
+</section>
+Oto graf wywoływań tej funkcji:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_database_config_dialog_a9fbb43790eb73a2213a24ea8f46b7b0d_icgraph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+</section>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z plików:</para>
+include/<link linkend="__database_config_dialog_8h">DatabaseConfigDialog.h</link>src/<link linkend="__database_config_dialog_8cpp">DatabaseConfigDialog.cpp</link></section>
+</section>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_ui__vendors" xml:lang="pl">
+<title>Dokumentacja klasy Ui_vendors</title>
+<indexterm><primary>Ui_vendors</primary></indexterm>
+Diagram dziedziczenia dla Ui_vendors<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_ui__vendors__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1a0d677679f4d5da67f32c7fb2a6ed640f"/>void <emphasis role="strong">setupUi</emphasis> (QWidget *<link linkend="_classvendors">vendors</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1a3e72ae5fac842cbe2f0c4f68854abe8f"/>void <emphasis role="strong">retranslateUi</emphasis> (QWidget *<link linkend="_classvendors">vendors</link>)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Atrybuty publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1acd73aa56c6c78746a3475ee870641b6f"/>QLabel * <emphasis role="strong">label</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1a9dbd06880fc2fd8aab40871743890c71"/>QLineEdit * <emphasis role="strong">lineEdit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1a5b84c0a5dee7be2420feb17ce5f42eea"/>QPushButton * <emphasis role="strong">pushButton_add</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1a9fdd68844db1d75286662f74d1e03f64"/>QPushButton * <emphasis role="strong">pushButton_edit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1aad275d57ad2b655755af11b1e3d602a0"/>QPushButton * <emphasis role="strong">pushButton_delete</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1ab456bc3d59531c3097a9bb1dca47a0a0"/>QListView * <emphasis role="strong">listView</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__vendors_1aee95300a954432899d1bfbbcbf922991"/>QDialogButtonBox * <emphasis role="strong">buttonBox</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+build/ui_vendors.h</section>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_ui__types" xml:lang="pl">
+<title>Dokumentacja klasy Ui_types</title>
+<indexterm><primary>Ui_types</primary></indexterm>
+Diagram dziedziczenia dla Ui_types<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="class_ui__types__inherit__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Metody publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__types_1a7cee6ed0ea9cad2c0ea06c67eaf239b2"/>void <emphasis role="strong">setupUi</emphasis> (QWidget *<link linkend="_classtypes">types</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1a54f01e06d0787ed99bc53ec818df1350"/>void <emphasis role="strong">retranslateUi</emphasis> (QWidget *<link linkend="_classtypes">types</link>)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Atrybuty publiczne    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_ui__types_1a2a1cd9bf6ecdd90eac2b3f308092ffc8"/>QLineEdit * <emphasis role="strong">type_lineEdit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1a00e11d63d7f750427d0f150a95ad7f6e"/>QLabel * <emphasis role="strong">label</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1af88c00e8212f5d329c1acfff5cd29f11"/>QListView * <emphasis role="strong">listView</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1a043d828242af7318837c468e60c42c20"/>QPushButton * <emphasis role="strong">pushButton_add</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1ac7d20db02c24871f458d60eacad46e14"/>QPushButton * <emphasis role="strong">pushButton_edit</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1a74f727808b60d8275910f458a01b7190"/>QPushButton * <emphasis role="strong">pushButton_delete</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_ui__types_1a6a4566ba3fa9a6830bb202f35b5c54f4"/>QDialogButtonBox * <emphasis role="strong">buttonBox</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<para>
+Dokumentacja dla tej klasy została wygenerowana z pliku:</para>
+build/ui_types.h</section>

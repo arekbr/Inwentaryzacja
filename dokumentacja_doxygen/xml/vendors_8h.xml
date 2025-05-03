@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="vendors_8h" kind="file" language="C++">
+    <compoundname>vendors.h</compoundname>
+    <includes local="no">QDialog</includes>
+    <includes local="no">QSqlDatabase</includes>
+    <includedby refid="moc__vendors_8cpp" local="yes">build/moc_vendors.cpp</includedby>
+    <includedby refid="mainwindow_8cpp" local="yes">src/mainwindow.cpp</includedby>
+    <includedby refid="vendors_8cpp" local="yes">src/vendors.cpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/vendors.h</label>
+        <link refid="vendors_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+      <node id="3">
+        <label>QSqlDatabase</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/vendors.h</label>
+        <link refid="vendors_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>src/mainwindow.cpp</label>
+        <link refid="mainwindow_8cpp"/>
+      </node>
+      <node id="3">
+        <label>src/vendors.cpp</label>
+        <link refid="vendors_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classvendors" prot="public">vendors</innerclass>
+    <innernamespace refid="namespace_ui">Ui</innernamespace>
+    <briefdescription>
+<para>Deklaracja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="version"><para>1.2.2 </para>
+</simplesect>
+<simplesect kind="date"><para>2025-05-03 </para>
+</simplesect>
+<simplesect kind="author"><para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</simplesect>
+</para>
+<sect1 id="vendors_8cpp_1Overview">
+<title>Overview</title>
+<para>Plik zawiera deklarację klasy vendors, która reprezentuje okno dialogowe do zarządzania producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli <computeroutput>vendors</computeroutput> w bazie danych, a także synchronizację z głównym oknem aplikacji (<computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>) w celu odświeżenia combo boxów po zapisaniu zmian.</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Structure">
+<title>Structure</title>
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem><para><bold>Deklarację klasy vendors</bold> – dziedziczy po QDialog.</para>
+</listitem><listitem><para><bold>Metody publiczne</bold> – konstruktor, destruktor, ustawianie <ref refid="class_main_window" kindref="compound">MainWindow</ref>.</para>
+</listitem><listitem><para><bold>Sloty prywatne</bold> – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).</para>
+</listitem><listitem><para><bold>Metody prywatne</bold> – odświeżanie listy producentów.</para>
+</listitem><listitem><para><bold>Zmienne prywatne</bold> – przechowują interfejs, <ref refid="class_main_window" kindref="compound">MainWindow</ref> i połączenie z bazą danych.</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+<para><itemizedlist>
+<listitem><para><bold>Qt Framework</bold>: Używa klas QDialog, QSqlDatabase.</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>: <ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref> (deklaracja <ref refid="class_main_window" kindref="compound">MainWindow</ref>).</para>
+</listitem><listitem><para><bold>Namespace Ui</bold>: Zawiera definicję interfejsu użytkownika (<ref refid="ui__vendors_8h_source" kindref="compound">ui_vendors.h</ref>).</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Notes">
+<title>Notes</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem><para>Klasa jest częścią systemu słownikowego, współpracuje z <ref refid="class_main_window" kindref="compound">MainWindow</ref> do aktualizacji combo boxów.</para>
+</listitem><listitem><para>Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref>). </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>VENDORS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>VENDORS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;QDialog&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;QSqlDatabase&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="class_main_window" kindref="compound">MainWindow</ref>;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Ui<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classvendors" kindref="compound">vendors</ref>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classvendors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classvendors" kindref="compound">vendors</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>QDialog</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>Q_OBJECT</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classvendors_1ac520c405515d0fc50ccdf077a807b3f3" kindref="member">vendors</ref>(QWidget<sp/>*parent<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classvendors_1a290f67d4df9bb91fe0846a265aa07662" kindref="member">~vendors</ref>();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classvendors_1a6e81140749856da9fa4d246f3fa2c278" kindref="member">setMainWindow</ref>(<ref refid="class_main_window" kindref="compound">MainWindow</ref><sp/>*mainWindow);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal"><sp/>slots:</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>onAddClicked();</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>onEditClicked();</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>onDeleteClicked();</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>onOkClicked();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>refreshList();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="class_ui_1_1vendors" kindref="compound">Ui::vendors</ref><sp/>*ui;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="class_main_window" kindref="compound">MainWindow</ref><sp/>*m_mainWindow;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>QSqlDatabase<sp/>m_db;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>VENDORS_H</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="include/vendors.h"/>
+  </compounddef>
+</doxygen>

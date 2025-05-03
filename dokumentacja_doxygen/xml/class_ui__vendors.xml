@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="class_ui__vendors" kind="class" language="C++" prot="public">
+    <compoundname>Ui_vendors</compoundname>
+    <derivedcompoundref refid="class_ui_1_1vendors" prot="public" virt="non-virtual">Ui::vendors</derivedcompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_ui__vendors_1acd73aa56c6c78746a3475ee870641b6f" prot="public" static="no" mutable="no">
+        <type>QLabel *</type>
+        <definition>QLabel* Ui_vendors::label</definition>
+        <argsstring></argsstring>
+        <name>label</name>
+        <qualifiedname>Ui_vendors::label</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="27" column="12" bodyfile="build/ui_vendors.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1a9dbd06880fc2fd8aab40871743890c71" prot="public" static="no" mutable="no">
+        <type>QLineEdit *</type>
+        <definition>QLineEdit* Ui_vendors::lineEdit</definition>
+        <argsstring></argsstring>
+        <name>lineEdit</name>
+        <qualifiedname>Ui_vendors::lineEdit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="28" column="15" bodyfile="build/ui_vendors.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1a5b84c0a5dee7be2420feb17ce5f42eea" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_vendors::pushButton_add</definition>
+        <argsstring></argsstring>
+        <name>pushButton_add</name>
+        <qualifiedname>Ui_vendors::pushButton_add</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="29" column="17" bodyfile="build/ui_vendors.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1a9fdd68844db1d75286662f74d1e03f64" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_vendors::pushButton_edit</definition>
+        <argsstring></argsstring>
+        <name>pushButton_edit</name>
+        <qualifiedname>Ui_vendors::pushButton_edit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="30" column="17" bodyfile="build/ui_vendors.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1aad275d57ad2b655755af11b1e3d602a0" prot="public" static="no" mutable="no">
+        <type>QPushButton *</type>
+        <definition>QPushButton* Ui_vendors::pushButton_delete</definition>
+        <argsstring></argsstring>
+        <name>pushButton_delete</name>
+        <qualifiedname>Ui_vendors::pushButton_delete</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="31" column="17" bodyfile="build/ui_vendors.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1ab456bc3d59531c3097a9bb1dca47a0a0" prot="public" static="no" mutable="no">
+        <type>QListView *</type>
+        <definition>QListView* Ui_vendors::listView</definition>
+        <argsstring></argsstring>
+        <name>listView</name>
+        <qualifiedname>Ui_vendors::listView</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="32" column="15" bodyfile="build/ui_vendors.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ui__vendors_1aee95300a954432899d1bfbbcbf922991" prot="public" static="no" mutable="no">
+        <type>QDialogButtonBox *</type>
+        <definition>QDialogButtonBox* Ui_vendors::buttonBox</definition>
+        <argsstring></argsstring>
+        <name>buttonBox</name>
+        <qualifiedname>Ui_vendors::buttonBox</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="33" column="22" bodyfile="build/ui_vendors.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ui__vendors_1a0d677679f4d5da67f32c7fb2a6ed640f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_vendors::setupUi</definition>
+        <argsstring>(QWidget *vendors)</argsstring>
+        <name>setupUi</name>
+        <qualifiedname>Ui_vendors::setupUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>vendors</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="35" column="10" bodyfile="build/ui_vendors.h" bodystart="35" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ui__vendors_1a3e72ae5fac842cbe2f0c4f68854abe8f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Ui_vendors::retranslateUi</definition>
+        <argsstring>(QWidget *vendors)</argsstring>
+        <name>retranslateUi</name>
+        <qualifiedname>Ui_vendors::retranslateUi</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>vendors</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="build/ui_vendors.h" line="113" column="10" bodyfile="build/ui_vendors.h" bodystart="113" bodyend="120"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Ui::vendors</label>
+        <link refid="class_ui_1_1vendors"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Ui_vendors</label>
+        <link refid="class_ui__vendors"/>
+      </node>
+    </inheritancegraph>
+    <location file="build/ui_vendors.h" line="24" column="1" bodyfile="build/ui_vendors.h" bodystart="25" bodyend="122"/>
+    <listofallmembers>
+      <member refid="class_ui__vendors_1aee95300a954432899d1bfbbcbf922991" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>buttonBox</name></member>
+      <member refid="class_ui__vendors_1acd73aa56c6c78746a3475ee870641b6f" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>label</name></member>
+      <member refid="class_ui__vendors_1a9dbd06880fc2fd8aab40871743890c71" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>lineEdit</name></member>
+      <member refid="class_ui__vendors_1ab456bc3d59531c3097a9bb1dca47a0a0" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>listView</name></member>
+      <member refid="class_ui__vendors_1a5b84c0a5dee7be2420feb17ce5f42eea" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>pushButton_add</name></member>
+      <member refid="class_ui__vendors_1aad275d57ad2b655755af11b1e3d602a0" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>pushButton_delete</name></member>
+      <member refid="class_ui__vendors_1a9fdd68844db1d75286662f74d1e03f64" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>pushButton_edit</name></member>
+      <member refid="class_ui__vendors_1a3e72ae5fac842cbe2f0c4f68854abe8f" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>retranslateUi</name></member>
+      <member refid="class_ui__vendors_1a0d677679f4d5da67f32c7fb2a6ed640f" prot="public" virt="non-virtual"><scope>Ui_vendors</scope><name>setupUi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

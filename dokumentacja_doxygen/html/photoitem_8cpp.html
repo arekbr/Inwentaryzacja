@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja pliku src/photoitem.cpp</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('photoitem_8cpp.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja pliku photoitem.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Implementacja klasy <a class="el" href="class_photo_item.html" title="Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych.">PhotoItem</a>, interaktywnego elementu graficznego dla zdjęć.  
+<a href="#details">Więcej...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="photoitem_8h_source.html">photoitem.h</a>&quot;</code><br />
+<code>#include &lt;QGraphicsSceneMouseEvent&gt;</code><br />
+<code>#include &lt;QPainter&gt;</code><br />
+<code>#include &lt;QPen&gt;</code><br />
+<code>#include &lt;QUuid&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Wykres zależności załączania dla photoitem.cpp:</div>
+<div class="dyncontent">
+<div class="center"><img src="photoitem_8cpp__incl.png" border="0" usemap="#asrc_2photoitem_8cpp" alt=""/></div>
+<map name="asrc_2photoitem_8cpp" id="asrc_2photoitem_8cpp">
+<area shape="rect" title="Implementacja klasy PhotoItem, interaktywnego elementu graficznego dla zdjęć." alt="" coords="728,5,867,32"/>
+<area shape="rect" href="photoitem_8h.html" title="Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia." alt="" coords="503,80,604,107"/>
+<area shape="rect" title=" " alt="" coords="697,155,905,181"/>
+<area shape="rect" title=" " alt="" coords="759,80,836,107"/>
+<area shape="rect" title=" " alt="" coords="860,80,916,107"/>
+<area shape="rect" title=" " alt="" coords="941,80,1003,107"/>
+<area shape="rect" title=" " alt="" coords="5,155,173,181"/>
+<area shape="rect" title=" " alt="" coords="198,155,346,181"/>
+<area shape="rect" title=" " alt="" coords="370,155,574,181"/>
+<area shape="rect" title=" " alt="" coords="599,155,673,181"/>
+</map>
+</div>
+</div><a name="details" id="details"></a><h2 class="groupheader">Opis szczegółowy</h2>
+<div class="textblock"><p >Implementacja klasy <a class="el" href="class_photo_item.html" title="Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych.">PhotoItem</a>, interaktywnego elementu graficznego dla zdjęć. </p>
+<dl class="section author"><dt>Autor</dt><dd>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </dd></dl>
+<dl class="section version"><dt>Wersja</dt><dd>1.2.2 </dd></dl>
+<dl class="section date"><dt>Data</dt><dd>2025-05-03</dd></dl>
+<h1><a class="anchor" id="Overview"></a>
+Overview</h1>
+<p >Plik zawiera implementację metod klasy <a class="el" href="class_photo_item.html" title="Element graficzny reprezentujący zdjęcie z obsługą zaznaczenia i zdarzeń interaktywnych.">PhotoItem</a>, która reprezentuje miniaturę zdjęcia w scenie graficznej Qt (QGraphicsView). Klasa rozszerza QGraphicsPixmapItem o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po QObject umożliwia emisję sygnałów (clicked, doubleClicked, hovered, unhovered) do integracji z logiką aplikacji, np. <a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a> w aplikacji inwentaryzacyjnej.</p>
+<h1><a class="anchor" id="Structure"></a>
+Structure</h1>
+<p >Kod jest podzielony na następujące sekcje:</p><ol type="1">
+<li><b>Konstruktor</b> – inicjalizuje obiekt, ramkę i zdarzenia.</li>
+<li><b>Destruktor</b> – zwalnia zasoby ramki.</li>
+<li><b>Metody publiczne</b> – ustawianie stanu zaznaczenia.</li>
+<li><b>Metody chronione</b> – obsługa zdarzeń myszy i hover.</li>
+<li><b>Metody prywatne</b> – aktualizacja ramki zaznaczenia.</li>
+</ol>
+<h1><a class="anchor" id="Dependencies"></a>
+Dependencies</h1>
+<ul>
+<li><b>Qt Framework</b>: Używa klas QGraphicsSceneMouseEvent, QPainter, QPen, QUuid.</li>
+<li><b>Nagłówki aplikacji</b>: <a class="el" href="photoitem_8h.html" title="Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia.">photoitem.h</a>.</li>
+</ul>
+<h1><a class="anchor" id="Notes"></a>
+Notes</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</li>
+<li>Klasa jest używana w <a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a> do wyświetlania i interakcji z miniaturami zdjęć eksponatów.</li>
+<li>Flaga m_pressed jest obecnie nieużywana, ale zachowana dla potencjalnych rozszerzeń. </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="photoitem_8cpp.html">photoitem.cpp</a></li>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

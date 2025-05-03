@@ -1,0 +1,74 @@
+.TH "include/ItemFilterProxyModel.h" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/ItemFilterProxyModel.h \- Deklaracja klasy \fBItemFilterProxyModel\fP do filtrowania listy eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <QSortFilterProxyModel>\fP
+.br
+
+.SS "Komponenty"
+
+.in +1c
+.ti -1c
+.RI "class \fBItemFilterProxyModel\fP"
+.br
+.RI "Model proxy do filtrowania listy eksponatów\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Deklaracja klasy \fBItemFilterProxyModel\fP do filtrowania listy eksponatów\&. 
+
+
+.PP
+\fBAutor\fP
+.RS 4
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK 
+.RE
+.PP
+\fBWersja\fP
+.RS 4
+1\&.2\&.2 
+.RE
+.PP
+\fBData\fP
+.RS 4
+2025-05-03
+.RE
+.PP
+.SH "Overview"
+.PP
+Plik \fBItemFilterProxyModel\&.h\fP definiuje klasę \fBItemFilterProxyModel\fP, która dziedziczy po QSortFilterProxyModel i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej\&. Klasa umożliwia ustawienie filtrów dla różnych atrybutów eksponatu (typ, producent, model, status, miejsce przechowywania) i kontroluje, które wiersze modelu źródłowego (np\&. QSqlRelationalTableModel) są wyświetlane w widoku\&.
+.SH "Structure"
+.PP
+Plik nagłówkowy zawiera:
+.IP "1." 4
+\fBDeklarację klasy \fBItemFilterProxyModel\fP\fP – dziedziczy po QSortFilterProxyModel\&.
+.IP "2." 4
+\fBMetody publiczne\fP – konstruktor i metody do ustawiania filtrów\&.
+.IP "3." 4
+\fBMetoda chroniona\fP – filterAcceptsRow, realizująca logikę filtrowania\&.
+.IP "4." 4
+\fBZmienne prywatne\fP – przechowują wartości filtrów dla każdego atrybutu\&.
+.PP
+.SH "Dependencies"
+.PP
+.IP "\(bu" 2
+\fBQt Framework\fP: Używa klasy QSortFilterProxyModel do filtrowania i sortowania danych\&.
+.PP
+.SH "Notes"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&. Dodano jedynie komentarze i dokumentację\&.
+.IP "\(bu" 2
+Klasa jest zaprojektowana do współpracy z modelem źródłowym, takim jak QSqlRelationalTableModel, w kontekście aplikacji inwentaryzacyjnej\&.
+.IP "\(bu" 2
+Filtry są dynamiczne i mogą być ustawiane niezależnie dla każdego atrybutu\&. 
+.PP
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

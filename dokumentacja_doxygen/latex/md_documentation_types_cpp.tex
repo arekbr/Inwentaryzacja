@@ -1,0 +1,111 @@
+\hypertarget{md_documentation_types_cpp_autotoc_md142}{}\doxysection{Metadane}\label{md_documentation_types_cpp_autotoc_md142}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{types_8cpp}{types.\+cpp}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_types_cpp_autotoc_md143}{}\doxysection{Przegląd}\label{md_documentation_types_cpp_autotoc_md143}
+Plik {\ttfamily \mbox{\hyperlink{types_8cpp}{types.\+cpp}}} zawiera implementację metod klasy {\ttfamily types}, odpowiedzialnej za zarządzanie typami eksponatów (np. Komputer, Monitor, Drukarka) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie typów w tabeli {\ttfamily types} w bazie danych My\+SQL, współpracując z interfejsem użytkownika ({\ttfamily QList\+View}, {\ttfamily QLine\+Edit}) oraz klasą {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} w celu odświeżania combo boxów typów po zapisaniu zmian.\hypertarget{md_documentation_types_cpp_autotoc_md144}{}\doxysection{Struktura kodu}\label{md_documentation_types_cpp_autotoc_md144}
+Kod jest podzielony na następujące sekcje\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Sekcja konstruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Inicjalizuje interfejs, połączenie z bazą danych, sloty i listę typów.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja destruktora}} ~\newline
+
+\begin{DoxyItemize}
+\item Zwalnia zasoby interfejsu.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja metod publicznych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily set\+Main\+Window}\+: Ustawia referencję do {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja slotów prywatnych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily on\+Add\+Clicked}\+: Dodaje nowy typ.
+\item {\ttfamily on\+Edit\+Clicked}\+: Edytuje istniejący typ.
+\item {\ttfamily on\+Delete\+Clicked}\+: Usuwa typ.
+\item {\ttfamily on\+Ok\+Clicked}\+: Odświeża combo box i zamyka okno.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja metod prywatnych}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily refresh\+List}\+: Odświeża listę typów w {\ttfamily QList\+View}.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_types_cpp_autotoc_md145}{}\doxysection{Opis działania}\label{md_documentation_types_cpp_autotoc_md145}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja}}\+:
+\begin{DoxyItemize}
+\item Konstruktor ustawia interfejs ({\ttfamily ui-\/\texorpdfstring{$>$}{>}setup\+Ui}), pobiera połączenie z bazą My\+SQL ({\ttfamily default\+\_\+connection}), ustala tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i wywołuje {\ttfamily refresh\+List} do wyświetlenia typów.
+\item Inicjalizuje {\ttfamily m\+\_\+main\+Window} jako {\ttfamily nullptr}.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item Zawiera {\ttfamily QList\+View} do wyświetlania typów (sortowanych alfabetycznie), {\ttfamily QLine\+Edit} (nazwane {\ttfamily type\+\_\+line\+Edit}) do wprowadzania nazwy typu oraz przyciski do zarządzania typami i zamykania okna.
+\item {\ttfamily QSql\+Query\+Model} dostarcza dane do {\ttfamily QList\+View}.
+\end{DoxyItemize}
+\item {\bfseries{Zarządzanie typami}}\+:
+\begin{DoxyItemize}
+\item {\bfseries{Dodawanie}} ({\ttfamily on\+Add\+Clicked})\+:
+\begin{DoxyItemize}
+\item Pobiera nazwę z {\ttfamily type\+\_\+line\+Edit}, waliduje (niepusta).
+\item Generuje UUID dla typu i zapisuje do zmiennej {\ttfamily uuid}.
+\item Wykonuje {\ttfamily INSERT} do tabeli {\ttfamily types}, odświeża listę i czyści pole.
+\end{DoxyItemize}
+\item {\bfseries{Edycja}} ({\ttfamily on\+Edit\+Clicked})\+:
+\begin{DoxyItemize}
+\item Sprawdza, czy wybrano typ w {\ttfamily QList\+View}.
+\item Otwiera {\ttfamily QInput\+Dialog} z aktualną nazwą, waliduje nową nazwę.
+\item Pobiera ID typu po nazwie, wykonuje {\ttfamily UPDATE} i odświeża listę.
+\end{DoxyItemize}
+\item {\bfseries{Usuwanie}} ({\ttfamily on\+Delete\+Clicked})\+:
+\begin{DoxyItemize}
+\item Sprawdza, czy wybrano typ.
+\item Prosi o potwierdzenie w {\ttfamily QMessage\+Box}.
+\item Wykonuje {\ttfamily DELETE} dla nazwy typu i odświeża listę.
+\end{DoxyItemize}
+\item Wyświetla komunikaty o błędach SQL lub brakujących wyborach.
+\end{DoxyItemize}
+\item {\bfseries{Integracja z {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily on\+Ok\+Clicked} wywołuje {\ttfamily load\+Combo\+Box\+Data} na combo boxie typów w {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} (jeśli ustawione) i zamyka okno z wynikiem {\ttfamily accept()}.
+\item {\ttfamily set\+Main\+Window} przechowuje referencję do {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} dla odświeżania.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_types_cpp_autotoc_md146}{}\doxysection{Zależności}\label{md_documentation_types_cpp_autotoc_md146}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QMessage\+Box}, {\ttfamily QSql\+Query}, {\ttfamily QSql\+Query\+Model}, {\ttfamily QInput\+Dialog}, {\ttfamily QUuid}\+: Obsługa komunikatów, zapytań SQL, modeli danych, dialogów i UUID.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{types_8h}{types.\+h}}}\+: Definicja klasy.
+\item {\ttfamily \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}}\+: Klasa {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}} dla odświeżania combo boxów.
+\end{DoxyItemize}
+\item {\bfseries{Interfejs użytkownika}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{ui__types_8h_source}{ui\+\_\+types.\+h}}}\+: Plik generowany przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_types_cpp_autotoc_md147}{}\doxysection{Uwagi}\label{md_documentation_types_cpp_autotoc_md147}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Implementacja zakłada użycie My\+SQL, ale aplikacja wspiera także SQLite (konfigurowane w {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}).
+\item Usuwanie i edycja typów opierają się na nazwie, co może powodować problemy przy duplikatach nazw (brak unikalności w schemacie bazy).
+\item Połączenie z bazą danych ({\ttfamily default\+\_\+connection}) jest współdzielone z innymi komponentami (np. {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, {\ttfamily models}).
+\item Lista typów w {\ttfamily QList\+View} nie jest filtrowana (np. po kategorii), co może być rozszerzone w przyszłości.
+\item W przeciwieństwie do innych klas słownikowych (np. {\ttfamily status}, {\ttfamily storage}), metoda {\ttfamily on\+Add\+Clicked} poprawnie przechowuje UUID w zmiennej, co eliminuje problem nieużywanego generowania UUID. 
+\end{DoxyItemize}

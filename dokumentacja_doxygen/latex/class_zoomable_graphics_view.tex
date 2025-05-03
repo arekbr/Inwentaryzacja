@@ -1,0 +1,96 @@
+\hypertarget{class_zoomable_graphics_view}{}\doxysection{Dokumentacja klasy Zoomable\+Graphics\+View}
+\label{class_zoomable_graphics_view}\index{ZoomableGraphicsView@{ZoomableGraphicsView}}
+
+
+Widok graficzny umożliwiający powiększanie i przesuwanie obrazu.  
+
+
+
+
+{\ttfamily \#include $<$fullscreenphotoviewer.\+h$>$}
+
+
+
+Diagram dziedziczenia dla Zoomable\+Graphics\+View
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=213pt]{class_zoomable_graphics_view__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Diagram współpracy dla Zoomable\+Graphics\+View\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=213pt]{class_zoomable_graphics_view__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Metody publiczne}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_zoomable_graphics_view_a3615bbe28257af383607c6076a00ecb0}{Zoomable\+Graphics\+View}} (QWidget $\ast$parent=nullptr)
+\begin{DoxyCompactList}\small\item\em Konstruktor klasy \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Metody chronione}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_zoomable_graphics_view_ac9369ca9bad87c801280cb80268ded94}{wheel\+Event}} (QWheel\+Event $\ast$event) override
+\begin{DoxyCompactList}\small\item\em Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Opis szczegółowy}
+Widok graficzny umożliwiający powiększanie i przesuwanie obrazu. 
+
+\hypertarget{class_zoomable_graphics_view_ClassOverview}{}\doxysubsection{Class\+Overview}\label{class_zoomable_graphics_view_ClassOverview}
+Klasa \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}} dziedziczy po QGraphics\+View i dostarcza funkcjonalność powiększania obrazu za pomocą kółka myszy oraz przesuwania przez przeciąganie. Ustawia kotwicę transformacji pod kursorem myszy, co zapewnia intuicyjne powiększanie, oraz tryb przeciągania Scroll\+Hand\+Drag dla przesuwania obrazu.\hypertarget{class_zoomable_graphics_view_Responsibilities}{}\doxysubsection{Responsibilities}\label{class_zoomable_graphics_view_Responsibilities}
+
+\begin{DoxyItemize}
+\item Obsługa zdarzeń kółka myszy do zmiany skali obrazu.
+\item Umożliwienie przesuwania obrazu poprzez przeciąganie myszą.
+\item Przechowywanie bieżącego współczynnika skali. 
+\end{DoxyItemize}
+
+\doxysubsection{Dokumentacja konstruktora i destruktora}
+\mbox{\Hypertarget{class_zoomable_graphics_view_a3615bbe28257af383607c6076a00ecb0}\label{class_zoomable_graphics_view_a3615bbe28257af383607c6076a00ecb0}} 
+\index{ZoomableGraphicsView@{ZoomableGraphicsView}!ZoomableGraphicsView@{ZoomableGraphicsView}}
+\index{ZoomableGraphicsView@{ZoomableGraphicsView}!ZoomableGraphicsView@{ZoomableGraphicsView}}
+\doxysubsubsection{\texorpdfstring{ZoomableGraphicsView()}{ZoomableGraphicsView()}}
+{\footnotesize\ttfamily Zoomable\+Graphics\+View\+::\+Zoomable\+Graphics\+View (\begin{DoxyParamCaption}\item[{QWidget $\ast$}]{parent = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+Konstruktor klasy \mbox{\hyperlink{class_zoomable_graphics_view}{Zoomable\+Graphics\+View}}. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em parent} & Wskaźnik na nadrzędny widget. Domyślnie nullptr.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_ConstructorOverview}{}\doxysubsection{Constructor\+Overview}\label{class_zoomable_graphics_view_ConstructorOverview}
+Inicjalizuje widok graficzny, ustawia kotwicę transformacji pod kursorem myszy (Anchor\+Under\+Mouse) oraz tryb przeciągania (Scroll\+Hand\+Drag). Ustawia początkowy współczynnik skali na 1.\+0. 
+
+\doxysubsection{Dokumentacja funkcji składowych}
+\mbox{\Hypertarget{class_zoomable_graphics_view_ac9369ca9bad87c801280cb80268ded94}\label{class_zoomable_graphics_view_ac9369ca9bad87c801280cb80268ded94}} 
+\index{ZoomableGraphicsView@{ZoomableGraphicsView}!wheelEvent@{wheelEvent}}
+\index{wheelEvent@{wheelEvent}!ZoomableGraphicsView@{ZoomableGraphicsView}}
+\doxysubsubsection{\texorpdfstring{wheelEvent()}{wheelEvent()}}
+{\footnotesize\ttfamily void Zoomable\+Graphics\+View\+::wheel\+Event (\begin{DoxyParamCaption}\item[{QWheel\+Event $\ast$}]{event }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}}
+
+
+
+Obsługuje zdarzenia kółka myszy do powiększania/pomniejszania obrazu. 
+
+
+\begin{DoxyParams}{Parametry}
+{\em event} & Wskaźnik na zdarzenie kółka myszy.\\
+\hline
+\end{DoxyParams}
+\hypertarget{class_zoomable_graphics_view_MethodOverview}{}\doxysubsection{Method\+Overview}\label{class_zoomable_graphics_view_MethodOverview}
+Przetwarza zdarzenia kółka myszy, zwiększając skalę obrazu o współczynnik 1.\+15 (zoom in) lub zmniejszając o 1/1.\+15 (zoom out) w zależności od kierunku przewijania. Aktualizuje zmienną m\+\_\+scale\+Factor i akceptuje zdarzenie, aby zapobiec jego dalszemu przetwarzaniu. 
+
+Dokumentacja dla tej klasy została wygenerowana z pliku\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{fullscreenphotoviewer_8h}{fullscreenphotoviewer.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="vendors__h_8md" kind="file" language="Markdown">
+    <compoundname>vendors_h.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`vendors.h`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>vendors.h</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`vendors.h`<sp/>definiuje<sp/>klasę<sp/>`vendors`,<sp/>która<sp/>reprezentuje<sp/>okno<sp/>dialogowe<sp/>do<sp/>zarządzania<sp/>producentami<sp/>sprzętu<sp/>(np.<sp/>Commodore,<sp/>IBM,<sp/>Apple)<sp/>w<sp/>aplikacji<sp/>inwentaryzacyjnej.<sp/>Klasa<sp/>umożliwia<sp/>dodawanie,<sp/>edytowanie<sp/>i<sp/>usuwanie<sp/>producentów<sp/>w<sp/>tabeli<sp/>`vendors`<sp/>w<sp/>bazie<sp/>danych<sp/>oraz<sp/>synchronizację<sp/>z<sp/>głównym<sp/>oknem<sp/>(`MainWindow`)<sp/>w<sp/>celu<sp/>odświeżenia<sp/>combo<sp/>boxów<sp/>producentów<sp/>po<sp/>zapisaniu<sp/>zmian.<sp/>Jest<sp/>częścią<sp/>systemu<sp/>słownikowego<sp/>aplikacji,<sp/>podobnie<sp/>jak<sp/>klasy<sp/>`models`,<sp/>`status`,<sp/>`storage`<sp/>czy<sp/>`types`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>nagłówkowy<sp/>zawiera<sp/>następujące<sp/>elementy:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**Deklaracja<sp/>klasy<sp/>`vendors`**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Dziedziczy<sp/>po<sp/>`QDialog`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Używa<sp/>makra<sp/>`Q_OBJECT`<sp/>dla<sp/>wsparcia<sp/>mechanizmu<sp/>sygnałów<sp/>i<sp/>slotów<sp/>Qt.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Metody<sp/>publiczne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Konstruktor:<sp/>Inicjalizuje<sp/>okno<sp/>dialogowe,<sp/>interfejs<sp/>i<sp/>połączenie<sp/>z<sp/>bazą<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Destruktor:<sp/>Zwalnia<sp/>zasoby.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`setMainWindow`:<sp/>Ustawia<sp/>referencję<sp/>do<sp/>`MainWindow`<sp/>dla<sp/>odświeżania<sp/>combo<sp/>boxów.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Sloty<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onAddClicked`:<sp/>Dodaje<sp/>nowego<sp/>producenta<sp/>do<sp/>tabeli<sp/>`vendors`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onEditClicked`:<sp/>Edytuje<sp/>nazwę<sp/>istniejącego<sp/>producenta.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onDeleteClicked`:<sp/>Usuwa<sp/>wybranego<sp/>producenta<sp/>po<sp/>potwierdzeniu.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onOkClicked`:<sp/>Odświeża<sp/>combo<sp/>box<sp/>w<sp/>`MainWindow`<sp/>i<sp/>zamyka<sp/>okno.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>**Metody<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`refreshList`:<sp/>Odświeża<sp/>listę<sp/>producentów<sp/>w<sp/>`QListView`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">5.<sp/>**Zmienne<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`ui`:<sp/>Wskaźnik<sp/>na<sp/>interfejs<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`m_mainWindow`:<sp/>Wskaźnik<sp/>na<sp/>główne<sp/>okno<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`m_db`:<sp/>Połączenie<sp/>z<sp/>bazą<sp/>danych<sp/>MySQL.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Inicjalizacja**:<sp/>Konstruktor<sp/>konfiguruje<sp/>interfejs<sp/>(`ui-&gt;setupUi`),<sp/>ustala<sp/>połączenie<sp/>z<sp/>bazą<sp/>danych<sp/>(`default_connection`),<sp/>ustawia<sp/>tytuł<sp/>okna<sp/>(&quot;Zarządzanie<sp/>producentami&quot;),<sp/>podłącza<sp/>sloty<sp/>dla<sp/>przycisków<sp/>i<sp/>odświeża<sp/>listę<sp/>producentów.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Interfejs**:<sp/>Zawiera<sp/>`QListView`<sp/>do<sp/>wyświetlania<sp/>producentów,<sp/>`QLineEdit`<sp/>do<sp/>wprowadzania<sp/>nazwy<sp/>producenta<sp/>oraz<sp/>przyciski<sp/>(Dodaj,<sp/>Edytuj,<sp/>Usuń,<sp/>OK,<sp/>Anuluj).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zarządzanie<sp/>producentami**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>**Dodawanie**:<sp/>Pobiera<sp/>nazwę<sp/>z<sp/>`QLineEdit`,<sp/>generuje<sp/>UUID,<sp/>zapisuje<sp/>producenta<sp/>w<sp/>tabeli<sp/>`vendors`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>**Edycja**:<sp/>Otwiera<sp/>`QInputDialog`<sp/>dla<sp/>wybranej<sp/>nazwy<sp/>producenta,<sp/>aktualizuje<sp/>rekord<sp/>w<sp/>bazie.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>**Usuwanie**:<sp/>Usuwa<sp/>producenta<sp/>po<sp/>potwierdzeniu,<sp/>wykonując<sp/>zapytanie<sp/>`DELETE`.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Integracja<sp/>z<sp/>`MainWindow`**:<sp/>Po<sp/>zatwierdzeniu<sp/>zmian<sp/>(`onOkClicked`),<sp/>odświeża<sp/>combo<sp/>box<sp/>producentów<sp/>w<sp/>głównym<sp/>oknie,<sp/>jeśli<sp/>`m_mainWindow`<sp/>jest<sp/>ustawione.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Baza<sp/>danych**:<sp/>Operuje<sp/>na<sp/>tabeli<sp/>`vendors`<sp/>z<sp/>polami<sp/>`id`<sp/>(UUID)<sp/>i<sp/>`name`<sp/>(nazwa<sp/>producenta).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Biblioteki<sp/>Qt**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QDialog`,<sp/>`QSqlDatabase`:<sp/>Obsługa<sp/>okna<sp/>dialogowego<sp/>i<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Nagłówki<sp/>aplikacji**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`mainwindow.h`:<sp/>Deklaracja<sp/>klasy<sp/>`MainWindow`<sp/>dla<sp/>komunikacji.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Interfejs<sp/>użytkownika**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`ui_vendors.h`:<sp/>Plik<sp/>generowany<sp/>przez<sp/>Qt<sp/>Designer.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Brak<sp/>bezpośrednich<sp/>zależności<sp/>od<sp/>zasobów<sp/>Qt<sp/>(np.<sp/>QSS,<sp/>czcionek).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Klasa<sp/>jest<sp/>częścią<sp/>systemu<sp/>słownikowego,<sp/>wspiera<sp/>zarządzanie<sp/>producentami<sp/>w<sp/>kontekście<sp/>eksponatów.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Połączenie<sp/>z<sp/>bazą<sp/>danych<sp/>(`default_connection`)<sp/>jest<sp/>współdzielone<sp/>z<sp/>innymi<sp/>komponentami<sp/>(np.<sp/>`MainWindow`,<sp/>`models`).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Operacje<sp/>CRUD<sp/>(Create,<sp/>Read,<sp/>Update,<sp/>Delete)<sp/>opierają<sp/>się<sp/>na<sp/>nazwie<sp/>producenta,<sp/>co<sp/>może<sp/>powodować<sp/>problemy<sp/>przy<sp/>duplikatach<sp/>(brak<sp/>unikalności<sp/>w<sp/>schemacie<sp/>bazy).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Klasa<sp/>nie<sp/>filtruje<sp/>producentów<sp/>(np.<sp/>po<sp/>kategorii),<sp/>co<sp/>może<sp/>być<sp/>rozszerzone<sp/>w<sp/>przyszłości.</highlight></codeline>
+    </programlisting>
+    <location file="documentation/vendors_h.md"/>
+  </compounddef>
+</doxygen>

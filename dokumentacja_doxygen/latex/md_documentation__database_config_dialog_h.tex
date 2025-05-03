@@ -1,0 +1,82 @@
+\hypertarget{md_documentation__database_config_dialog_h_autotoc_md15}{}\doxysection{Metadane}\label{md_documentation__database_config_dialog_h_autotoc_md15}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{_database_config_dialog_8h}{Database\+Config\+Dialog.\+h}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation__database_config_dialog_h_autotoc_md16}{}\doxysection{Przegląd}\label{md_documentation__database_config_dialog_h_autotoc_md16}
+Plik {\ttfamily \mbox{\hyperlink{_database_config_dialog_8h}{Database\+Config\+Dialog.\+h}}} definiuje klasę {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}, która reprezentuje okno dialogowe do konfiguracji parametrów połączenia z bazą danych (SQLite lub My\+SQL) oraz wyboru skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Klasa dostarcza metody dostępowe do parametrów bazy danych, obsługuje dynamiczną zmianę stylów i czcionek oraz zapisuje ustawienia w {\ttfamily QSettings} dla trwałości między sesjami aplikacji.\hypertarget{md_documentation__database_config_dialog_h_autotoc_md17}{}\doxysection{Struktura kodu}\label{md_documentation__database_config_dialog_h_autotoc_md17}
+Plik nagłówkowy zawiera następujące elementy\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Deklaracja klasy {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}}}} ~\newline
+
+\begin{DoxyItemize}
+\item Klasa dziedziczy po {\ttfamily QDialog} i używa mechanizmu sygnałów i slotów Qt ({\ttfamily Q\+\_\+\+OBJECT}).
+\item Zawiera publiczne i prywatne metody oraz zmienne.
+\end{DoxyItemize}
+\item {\bfseries{Metody publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item Konstruktor\+: Inicjalizuje okno dialogowe i interfejs użytkownika.
+\item Destruktor\+: Zwalnia zasoby i odrejestrowuje czcionki.
+\item Metody dostępowe\+: Zwracają parametry bazy danych (typ, ścieżka SQLite, dane My\+SQL).
+\end{DoxyItemize}
+\item {\bfseries{Sloty publiczne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily accept()}\+: Przesłania metodę {\ttfamily QDialog\+::accept} do zapisu ustawień w {\ttfamily QSettings}.
+\end{DoxyItemize}
+\item {\bfseries{Sloty prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily on\+Database\+Type\+Changed(int index)}\+: Obsługuje zmianę typu bazy danych w combo boxie.
+\item {\ttfamily on\+Skin\+Changed(const QString \&skin)}\+: Obsługuje zmianę skórki graficznej.
+\end{DoxyItemize}
+\item {\bfseries{Metody prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily load\+Style\+Sheet(const QString \&skin)}\+: Ładuje arkusz stylów QSS dla wybranej skórki.
+\item {\ttfamily load\+Font(const QString \&skin)}\+: Ładuje czcionkę dla wybranej skórki.
+\end{DoxyItemize}
+\item {\bfseries{Zmienne prywatne}} ~\newline
+
+\begin{DoxyItemize}
+\item {\ttfamily ui}\+: Wskaźnik na obiekt interfejsu użytkownika.
+\item {\ttfamily m\+\_\+topaz\+Font\+Id}, {\ttfamily m\+\_\+zx\+Font\+Id}, {\ttfamily m\+\_\+atari8bit\+Font\+Id}\+: Identyfikatory załadowanych czcionek.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation__database_config_dialog_h_autotoc_md18}{}\doxysection{Opis działania}\label{md_documentation__database_config_dialog_h_autotoc_md18}
+Klasa {\ttfamily \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}} odpowiada za\+:
+\begin{DoxyItemize}
+\item {\bfseries{Wyświetlanie okna dialogowego}}\+: Użytkownik wybiera typ bazy danych (SQLite/\+My\+SQL) i wprowadza parametry połączenia za pomocą interfejsu graficznego.
+\item {\bfseries{Dynamiczne przełączanie interfejsu}}\+: Używa {\ttfamily QStacked\+Widget} do pokazywania odpowiednich pól w zależności od typu bazy danych.
+\item {\bfseries{Wybór skórki graficznej}}\+: Umożliwia wybór jednej z czterech skórek (Amiga, Atari 8bit, ZX Spectrum, Standard), co wpływa na styl (QSS) i czcionkę aplikacji.
+\item {\bfseries{Trwałe przechowywanie ustawień}}\+: Parametry bazy danych i wybrana skórka są zapisywane w pliku {\ttfamily inwentaryzacja.\+ini} za pomocą {\ttfamily QSettings}.
+\item {\bfseries{Metody dostępowe}}\+: Umożliwiają innym częściom aplikacji (np. {\ttfamily \mbox{\hyperlink{main_8cpp}{main.\+cpp}}}) pobranie skonfigurowanych parametrów.
+\end{DoxyItemize}\hypertarget{md_documentation__database_config_dialog_h_autotoc_md19}{}\doxysection{Zależności}\label{md_documentation__database_config_dialog_h_autotoc_md19}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QDialog}\+: Bazowa klasa dla okna dialogowego.
+\item {\ttfamily QString}\+: Obsługa ciągów znaków dla parametrów.
+\end{DoxyItemize}
+\item {\bfseries{Namespace {\ttfamily Ui}}}\+:
+\begin{DoxyItemize}
+\item Zawiera definicję interfejsu użytkownika ({\ttfamily \mbox{\hyperlink{ui___database_config_dialog_8h_source}{ui\+\_\+\+Database\+Config\+Dialog.\+h}}}) generowaną przez Qt Designer.
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Pliki QSS dla stylów ({\ttfamily \+:/styles/amiga.qss}, {\ttfamily \+:/styles/atari8bit.qss}, {\ttfamily \+:/styles/zxspectrum.qss}, {\ttfamily \+:/styles/default.qss}).
+\item Czcionki ({\ttfamily \+:/fonts/topaz.ttf}, {\ttfamily \+:/fonts/zxspectrum.ttf}, {\ttfamily \+:/fonts/\+Eight\+Bit Atari-\/\+Ataripl.\+ttf}).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation__database_config_dialog_h_autotoc_md20}{}\doxysection{Uwagi}\label{md_documentation__database_config_dialog_h_autotoc_md20}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Klasa dynamicznie dostosowuje interfejs użytkownika do wybranego typu bazy danych.
+\item Czcionki są ładowane z zasobów Qt i odrejestrowywane w destruktorze, aby zapobiec wyciekom pamięci.
+\item W przypadku błędów ładowania zasobów (np. czcionek lub QSS) aplikacja przechodzi na domyślne ustawienia (czcionka systemowa, brak stylu). 
+\end{DoxyItemize}

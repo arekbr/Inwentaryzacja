@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Plik źródłowy include/DatabaseConfigDialog.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('_database_config_dialog_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">DatabaseConfigDialog.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_database_config_dialog_8h.html">Idź do dokumentacji tego pliku.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#ifndef DATABASECONFIGDIALOG_H</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#define DATABASECONFIGDIALOG_H</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;QDialog&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">namespace </span>Ui {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">class </span><a class="code hl_class" href="class_database_config_dialog.html">DatabaseConfigDialog</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="class_database_config_dialog.html">   53</a></span><span class="keyword">class </span><a class="code hl_class" href="class_database_config_dialog.html">DatabaseConfigDialog</a> : <span class="keyword">public</span> QDialog</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    Q_OBJECT</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="class_database_config_dialog.html#abd57d101ca62d53fc719cd89d2e8dd13">DatabaseConfigDialog</a>(QWidget *parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_function" href="class_database_config_dialog.html#a1afdbe78fee40f7f4a1d7a79e18bc5e6">~DatabaseConfigDialog</a>();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#a544fd4daddba5cee41f5eb59ebba673c">selectedDatabaseType</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#a9fbb43790eb73a2213a24ea8f46b7b0d">sqliteFilePath</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#a3c7ab6aed47852a33fcabe8d68c047c5">mysqlHost</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#ad5a6a7ac2e50e1ea0ee3c83696e5634b">mysqlDatabase</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#aad109fe645f948ace8242edeb70d8a67">mysqlUser</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    QString <a class="code hl_function" href="class_database_config_dialog.html#a357702f98c99b2a3ac41862209bbd14a">mysqlPassword</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_database_config_dialog.html#a5336cc0a9b114cd604fbbbd8e8900d00">mysqlPort</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">public</span> slots:</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">void</span> <a class="code hl_slot" href="class_database_config_dialog.html#aec79b59fc35c01ec7bc6c3a54b1521b9">accept</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">private</span> slots:</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">void</span> onDatabaseTypeChanged(<span class="keywordtype">int</span> index);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">void</span> onSkinChanged(<span class="keyword">const</span> QString &amp;skin);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">void</span> loadStyleSheet(<span class="keyword">const</span> QString &amp;skin);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">void</span> loadFont(<span class="keyword">const</span> QString &amp;skin);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <a class="code hl_class" href="class_ui_1_1_database_config_dialog.html">Ui::DatabaseConfigDialog</a> *ui;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">int</span> m_topazFontId;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordtype">int</span> m_zxFontId;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">int</span> m_atari8bitFontId;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>};</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#endif </span><span class="comment">// DATABASECONFIGDIALOG_H</span></div>
+<div class="ttc" id="aclass_database_config_dialog_html"><div class="ttname"><a href="class_database_config_dialog.html">DatabaseConfigDialog</a></div><div class="ttdoc">Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.h:54</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a1afdbe78fee40f7f4a1d7a79e18bc5e6"><div class="ttname"><a href="class_database_config_dialog.html#a1afdbe78fee40f7f4a1d7a79e18bc5e6">DatabaseConfigDialog::~DatabaseConfigDialog</a></div><div class="ttdeci">~DatabaseConfigDialog()</div><div class="ttdoc">Destruktor klasy DatabaseConfigDialog.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:161</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a357702f98c99b2a3ac41862209bbd14a"><div class="ttname"><a href="class_database_config_dialog.html#a357702f98c99b2a3ac41862209bbd14a">DatabaseConfigDialog::mysqlPassword</a></div><div class="ttdeci">QString mysqlPassword() const</div><div class="ttdoc">Zwraca hasło użytkownika dla bazy MySQL.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:260</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a3c7ab6aed47852a33fcabe8d68c047c5"><div class="ttname"><a href="class_database_config_dialog.html#a3c7ab6aed47852a33fcabe8d68c047c5">DatabaseConfigDialog::mysqlHost</a></div><div class="ttdeci">QString mysqlHost() const</div><div class="ttdoc">Zwraca adres hosta dla bazy MySQL.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:224</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a5336cc0a9b114cd604fbbbd8e8900d00"><div class="ttname"><a href="class_database_config_dialog.html#a5336cc0a9b114cd604fbbbd8e8900d00">DatabaseConfigDialog::mysqlPort</a></div><div class="ttdeci">int mysqlPort() const</div><div class="ttdoc">Zwraca numer portu dla bazy MySQL.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:272</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a544fd4daddba5cee41f5eb59ebba673c"><div class="ttname"><a href="class_database_config_dialog.html#a544fd4daddba5cee41f5eb59ebba673c">DatabaseConfigDialog::selectedDatabaseType</a></div><div class="ttdeci">QString selectedDatabaseType() const</div><div class="ttdoc">Zwraca wybrany typ bazy danych.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:200</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_a9fbb43790eb73a2213a24ea8f46b7b0d"><div class="ttname"><a href="class_database_config_dialog.html#a9fbb43790eb73a2213a24ea8f46b7b0d">DatabaseConfigDialog::sqliteFilePath</a></div><div class="ttdeci">QString sqliteFilePath() const</div><div class="ttdoc">Zwraca ścieżkę do pliku bazy SQLite.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:212</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_aad109fe645f948ace8242edeb70d8a67"><div class="ttname"><a href="class_database_config_dialog.html#aad109fe645f948ace8242edeb70d8a67">DatabaseConfigDialog::mysqlUser</a></div><div class="ttdeci">QString mysqlUser() const</div><div class="ttdoc">Zwraca nazwę użytkownika dla bazy MySQL.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:248</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_abd57d101ca62d53fc719cd89d2e8dd13"><div class="ttname"><a href="class_database_config_dialog.html#abd57d101ca62d53fc719cd89d2e8dd13">DatabaseConfigDialog::DatabaseConfigDialog</a></div><div class="ttdeci">DatabaseConfigDialog(QWidget *parent=nullptr)</div><div class="ttdoc">Konstruktor klasy DatabaseConfigDialog.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:69</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_ad5a6a7ac2e50e1ea0ee3c83696e5634b"><div class="ttname"><a href="class_database_config_dialog.html#ad5a6a7ac2e50e1ea0ee3c83696e5634b">DatabaseConfigDialog::mysqlDatabase</a></div><div class="ttdeci">QString mysqlDatabase() const</div><div class="ttdoc">Zwraca nazwę bazy danych MySQL.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:236</div></div>
+<div class="ttc" id="aclass_database_config_dialog_html_aec79b59fc35c01ec7bc6c3a54b1521b9"><div class="ttname"><a href="class_database_config_dialog.html#aec79b59fc35c01ec7bc6c3a54b1521b9">DatabaseConfigDialog::accept</a></div><div class="ttdeci">void accept() override</div><div class="ttdoc">Zatwierdza wprowadzone dane i zamyka okno dialogowe.</div><div class="ttdef"><b>Definition:</b> DatabaseConfigDialog.cpp:178</div></div>
+<div class="ttc" id="aclass_ui_1_1_database_config_dialog_html"><div class="ttname"><a href="class_ui_1_1_database_config_dialog.html">Ui::DatabaseConfigDialog</a></div><div class="ttdef"><b>Definition:</b> ui_DatabaseConfigDialog.h:207</div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="_database_config_dialog_8h.html">DatabaseConfigDialog.h</a></li>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

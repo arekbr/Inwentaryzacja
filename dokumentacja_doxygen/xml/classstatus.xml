@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="classstatus" kind="class" language="C++" prot="public">
+    <compoundname>status</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">QDialog</basecompoundref>
+    <includes refid="status_8h" local="no">status.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classstatus_1a836a8eecea83f01305ae74f78c7a2e40" prot="private" static="no" mutable="no">
+        <type><ref refid="class_ui_1_1status" kindref="compound">Ui::status</ref> *</type>
+        <definition>Ui::status* status::ui</definition>
+        <argsstring></argsstring>
+        <name>ui</name>
+        <qualifiedname>status::ui</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na obiekt interfejsu użytkownika. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="143" column="16" bodyfile="include/status.h" bodystart="143" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classstatus_1aeabb2d37aaafb71212fd078f81d66473" prot="private" static="no" mutable="no">
+        <type><ref refid="class_main_window" kindref="compound">MainWindow</ref> *</type>
+        <definition>MainWindow* status::m_mainWindow</definition>
+        <argsstring></argsstring>
+        <name>m_mainWindow</name>
+        <qualifiedname>status::m_mainWindow</qualifiedname>
+        <briefdescription>
+<para>Wskaźnik na główne okno aplikacji. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="146" column="16" bodyfile="include/status.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classstatus_1a113f45eaefaecb12efd5bc5198f95f47" prot="private" static="no" mutable="no">
+        <type>QSqlDatabase</type>
+        <definition>QSqlDatabase status::m_db</definition>
+        <argsstring></argsstring>
+        <name>m_db</name>
+        <qualifiedname>status::m_db</qualifiedname>
+        <briefdescription>
+<para>Obiekt reprezentujący połączenie z bazą danych. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="149" column="18" bodyfile="include/status.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classstatus_1a36c38a210bce6807a7dadb2b15d84341" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>status::status</definition>
+        <argsstring>(QWidget *parent=nullptr)</argsstring>
+        <name>status</name>
+        <qualifiedname>status::status</qualifiedname>
+        <param>
+          <type>QWidget *</type>
+          <declname>parent</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Konstruktor klasy status. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget (domyślnie nullptr).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na nadrzędny widget, domyślnie nullptr.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1ConstructorOverview">
+<title>ConstructorOverview</title>
+<para>Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych (&apos;default_connection&apos;), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę statusów w QListView. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="75" column="14" bodyfile="src/status.cpp" bodystart="53" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classstatus_1aaacad1153f6cd58697d6b3871c7506ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>status::~status</definition>
+        <argsstring>()</argsstring>
+        <name>~status</name>
+        <qualifiedname>status::~status</qualifiedname>
+        <briefdescription>
+<para>Destruktor klasy status. </para>
+        </briefdescription>
+        <detaileddescription>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.</para>
+</sect1>
+<sect1 id="classvendors_1DestructorOverview">
+<title>DestructorOverview</title>
+<para>Usuwa obiekt interfejsu użytkownika i zwalnia zasoby. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="83" column="5" bodyfile="src/status.cpp" bodystart="77" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classstatus_1a7fd8e93cad5cefd0ecbb6fc92fd21b2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::setMainWindow</definition>
+        <argsstring>(MainWindow *mainWindow)</argsstring>
+        <name>setMainWindow</name>
+        <qualifiedname>status::setMainWindow</qualifiedname>
+        <param>
+          <type><ref refid="class_main_window" kindref="compound">MainWindow</ref> *</type>
+          <declname>mainWindow</declname>
+        </param>
+        <briefdescription>
+<para>Ustawia wskaźnik na główne okno aplikacji. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mainWindow</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik na obiekt <ref refid="class_main_window" kindref="compound">MainWindow</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Umożliwia komunikację z głównym oknem w celu odświeżenia listy statusów w combo boxie po zapisaniu zmian.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mainWindow</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Wskaźnik do obiektu <ref refid="class_main_window" kindref="compound">MainWindow</ref>.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Przechowuje referencję do <ref refid="class_main_window" kindref="compound">MainWindow</ref>, umożliwiając odświeżanie combo boxa statusów po zapisaniu zmian. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="93" column="10" bodyfile="src/status.cpp" bodystart="90" bodyend="93"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-slot">
+      <memberdef kind="slot" id="classstatus_1acdadc7afc45fa27025120054a0e75c3e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::onAddClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onAddClicked</name>
+        <qualifiedname>status::onAddClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Dodaj”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Slot obsługujący dodawanie nowego statusu.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera nazwę statusu z pola tekstowego, generuje UUID, zapisuje status w tabeli <computeroutput>statuses</computeroutput> i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera nazwę statusu z QLineEdit, waliduje (niepusta), generuje UUID, wstawia status do tabeli <computeroutput>statuses</computeroutput>. Wyświetla ostrzeżenie dla pustej nazwy lub błąd SQL. Odświeża listę i czyści pole tekstowe po sukcesie.</para>
+</sect1>
+<sect1 id="classstorage_1Bug">
+<title>Bug</title>
+<para>Linia <computeroutput>QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput> generuje UUID, ale wynik nie jest przypisywany. Poprawiona wersja powinna używać zmiennej (np. <computeroutput>QString statusId = QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput>). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="103" column="10" bodyfile="src/status.cpp" bodystart="130" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstatus_1abec0bfa342ca684f482d29581a11a2a5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::onEditClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onEditClicked</name>
+        <qualifiedname>status::onEditClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Edytuj”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Slot obsługujący edytowanie istniejącego statusu.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybrany status, otwiera okno dialogowe do edycji nazwy, aktualizuje rekord w tabeli <computeroutput>statuses</computeroutput> i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybrany status z QListView, otwiera QInputDialog do edycji nazwy, aktualizuje rekord w tabeli <computeroutput>statuses</computeroutput> za pomocą ID statusu. Wyświetla informację, jeśli status nie jest wybrany, lub błąd SQL. Odświeża listę po sukcesie. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="112" column="10" bodyfile="src/status.cpp" bodystart="162" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstatus_1a90c679c5640be52ad581592df4355619" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::onDeleteClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onDeleteClicked</name>
+        <qualifiedname>status::onDeleteClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku „Usuń”. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Slot obsługujący usunięcie zaznaczonego statusu.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Usuwa wybrany status z tabeli <computeroutput>statuses</computeroutput> po potwierdzeniu użytkownika i odświeża listę.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Pobiera wybrany status z QListView, prosi o potwierdzenie usunięcia, wykonuje zapytanie DELETE na tabeli <computeroutput>statuses</computeroutput> dla nazwy statusu. Wyświetla informację, jeśli status nie jest wybrany, lub błąd SQL. Odświeża listę po każdej próbie. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="121" column="10" bodyfile="src/status.cpp" bodystart="209" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="slot" id="classstatus_1a7e2f715c8654e9aa0174785a756832e7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::onOkClicked</definition>
+        <argsstring>()</argsstring>
+        <name>onOkClicked</name>
+        <qualifiedname>status::onOkClicked</qualifiedname>
+        <briefdescription>
+<para>Slot wywoływany po kliknięciu przycisku OK. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Slot obsługujący zatwierdzenie i zamknięcie okna.</para>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Odświeża listę statusów w combo boxie <ref refid="class_main_window" kindref="compound">MainWindow</ref> (jeśli ustawione), zamyka okno dialogowe z wynikiem zaakceptowania.</para>
+</sect1>
+<sect1 id="classvendors_1SlotOverview">
+<title>SlotOverview</title>
+<para>Jeśli <ref refid="class_main_window" kindref="compound">MainWindow</ref> jest ustawione, odświeża combo box statusów w głównym oknie poprzez loadComboBoxData. Zamyka okno dialogowe z wynikiem akceptacji (accept). </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="130" column="10" bodyfile="src/status.cpp" bodystart="244" bodyend="250"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classstatus_1a4e95304c552f4f78242b4ea446e8213d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void status::refreshList</definition>
+        <argsstring>()</argsstring>
+        <name>refreshList</name>
+        <qualifiedname>status::refreshList</qualifiedname>
+        <briefdescription>
+<para>Odświeża listę statusów wyświetlanych w interfejsie. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Odświeża listę statusów w interfejsie graficznym.</para>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera statusy z tabeli <computeroutput>statuses</computeroutput>, sortuje alfabetycznie i wyświetla w QListView za pomocą QSqlQueryModel.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1MethodOverview">
+<title>MethodOverview</title>
+<para>Pobiera wszystkie statusy z tabeli <computeroutput>statuses</computeroutput>, sortuje je alfabetycznie i wyświetla w QListView za pomocą QSqlQueryModel. Wyświetla komunikat o błędzie w przypadku niepowodzenia zapytania SQL. </para>
+</sect1>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/status.h" line="140" column="10" bodyfile="src/status.cpp" bodystart="103" bodyend="115"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Okno dialogowe do zarządzania statusami eksponatów. </para>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="class_zoomable_graphics_view_1ClassOverview">
+<title>ClassOverview</title>
+<para>Klasa status dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania statusów eksponatów w bazie danych (tabela <computeroutput>statuses</computeroutput>). Współpracuje z klasą <ref refid="class_main_window" kindref="compound">MainWindow</ref>, aby odświeżyć listę statusów w combo boxie po zapisaniu zmian.</para>
+</sect1>
+<sect1 id="class_zoomable_graphics_view_1Responsibilities">
+<title>Responsibilities</title>
+<para><itemizedlist>
+<listitem><para>Wyświetlanie listy statusów w QListView.</para>
+</listitem><listitem><para>Dodawanie nowych statusów do tabeli <computeroutput>statuses</computeroutput> z unikalnym UUID.</para>
+</listitem><listitem><para>Edycja istniejących statusów (zmiana nazwy).</para>
+</listitem><listitem><para>Usuwanie statusów po potwierdzeniu użytkownika.</para>
+</listitem><listitem><para>Odświeżanie combo boxa statusów w <ref refid="class_main_window" kindref="compound">MainWindow</ref> po zapisaniu zmian. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+      <node id="1">
+        <label>status</label>
+        <link refid="classstatus"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>QDialog</label>
+      </node>
+      <node id="1">
+        <label>status</label>
+        <link refid="classstatus"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/status.h" line="62" column="1" bodyfile="include/status.h" bodystart="63" bodyend="150"/>
+    <listofallmembers>
+      <member refid="classstatus_1a113f45eaefaecb12efd5bc5198f95f47" prot="private" virt="non-virtual"><scope>status</scope><name>m_db</name></member>
+      <member refid="classstatus_1aeabb2d37aaafb71212fd078f81d66473" prot="private" virt="non-virtual"><scope>status</scope><name>m_mainWindow</name></member>
+      <member refid="classstatus_1acdadc7afc45fa27025120054a0e75c3e" prot="private" virt="non-virtual"><scope>status</scope><name>onAddClicked</name></member>
+      <member refid="classstatus_1a90c679c5640be52ad581592df4355619" prot="private" virt="non-virtual"><scope>status</scope><name>onDeleteClicked</name></member>
+      <member refid="classstatus_1abec0bfa342ca684f482d29581a11a2a5" prot="private" virt="non-virtual"><scope>status</scope><name>onEditClicked</name></member>
+      <member refid="classstatus_1a7e2f715c8654e9aa0174785a756832e7" prot="private" virt="non-virtual"><scope>status</scope><name>onOkClicked</name></member>
+      <member refid="classstatus_1a4e95304c552f4f78242b4ea446e8213d" prot="private" virt="non-virtual"><scope>status</scope><name>refreshList</name></member>
+      <member refid="classstatus_1a7fd8e93cad5cefd0ecbb6fc92fd21b2d" prot="public" virt="non-virtual"><scope>status</scope><name>setMainWindow</name></member>
+      <member refid="classstatus_1a36c38a210bce6807a7dadb2b15d84341" prot="public" virt="non-virtual"><scope>status</scope><name>status</name></member>
+      <member refid="classstatus_1a836a8eecea83f01305ae74f78c7a2e40" prot="private" virt="non-virtual"><scope>status</scope><name>ui</name></member>
+      <member refid="classstatus_1aaacad1153f6cd58697d6b3871c7506ef" prot="public" virt="non-virtual"><scope>status</scope><name>~status</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

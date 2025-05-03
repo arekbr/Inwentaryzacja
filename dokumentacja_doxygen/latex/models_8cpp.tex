@@ -1,0 +1,61 @@
+\hypertarget{models_8cpp}{}\doxysection{Dokumentacja pliku src/models.cpp}
+\label{models_8cpp}\index{src/models.cpp@{src/models.cpp}}
+
+
+Implementacja klasy models do zarządzania modelami eksponatów.  
+
+
+{\ttfamily \#include \char`\"{}models.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$QInput\+Dialog$>$}\newline
+{\ttfamily \#include $<$QMessage\+Box$>$}\newline
+{\ttfamily \#include $<$QSql\+Error$>$}\newline
+{\ttfamily \#include $<$QSql\+Query$>$}\newline
+{\ttfamily \#include $<$QSql\+Query\+Model$>$}\newline
+{\ttfamily \#include $<$QUuid$>$}\newline
+{\ttfamily \#include \char`\"{}mainwindow.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}ui\+\_\+models.\+h\char`\"{}}\newline
+Wykres zależności załączania dla models.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{models_8cpp__incl}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Opis szczegółowy}
+Implementacja klasy models do zarządzania modelami eksponatów. 
+
+\begin{DoxyAuthor}{Autor}
+Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Wersja}
+1.\+2.\+2 
+\end{DoxyVersion}
+\begin{DoxyDate}{Data}
+2025-\/05-\/03
+\end{DoxyDate}
+\hypertarget{vendors_8cpp_Overview}{}\doxysubsection{Overview}\label{vendors_8cpp_Overview}
+Plik zawiera implementację metod klasy models, odpowiedzialnej za zarządzanie modelami eksponatów w bazie danych. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli \textquotesingle{}models\textquotesingle{}, współpracując z interfejsem użytkownika (QList\+View, QLine\+Edit) oraz klasą \mbox{\hyperlink{class_main_window}{Main\+Window}} w celu odświeżania combo boxów. Obsługuje powiązanie modeli z producentami poprzez vendor\+Id (QString).\hypertarget{vendors_8cpp_Structure}{}\doxysubsection{Structure}\label{vendors_8cpp_Structure}
+Kod jest podzielony na następujące sekcje\+:
+\begin{DoxyEnumerate}
+\item {\bfseries{Konstruktor}} – inicjalizuje interfejs, połączenie z bazą danych, sloty.
+\item {\bfseries{Destruktor}} – zwalnia zasoby.
+\item {\bfseries{Metody publiczne}} – ustawianie \mbox{\hyperlink{class_main_window}{Main\+Window}} i vendor\+Id.
+\item {\bfseries{Sloty prywatne}} – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).
+\item {\bfseries{Metody prywatne}} – odświeżanie listy modeli.
+\end{DoxyEnumerate}\hypertarget{vendors_8cpp_Dependencies}{}\doxysubsection{Dependencies}\label{vendors_8cpp_Dependencies}
+
+\begin{DoxyItemize}
+\item {\bfseries{Qt Framework}}\+: Używa klas QMessage\+Box, QSql\+Query, QSql\+Query\+Model, QInput\+Dialog, QUuid.
+\item {\bfseries{Nagłówki aplikacji}}\+: \mbox{\hyperlink{models_8h}{models.\+h}}, \mbox{\hyperlink{mainwindow_8h}{mainwindow.\+h}}.
+\item {\bfseries{Interfejs użytkownika}}\+: \mbox{\hyperlink{ui__models_8h_source}{ui\+\_\+models.\+h}}.
+\end{DoxyItemize}\hypertarget{vendors_8cpp_Notes}{}\doxysubsection{Notes}\label{vendors_8cpp_Notes}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+\item Klasa jest częścią systemu słownikowego, integruje się z \mbox{\hyperlink{class_main_window}{Main\+Window}}.
+\item Obsługuje My\+SQL, ale aplikacja wspiera także SQLite (konfigurowane w \mbox{\hyperlink{class_database_config_dialog}{Database\+Config\+Dialog}}).
+\item Lista modeli w QList\+View nie filtruje po vendor\+Id, co może być rozszerzone w przyszłości. 
+\end{DoxyItemize}

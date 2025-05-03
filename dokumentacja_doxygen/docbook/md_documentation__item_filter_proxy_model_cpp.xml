@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md_documentation__item_filter_proxy_model_cpp" xml:lang="pl">
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md36">
+<title>Metadane</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Plik</emphasis>: <link linkend="__item_filter_proxy_model_8cpp">ItemFilterProxyModel.cpp</link></para>
+</listitem><listitem>
+<para><emphasis role="bold">Wersja</emphasis>: 1.2.2</para>
+</listitem><listitem>
+<para><emphasis role="bold">Data</emphasis>: 2025-05-03</para>
+</listitem><listitem>
+<para><emphasis role="bold">Autorzy</emphasis>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md37">
+<title>Przegląd</title>
+
+<para>Plik <computeroutput><link linkend="__item_filter_proxy_model_8cpp">ItemFilterProxyModel.cpp</link></computeroutput> zawiera implementację metod klasy <computeroutput><link linkend="_class_item_filter_proxy_model">ItemFilterProxyModel</link></computeroutput>, która umożliwia dynamiczne filtrowanie listy eksponatów w aplikacji inwentaryzacyjnej na podstawie atrybutów takich jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu <computeroutput>QSortFilterProxyModel</computeroutput>, zapewniając filtrowanie wierszy modelu źródłowego (np. <computeroutput>QSqlRelationalTableModel</computeroutput>) z ignorowaniem wielkości liter.</para>
+</section>
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md38">
+<title>Struktura kodu</title>
+
+<para>Kod jest podzielony na następujące sekcje:</para>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Sekcja konstruktora</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Inicjalizuje model proxy i konfiguruje filtrowanie bez uwzględnienia wielkości liter.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metod ustawiania filtrów</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Metody <computeroutput>setTypeFilter</computeroutput>, <computeroutput>setVendorFilter</computeroutput>, <computeroutput>setModelFilter</computeroutput>, <computeroutput>setStatusFilter</computeroutput>, <computeroutput>setStorageFilter</computeroutput> zapisują wartości filtrów i odświeżają widok.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sekcja metody filterAcceptsRow</emphasis> 
+<literallayout>&#160;&#xa;</literallayout>
+<itemizedlist>
+<listitem>
+<para>Implementuje logikę filtrowania, sprawdzając zgodność wierszy modelu źródłowego z filtrami.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md39">
+<title>Opis działania</title>
+
+<para><orderedlist>
+<listitem>
+<para><emphasis role="bold">Inicjalizacja</emphasis>:<itemizedlist>
+<listitem>
+<para>Konstruktor ustawia model proxy jako dziecko podanego rodzica i konfiguruje filtrowanie z ignorowaniem wielkości liter (<computeroutput>Qt::CaseInsensitive</computeroutput>).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Ustawianie filtrów</emphasis>:<itemizedlist>
+<listitem>
+<para>Każda metoda ustawiania filtru (<computeroutput>setTypeFilter</computeroutput>, <computeroutput>setVendorFilter</computeroutput> itp.) zapisuje wartość filtru w odpowiedniej zmiennej prywatnej (<computeroutput>m_type</computeroutput>, <computeroutput>m_vendor</computeroutput> itp.) i wywołuje <computeroutput>invalidateFilter()</computeroutput>, co odświeża widok z uwzględnieniem nowego filtru.</para>
+</listitem><listitem>
+<para>Pusty ciąg jako wartość filtru oznacza brak ograniczeń dla danego atrybutu.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Filtrowanie</emphasis>:<itemizedlist>
+<listitem>
+<para>Metoda <computeroutput>filterAcceptsRow</computeroutput> sprawdza, czy wartości w kolumnach modelu źródłowego (2: typ, 3: producent, 4: model, 9: status, 10: miejsce przechowywania) odpowiadają ustawionym filtrom.</para>
+</listitem><listitem>
+<para>Używa lambdy <computeroutput>pasuje</computeroutput>, która porównuje wartość w kolumnie z wartością filtru. Jeśli filtr jest pusty, wszystkie wartości dla tej kolumny są akceptowane.</para>
+</listitem><listitem>
+<para>Wiersz jest widoczny tylko wtedy, gdy spełnia wszystkie aktywne filtry.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md40">
+<title>Zależności</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Biblioteki Qt</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput>QSortFilterProxyModel</computeroutput>: Bazowa klasa dla filtrowania i sortowania.</para>
+</listitem><listitem>
+<para><computeroutput>QModelIndex</computeroutput>, <computeroutput>QAbstractItemModel</computeroutput>: Obsługa indeksów i danych modelu źródłowego.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówek</emphasis>:<itemizedlist>
+<listitem>
+<para><computeroutput><link linkend="__item_filter_proxy_model_8h">ItemFilterProxyModel.h</link></computeroutput>: Definicja klasy.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>:<itemizedlist>
+<listitem>
+<para>Brak zależności od zasobów Qt.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md_documentation__item_filter_proxy_model_cpp_1autotoc_md41">
+<title>Uwagi</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem>
+<para>Filtrowanie ignoruje wielkość liter, co ułatwia dopasowanie wartości.</para>
+</listitem><listitem>
+<para>Struktura kolumn (2, 3, 4, 9, 10) jest zgodna z modelem <computeroutput>QSqlRelationalTableModel</computeroutput> używanym w aplikacji.</para>
+</listitem><listitem>
+<para>Wywołanie <computeroutput>invalidateFilter()</computeroutput> po każdej zmianie filtru zapewnia natychmiastowe odświeżenie widoku. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>

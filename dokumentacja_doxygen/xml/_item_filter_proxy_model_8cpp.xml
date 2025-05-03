@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="_item_filter_proxy_model_8cpp" kind="file" language="C++">
+    <compoundname>ItemFilterProxyModel.cpp</compoundname>
+    <includes refid="_item_filter_proxy_model_8h" local="yes">ItemFilterProxyModel.h</includes>
+    <includes local="no">QModelIndex</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>ItemFilterProxyModel.h</label>
+        <link refid="_item_filter_proxy_model_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>src/ItemFilterProxyModel.cpp</label>
+        <link refid="_item_filter_proxy_model_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>QModelIndex</label>
+      </node>
+      <node id="3">
+        <label>QSortFilterProxyModel</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+<para>Implementacja klasy <ref refid="class_item_filter_proxy_model" kindref="compound">ItemFilterProxyModel</ref> do filtrowania listy eksponatów. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </para>
+</simplesect>
+<simplesect kind="version"><para>1.2.2 </para>
+</simplesect>
+<simplesect kind="date"><para>2025-05-03</para>
+</simplesect>
+</para>
+<sect1 id="vendors_8cpp_1Overview">
+<title>Overview</title>
+<para>Plik <ref refid="_item_filter_proxy_model_8cpp" kindref="compound">ItemFilterProxyModel.cpp</ref> zawiera implementację metod klasy <ref refid="class_item_filter_proxy_model" kindref="compound">ItemFilterProxyModel</ref>, która umożliwia dynamiczne filtrowanie listy eksponatów na podstawie atrybutów takich jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu QSortFilterProxyModel, umożliwiając filtrowanie wierszy modelu źródłowego (np. QSqlRelationalTableModel) z ignorowaniem wielkości liter.</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Structure">
+<title>Structure</title>
+<para>Kod jest podzielony na następujące sekcje:<orderedlist>
+<listitem><para><bold>Konstruktor</bold> – inicjalizuje model proxy i konfiguruje filtrowanie.</para>
+</listitem><listitem><para><bold>Metody ustawiania filtrów</bold> – zapisują wartości filtrów i odświeżają widok.</para>
+</listitem><listitem><para><bold>Metoda filterAcceptsRow</bold> – implementuje logikę filtrowania wierszy.</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+<para><itemizedlist>
+<listitem><para><bold>Qt Framework</bold>: Używa klas QSortFilterProxyModel, QModelIndex, QAbstractItemModel.</para>
+</listitem><listitem><para><bold>Nagłówek</bold>: <ref refid="_item_filter_proxy_model_8h" kindref="compound">ItemFilterProxyModel.h</ref>.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="vendors_8cpp_1Notes">
+<title>Notes</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem><para>Filtrowanie jest niezależne od wielkości liter, co ułatwia dopasowanie wartości.</para>
+</listitem><listitem><para>Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2). </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>===<sp/>ItemFilterProxyModel.cpp<sp/>===</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>Implementacja<sp/>filtrowania<sp/>według<sp/>wybranych<sp/>wartości<sp/>z<sp/>QComboBox</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_item_filter_proxy_model_8h" kindref="compound">ItemFilterProxyModel.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;QModelIndex&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="class_item_filter_proxy_model_1a2d310723c09364115f27abe385d80137" refkind="member"><highlight class="normal"><ref refid="class_item_filter_proxy_model_1a2d310723c09364115f27abe385d80137" kindref="member">ItemFilterProxyModel::ItemFilterProxyModel</ref>(QObject<sp/>*parent)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>QSortFilterProxyModel(parent)</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Filtrowanie<sp/>bez<sp/>uwzględnienia<sp/>wielkości<sp/>liter</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>setFilterCaseSensitivity(Qt::CaseInsensitive);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="class_item_filter_proxy_model_1a3b839be4b1f73ec00e844e3426169a9c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1a3b839be4b1f73ec00e844e3426169a9c" kindref="member">ItemFilterProxyModel::setTypeFilter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;type)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>m_type<sp/>=<sp/>type;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>invalidateFilter();<sp/></highlight><highlight class="comment">//<sp/>odświeżenie<sp/>widoku</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="class_item_filter_proxy_model_1a144db02336c7091e0cf4bf5210aa0b0d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1a144db02336c7091e0cf4bf5210aa0b0d" kindref="member">ItemFilterProxyModel::setVendorFilter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;vendor)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>m_vendor<sp/>=<sp/>vendor;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>invalidateFilter();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="class_item_filter_proxy_model_1a9152e844aa678dd0bfc18a5b020fbfc3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1a9152e844aa678dd0bfc18a5b020fbfc3" kindref="member">ItemFilterProxyModel::setModelFilter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;model)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>m_model<sp/>=<sp/>model;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>invalidateFilter();</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="class_item_filter_proxy_model_1a8d34cd1044baa12592a4c521e70f9d3e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1a8d34cd1044baa12592a4c521e70f9d3e" kindref="member">ItemFilterProxyModel::setStatusFilter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;<ref refid="classstatus" kindref="compound">status</ref>)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>m_status<sp/>=<sp/><ref refid="classstatus" kindref="compound">status</ref>;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>invalidateFilter();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="class_item_filter_proxy_model_1aaca404925d7cb40178d2689d2f8bfbe3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1aaca404925d7cb40178d2689d2f8bfbe3" kindref="member">ItemFilterProxyModel::setStorageFilter</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;<ref refid="classstorage" kindref="compound">storage</ref>)</highlight></codeline>
+<codeline lineno="118"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>m_storage<sp/>=<sp/><ref refid="classstorage" kindref="compound">storage</ref>;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>invalidateFilter();</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="class_item_filter_proxy_model_1a29855e6462987ef6e783e8b144b00f0d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="class_item_filter_proxy_model_1a29855e6462987ef6e783e8b144b00f0d" kindref="member">ItemFilterProxyModel::filterAcceptsRow</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>sourceRow,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QModelIndex<sp/>&amp;sourceParent)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="136"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QAbstractItemModel<sp/>*src<sp/>=<sp/>sourceModel();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pasuje<sp/>=<sp/>[&amp;](</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>col,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>QString<sp/>&amp;wzor)<sp/>{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(wzor.isEmpty())</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>brak<sp/>filtra<sp/>=&gt;<sp/>wszystko<sp/>pasuje</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>QModelIndex<sp/>idx<sp/>=<sp/>src-&gt;index(sourceRow,<sp/>col,<sp/>sourceParent);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>src-&gt;data(idx).toString()<sp/>==<sp/>wzor;<sp/></highlight><highlight class="comment">//<sp/>porównanie<sp/>wartości</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Kolumny<sp/>w<sp/>QSqlRelationalTableModel:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>2<sp/>=<sp/>Typ,<sp/>3<sp/>=<sp/>Producent,<sp/>4<sp/>=<sp/>Model,<sp/>9<sp/>=<sp/>Status,<sp/>10<sp/>=<sp/>Miejsce<sp/>przechowywania</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pasuje(2,<sp/>m_type)<sp/>&amp;&amp;<sp/>pasuje(3,<sp/>m_vendor)<sp/>&amp;&amp;<sp/>pasuje(4,<sp/>m_model)<sp/>&amp;&amp;<sp/>pasuje(9,<sp/>m_status)</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>pasuje(10,<sp/>m_storage);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="src/ItemFilterProxyModel.cpp"/>
+  </compounddef>
+</doxygen>

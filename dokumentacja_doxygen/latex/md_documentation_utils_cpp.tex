@@ -1,0 +1,90 @@
+\hypertarget{md_documentation_utils_cpp_autotoc_md156}{}\doxysection{Metadane}\label{md_documentation_utils_cpp_autotoc_md156}
+
+\begin{DoxyItemize}
+\item {\bfseries{Plik}}\+: \mbox{\hyperlink{utils_8cpp}{utils.\+cpp}}
+\item {\bfseries{Wersja}}\+: 1.\+2.\+2
+\item {\bfseries{Data}}\+: 2025-\/05-\/03
+\item {\bfseries{Autorzy}}\+: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK \& Chat\+GPT \& GROK
+\end{DoxyItemize}\hypertarget{md_documentation_utils_cpp_autotoc_md157}{}\doxysection{Przegląd}\label{md_documentation_utils_cpp_autotoc_md157}
+Plik {\ttfamily \mbox{\hyperlink{utils_8cpp}{utils.\+cpp}}} zawiera implementację funkcji {\ttfamily setup\+Database}, która konfiguruje i otwiera połączenie z bazą danych SQLite lub My\+SQL w aplikacji inwentaryzacyjnej. Funkcja rejestruje połączenie pod nazwą \char`\"{}default\+\_\+connection\char`\"{}, używaną przez inne komponenty aplikacji (np. {\ttfamily \mbox{\hyperlink{class_main_window}{Main\+Window}}}, {\ttfamily types}, {\ttfamily status}). Dla SQLite automatycznie tworzy schemat bazy danych (tabele i dane początkowe), co zapewnia gotowość bazy do pracy po pierwszym uruchomieniu.\hypertarget{md_documentation_utils_cpp_autotoc_md158}{}\doxysection{Struktura kodu}\label{md_documentation_utils_cpp_autotoc_md158}
+Kod jest podzielony na następujące sekcje\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Sekcja implementacji funkcji {\ttfamily setup\+Database}}} ~\newline
+
+\begin{DoxyItemize}
+\item Konfiguruje połączenie, otwiera bazę i obsługuje błędy.
+\item Dla SQLite tworzy schemat bazy i przykładowe dane.
+\end{DoxyItemize}
+\item {\bfseries{Sekcja tworzenia schematu SQLite}} ~\newline
+
+\begin{DoxyItemize}
+\item Definiuje tabele\+: {\ttfamily eksponaty}, {\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}, {\ttfamily photos}.
+\item Wypełnia tabele słownikowe przykładowymi danymi (np. \char`\"{}\+Komputer\char`\"{}, \char`\"{}\+Atari\char`\"{}, \char`\"{}\+Sprawny\char`\"{}).
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_utils_cpp_autotoc_md159}{}\doxysection{Opis działania}\label{md_documentation_utils_cpp_autotoc_md159}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Inicjalizacja połączenia}}\+:
+\begin{DoxyItemize}
+\item Usuwa istniejące połączenie \char`\"{}default\+\_\+connection\char`\"{} ({\ttfamily QSql\+Database\+::remove\+Database}).
+\item Tworzy nowe połączenie z driverem {\ttfamily QSQLITE} (dla {\ttfamily db\+Type=\char`\"{}\+SQLite3\char`\"{}}) lub {\ttfamily QMYSQL} (dla {\ttfamily db\+Type=\char`\"{}\+My\+SQL\char`\"{}}).
+\item Konfiguruje parametry\+:
+\begin{DoxyItemize}
+\item {\bfseries{My\+SQL}}\+: Ustawia {\ttfamily host}, {\ttfamily db\+Source} (nazwa bazy), {\ttfamily user}, {\ttfamily password}, {\ttfamily port}.
+\item {\bfseries{SQLite}}\+: Ustawia {\ttfamily db\+Source} jako ścieżkę do pliku bazy.
+\end{DoxyItemize}
+\item Próbuje otworzyć połączenie, wyświetlając {\ttfamily QMessage\+Box} z błędem w przypadku niepowodzenia.
+\end{DoxyItemize}
+\item {\bfseries{Tworzenie schematu dla SQLite}}\+:
+\begin{DoxyItemize}
+\item Sprawdza, czy wszystkie wymagane tabele ({\ttfamily eksponaty}, {\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places}, {\ttfamily photos}) istnieją.
+\item Jeśli brakuje którejkolwiek tabeli, wykonuje zapytania SQL\+:
+\begin{DoxyItemize}
+\item {\bfseries{Tabela {\ttfamily eksponaty}}}\+: Przechowuje dane eksponatów (np. nazwa, typ, producent, status).
+\item {\bfseries{Tabele słownikowe}} ({\ttfamily types}, {\ttfamily vendors}, {\ttfamily models}, {\ttfamily statuses}, {\ttfamily storage\+\_\+places})\+: Przechowują unikalne nazwy z UUID jako kluczem.
+\item {\bfseries{Tabela {\ttfamily photos}}}\+: Przechowuje zdjęcia powiązane z eksponatami (BLOB).
+\end{DoxyItemize}
+\item Wypełnia tabele słownikowe przykładowymi danymi\+:
+\begin{DoxyItemize}
+\item Typy\+: \char`\"{}\+Komputer\char`\"{}, \char`\"{}\+Monitor\char`\"{}, \char`\"{}\+Kabel\char`\"{}.
+\item Producenci\+: \char`\"{}\+Atari\char`\"{}, \char`\"{}\+Commodore\char`\"{}, \char`\"{}\+Sinclair\char`\"{}.
+\item Modele\+: \char`\"{}\+Atari 800\+XL\char`\"{}, \char`\"{}\+Amiga 500\char`\"{}, \char`\"{}\+ZX Spectrum\char`\"{}.
+\item Statusy\+: \char`\"{}\+Sprawny\char`\"{}, \char`\"{}\+Uszkodzony\char`\"{}, \char`\"{}\+W naprawie\char`\"{}.
+\item Miejsce przechowywania\+: \char`\"{}\+Magazyn 1\char`\"{}, \char`\"{}\+Półka B3\char`\"{}.
+\end{DoxyItemize}
+\item Używa {\ttfamily QUuid} do generowania unikalnych identyfikatorów.
+\end{DoxyItemize}
+\item {\bfseries{Zwracana wartość}}\+:
+\begin{DoxyItemize}
+\item Zwraca {\ttfamily true} po pomyślnym nawiązaniu połączenia i (dla SQLite) utworzeniu schematu.
+\item Zwraca {\ttfamily false} w przypadku błędu połączenia.
+\end{DoxyItemize}
+\end{DoxyEnumerate}\hypertarget{md_documentation_utils_cpp_autotoc_md160}{}\doxysection{Zależności}\label{md_documentation_utils_cpp_autotoc_md160}
+
+\begin{DoxyItemize}
+\item {\bfseries{Biblioteki Qt}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily QMessage\+Box}\+: Wyświetlanie błędów połączenia.
+\item {\ttfamily QSql\+Database}, {\ttfamily QSql\+Error}, {\ttfamily QSql\+Query}\+: Obsługa połączenia i zapytań SQL.
+\item {\ttfamily QUuid}\+: Generowanie unikalnych identyfikatorów.
+\end{DoxyItemize}
+\item {\bfseries{Nagłówki aplikacji}}\+:
+\begin{DoxyItemize}
+\item Brak zależności od innych nagłówków aplikacji (tylko Qt).
+\end{DoxyItemize}
+\item {\bfseries{Zasoby}}\+:
+\begin{DoxyItemize}
+\item Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_documentation_utils_cpp_autotoc_md161}{}\doxysection{Uwagi}\label{md_documentation_utils_cpp_autotoc_md161}
+
+\begin{DoxyItemize}
+\item Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.
+\item Funkcja {\ttfamily setup\+Database} jest centralnym elementem konfiguracji bazy danych, używanym przez inne komponenty aplikacji.
+\item Dla SQLite automatyczne tworzenie schematu i danych początkowych zapewnia gotowość bazy, ale brak podobnego mechanizmu dla My\+SQL (zakłada, że schemat już istnieje).
+\item Schemat bazy używa UUID jako kluczy głównych, co zapewnia unikalność, ale operacje CRUD w innych klasach (np. {\ttfamily types}, {\ttfamily status}) opierają się na nazwach, co może powodować problemy przy duplikatach.
+\item Połączenie \char`\"{}default\+\_\+connection\char`\"{} jest współdzielone, co wymaga ostrożnego zarządzania w przypadku wielokrotnego wywoływania funkcji.
+\item Przykładowe dane są zorientowane na retro sprzęt komputerowy, co odzwierciedla kontekst aplikacji. 
+\end{DoxyItemize}

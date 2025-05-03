@@ -1,0 +1,4 @@
+<map id="PhotoItem::clicked" name="PhotoItem::clicked">
+<area shape="rect" id="node1" title="Sygnał emitowany po jednokrotnym kliknięciu lewym przyciskiem myszy." alt="" coords="267,5,409,32"/>
+<area shape="rect" id="node2" href="$class_photo_item.html#a5a553036f675f90cf78f59e9e5ef487f" title="Obsługa zdarzenia kliknięcia myszy." alt="" coords="5,5,219,32"/>
+</map>

@@ -1,0 +1,113 @@
+.TH "storage" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+storage \- Okno dialogowe do zarządzania miejscami przechowywania eksponatów\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <storage\&.h>\fP
+.PP
+Dziedziczy QDialog\&.
+.SS "Metody publiczne"
+
+.in +1c
+.ti -1c
+.RI "\fBstorage\fP (QWidget *parent=nullptr)"
+.br
+.RI "Konstruktor klasy storage\&. "
+.ti -1c
+.RI "\fB~storage\fP ()"
+.br
+.RI "Destruktor klasy storage\&. "
+.ti -1c
+.RI "void \fBsetMainWindow\fP (\fBMainWindow\fP *mainWindow)"
+.br
+.RI "Ustawia wskaźnik na główne okno aplikacji\&. "
+.in -1c
+.SH "Opis szczegółowy"
+.PP 
+Okno dialogowe do zarządzania miejscami przechowywania eksponatów\&. 
+
+
+.SH "ClassOverview"
+.PP
+Klasa storage dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania i usuwania miejsc przechowywania eksponatów (np\&. regały, magazyny) w bazie danych (tabela \fCstorage_places\fP)\&. Współpracuje z klasą \fBMainWindow\fP, aby odświeżyć listę lokalizacji w combo boxie po zapisaniu zmian\&.
+.SH "Responsibilities"
+.PP
+.IP "\(bu" 2
+Wyświetlanie listy lokalizacji w QListView\&.
+.IP "\(bu" 2
+Dodawanie nowych lokalizacji do tabeli \fCstorage_places\fP z unikalnym UUID\&.
+.IP "\(bu" 2
+Edycja istniejących lokalizacji (zmiana nazwy)\&.
+.IP "\(bu" 2
+Usuwanie lokalizacji po potwierdzeniu użytkownika\&.
+.IP "\(bu" 2
+Odświeżanie combo boxa lokalizacji w \fBMainWindow\fP po zapisaniu zmian\&. 
+.PP
+
+.SH "Dokumentacja konstruktora i destruktora"
+.PP 
+.SS "storage::storage (QWidget * parent = \fCnullptr\fP)\fC [explicit]\fP"
+
+.PP
+Konstruktor klasy storage\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na nadrzędny widget (domyślnie nullptr)\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika, ustanawia połączenie z bazą danych i podłącza sloty dla przycisków\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fIparent\fP Wskaźnik na widget nadrzędny (domyślnie nullptr)\&.
+.RE
+.PP
+.SH "ConstructorOverview"
+.PP
+Inicjalizuje interfejs graficzny, ustala połączenie z bazą danych ('default_connection'), ustawia tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i odświeża listę lokalizacji w QListView\&. 
+.SS "storage::~storage ()"
+
+.PP
+Destruktor klasy storage\&. 
+.SH "DestructorOverview"
+.PP
+Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne\&.
+.SH "DestructorOverview"
+.PP
+Usuwa obiekt interfejsu użytkownika i zwalnia zasoby\&. 
+.SH "Dokumentacja funkcji składowych"
+.PP 
+.SS "void storage::setMainWindow (\fBMainWindow\fP * mainWindow)"
+
+.PP
+Ustawia wskaźnik na główne okno aplikacji\&. 
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik na obiekt klasy \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Umożliwia komunikację z głównym oknem w celu odświeżenia listy lokalizacji w combo boxie po zapisaniu zmian\&.
+.PP
+\fBParametry\fP
+.RS 4
+\fImainWindow\fP Wskaźnik do instancji klasy \fBMainWindow\fP\&.
+.RE
+.PP
+.SH "MethodOverview"
+.PP
+Przechowuje referencję do \fBMainWindow\fP, umożliwiając odświeżanie combo boxa lokalizacji po zapisaniu zmian\&. 
+
+.SH "Autor"
+.PP 
+Wygenerowano automatycznie z kodu źródłowego programem Doxygen dla Inwentaryzacja\&.

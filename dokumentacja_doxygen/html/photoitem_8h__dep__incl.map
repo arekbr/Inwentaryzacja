@@ -1,0 +1,8 @@
+<map id="include/photoitem.h" name="include/photoitem.h">
+<area shape="rect" id="node1" title="Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia." alt="" coords="184,5,336,32"/>
+<area shape="rect" id="node2" href="$item_list_8h.html" title="Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyj..." alt="" coords="105,80,244,107"/>
+<area shape="rect" id="node3" href="$item_list_8cpp.html" title="Implementacja klasy itemList do zarządzania listą eksponatów." alt="" coords="5,155,131,181"/>
+<area shape="rect" id="node5" href="$mainwindow_8cpp.html" title="Implementacja klasy MainWindow do zarządzania formularzem eksponatów." alt="" coords="268,80,423,107"/>
+<area shape="rect" id="node6" href="$photoitem_8cpp.html" title="Implementacja klasy PhotoItem, interaktywnego elementu graficznego dla zdjęć." alt="" coords="447,80,585,107"/>
+<area shape="rect" id="node4" href="$main_8cpp.html" title="Główny punkt wejścia aplikacji inwentaryzacyjnej." alt="" coords="155,155,261,181"/>
+</map>

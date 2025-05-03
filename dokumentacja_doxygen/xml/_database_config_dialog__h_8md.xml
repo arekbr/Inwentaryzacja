@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="_database_config_dialog__h_8md" kind="file" language="Markdown">
+    <compoundname>DatabaseConfigDialog_h.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>Dokumentacja<sp/>dla<sp/>pliku<sp/>`DatabaseConfigDialog.h`</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Metadane</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Plik**:<sp/>DatabaseConfigDialog.h</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wersja**:<sp/>1.2.2</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Data**:<sp/>2025-05-03</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Autorzy**:<sp/>Stowarzyszenie<sp/>Miłośników<sp/>Oldschoolowych<sp/>Komputerów<sp/>SMOK<sp/>&amp;<sp/>ChatGPT<sp/>&amp;<sp/>GROK</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Przegląd</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>`DatabaseConfigDialog.h`<sp/>definiuje<sp/>klasę<sp/>`DatabaseConfigDialog`,<sp/>która<sp/>reprezentuje<sp/>okno<sp/>dialogowe<sp/>do<sp/>konfiguracji<sp/>parametrów<sp/>połączenia<sp/>z<sp/>bazą<sp/>danych<sp/>(SQLite<sp/>lub<sp/>MySQL)<sp/>oraz<sp/>wyboru<sp/>skórki<sp/>graficznej<sp/>aplikacji<sp/>(Amiga,<sp/>Atari<sp/>8bit,<sp/>ZX<sp/>Spectrum,<sp/>Standard).<sp/>Klasa<sp/>dostarcza<sp/>metody<sp/>dostępowe<sp/>do<sp/>parametrów<sp/>bazy<sp/>danych,<sp/>obsługuje<sp/>dynamiczną<sp/>zmianę<sp/>stylów<sp/>i<sp/>czcionek<sp/>oraz<sp/>zapisuje<sp/>ustawienia<sp/>w<sp/>`QSettings`<sp/>dla<sp/>trwałości<sp/>między<sp/>sesjami<sp/>aplikacji.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Struktura<sp/>kodu</highlight></codeline>
+<codeline><highlight class="normal">Plik<sp/>nagłówkowy<sp/>zawiera<sp/>następujące<sp/>elementy:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">1.<sp/>**Deklaracja<sp/>klasy<sp/>`DatabaseConfigDialog`**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Klasa<sp/>dziedziczy<sp/>po<sp/>`QDialog`<sp/>i<sp/>używa<sp/>mechanizmu<sp/>sygnałów<sp/>i<sp/>slotów<sp/>Qt<sp/>(`Q_OBJECT`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Zawiera<sp/>publiczne<sp/>i<sp/>prywatne<sp/>metody<sp/>oraz<sp/>zmienne.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">2.<sp/>**Metody<sp/>publiczne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Konstruktor:<sp/>Inicjalizuje<sp/>okno<sp/>dialogowe<sp/>i<sp/>interfejs<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Destruktor:<sp/>Zwalnia<sp/>zasoby<sp/>i<sp/>odrejestrowuje<sp/>czcionki.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>Metody<sp/>dostępowe:<sp/>Zwracają<sp/>parametry<sp/>bazy<sp/>danych<sp/>(typ,<sp/>ścieżka<sp/>SQLite,<sp/>dane<sp/>MySQL).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">3.<sp/>**Sloty<sp/>publiczne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`accept()`:<sp/>Przesłania<sp/>metodę<sp/>`QDialog::accept`<sp/>do<sp/>zapisu<sp/>ustawień<sp/>w<sp/>`QSettings`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">4.<sp/>**Sloty<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onDatabaseTypeChanged(int<sp/>index)`:<sp/>Obsługuje<sp/>zmianę<sp/>typu<sp/>bazy<sp/>danych<sp/>w<sp/>combo<sp/>boxie.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`onSkinChanged(const<sp/>QString<sp/>&amp;skin)`:<sp/>Obsługuje<sp/>zmianę<sp/>skórki<sp/>graficznej.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">5.<sp/>**Metody<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`loadStyleSheet(const<sp/>QString<sp/>&amp;skin)`:<sp/>Ładuje<sp/>arkusz<sp/>stylów<sp/>QSS<sp/>dla<sp/>wybranej<sp/>skórki.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`loadFont(const<sp/>QString<sp/>&amp;skin)`:<sp/>Ładuje<sp/>czcionkę<sp/>dla<sp/>wybranej<sp/>skórki.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">6.<sp/>**Zmienne<sp/>prywatne**<sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`ui`:<sp/>Wskaźnik<sp/>na<sp/>obiekt<sp/>interfejsu<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/>-<sp/>`m_topazFontId`,<sp/>`m_zxFontId`,<sp/>`m_atari8bitFontId`:<sp/>Identyfikatory<sp/>załadowanych<sp/>czcionek.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Opis<sp/>działania</highlight></codeline>
+<codeline><highlight class="normal">Klasa<sp/>`DatabaseConfigDialog`<sp/>odpowiada<sp/>za:</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wyświetlanie<sp/>okna<sp/>dialogowego**:<sp/>Użytkownik<sp/>wybiera<sp/>typ<sp/>bazy<sp/>danych<sp/>(SQLite/MySQL)<sp/>i<sp/>wprowadza<sp/>parametry<sp/>połączenia<sp/>za<sp/>pomocą<sp/>interfejsu<sp/>graficznego.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Dynamiczne<sp/>przełączanie<sp/>interfejsu**:<sp/>Używa<sp/>`QStackedWidget`<sp/>do<sp/>pokazywania<sp/>odpowiednich<sp/>pól<sp/>w<sp/>zależności<sp/>od<sp/>typu<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Wybór<sp/>skórki<sp/>graficznej**:<sp/>Umożliwia<sp/>wybór<sp/>jednej<sp/>z<sp/>czterech<sp/>skórek<sp/>(Amiga,<sp/>Atari<sp/>8bit,<sp/>ZX<sp/>Spectrum,<sp/>Standard),<sp/>co<sp/>wpływa<sp/>na<sp/>styl<sp/>(QSS)<sp/>i<sp/>czcionkę<sp/>aplikacji.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Trwałe<sp/>przechowywanie<sp/>ustawień**:<sp/>Parametry<sp/>bazy<sp/>danych<sp/>i<sp/>wybrana<sp/>skórka<sp/>są<sp/>zapisywane<sp/>w<sp/>pliku<sp/>`inwentaryzacja.ini`<sp/>za<sp/>pomocą<sp/>`QSettings`.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Metody<sp/>dostępowe**:<sp/>Umożliwiają<sp/>innym<sp/>częściom<sp/>aplikacji<sp/>(np.<sp/>`main.cpp`)<sp/>pobranie<sp/>skonfigurowanych<sp/>parametrów.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Zależności</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Biblioteki<sp/>Qt**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QDialog`:<sp/>Bazowa<sp/>klasa<sp/>dla<sp/>okna<sp/>dialogowego.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>`QString`:<sp/>Obsługa<sp/>ciągów<sp/>znaków<sp/>dla<sp/>parametrów.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Namespace<sp/>`Ui`**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Zawiera<sp/>definicję<sp/>interfejsu<sp/>użytkownika<sp/>(`ui_DatabaseConfigDialog.h`)<sp/>generowaną<sp/>przez<sp/>Qt<sp/>Designer.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Zasoby**:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Pliki<sp/>QSS<sp/>dla<sp/>stylów<sp/>(`:/styles/amiga.qss`,<sp/>`:/styles/atari8bit.qss`,<sp/>`:/styles/zxspectrum.qss`,<sp/>`:/styles/default.qss`).</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>Czcionki<sp/>(`:/fonts/topaz.ttf`,<sp/>`:/fonts/zxspectrum.ttf`,<sp/>`:/fonts/EightBit<sp/>Atari-Ataripl.ttf`).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Uwagi</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Kod<sp/>nie<sp/>został<sp/>zmodyfikowany,<sp/>zgodnie<sp/>z<sp/>wymaganiami<sp/>użytkownika.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Klasa<sp/>dynamicznie<sp/>dostosowuje<sp/>interfejs<sp/>użytkownika<sp/>do<sp/>wybranego<sp/>typu<sp/>bazy<sp/>danych.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Czcionki<sp/>są<sp/>ładowane<sp/>z<sp/>zasobów<sp/>Qt<sp/>i<sp/>odrejestrowywane<sp/>w<sp/>destruktorze,<sp/>aby<sp/>zapobiec<sp/>wyciekom<sp/>pamięci.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>W<sp/>przypadku<sp/>błędów<sp/>ładowania<sp/>zasobów<sp/>(np.<sp/>czcionek<sp/>lub<sp/>QSS)<sp/>aplikacja<sp/>przechodzi<sp/>na<sp/>domyślne<sp/>ustawienia<sp/>(czcionka<sp/>systemowa,<sp/>brak<sp/>stylu).</highlight></codeline>
+    </programlisting>
+    <location file="documentation/DatabaseConfigDialog_h.md"/>
+  </compounddef>
+</doxygen>

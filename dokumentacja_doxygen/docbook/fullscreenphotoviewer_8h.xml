@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_fullscreenphotoviewer_8h" xml:lang="pl">
+<title>Dokumentacja pliku include/fullscreenphotoviewer.h</title>
+<indexterm><primary>include/fullscreenphotoviewer.h</primary></indexterm>
+<para>
+
+<para>Deklaracja klas <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> i <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link> do pełnoekranowego podglądu zdjęć. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &lt;QGraphicsScene&gt;
+#include &lt;QGraphicsView&gt;
+#include &lt;QKeyEvent&gt;
+#include &lt;QMainWindow&gt;
+#include &lt;QWheelEvent&gt;
+</programlisting>Wykres zależności załączania dla fullscreenphotoviewer.h:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="fullscreenphotoviewer_8h__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="fullscreenphotoviewer_8h__dep__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Komponenty    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link></para>
+
+<para>Widok graficzny umożliwiający powiększanie i przesuwanie obrazu. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link></para>
+
+<para>Okno pełnoekranowe do wyświetlania zdjęć. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Deklaracja klas <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> i <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link> do pełnoekranowego podglądu zdjęć. </para>
+
+<para><formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </para>
+</formalpara>
+<formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik <link linkend="_fullscreenphotoviewer_8h">fullscreenphotoviewer.h</link> definiuje dwie klasy: <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> oraz <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link>, używane w aplikacji inwentaryzacyjnej do pełnoekranowego wyświetlania zdjęć eksponatów. Klasa <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link> umożliwia powiększanie i przesuwanie obrazu za pomocą kółka myszy i przeciągania, natomiast <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link> tworzy bezramkowe okno pełnoekranowe z możliwością zamknięcia klawiszem Escape.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Deklarację klasy <link linkend="_class_zoomable_graphics_view">ZoomableGraphicsView</link></emphasis> – dziedziczy po QGraphicsView, implementuje powiększanie i przesuwanie.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Deklarację klasy <link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link></emphasis> – dziedziczy po QMainWindow, zarządza pełnoekranowym wyświetlaniem zdjęcia.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody inline</emphasis> – wszystkie metody są zdefiniowane w pliku nagłówkowym, eliminując potrzebę osobnego pliku .cpp.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QMainWindow, QGraphicsView, QGraphicsScene, QKeyEvent, QWheelEvent.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zasoby</emphasis>: Brak bezpośrednich zależności od zasobów Qt (np. plików QSS czy czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Obie klasy są zoptymalizowane pod kątem prostoty i wydajności, z implementacją inline w pliku nagłówkowym.</para>
+</listitem><listitem>
+<para><link linkend="_class_full_screen_photo_viewer">FullScreenPhotoViewer</link> jest modalny i automatycznie usuwa się po zamknięciu, co zapobiega wyciekom pamięci. </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

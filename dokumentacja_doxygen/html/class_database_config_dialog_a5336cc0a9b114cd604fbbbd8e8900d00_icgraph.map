@@ -1,0 +1,4 @@
+<map id="DatabaseConfigDialog::mysqlPort" name="DatabaseConfigDialog::mysqlPort">
+<area shape="rect" id="node1" title="Zwraca numer portu dla bazy MySQL." alt="" coords="108,5,275,47"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="Główna funkcja aplikacji inwentaryzacyjnej." alt="" coords="5,13,60,39"/>
+</map>

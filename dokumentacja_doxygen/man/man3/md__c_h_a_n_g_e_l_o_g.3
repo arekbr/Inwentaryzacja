@@ -1,0 +1,187 @@
+.TH "md__c_h_a_n_g_e_l_o_g" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md__c_h_a_n_g_e_l_o_g \- Dziennik zmian 
+Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym pliku\&.
+.PP
+Format opiera się na \fCKeep a Changelog\fP, a projekt stosuje \fCWersjonowanie Semantyczne\fP\&.
+.SH "[1\&.2\&.0] - 2025-04-15"
+.PP
+.SS "Dodano"
+.IP "\(bu" 2
+\fBKonfiguracja bazy danych\fP: Nowe okno (\fC\fBDatabaseConfigDialog\fP\fP) do wyboru i ustawiania bazy danych:
+.IP "  \(bu" 4
+Obsługa SQLite3 (wybór pliku za pomocą \fCQFileDialog\fP)\&.
+.IP "  \(bu" 4
+Obsługa MySQL (ustawienia hosta, portu, użytkownika, hasła, nazwy bazy)\&.
+.IP "  \(bu" 4
+Zapisywanie ustawień w \fCQSettings\fP dla trwałości konfiguracji\&.
+.PP
+
+.IP "\(bu" 2
+\fBZarządzanie statusami\fP: Dedykowane okno (\fCstatus\&.ui\fP) z pełnymi operacjami:
+.IP "  \(bu" 4
+Dodawanie, edycja i usuwanie statusów w bazie danych\&.
+.IP "  \(bu" 4
+Integracja z głównym oknem (odświeżanie listy statusów w \fC\fBMainWindow\fP\fP)\&.
+.IP "  \(bu" 4
+Użycie UUID dla unikalnych identyfikatorów\&.
+.PP
+
+.IP "\(bu" 2
+\fBZarządzanie miejscami przechowywania\fP: Nowe okno (\fCstorage\&.ui\fP) do obsługi lokalizacji:
+.IP "  \(bu" 4
+Dodawanie, edycja i usuwanie miejsc przechowywania\&.
+.IP "  \(bu" 4
+Synchronizacja z głównym oknem aplikacji\&.
+.IP "  \(bu" 4
+UUID dla identyfikatorów\&.
+.PP
+
+.IP "\(bu" 2
+\fBObsługa zdjęć\fP: Nowe moduły (\fCphotoitem\fP, \fCfullscreenphotoviewer\fP) umożliwiające:
+.IP "  \(bu" 4
+Dodawanie zdjęć do elementów inwentaryzacji\&.
+.IP "  \(bu" 4
+Przeglądanie zdjęć w trybie pełnoekranowym\&.
+.IP "  \(bu" 4
+Zarządzanie zdjęciami w bazie danych\&.
+.PP
+
+.IP "\(bu" 2
+\fBUlepszone zarządzanie typami i producentami\fP:
+.IP "  \(bu" 4
+Przejście na okna dialogowe (\fCQDialog\fP) w \fC\fBtypes\&.cpp\fP\fP i \fC\fBvendors\&.cpp\fP\fP\&.
+.IP "  \(bu" 4
+Pełne operacje CRUD (tworzenie, odczyt, aktualizacja, usuwanie)\&.
+.IP "  \(bu" 4
+Interfejsy z listami (\fCQListView\fP) i przyciskami akcji (dodaj, edytuj, usuń)\&.
+.IP "  \(bu" 4
+Synchronizacja z głównym oknem dla dynamicznych list rozwijanych\&.
+.PP
+
+.IP "\(bu" 2
+\fBFunkcja konfiguracji bazy\fP: Nowy moduł \fC\fButils\&.cpp\fP\fP z funkcją \fCsetupDatabase\fP:
+.IP "  \(bu" 4
+Ujednolicona konfiguracja połączenia dla SQLite3 i MySQL\&.
+.IP "  \(bu" 4
+Obsługa błędów z komunikatami w \fCQMessageBox\fP\&.
+.PP
+
+.IP "\(bu" 2
+\fBSkrypty SQL\fP:
+.IP "  \(bu" 4
+\fCCreate_MySQL\&.sql\fP: Inicjalizacja bazy MySQL z pełną strukturą tabel\&.
+.IP "  \(bu" 4
+\fCcreateTable\&.sql\fP: Skrypt do tworzenia tabel dla nowych funkcji\&.
+.IP "  \(bu" 4
+\fCmigrate_to_uuid\&.sql\fP: Migracja identyfikatorów na UUID dla istniejących danych\&.
+.IP "  \(bu" 4
+\fCdatabase_example_record\&.sql\fP: Przykładowe rekordy do testowania bazy\&.
+.PP
+
+.IP "\(bu" 2
+\fBDokumentacja\fP: Plik \fCREADME\&.md\fP opisujący:
+.IP "  \(bu" 4
+Cel projektu (inwentaryzacja retro komputerów)\&.
+.IP "  \(bu" 4
+Proces tworzenia z użyciem AI (ChatGPT, GROK, DeepSeek)\&.
+.IP "  \(bu" 4
+Wymagania (Qt 6\&.8\&.1, SQLite3) i instrukcje instalacji\&.
+.PP
+
+.IP "\(bu" 2
+\fBGitignore\fP: Plik \fC\&.gitignore\fP ignorujący pliki tymczasowe (\fCbuild/\fP, \fC*\&.db\fP, \fC*\&.DS_Store\fP itp\&.)\&.
+.PP
+.SS "Zmieniono"
+.IP "\(bu" 2
+\fBGłówne okno\fP (\fC\fBmainwindow\&.cpp\fP\fP, \fCmainwindow\&.ui\fP):
+.IP "  \(bu" 4
+Dodano zaawansowane filtrowanie i wyszukiwanie elementów w liście inwentaryzacyjnej\&.
+.IP "  \(bu" 4
+Wprowadzono obsługę UUID dla nowych rekordów\&.
+.IP "  \(bu" 4
+Zintegrowano nowe moduły (statusy, miejsca przechowywania, zdjęcia)\&.
+.IP "  \(bu" 4
+Ulepszono zarządzanie danymi w tabelach (\fCQTableView\fP) z dynamicznym ładowaniem\&.
+.PP
+
+.IP "\(bu" 2
+\fBLista elementów\fP (\fC\fBitemList\&.cpp\fP\fP):
+.IP "  \(bu" 4
+Rozbudowano o możliwość edycji i usuwania bezpośrednio z interfejsu\&.
+.IP "  \(bu" 4
+Poprawiono integrację z bazą danych dla nowych tabel (statusy, miejsca)\&.
+.PP
+
+.IP "\(bu" 2
+\fBModele\fP (\fC\fBmodels\&.cpp\fP\fP):
+.IP "  \(bu" 4
+Zaktualizowano o obsługę nowych typów danych (np\&. zdjęcia, statusy)\&.
+.IP "  \(bu" 4
+Ulepszono ładowanie i zapisywanie danych z bazy\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejsy typów i producentów\fP (\fCtypes\&.ui\fP, \fCvendors\&.ui\fP):
+.IP "  \(bu" 4
+Dodano widoki list (\fCQListView\fP) dla przeglądania rekordów\&.
+.IP "  \(bu" 4
+Wprowadzono przyciski akcji (dodaj, edytuj, usuń) dla łatwiejszej obsługi\&.
+.IP "  \(bu" 4
+Zwiększono szerokość okien dla lepszej czytelności (np\&. z 400px na 546px dla \fCtypes\&.ui\fP)\&.
+.PP
+
+.IP "\(bu" 2
+\fBPlik projektu\fP (\fCInwentaryzacja\&.pro\fP):
+.IP "  \(bu" 4
+Dodano moduł \fCwidgets\fP dla pełnej obsługi Qt Widgets\&.
+.IP "  \(bu" 4
+Włączono nowe pliki źródłowe, nagłówki, formularze i skrypty SQL\&.
+.IP "  \(bu" 4
+Ulepszono konfigurację tłumaczeń (\fClrelease\fP, \fCembed_translations\fP) dla \fCInwentaryzacja_pl_PL\&.ts\fP\&.
+.PP
+
+.IP "\(bu" 2
+\fBStruktura bazy danych\fP:
+.IP "  \(bu" 4
+Przejście na UUID dla tabel (\fCtypes\fP, \fCvendors\fP, \fCstatuses\fP, \fCstorage_places\fP)\&.
+.IP "  \(bu" 4
+Rozbudowa schematu o nowe tabele dla statusów i miejsc przechowywania\&.
+.PP
+
+.IP "\(bu" 2
+\fBKod i organizacja\fP:
+.IP "  \(bu" 4
+Przepisano \fCtypes\fP i \fCvendors\fP z \fCQWidget\fP na \fCQDialog\fP dla lepszej modalności\&.
+.IP "  \(bu" 4
+Dodano zarządzanie błędami w interakcjach z bazą (np\&. komunikaty w \fCQMessageBox\fP)\&.
+.IP "  \(bu" 4
+Usprawniono połączenia sygnałów-slotów w nowych oknach\&.
+.PP
+
+.PP
+.SS "Poprawiono"
+.IP "\(bu" 2
+Stabilność interfejsu użytkownika dzięki lepszemu zarządzaniu danymi w \fCQSqlQueryModel\fP\&.
+.IP "\(bu" 2
+Poprawiono obsługę błędów bazy danych w nowych modułach (\fCstatus\fP, \fCstorage\fP, \fCtypes\fP, \fCvendors\fP)\&.
+.IP "\(bu" 2
+Zoptymalizowano ładowanie danych w głównym oknie dla większych zbiorów\&.
+.IP "\(bu" 2
+Ujednolicono styl interfejsu w nowych oknach (np\&. spójne rozmiary przycisków i pól)\&.
+.PP
+.SH "[1\&.0\&.0] - 11 marca 2025"
+.PP
+.SS "Dodano"
+.IP "\(bu" 2
+Początkowe wydanie aplikacji Inwentaryzacja do zarządzania kolekcją retro komputerów\&.
+.IP "\(bu" 2
+Podstawowe funkcje: przeglądanie listy elementów, zarządzanie typami, producentami i modelami\&.
+.IP "\(bu" 2
+Obsługa bazy danych SQLite3 do przechowywania danych\&.
+.IP "\(bu" 2
+Prosty interfejs użytkownika z głównym oknem, listą elementów i formularzami\&. 
+.PP
+

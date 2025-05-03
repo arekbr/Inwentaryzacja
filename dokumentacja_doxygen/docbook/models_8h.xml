@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_models_8h" xml:lang="pl">
+<title>Dokumentacja pliku include/models.h</title>
+<indexterm><primary>include/models.h</primary></indexterm>
+<para>
+
+<para>Deklaracja klasy models do zarządzania modelami eksponatów. </para>
+ 
+</para>
+<programlisting linenumbering="unnumbered">#include &lt;QDialog&gt;
+#include &lt;QSqlDatabase&gt;
+</programlisting>Wykres zależności załączania dla models.h:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="models_8h__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+Ten wykres pokazuje, które pliki bezpośrednio lub pośrednio załączają ten plik:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="models_8h__dep__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Komponenty    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_classmodels">models</link></para>
+
+<para>Okno dialogowe do zarządzania modelami eksponatów. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Opis szczegółowy</title>
+
+<para>Deklaracja klasy models do zarządzania modelami eksponatów. </para>
+
+<para><formalpara><title>Autor</title>
+
+<para>Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK </para>
+</formalpara>
+<formalpara><title>Wersja</title>
+
+<para>1.2.2 </para>
+</formalpara>
+<formalpara><title>Data</title>
+
+<para>2025-05-03</para>
+</formalpara>
+</para>
+<section xml:id="_vendors_8cpp_1Overview">
+<title>Overview</title>
+
+<para>Plik zawiera deklarację klasy models, która reprezentuje okno dialogowe do zarządzania modelami eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli &apos;models&apos; w bazie danych, a także odświeżanie listy modeli w głównym oknie aplikacji. Obsługuje identyfikator producenta (vendorId) jako QString.</para>
+</section>
+<section xml:id="_vendors_8cpp_1Structure">
+<title>Structure</title>
+
+<para>Plik nagłówkowy zawiera:<orderedlist>
+<listitem>
+<para><emphasis role="bold">Deklarację klasy models</emphasis> – dziedziczy po QDialog.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody publiczne</emphasis> – konstruktor, destruktor, metody ustawiające <link linkend="_class_main_window">MainWindow</link> i vendorId.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Sloty prywatne</emphasis> – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Metody prywatne</emphasis> – odświeżanie listy modeli.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Zmienne prywatne</emphasis> – przechowują interfejs, połączenie z bazą danych, <link linkend="_class_main_window">MainWindow</link> i vendorId.</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Dependencies">
+<title>Dependencies</title>
+
+<para><itemizedlist>
+<listitem>
+<para><emphasis role="bold">Qt Framework</emphasis>: Używa klas QDialog, QSqlDatabase.</para>
+</listitem><listitem>
+<para><emphasis role="bold">Nagłówki aplikacji</emphasis>: <link linkend="_mainwindow_8h">mainwindow.h</link> (deklaracja <link linkend="_class_main_window">MainWindow</link>).</para>
+</listitem><listitem>
+<para><emphasis role="bold">Namespace Ui</emphasis>: Zawiera definicję interfejsu użytkownika (<link linkend="_ui__models_8h_source">ui_models.h</link>).</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_vendors_8cpp_1Notes">
+<title>Notes</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.</para>
+</listitem><listitem>
+<para>Klasa jest częścią systemu słownikowego, współpracuje z <link linkend="_class_main_window">MainWindow</link> do aktualizacji combo boxów.</para>
+</listitem><listitem>
+<para>Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <link linkend="_class_database_config_dialog">DatabaseConfigDialog</link>). </para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+</section>

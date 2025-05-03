@@ -1,0 +1,178 @@
+.TH "md_documentation_mainwindow_cpp" 3 "So, 3 maj 2025" "Version 1.1.2" "Inwentaryzacja" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md_documentation_mainwindow_cpp \- Dokumentacja dla pliku \fC\fBmainwindow\&.cpp\fP\fP 
+
+.SH "Metadane"
+.PP
+.IP "\(bu" 2
+\fBPlik\fP: \fBmainwindow\&.cpp\fP
+.IP "\(bu" 2
+\fBWersja\fP: 1\&.2\&.2
+.IP "\(bu" 2
+\fBData\fP: 2025-05-03
+.IP "\(bu" 2
+\fBAutorzy\fP: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+.PP
+.SH "Przegląd"
+.PP
+Plik \fC\fBmainwindow\&.cpp\fP\fP zawiera implementację metod klasy \fC\fBMainWindow\fP\fP, odpowiedzialnej za formularz do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej\&. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), zapisywanie rekordów w bazie danych MySQL oraz otwieranie dialogów słownikowych\&. Implementacja obejmuje również automatyczne dodawanie nowych wartości do słowników po ich wpisaniu w combo boxach\&.
+.SH "Struktura kodu"
+.PP
+Kod jest podzielony na następujące sekcje:
+.PP
+.IP "1." 4
+\fBSekcja konstruktora\fP 
+.br
+.IP "  \(bu" 4
+Inicjalizuje interfejs, połączenie z bazą danych, combo boxy, sloty i automatyczne dodawanie wartości do słowników\&.
+.PP
+
+.IP "2." 4
+\fBSekcja destruktora\fP 
+.br
+.IP "  \(bu" 4
+Zamyka połączenie z bazą danych i zwalnia zasoby\&.
+.PP
+
+.IP "3." 4
+\fBSekcja metod publicznych\fP 
+.br
+.IP "  \(bu" 4
+\fCloadComboBoxData\fP: Ładuje dane do combo boxów\&.
+.IP "  \(bu" 4
+\fCeventFilter\fP: Obsługuje kliknięcia w combo boxy\&.
+.IP "  \(bu" 4
+\fCsetEditMode\fP, \fCsetCloneMode\fP: Konfigurują tryby formularza\&.
+.IP "  \(bu" 4
+\fCgetNewItem*ComboBox\fP: Zwracają wskaźniki na combo boxy\&.
+.PP
+
+.IP "4." 4
+\fBSekcja slotów prywatnych\fP 
+.br
+.IP "  \(bu" 4
+\fConSaveClicked\fP: Zapisuje rekord i zdjęcia\&.
+.IP "  \(bu" 4
+\fConCancelClicked\fP: Zamyka okno\&.
+.IP "  \(bu" 4
+\fConAddPhotoClicked\fP, \fConRemovePhotoClicked\fP, \fConPhotoClicked\fP: Zarządzają zdjęciami\&.
+.IP "  \(bu" 4
+\fConAdd*Clicked\fP: Otwierają dialogi słownikowe\&.
+.PP
+
+.IP "5." 4
+\fBSekcja metod prywatnych\fP 
+.br
+.IP "  \(bu" 4
+\fCloadRecord\fP: Wczytuje dane rekordu\&.
+.IP "  \(bu" 4
+\fCloadPhotos\fP, \fCloadPhotosFromBuffer\fP: Wczytują zdjęcia z bazy lub bufora\&.
+.PP
+
+.PP
+.SH "Opis działania"
+.PP
+.IP "1." 4
+\fBInicjalizacja\fP:
+.IP "  \(bu" 4
+Konstruktor ustawia interfejs (\fCui->setupUi\fP), pobiera istniejące połączenie z bazą MySQL (\fCdefault_connection\fP), ładuje dane do combo boxów (\fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatuses\fP, \fCstorage_places\fP), podłącza sloty dla przycisków i konfiguruje automatyczne dodawanie wartości do słowników poprzez sygnał \fCeditingFinished\fP dla pól edycyjnych combo boxów\&.
+.IP "  \(bu" 4
+Ustawia początkowy stan: brak trybu edycji, brak wybranego zdjęcia\&.
+.PP
+
+.IP "2." 4
+\fBFormularz\fP:
+.IP "  \(bu" 4
+Zawiera pola tekstowe (nazwa, numer seryjny, part number, rewizja, opis, wartość), pole daty (rok produkcji), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar \fCQGraphicsView\fP dla miniatur zdjęć\&.
+.IP "  \(bu" 4
+Combo boxy są edytowalne z autouzupełnianiem (\fCQCompleter\fP)\&.
+.PP
+
+.IP "3." 4
+\fBTryby pracy\fP:
+.IP "  \(bu" 4
+\fBDodawanie\fP: Czyści pola, ustawia domyślne wartości ('brak' dla statusu i miejsca przechowywania), przechowuje zdjęcia w buforze\&.
+.IP "  \(bu" 4
+\fBEdycja\fP: Wczytuje dane rekordu i zdjęcia na podstawie ID, zapisuje zmiany w istniejącym rekordzie\&.
+.IP "  \(bu" 4
+\fBKlonowanie\fP: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć)\&.
+.PP
+
+.IP "4." 4
+\fBZdjęcia\fP:
+.IP "  \(bu" 4
+\fConAddPhotoClicked\fP: Otwiera okno wyboru plików, ładuje zdjęcia do bufora (\fCm_photoBuffer\fP) dla nowych rekordów lub do bazy (\fCphotos\fP) dla edycji, przenosi pliki do katalogu 'gotowe'\&.
+.IP "  \(bu" 4
+\fConRemovePhotoClicked\fP: Usuwa zdjęcie z bazy po potwierdzeniu, odświeżając podgląd\&.
+.IP "  \(bu" 4
+\fConPhotoClicked\fP: Ustawia wybraną miniaturę jako aktywną, aktualizując \fCm_selectedPhotoIndex\fP\&.
+.IP "  \(bu" 4
+Miniatury (80x80 pikseli) są wyświetlane w \fCQGraphicsView\fP z zachowaniem proporcji\&.
+.PP
+
+.IP "5." 4
+\fBSłowniki\fP:
+.IP "  \(bu" 4
+Automatyczne dodawanie: Po wpisaniu nowej wartości w combo boxie, zapisuje ją do odpowiedniej tabeli (\fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatuses\fP, \fCstorage_places\fP) z nowym UUID\&. Dla modeli wymaga wybranego producenta\&.
+.IP "  \(bu" 4
+Dialogi słownikowe (\fConAdd*Clicked\fP): Otwierają okna (\fCtypes\fP, \fCvendors\fP, \fCmodels\fP, \fCstatus\fP, \fCstorage\fP), przekazują referencję do \fC\fBMainWindow\fP\fP i odświeżają combo boxy po dodaniu wartości\&.
+.PP
+
+.IP "6." 4
+\fBZapis\fP:
+.IP "  \(bu" 4
+\fConSaveClicked\fP: Waliduje dane, wykonuje \fCINSERT\fP (nowy rekord) lub \fCUPDATE\fP (edycja) w tabeli \fCeksponaty\fP, zapisuje zdjęcia z bufora do tabeli \fCphotos\fP, przenosi pliki do katalogu 'gotowe', emituje \fCrecordSaved\fP i zamyka okno\&.
+.IP "  \(bu" 4
+Używa domyślnych UUID dla pustych wartości combo boxów (np\&. \fCunknown_status_uuid\fP)\&.
+.PP
+
+.PP
+.SH "Zależności"
+.PP
+.IP "\(bu" 2
+\fBBiblioteki Qt\fP:
+.IP "  \(bu" 4
+\fCQSqlQuery\fP, \fCQFileDialog\fP, \fCQMessageBox\fP, \fCQGraphicsScene\fP, \fCQCompleter\fP, \fCQDir\fP, \fCQUuid\fP, itp\&.: Obsługa bazy danych, plików, interfejsu i grafik\&.
+.PP
+
+.IP "\(bu" 2
+\fBNagłówki aplikacji\fP:
+.IP "  \(bu" 4
+\fC\fBmainwindow\&.h\fP\fP: Definicja klasy\&.
+.IP "  \(bu" 4
+\fC\fBphotoitem\&.h\fP\fP: Klasa dla miniatur zdjęć\&.
+.IP "  \(bu" 4
+\fC\fBtypes\&.h\fP\fP, \fC\fBvendors\&.h\fP\fP, \fC\fBmodels\&.h\fP\fP, \fC\fBstatus\&.h\fP\fP, \fC\fBstorage\&.h\fP\fP: Dialogi słownikowe\&.
+.PP
+
+.IP "\(bu" 2
+\fBInterfejs użytkownika\fP:
+.IP "  \(bu" 4
+\fC\fBui_mainwindow\&.h\fP\fP: Plik generowany przez Qt Designer\&.
+.PP
+
+.IP "\(bu" 2
+\fBZasoby\fP:
+.IP "  \(bu" 4
+Brak bezpośrednich zależności od zasobów Qt (np\&. QSS, czcionek)\&.
+.PP
+
+.PP
+.SH "Uwagi"
+.PP
+.IP "\(bu" 2
+Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika\&.
+.IP "\(bu" 2
+Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w \fC\fBDatabaseConfigDialog\fP\fP)\&.
+.IP "\(bu" 2
+Automatyczne dodawanie wartości do słowników zwiększa wygodę, ale wymaga walidacji (np\&. producent dla modeli)\&.
+.IP "\(bu" 2
+Zdjęcia przechowywane jako \fCLONGBLOB\fP mogą obciążać bazę przy dużej liczbie rekordów\&.
+.IP "\(bu" 2
+Katalog 'gotowe' jest tworzony w ścieżce źródłowej zdjęć, co wymaga uprawnień do zapisu\&.
+.IP "\(bu" 2
+Połączenie z bazą danych (\fCdefault_connection\fP) jest współdzielone z innymi komponentami (np\&. \fC\fBitemList\fP\fP)\&. 
+.PP
+

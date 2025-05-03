@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.4"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Inwentaryzacja: Dokumentacja dla pliku &lt;tt&gt;mainwindow.h&lt;/tt&gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="icon.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Inwentaryzacja<span id="projectnumber">&#160;1.1.2</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Wygenerowano przez Doxygen 1.9.4 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search",'Szukaj','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Szukaj');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('md_documentation_mainwindow_h.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Dokumentacja dla pliku <code><a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a></code> </div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md79"></a>
+Metadane</h1>
+<ul>
+<li><b>Plik</b>: <a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a></li>
+<li><b>Wersja</b>: 1.2.2</li>
+<li><b>Data</b>: 2025-05-03</li>
+<li><b>Autorzy</b>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md80"></a>
+Przegląd</h1>
+<p >Plik <code><a class="el" href="mainwindow_8h.html" title="Deklaracja klasy MainWindow do zarządzania formularzem eksponatów.">mainwindow.h</a></code> definiuje klasę <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code>, która reprezentuje główne okno formularza do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych MySQL. Emituje sygnał <code>recordSaved</code> po zapisaniu rekordu i zawiera sloty do obsługi akcji użytkownika, takich jak zapis, anulowanie czy dodawanie zdjęć.</p>
+<h1><a class="anchor" id="autotoc_md81"></a>
+Struktura kodu</h1>
+<p >Plik nagłówkowy zawiera następujące elementy:</p>
+<ol type="1">
+<li><b>Deklaracja klasy <code><a class="el" href="class_main_window.html" title="Główne okno formularza do zarządzania eksponatami.">MainWindow</a></code></b> <br  />
+<ul>
+<li>Dziedziczy po <code>QMainWindow</code>.</li>
+<li>Używa makra <code>Q_OBJECT</code> dla wsparcia mechanizmu sygnałów i slotów Qt.</li>
+</ul>
+</li>
+<li><b>Metody publiczne</b> <br  />
+<ul>
+<li>Konstruktor: Inicjalizuje interfejs, połączenie z bazą danych i combo boxy.</li>
+<li>Destruktor: Zwalnia zasoby.</li>
+<li><code>loadComboBoxData</code>: Ładuje dane z tabeli do combo boxa.</li>
+<li><code>eventFilter</code>: Obsługuje zdarzenia dla combo boxów (otwieranie listy po kliknięciu).</li>
+<li><code>setEditMode</code>: Ustawia tryb edycji lub dodawania rekordu.</li>
+<li><code>setCloneMode</code>: Ustawia tryb klonowania rekordu.</li>
+<li><code>getNewItemVendorComboBox</code>, <code>getNewItemModelComboBox</code>, <code>getNewItemStoragePlaceComboBox</code>, <code>getNewItemTypeComboBox</code>, <code>getNewItemStatusComboBox</code>: Zwracają wskaźniki na combo boxy.</li>
+</ul>
+</li>
+<li><b>Sygnały</b> <br  />
+<ul>
+<li><code>recordSaved</code>: Emitowany po zapisaniu rekordu, przekazuje ID rekordu.</li>
+</ul>
+</li>
+<li><b>Sloty prywatne</b> <br  />
+<ul>
+<li><code>onSaveClicked</code>: Zapisuje dane do bazy danych i emituje sygnał <code>recordSaved</code>.</li>
+<li><code>onCancelClicked</code>: Zamyka okno bez zapisywania zmian.</li>
+<li><code>onAddPhotoClicked</code>: Dodaje nowe zdjęcie do rekordu.</li>
+<li><code>onRemovePhotoClicked</code>: Usuwa wybrane zdjęcie.</li>
+<li><code>onPhotoClicked</code>: Obsługuje kliknięcie w miniaturę zdjęcia.</li>
+<li><code>onAddTypeClicked</code>, <code>onAddVendorClicked</code>, <code>onAddModelClicked</code>, <code>onAddStatusClicked</code>, <code>onAddStoragePlaceClicked</code>: Otwierają okna dialogowe dla słowników.</li>
+</ul>
+</li>
+<li><b>Metody prywatne</b> <br  />
+<ul>
+<li><code>loadRecord</code>: Wczytuje dane rekordu do formularza.</li>
+<li><code>loadPhotos</code>: Wczytuje zdjęcia powiązane z rekordem.</li>
+<li><code>loadPhotosFromBuffer</code>: Wczytuje zdjęcia z bufora pamięci.</li>
+</ul>
+</li>
+<li><b>Zmienne prywatne</b> <br  />
+<ul>
+<li><code>db</code>: Połączenie z bazą danych MySQL.</li>
+<li><code>ui</code>: Wskaźnik na interfejs użytkownika.</li>
+<li><code>m_editMode</code>: Flaga trybu edycji (true) lub dodawania (false).</li>
+<li><code>m_recordId</code>: ID edytowanego rekordu.</li>
+<li><code>m_selectedPhotoIndex</code>: Indeks wybranej miniatury zdjęcia.</li>
+<li><code>m_photoBuffer</code>: Bufor dla zdjęć niezapisanych rekordów.</li>
+<li><code>m_photoPathsBuffer</code>: Bufor ścieżek do zdjęć przed zapisem.</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="autotoc_md82"></a>
+Opis działania</h1>
+<ul>
+<li><b>Inicjalizacja</b>: Konstruktor konfiguruje interfejs, łączy się z bazą danych, ładuje dane do combo boxów, ustawia sloty dla przycisków i włącza automatyczne dodawanie wartości do słowników.</li>
+<li><b>Formularz</b>: Wyświetla pola tekstowe (nazwa, numer seryjny, opis, itp.), combo boxy (typy, producenci, modele, statusy, miejsca przechowywania) i obszar dla miniatur zdjęć.</li>
+<li><b>Tryby pracy</b>:<ul>
+<li><b>Dodawanie</b>: Czyści pola, ustawia domyślne wartości ("brak" dla statusu i miejsca przechowywania).</li>
+<li><b>Edycja</b>: Wczytuje dane rekordu i zdjęcia na podstawie ID.</li>
+<li><b>Klonowanie</b>: Wczytuje dane rekordu, ale zapisuje jako nowy rekord (bez ID i zdjęć).</li>
+</ul>
+</li>
+<li><b>Zdjęcia</b>: Obsługuje dodawanie zdjęć (do bufora lub bazy), usuwanie (z bazy po potwierdzeniu) i wybór miniatur w <code>QGraphicsView</code>.</li>
+<li><b>Słowniki</b>: Umożliwia dodawanie nowych wartości do tabel <code>types</code>, <code>vendors</code>, <code>models</code>, <code>statuses</code>, <code>storage_places</code> przez dialogi lub automatycznie po wpisaniu w combo boxie.</li>
+<li><b>Zapis</b>: Waliduje dane, zapisuje rekord w tabeli <code>eksponaty</code>, przenosi zdjęcia do tabeli <code>photos</code> i katalogu "gotowe", emituje <code>recordSaved</code>.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md83"></a>
+Zależności</h1>
+<ul>
+<li><b>Biblioteki Qt</b>:<ul>
+<li><code>QMainWindow</code>, <code>QSqlDatabase</code>, <code>QComboBox</code>, <code>QList</code>: Obsługa interfejsu, bazy danych i danych.</li>
+</ul>
+</li>
+<li><b>Nagłówki aplikacji</b>:<ul>
+<li><code><a class="el" href="photoitem_8h.html" title="Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia.">photoitem.h</a></code>: Klasa dla miniatur zdjęć (forward-deklaracja).</li>
+</ul>
+</li>
+<li><b>Interfejs użytkownika</b>:<ul>
+<li><code><a class="el" href="ui__mainwindow_8h_source.html">ui_mainwindow.h</a></code>: Plik generowany przez Qt Designer.</li>
+</ul>
+</li>
+<li><b>Zasoby</b>:<ul>
+<li>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md84"></a>
+Uwagi</h1>
+<ul>
+<li>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</li>
+<li>Klasa integruje formularz z bazą danych i dialogami słownikowymi, będąc kluczowym elementem edycji danych.</li>
+<li>Automatyczne dodawanie wartości do słowników wymaga wybrania producenta dla modeli, co zapewnia spójność danych.</li>
+<li>Zdjęcia są przechowywane jako <code>LONGBLOB</code> w tabeli <code>photos</code>, co może wpłynąć na wydajność przy dużej liczbie rekordów.</li>
+<li>Połączenie z bazą danych (<code>default_connection</code>) jest współdzielone z innymi komponentami (np. <code><a class="el" href="classitem_list.html" title="Widget zarządzający listą eksponatów z interfejsem użytkownika.">itemList</a></code>). </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Wygenerowano przez <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
+  </ul>
+</div>
+</body>
+</html>

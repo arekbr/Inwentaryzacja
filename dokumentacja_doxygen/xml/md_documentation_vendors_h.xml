@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_vendors_h" kind="page">
+    <compoundname>md_documentation_vendors_h</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;vendors.h&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_vendors_h_1autotoc_md177">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="vendors_8h" kindref="compound">vendors.h</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_vendors_h_1autotoc_md178">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="vendors_8h" kindref="compound">vendors.h</ref></computeroutput> definiuje klasę <computeroutput>vendors</computeroutput>, która reprezentuje okno dialogowe do zarządzania producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli <computeroutput>vendors</computeroutput> w bazie danych oraz synchronizację z głównym oknem (<computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>) w celu odświeżenia combo boxów producentów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy <computeroutput>models</computeroutput>, <computeroutput>status</computeroutput>, <computeroutput>storage</computeroutput> czy <computeroutput>types</computeroutput>.</para>
+</sect1>
+<sect1 id="md_documentation_vendors_h_1autotoc_md179">
+<title>Struktura kodu</title>
+<para>Plik nagłówkowy zawiera następujące elementy:</para>
+<para><orderedlist>
+<listitem><para><bold>Deklaracja klasy <computeroutput>vendors</computeroutput></bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Dziedziczy po <computeroutput>QDialog</computeroutput>.</para>
+</listitem><listitem><para>Używa makra <computeroutput>Q_OBJECT</computeroutput> dla wsparcia mechanizmu sygnałów i slotów Qt.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody publiczne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Konstruktor: Inicjalizuje okno dialogowe, interfejs i połączenie z bazą danych.</para>
+</listitem><listitem><para>Destruktor: Zwalnia zasoby.</para>
+</listitem><listitem><para><computeroutput>setMainWindow</computeroutput>: Ustawia referencję do <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla odświeżania combo boxów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sloty prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>onAddClicked</computeroutput>: Dodaje nowego producenta do tabeli <computeroutput>vendors</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>onEditClicked</computeroutput>: Edytuje nazwę istniejącego producenta.</para>
+</listitem><listitem><para><computeroutput>onDeleteClicked</computeroutput>: Usuwa wybranego producenta po potwierdzeniu.</para>
+</listitem><listitem><para><computeroutput>onOkClicked</computeroutput>: Odświeża combo box w <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> i zamyka okno.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Metody prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>refreshList</computeroutput>: Odświeża listę producentów w <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zmienne prywatne</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>ui</computeroutput>: Wskaźnik na interfejs użytkownika.</para>
+</listitem><listitem><para><computeroutput>m_mainWindow</computeroutput>: Wskaźnik na główne okno aplikacji.</para>
+</listitem><listitem><para><computeroutput>m_db</computeroutput>: Połączenie z bazą danych MySQL.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_vendors_h_1autotoc_md180">
+<title>Opis działania</title>
+<para><itemizedlist>
+<listitem><para><bold>Inicjalizacja</bold>: Konstruktor konfiguruje interfejs (<computeroutput>ui-&gt;setupUi</computeroutput>), ustala połączenie z bazą danych (<computeroutput>default_connection</computeroutput>), ustawia tytuł okna (&quot;Zarządzanie producentami&quot;), podłącza sloty dla przycisków i odświeża listę producentów.</para>
+</listitem><listitem><para><bold>Interfejs</bold>: Zawiera <computeroutput>QListView</computeroutput> do wyświetlania producentów, <computeroutput>QLineEdit</computeroutput> do wprowadzania nazwy producenta oraz przyciski (Dodaj, Edytuj, Usuń, OK, Anuluj).</para>
+</listitem><listitem><para><bold>Zarządzanie producentami</bold>:<itemizedlist>
+<listitem><para><bold>Dodawanie</bold>: Pobiera nazwę z <computeroutput>QLineEdit</computeroutput>, generuje UUID, zapisuje producenta w tabeli <computeroutput>vendors</computeroutput>.</para>
+</listitem><listitem><para><bold>Edycja</bold>: Otwiera <computeroutput>QInputDialog</computeroutput> dla wybranej nazwy producenta, aktualizuje rekord w bazie.</para>
+</listitem><listitem><para><bold>Usuwanie</bold>: Usuwa producenta po potwierdzeniu, wykonując zapytanie <computeroutput>DELETE</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Integracja z <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput></bold>: Po zatwierdzeniu zmian (<computeroutput>onOkClicked</computeroutput>), odświeża combo box producentów w głównym oknie, jeśli <computeroutput>m_mainWindow</computeroutput> jest ustawione.</para>
+</listitem><listitem><para><bold>Baza danych</bold>: Operuje na tabeli <computeroutput>vendors</computeroutput> z polami <computeroutput>id</computeroutput> (UUID) i <computeroutput>name</computeroutput> (nazwa producenta).</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_vendors_h_1autotoc_md181">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QDialog</computeroutput>, <computeroutput>QSqlDatabase</computeroutput>: Obsługa okna dialogowego i bazy danych.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></computeroutput>: Deklaracja klasy <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla komunikacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui__vendors_8h_source" kindref="compound">ui_vendors.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_vendors_h_1autotoc_md182">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Klasa jest częścią systemu słownikowego, wspiera zarządzanie producentami w kontekście eksponatów.</para>
+</listitem><listitem><para>Połączenie z bazą danych (<computeroutput>default_connection</computeroutput>) jest współdzielone z innymi komponentami (np. <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>, <computeroutput>models</computeroutput>).</para>
+</listitem><listitem><para>Operacje CRUD (Create, Read, Update, Delete) opierają się na nazwie producenta, co może powodować problemy przy duplikatach (brak unikalności w schemacie bazy).</para>
+</listitem><listitem><para>Klasa nie filtruje producentów (np. po kategorii), co może być rozszerzone w przyszłości. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/vendors_h.md"/>
+  </compounddef>
+</doxygen>

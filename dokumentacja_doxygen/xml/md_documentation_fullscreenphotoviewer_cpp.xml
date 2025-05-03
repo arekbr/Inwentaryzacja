@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_fullscreenphotoviewer_cpp" kind="page">
+    <compoundname>md_documentation_fullscreenphotoviewer_cpp</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;fullscreenphotoviewer.cpp&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md22">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="fullscreenphotoviewer_8cpp" kindref="compound">fullscreenphotoviewer.cpp</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md23">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="fullscreenphotoviewer_8cpp" kindref="compound">fullscreenphotoviewer.cpp</ref></computeroutput> jest pusty, ponieważ cała implementacja klas <computeroutput><ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref></computeroutput> i <computeroutput><ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref></computeroutput> znajduje się w pliku nagłówkowym <computeroutput><ref refid="fullscreenphotoviewer_8h" kindref="compound">fullscreenphotoviewer.h</ref></computeroutput>, gdzie metody są zdefiniowane inline. Plik istnieje dla kompletności struktury projektu i zgodności z konwencją oddzielania deklaracji od implementacji w projektach Qt.</para>
+</sect1>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md24">
+<title>Struktura kodu</title>
+<para>Plik zawiera jedynie:<itemizedlist>
+<listitem><para>Zakomentowane włączenie nagłówka (<computeroutput>#include &quot;fullscreenphotoviewer.h&quot; // NOLINT</computeroutput>).</para>
+</listitem><listitem><para>Komentarz wskazujący, że plik może być pusty, jeśli nie ma dodatkowych metod.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md25">
+<title>Opis działania</title>
+<para><itemizedlist>
+<listitem><para>Plik nie zawiera żadnego kodu wykonywalnego, ponieważ cała logika została zaimplementowana w pliku <computeroutput><ref refid="fullscreenphotoviewer_8h" kindref="compound">fullscreenphotoviewer.h</ref></computeroutput>.</para>
+</listitem><listitem><para>Funkcjonalność klas <computeroutput><ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref></computeroutput> (powiększanie i przesuwanie obrazu) oraz <computeroutput><ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref></computeroutput> (pełnoekranowe wyświetlanie zdjęcia) jest w pełni opisana w dokumentacji pliku nagłówkowego.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md26">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Nagłówek</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="fullscreenphotoviewer_8h" kindref="compound">fullscreenphotoviewer.h</ref></computeroutput> (zakomentowane włączenie, nieużywane w praktyce).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak zależności od zasobów Qt.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_fullscreenphotoviewer_cpp_1autotoc_md27">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Plik jest pusty z wyjątkiem zakomentowanego <computeroutput>#include</computeroutput>, co jest zgodne z oryginalnym kodem.</para>
+</listitem><listitem><para>Dokumentacja w pliku <computeroutput>fullscreenphotoviewer_h.md</computeroutput> w pełni opisuje funkcjonalność klas <computeroutput><ref refid="class_zoomable_graphics_view" kindref="compound">ZoomableGraphicsView</ref></computeroutput> i <computeroutput><ref refid="class_full_screen_photo_viewer" kindref="compound">FullScreenPhotoViewer</ref></computeroutput>.</para>
+</listitem><listitem><para>Obecność pliku .cpp jest zgodna z konwencją projektową, mimo braku dodatkowej implementacji. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/fullscreenphotoviewer_cpp.md"/>
+  </compounddef>
+</doxygen>

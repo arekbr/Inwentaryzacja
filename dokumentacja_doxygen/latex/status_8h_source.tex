@@ -1,0 +1,50 @@
+\hypertarget{status_8h_source}{}\doxysection{status.\+h}
+\label{status_8h_source}\index{include/status.h@{include/status.h}}
+\mbox{\hyperlink{status_8h}{Idź do dokumentacji tego pliku.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 }
+\DoxyCodeLine{34 \textcolor{preprocessor}{\#ifndef STATUS\_H}}
+\DoxyCodeLine{35 \textcolor{preprocessor}{\#define STATUS\_H}}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37 \textcolor{preprocessor}{\#include <QDialog>}}
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#include <QSqlDatabase>}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40 \textcolor{keyword}{class }\mbox{\hyperlink{class_main_window}{MainWindow}};}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{42 \textcolor{keyword}{namespace }Ui \{}
+\DoxyCodeLine{43 \textcolor{keyword}{class }\mbox{\hyperlink{classstatus}{status}};}
+\DoxyCodeLine{44 \}}
+\DoxyCodeLine{45 }
+\DoxyCodeLine{62 \textcolor{keyword}{class }\mbox{\hyperlink{classstatus}{status}} : \textcolor{keyword}{public} QDialog}
+\DoxyCodeLine{63 \{}
+\DoxyCodeLine{64     Q\_OBJECT}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{keyword}{public}:}
+\DoxyCodeLine{75     \textcolor{keyword}{explicit} \mbox{\hyperlink{classstatus_a36c38a210bce6807a7dadb2b15d84341}{status}}(QWidget *parent = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{83     \mbox{\hyperlink{classstatus_aaacad1153f6cd58697d6b3871c7506ef}{\string~status}}();}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{93     \textcolor{keywordtype}{void} \mbox{\hyperlink{classstatus_a7fd8e93cad5cefd0ecbb6fc92fd21b2d}{setMainWindow}}(\mbox{\hyperlink{class_main_window}{MainWindow}} *mainWindow);}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95 \textcolor{keyword}{private} slots:}
+\DoxyCodeLine{103     \textcolor{keywordtype}{void} onAddClicked();}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{112     \textcolor{keywordtype}{void} onEditClicked();}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{121     \textcolor{keywordtype}{void} onDeleteClicked();}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{130     \textcolor{keywordtype}{void} onOkClicked();}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{132 \textcolor{keyword}{private}:}
+\DoxyCodeLine{140     \textcolor{keywordtype}{void} refreshList();}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{143     \mbox{\hyperlink{class_ui_1_1status}{Ui::status}} *ui;}
+\DoxyCodeLine{144 }
+\DoxyCodeLine{146     \mbox{\hyperlink{class_main_window}{MainWindow}} *m\_mainWindow;}
+\DoxyCodeLine{147 }
+\DoxyCodeLine{149     QSqlDatabase m\_db;}
+\DoxyCodeLine{150 \};}
+\DoxyCodeLine{151 }
+\DoxyCodeLine{152 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// STATUS\_H}}
+
+\end{DoxyCode}

@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="pl">
+  <compounddef id="md_documentation_storage_cpp" kind="page">
+    <compoundname>md_documentation_storage_cpp</compoundname>
+    <title>Dokumentacja dla pliku &lt;tt&gt;storage.cpp&lt;/tt&gt;</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md128">
+<title>Metadane</title>
+<para><itemizedlist>
+<listitem><para><bold>Plik</bold>: <ref refid="storage_8cpp" kindref="compound">storage.cpp</ref></para>
+</listitem><listitem><para><bold>Wersja</bold>: 1.2.2</para>
+</listitem><listitem><para><bold>Data</bold>: 2025-05-03</para>
+</listitem><listitem><para><bold>Autorzy</bold>: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK &amp; ChatGPT &amp; GROK</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md129">
+<title>Przegląd</title>
+<para>Plik <computeroutput><ref refid="storage_8cpp" kindref="compound">storage.cpp</ref></computeroutput> zawiera implementację metod klasy <computeroutput>storage</computeroutput>, odpowiedzialnej za zarządzanie miejscami przechowywania eksponatów (np. magazyny, półki, pokoje) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie lokalizacji w tabeli <computeroutput>storage_places</computeroutput> w bazie danych MySQL, współpracując z interfejsem użytkownika (<computeroutput>QListView</computeroutput>, <computeroutput>QLineEdit</computeroutput>) oraz klasą <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> w celu odświeżania combo boxów lokalizacji po zapisaniu zmian.</para>
+</sect1>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md130">
+<title>Struktura kodu</title>
+<para>Kod jest podzielony na następujące sekcje:</para>
+<para><orderedlist>
+<listitem><para><bold>Sekcja konstruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Inicjalizuje interfejs, połączenie z bazą danych, sloty i listę lokalizacji.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja destruktora</bold> <linebreak/>
+<itemizedlist>
+<listitem><para>Zwalnia zasoby interfejsu.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja metod publicznych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>setMainWindow</computeroutput>: Ustawia referencję do <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja slotów prywatnych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>onAddClicked</computeroutput>: Dodaje nową lokalizację.</para>
+</listitem><listitem><para><computeroutput>onEditClicked</computeroutput>: Edytuje istniejącą lokalizację.</para>
+</listitem><listitem><para><computeroutput>onDeleteClicked</computeroutput>: Usuwa lokalizację.</para>
+</listitem><listitem><para><computeroutput>onOkClicked</computeroutput>: Odświeża combo box i zamyka okno.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Sekcja metod prywatnych</bold> <linebreak/>
+<itemizedlist>
+<listitem><para><computeroutput>refreshList</computeroutput>: Odświeża listę lokalizacji w <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md131">
+<title>Opis działania</title>
+<para><orderedlist>
+<listitem><para><bold>Inicjalizacja</bold>:<itemizedlist>
+<listitem><para>Konstruktor ustawia interfejs (<computeroutput>ui-&gt;setupUi</computeroutput>), pobiera połączenie z bazą MySQL (<computeroutput>default_connection</computeroutput>), ustala tytuł okna, podłącza sloty dla przycisków (Dodaj, Edytuj, Usuń, OK, Anuluj) i wywołuje <computeroutput>refreshList</computeroutput> do wyświetlenia lokalizacji.</para>
+</listitem><listitem><para>Inicjalizuje <computeroutput>m_mainWindow</computeroutput> jako <computeroutput>nullptr</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para>Zawiera <computeroutput>QListView</computeroutput> do wyświetlania lokalizacji (sortowanych alfabetycznie), <computeroutput>QLineEdit</computeroutput> do wprowadzania nazwy lokalizacji oraz przyciski do zarządzania lokalizacjami i zamykania okna.</para>
+</listitem><listitem><para><computeroutput>QSqlQueryModel</computeroutput> dostarcza dane do <computeroutput>QListView</computeroutput>.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zarządzanie lokalizacjami</bold>:<itemizedlist>
+<listitem><para><bold>Dodawanie</bold> (<computeroutput>onAddClicked</computeroutput>):<itemizedlist>
+<listitem><para>Pobiera nazwę z <computeroutput>QLineEdit</computeroutput>, waliduje (niepusta).</para>
+</listitem><listitem><para>Generuje UUID dla lokalizacji.</para>
+</listitem><listitem><para>Wykonuje <computeroutput>INSERT</computeroutput> do tabeli <computeroutput>storage_places</computeroutput>, odświeża listę i czyści pole.</para>
+</listitem><listitem><para><bold>Błąd</bold>: Linia <computeroutput>QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput> generuje UUID, ale nie przypisuje go (wynik jest odrzucany).</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Edycja</bold> (<computeroutput>onEditClicked</computeroutput>):<itemizedlist>
+<listitem><para>Sprawdza, czy wybrano lokalizację w <computeroutput>QListView</computeroutput>.</para>
+</listitem><listitem><para>Otwiera <computeroutput>QInputDialog</computeroutput> z aktualną nazwą, waliduje nową nazwę.</para>
+</listitem><listitem><para>Pobiera ID lokalizacji po nazwie, wykonuje <computeroutput>UPDATE</computeroutput> i odświeża listę.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Usuwanie</bold> (<computeroutput>onDeleteClicked</computeroutput>):<itemizedlist>
+<listitem><para>Sprawdza, czy wybrano lokalizację.</para>
+</listitem><listitem><para>Prosi o potwierdzenie w <computeroutput>QMessageBox</computeroutput>.</para>
+</listitem><listitem><para>Wykonuje <computeroutput>DELETE</computeroutput> dla nazwy lokalizacji i odświeża listę.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>Wyświetla komunikaty o błędach SQL lub brakujących wyborach.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Integracja z <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput></bold>:<itemizedlist>
+<listitem><para><computeroutput>onOkClicked</computeroutput> wywołuje <computeroutput>loadComboBoxData</computeroutput> na combo boxie lokalizacji w <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> (jeśli ustawione) i zamyka okno z wynikiem <computeroutput>accept()</computeroutput>.</para>
+</listitem><listitem><para><computeroutput>setMainWindow</computeroutput> przechowuje referencję do <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla odświeżania.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md132">
+<title>Zależności</title>
+<para><itemizedlist>
+<listitem><para><bold>Biblioteki Qt</bold>:<itemizedlist>
+<listitem><para><computeroutput>QMessageBox</computeroutput>, <computeroutput>QSqlQuery</computeroutput>, <computeroutput>QSqlQueryModel</computeroutput>, <computeroutput>QInputDialog</computeroutput>, <computeroutput>QUuid</computeroutput>: Obsługa komunikatów, zapytań SQL, modeli danych, dialogów i UUID.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Nagłówki aplikacji</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="storage_8h" kindref="compound">storage.h</ref></computeroutput>: Definicja klasy.</para>
+</listitem><listitem><para><computeroutput><ref refid="mainwindow_8h" kindref="compound">mainwindow.h</ref></computeroutput>: Klasa <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput> dla odświeżania combo boxów.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Interfejs użytkownika</bold>:<itemizedlist>
+<listitem><para><computeroutput><ref refid="ui__storage_8h_source" kindref="compound">ui_storage.h</ref></computeroutput>: Plik generowany przez Qt Designer.</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para><bold>Zasoby</bold>:<itemizedlist>
+<listitem><para>Brak bezpośrednich zależności od zasobów Qt (np. QSS, czcionek).</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_documentation_storage_cpp_1autotoc_md133">
+<title>Uwagi</title>
+<para><itemizedlist>
+<listitem><para>Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.</para>
+</listitem><listitem><para>Implementacja zakłada użycie MySQL, ale aplikacja wspiera także SQLite (konfigurowane w <computeroutput><ref refid="class_database_config_dialog" kindref="compound">DatabaseConfigDialog</ref></computeroutput>).</para>
+</listitem><listitem><para><bold>Błąd w <computeroutput>onAddClicked</computeroutput></bold>: Linia <computeroutput>QUuid::createUuid().toString(QUuid::WithoutBraces);</computeroutput> nie przypisuje UUID, co jest niepotrzebne, ponieważ kolejne wygenerowanie UUID jest używane w <computeroutput>query.bindValue</computeroutput>. Sugerowana poprawka: usunąć nieużywaną linię lub przypisać wynik do zmiennej.</para>
+</listitem><listitem><para>Usuwanie i edycja lokalizacji opierają się na nazwie, co może powodować problemy przy duplikatach nazw (brak unikalności w schemacie bazy).</para>
+</listitem><listitem><para>Połączenie z bazą danych (<computeroutput>default_connection</computeroutput>) jest współdzielone z innymi komponentami (np. <computeroutput><ref refid="class_main_window" kindref="compound">MainWindow</ref></computeroutput>, <computeroutput>models</computeroutput>).</para>
+</listitem><listitem><para>Lista lokalizacji w <computeroutput>QListView</computeroutput> nie jest filtrowana (np. po typie magazynu), co może być rozszerzone w przyszłości. </para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+    <location file="documentation/storage_cpp.md"/>
+  </compounddef>
+</doxygen>
