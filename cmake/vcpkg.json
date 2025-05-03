@@ -1,0 +1,14 @@
+{
+    "name": "inwentaryzacja",
+    "version-string": "1.0.0",
+    "dependencies": [
+        {
+            "name": "mysql-connector-c",
+            "version>=": "8.0.35"
+        },
+        {
+            "name": "openssl",
+            "version>=": "3.3.2"
+        }
+    ]
+}
