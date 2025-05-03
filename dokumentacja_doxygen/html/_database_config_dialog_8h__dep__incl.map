@@ -1,5 +1,0 @@
-<map id="include/DatabaseConfigDialog.h" name="include/DatabaseConfigDialog.h">
-<area shape="rect" id="node1" title="Deklaracja klasy DatabaseConfigDialog do konfiguracji połączenia z bazą danych oraz wyboru skórki gra..." alt="" coords="91,5,321,32"/>
-<area shape="rect" id="node2" href="$_database_config_dialog_8cpp.html" title="Implementacja klasy DatabaseConfigDialog z obsługą tworzenia nowego pliku SQLite oraz wyboru skórki g..." alt="" coords="5,80,223,107"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="Główny punkt wejścia aplikacji inwentaryzacyjnej." alt="" coords="247,80,352,107"/>
-</map>

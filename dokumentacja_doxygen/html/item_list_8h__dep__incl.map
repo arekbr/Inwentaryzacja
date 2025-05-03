@@ -1,5 +1,0 @@
-<map id="include/itemList.h" name="include/itemList.h">
-<area shape="rect" id="node1" title="Deklaracja klasy itemList, odpowiedzialnej za zarządzanie listą eksponatów w aplikacji inwentaryzacyj..." alt="" coords="68,5,207,32"/>
-<area shape="rect" id="node2" href="$item_list_8cpp.html" title="Implementacja klasy itemList do zarządzania listą eksponatów." alt="" coords="5,80,131,107"/>
-<area shape="rect" id="node3" href="$main_8cpp.html" title="Główny punkt wejścia aplikacji inwentaryzacyjnej." alt="" coords="155,80,261,107"/>
-</map>

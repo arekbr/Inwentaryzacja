@@ -1,4 +1,0 @@
-<map id="PhotoItem::unhovered" name="PhotoItem::unhovered">
-<area shape="rect" id="node1" title="Sygnał emitowany po opuszczeniu kursora z obiektu." alt="" coords="264,5,431,32"/>
-<area shape="rect" id="node2" href="$class_photo_item.html#a6e7aafa8208b3a6e3c0d9b2acf807dd7" title="Obsługa zdarzenia opuszczenia kursora." alt="" coords="5,5,216,32"/>
-</map>

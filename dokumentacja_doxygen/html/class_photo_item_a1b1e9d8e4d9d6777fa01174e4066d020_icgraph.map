@@ -1,4 +1,0 @@
-<map id="PhotoItem::doubleClicked" name="PhotoItem::doubleClicked">
-<area shape="rect" id="node1" title="Sygnał emitowany po dwukrotnym kliknięciu lewym przyciskiem myszy." alt="" coords="272,13,460,39"/>
-<area shape="rect" id="node2" href="$class_photo_item.html#a79a5040519c8fa7888f3e70b3d3de013" title="Obsługa zdarzenia podwójnego kliknięcia myszy." alt="" coords="5,5,224,47"/>
-</map>

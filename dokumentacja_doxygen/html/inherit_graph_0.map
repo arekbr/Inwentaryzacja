@@ -1,9 +1,0 @@
-<map id="Graficzna hierarchia klas" name="Graficzna hierarchia klas">
-<area shape="rect" id="node1" title=" " alt="" coords="5,132,80,159"/>
-<area shape="rect" id="node2" href="$class_database_config_dialog.html" title="Okno dialogowe do konfiguracji połączenia z bazą danych i wyboru skórki graficznej." alt="" coords="128,5,295,32"/>
-<area shape="rect" id="node3" href="$classmodels.html" title="Okno dialogowe do zarządzania modelami eksponatów." alt="" coords="176,56,247,83"/>
-<area shape="rect" id="node4" href="$classstatus.html" title="Okno dialogowe do zarządzania statusami eksponatów." alt="" coords="180,107,243,133"/>
-<area shape="rect" id="node5" href="$classstorage.html" title="Okno dialogowe do zarządzania miejscami przechowywania eksponatów." alt="" coords="176,157,247,184"/>
-<area shape="rect" id="node6" href="$classtypes.html" title="Okno dialogowe do zarządzania typami eksponatów." alt="" coords="182,208,241,235"/>
-<area shape="rect" id="node7" href="$classvendors.html" title="Okno dialogowe do zarządzania producentami sprzętu." alt="" coords="174,259,249,285"/>
-</map>
