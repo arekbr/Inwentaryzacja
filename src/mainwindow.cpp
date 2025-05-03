@@ -2,96 +2,127 @@
  * @file mainwindow.cpp
  * @brief Implementacja klasy MainWindow do zarządzania formularzem eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.2.2
+ * @date 2025-05-03
  *
+ * @section Overview
  * Plik zawiera implementację metod klasy MainWindow, odpowiedzialnej za formularz do dodawania,
  * edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych
  * do combo boxów, zarządzanie zdjęciami (w bazie i buforze), zapisywanie rekordów w bazie danych
  * MySQL oraz otwieranie dialogów słownikowych. Implementacja obejmuje również automatyczne
  * dodawanie nowych wartości do słowników po ich wpisaniu w combo boxach.
+ *
+ * @section Structure
+ * Kod jest podzielony na następujące sekcje:
+ * 1. **Konstruktor** – inicjalizuje interfejs, połączenie z bazą danych, combo boxy i sloty.
+ * 2. **Destruktor** – zwalnia zasoby.
+ * 3. **Metody publiczne** – ładowanie danych do combo boxów, ustawianie trybów, dostęp do combo boxów.
+ * 4. **Sloty prywatne** – obsługują akcje użytkownika (zapis, anulowanie, zdjęcia, słowniki).
+ * 5. **Metody prywatne** – wczytywanie rekordów i zdjęć.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QSqlQuery, QFileDialog, QMessageBox, QGraphicsScene, QCompleter, itp.
+ * - **Nagłówki aplikacji**: mainwindow.h, photoitem.h, types.h, models.h, vendors.h, status.h, storage.h.
+ * - **Interfejs użytkownika**: ui_mainwindow.h.
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa obsługuje tylko MySQL w tej implementacji, choć aplikacja wspiera także SQLite (konfigurowane w DatabaseConfigDialog).
+ * - Automatyczne dodawanie wartości do słowników wymaga wybrania producenta dla modeli.
  */
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 // Inne nagłówki
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDebug>
-#include <QDate>
-#include <QInputDialog>
-#include <QGuiApplication>
-#include <QScreen>
-#include <QGraphicsScene>
-#include <QGraphicsPixmapItem>
-#include <QDir>
-#include <QSettings>
-#include <QUuid>
-#include <QFile>
-#include <QFileInfo>
 #include <QCompleter>
+#include <QDate>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QGuiApplication>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QScreen>
+#include <QSettings>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QUuid>
 
-#include "photoitem.h"
-#include "types.h"
 #include "models.h"
-#include "vendors.h"
+#include "photoitem.h"
 #include "status.h"
 #include "storage.h"
+#include "types.h"
+#include "vendors.h"
 
 /**
  * @brief Konstruktor klasy MainWindow.
  * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
  *
+ * @section ConstructorOverview
  * Inicjalizuje interfejs użytkownika, ustanawia połączenie z bazą danych, ładuje dane do combo boxów,
  * podłącza sygnały i sloty dla przycisków oraz konfiguruje automatyczne dodawanie nowych wartości
  * do słowników. Ustawia początkowy stan formularza (brak edycji, brak wybranego zdjęcia).
  */
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    m_editMode(false),
-    m_recordId(QString()),
-    m_selectedPhotoIndex(-1)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , m_editMode(false)
+    , m_recordId(QString())
+    , m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
 
     // Pobranie istniejącego połączenia z bazy danych
     db = QSqlDatabase::database("default_connection");
     if (!db.isOpen()) {
-        QMessageBox::critical(this, tr("Błąd bazy danych"),
+        QMessageBox::critical(this,
+                              tr("Błąd bazy danych"),
                               tr("Brak otwartego połączenia z bazą danych (default_connection)."));
         return;
     }
 
     // Ładowanie danych do ComboBoxów
-    loadComboBoxData("types",           ui->New_item_type);
-    loadComboBoxData("vendors",         ui->New_item_vendor);
-    loadComboBoxData("models",          ui->New_item_model);
-    loadComboBoxData("statuses",        ui->New_item_status);
-    loadComboBoxData("storage_places",  ui->New_item_storagePlace);
+    loadComboBoxData("types", ui->New_item_type);
+    loadComboBoxData("vendors", ui->New_item_vendor);
+    loadComboBoxData("models", ui->New_item_model);
+    loadComboBoxData("statuses", ui->New_item_status);
+    loadComboBoxData("storage_places", ui->New_item_storagePlace);
 
     // Podpinanie sygnałów i slotów przycisków
-    connect(ui->New_item_PushButton_OK,     &QPushButton::clicked, this, &MainWindow::onSaveClicked);
-    connect(ui->New_item_PushButton_Cancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
-    connect(ui->New_item_addPhoto,          &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
-    connect(ui->New_item_removePhoto,       &QPushButton::clicked, this, &MainWindow::onRemovePhotoClicked);
+    connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
+    connect(ui->New_item_PushButton_Cancel,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::onCancelClicked);
+    connect(ui->New_item_addPhoto, &QPushButton::clicked, this, &MainWindow::onAddPhotoClicked);
+    connect(ui->New_item_removePhoto,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::onRemovePhotoClicked);
 
     // Słowniki
-    connect(ui->New_item_addType,           &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
-    connect(ui->New_item_addVendor,         &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
-    connect(ui->New_item_addModel,          &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
-    connect(ui->New_item_addStatus,         &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
-    connect(ui->New_item_addStoragePlace,   &QPushButton::clicked, this, &MainWindow::onAddStoragePlaceClicked);
+    connect(ui->New_item_addType, &QPushButton::clicked, this, &MainWindow::onAddTypeClicked);
+    connect(ui->New_item_addVendor, &QPushButton::clicked, this, &MainWindow::onAddVendorClicked);
+    connect(ui->New_item_addModel, &QPushButton::clicked, this, &MainWindow::onAddModelClicked);
+    connect(ui->New_item_addStatus, &QPushButton::clicked, this, &MainWindow::onAddStatusClicked);
+    connect(ui->New_item_addStoragePlace,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::onAddStoragePlaceClicked);
 
     // Automatyczne dodawanie nowych wartości do słowników
     auto autoInsert = [this](QComboBox *comboBox, const QString &tableName) {
         comboBox->setEditable(true);
         connect(comboBox->lineEdit(), &QLineEdit::editingFinished, this, [this, comboBox, tableName]() {
             QString text = comboBox->currentText().trimmed();
-            if (text.isEmpty() || comboBox->findText(text, Qt::MatchFixedString | Qt::MatchCaseSensitive) != -1)
+            if (text.isEmpty()
+                || comboBox->findText(text, Qt::MatchFixedString | Qt::MatchCaseSensitive) != -1)
                 return;
 
             QSqlQuery q(db);
@@ -102,13 +133,16 @@ MainWindow::MainWindow(QWidget *parent)
                 QVariant vendorData = ui->New_item_vendor->itemData(vendorIndex);
 
                 if (!vendorData.isValid() || vendorData.toString().isEmpty()) {
-                    QMessageBox::warning(this, tr("Błąd"),
-                                         tr("Nie można dodać modelu – najpierw wybierz lub zapisz producenta."));
+                    QMessageBox::warning(
+                        this,
+                        tr("Błąd"),
+                        tr("Nie można dodać modelu – najpierw wybierz lub zapisz producenta."));
                     return;
                 }
 
                 QString vendorId = vendorData.toString();
-                q.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
+                q.prepare(
+                    "INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
                 q.bindValue(":vendor_id", vendorId);
             } else {
                 q.prepare(QString("INSERT INTO %1 (id, name) VALUES (:id, :name)").arg(tableName));
@@ -118,7 +152,8 @@ MainWindow::MainWindow(QWidget *parent)
             q.bindValue(":name", text);
 
             if (!q.exec()) {
-                QMessageBox::warning(this, tr("Błąd"),
+                QMessageBox::warning(this,
+                                     tr("Błąd"),
                                      tr("Nie udało się dodać nowej wartości do '%1':\n%2")
                                          .arg(tableName, q.lastError().text()));
                 return;
@@ -142,6 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
 /**
  * @brief Destruktor klasy MainWindow.
  *
+ * @section DestructorOverview
  * Zamyka połączenie z bazą danych, jeśli jest otwarte, i zwalnia zasoby interfejsu użytkownika.
  */
 MainWindow::~MainWindow()
@@ -158,12 +194,14 @@ MainWindow::~MainWindow()
  * @param event Wskaźnik na zdarzenie.
  * @return true, jeśli zdarzenie zostało obsłużone; false w przeciwnym razie.
  *
- * Otwiera listę combo boxa po kliknięciu myszą, a następnie przekazuje zdarzenie do QMainWindow.
+ * @section MethodOverview
+ * Otwiera listę combo boxa po kliknięciu myszą, a następnie przekazuje zdarzenie
+ * do QMainWindow dla dalszego przetwarzania.
  */
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress) {
-        QComboBox *combo = qobject_cast<QComboBox*>(obj);
+        QComboBox *combo = qobject_cast<QComboBox *>(obj);
         if (combo && combo->view()) {
             combo->showPopup();
         }
@@ -175,7 +213,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
  * @brief Zwraca wskaźnik na combo box dla producentów.
  * @return Wskaźnik na QComboBox dla producentów.
  */
-QComboBox* MainWindow::getNewItemVendorComboBox() const
+QComboBox *MainWindow::getNewItemVendorComboBox() const
 {
     return ui->New_item_vendor;
 }
@@ -184,7 +222,7 @@ QComboBox* MainWindow::getNewItemVendorComboBox() const
  * @brief Zwraca wskaźnik na combo box dla modeli.
  * @return Wskaźnik na QComboBox dla modeli.
  */
-QComboBox* MainWindow::getNewItemModelComboBox() const
+QComboBox *MainWindow::getNewItemModelComboBox() const
 {
     return ui->New_item_model;
 }
@@ -193,7 +231,7 @@ QComboBox* MainWindow::getNewItemModelComboBox() const
  * @brief Zwraca wskaźnik na combo box dla miejsc przechowywania.
  * @return Wskaźnik na QComboBox dla miejsc przechowywania.
  */
-QComboBox* MainWindow::getNewItemStoragePlaceComboBox() const
+QComboBox *MainWindow::getNewItemStoragePlaceComboBox() const
 {
     return ui->New_item_storagePlace;
 }
@@ -202,7 +240,7 @@ QComboBox* MainWindow::getNewItemStoragePlaceComboBox() const
  * @brief Zwraca wskaźnik na combo box dla typów.
  * @return Wskaźnik na QComboBox dla typów.
  */
-QComboBox* MainWindow::getNewItemTypeComboBox() const
+QComboBox *MainWindow::getNewItemTypeComboBox() const
 {
     return ui->New_item_type;
 }
@@ -211,7 +249,7 @@ QComboBox* MainWindow::getNewItemTypeComboBox() const
  * @brief Zwraca wskaźnik na combo box dla statusów.
  * @return Wskaźnik na QComboBox dla statusów.
  */
-QComboBox* MainWindow::getNewItemStatusComboBox() const
+QComboBox *MainWindow::getNewItemStatusComboBox() const
 {
     return ui->New_item_status;
 }
@@ -221,8 +259,9 @@ QComboBox* MainWindow::getNewItemStatusComboBox() const
  * @param tableName Nazwa tabeli w bazie danych (np. "types", "vendors").
  * @param comboBox Wskaźnik na QComboBox, do którego ładowane są dane.
  *
+ * @section MethodOverview
  * Pobiera unikalne wartości z kolumn "id" i "name" podanej tabeli i wypełnia nimi combo box,
- * ustawiając ID jako dane użytkownika.
+ * ustawiając ID jako dane użytkownika dla każdej pozycji. Wyświetla błędy w konsoli debugowania.
  */
 void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
 {
@@ -231,7 +270,7 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
     if (query.exec(QString("SELECT id, name FROM %1").arg(tableName))) {
         while (query.next()) {
             const QString itemName = query.value("name").toString();
-            const QString itemId   = query.value("id").toString();
+            const QString itemId = query.value("id").toString();
             comboBox->addItem(itemName, itemId);
         }
     } else {
@@ -244,8 +283,10 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
  * @param edit true dla trybu edycji, false dla trybu dodawania.
  * @param recordId ID rekordu do edycji (puste dla nowego rekordu).
  *
+ * @section MethodOverview
  * Konfiguruje formularz w trybie edycji istniejącego rekordu lub dodawania nowego,
- * czyszcząc pola i ustawiając domyślne wartości dla statusu i miejsca przechowywania.
+ * czyszcząc pola, ustawiając domyślne wartości dla statusu i miejsca przechowywania,
+ * oraz włączając autouzupełnianie dla combo boxów.
  */
 void MainWindow::setEditMode(bool edit, const QString &recordId)
 {
@@ -265,13 +306,11 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
         ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
         // ComboBoxy czyścimy / resetujemy
-        QList<QComboBox*> combos = {
-            ui->New_item_type,
-            ui->New_item_vendor,
-            ui->New_item_model,
-            ui->New_item_status,
-            ui->New_item_storagePlace
-        };
+        QList<QComboBox *> combos = {ui->New_item_type,
+                                     ui->New_item_vendor,
+                                     ui->New_item_model,
+                                     ui->New_item_status,
+                                     ui->New_item_storagePlace};
         for (QComboBox *c : combos) {
             c->setEditable(true);
             c->clearEditText();
@@ -300,8 +339,9 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
  * @brief Ustawia tryb klonowania rekordu.
  * @param recordId ID rekordu do sklonowania.
  *
+ * @section MethodOverview
  * Wypełnia formularz danymi istniejącego rekordu, przygotowując go do zapisu jako nowy rekord,
- * z wyczyszczeniem zdjęć i ID rekordu.
+ * z wyczyszczeniem zdjęć, ID rekordu i buforów zdjęć.
  */
 void MainWindow::setCloneMode(const QString &recordId)
 {
@@ -318,7 +358,9 @@ void MainWindow::setCloneMode(const QString &recordId)
  * @brief Wczytuje rekord o podanym ID do formularza.
  * @param recordId ID rekordu do wczytania.
  *
- * Pobiera dane rekordu z tabeli eksponaty, wypełnia pola formularza i ładuje powiązane zdjęcia.
+ * @section MethodOverview
+ * Pobiera dane rekordu z tabeli eksponaty, wypełnia pola formularza (nazwa, numer seryjny,
+ * rok produkcji, itd.) i ładuje powiązane zdjęcia. Wyświetla ostrzeżenie, jeśli rekord nie istnieje.
  */
 void MainWindow::loadRecord(const QString &recordId)
 {
@@ -332,8 +374,7 @@ void MainWindow::loadRecord(const QString &recordId)
     )");
     query.bindValue(":id", recordId);
     if (!query.exec() || !query.next()) {
-        QMessageBox::warning(this, tr("Błąd"),
-                             tr("Nie znaleziono rekordu o ID %1").arg(recordId));
+        QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
         return;
     }
 
@@ -365,7 +406,9 @@ void MainWindow::loadRecord(const QString &recordId)
  * @brief Wczytuje zdjęcia powiązane z danym rekordem.
  * @param recordId ID rekordu, którego zdjęcia są wczytywane.
  *
- * Pobiera zdjęcia z tabeli photos, tworzy miniatury i wyświetla je w QGraphicsView.
+ * @section MethodOverview
+ * Pobiera zdjęcia z tabeli photos, tworzy miniatury o rozmiarze 80x80 pikseli
+ * i wyświetla je w QGraphicsView, z możliwością wyboru zdjęcia.
  */
 void MainWindow::loadPhotos(const QString &recordId)
 {
@@ -389,17 +432,17 @@ void MainWindow::loadPhotos(const QString &recordId)
             qDebug() << "Nie można załadować BLOB zdjęcia";
             continue;
         }
-        QPixmap scaled = pix.scaled(thumbSize, thumbSize,
-                                    Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaled = pix.scaled(thumbSize,
+                                    thumbSize,
+                                    Qt::KeepAspectRatio,
+                                    Qt::SmoothTransformation);
 
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
         item->setData(0, query.value("id").toString());
         item->setData(1, idx);
 
-        connect(item, &PhotoItem::clicked, this, [this, item]() {
-            onPhotoClicked(item);
-        });
+        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
 
         item->setPos(x, y);
         scene->addItem(item);
@@ -417,11 +460,10 @@ void MainWindow::loadPhotos(const QString &recordId)
         ui->graphicsView->setScene(scene);
         ui->graphicsView->resetTransform();
 
-        qreal scaleFactor = qMin(
-            (ui->graphicsView->width() - 10.0) / scene->width(),
-            (ui->graphicsView->height() - 10.0) / scene->height()
-            );
-        if (scaleFactor < 1.0) scaleFactor = 1.0;
+        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
+                                 (ui->graphicsView->height() - 10.0) / scene->height());
+        if (scaleFactor < 1.0)
+            scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
     } else {
         ui->graphicsView->setScene(nullptr);
@@ -432,7 +474,9 @@ void MainWindow::loadPhotos(const QString &recordId)
 /**
  * @brief Wczytuje zdjęcia z bufora pamięci.
  *
- * Wyświetla miniatury zdjęć przechowywanych w buforze (dla rekordów jeszcze niezapisanych).
+ * @section MethodOverview
+ * Wyświetla miniatury zdjęć przechowywanych w buforze (dla rekordów jeszcze niezapisanych)
+ * w QGraphicsView, z rozmiarem miniatur 80x80 pikseli.
  */
 void MainWindow::loadPhotosFromBuffer()
 {
@@ -446,8 +490,10 @@ void MainWindow::loadPhotosFromBuffer()
             qDebug() << "Błąd loadFromData w buforze zdjęć";
             continue;
         }
-        QPixmap scaled = pix.scaled(thumbSize, thumbSize,
-                                    Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaled = pix.scaled(thumbSize,
+                                    thumbSize,
+                                    Qt::KeepAspectRatio,
+                                    Qt::SmoothTransformation);
         QGraphicsPixmapItem *it = scene->addPixmap(scaled);
         it->setPos(x, y);
         x += (scaled.width() + spacing);
@@ -462,8 +508,10 @@ void MainWindow::loadPhotosFromBuffer()
 /**
  * @brief Zapisuje dane z formularza do bazy danych.
  *
- * Waliduje dane, zapisuje rekord w tabeli eksponaty, przenosi zdjęcia z bufora do bazy
- * i katalogu "gotowe", emituje sygnał recordSaved i zamyka okno.
+ * @section MethodOverview
+ * Waliduje dane, zapisuje rekord w tabeli eksponaty (INSERT dla nowych, UPDATE dla edycji),
+ * przenosi zdjęcia z bufora do bazy danych i katalogu "gotowe", emituje sygnał recordSaved
+ * i zamyka okno po sukcesie.
  */
 void MainWindow::onSaveClicked()
 {
@@ -509,19 +557,24 @@ void MainWindow::onSaveClicked()
     q.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
 
     QString statusId = ui->New_item_status->currentData().toString();
-    if (statusId.isEmpty()) statusId = "unknown_status_uuid";
+    if (statusId.isEmpty())
+        statusId = "unknown_status_uuid";
 
     QString typeId = ui->New_item_type->currentData().toString();
-    if (typeId.isEmpty()) typeId = "unknown_type_uuid";
+    if (typeId.isEmpty())
+        typeId = "unknown_type_uuid";
 
     QString vendorId = ui->New_item_vendor->currentData().toString();
-    if (vendorId.isEmpty()) vendorId = "unknown_vendor_uuid";
+    if (vendorId.isEmpty())
+        vendorId = "unknown_vendor_uuid";
 
     QString modelId = ui->New_item_model->currentData().toString();
-    if (modelId.isEmpty()) modelId = "unknown_model_uuid";
+    if (modelId.isEmpty())
+        modelId = "unknown_model_uuid";
 
     QString storageId = ui->New_item_storagePlace->currentData().toString();
-    if (storageId.isEmpty()) storageId = "unknown_storage_uuid";
+    if (storageId.isEmpty())
+        storageId = "unknown_storage_uuid";
 
     q.bindValue(":status_id", statusId);
     q.bindValue(":type_id", typeId);
@@ -531,12 +584,11 @@ void MainWindow::onSaveClicked()
 
     q.bindValue(":description", ui->New_item_description->toPlainText());
     q.bindValue(":value",
-                ui->New_item_value->text().isEmpty()
-                    ? 0
-                    : ui->New_item_value->text().toInt());
+                ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
 
     if (!q.exec()) {
-        QMessageBox::critical(this, tr("Błąd"),
+        QMessageBox::critical(this,
+                              tr("Błąd"),
                               tr("Nie udało się zapisać:\n%1").arg(q.lastError().text()));
         return;
     }
@@ -574,7 +626,8 @@ void MainWindow::onSaveClicked()
 /**
  * @brief Anuluje edycję/dodawanie i zamyka okno.
  *
- * Zamyka okno formularza bez zapisywania zmian.
+ * @section MethodOverview
+ * Zamyka okno formularza bez zapisywania jakichkolwiek zmian.
  */
 void MainWindow::onCancelClicked()
 {
@@ -584,15 +637,18 @@ void MainWindow::onCancelClicked()
 /**
  * @brief Dodaje nowe zdjęcia do rekordu.
  *
- * Otwiera okno wyboru plików, ładuje zdjęcia do bufora lub bazy danych, przenosi pliki
- * do katalogu "gotowe" (dla zapisanych rekordów) i odświeża podgląd miniaturek.
+ * @section MethodOverview
+ * Otwiera okno wyboru plików, ładuje zdjęcia do bufora (dla nowych rekordów) lub bazy danych
+ * (dla edycji), przenosi pliki do katalogu "gotowe" i odświeża podgląd miniaturek w QGraphicsView.
  */
 void MainWindow::onAddPhotoClicked()
 {
-    QStringList files = QFileDialog::getOpenFileNames(
-        this, tr("Wybierz zdjęcia"), QString(),
-        tr("Images (*.jpg *.jpeg *.png)"));
-    if (files.isEmpty()) return;
+    QStringList files = QFileDialog::getOpenFileNames(this,
+                                                      tr("Wybierz zdjęcia"),
+                                                      QString(),
+                                                      tr("Images (*.jpg *.jpeg *.png)"));
+    if (files.isEmpty())
+        return;
 
     for (const auto &fn : std::as_const(files)) {
         QFile f(fn);
@@ -620,18 +676,20 @@ void MainWindow::onAddPhotoClicked()
                 QFileInfo fi(fn);
                 QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
                 if (!QDir().mkpath(doneDir)) {
-                    QMessageBox::warning(this, tr("Uwaga"),
+                    QMessageBox::warning(this,
+                                         tr("Uwaga"),
                                          tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
                 }
                 QString dst = doneDir + QDir::separator() + fi.fileName();
                 if (!QFile::rename(fn, dst)) {
-                    QMessageBox::warning(this, tr("Uwaga"),
+                    QMessageBox::warning(this,
+                                         tr("Uwaga"),
                                          tr("Nie można przenieść %1 do %2").arg(fn, dst));
                 }
             } else {
-                QMessageBox::critical(this, tr("Błąd"),
-                                      tr("Nie można zapisać zdjęcia:\n%1")
-                                          .arg(q.lastError().text()));
+                QMessageBox::critical(this,
+                                      tr("Błąd"),
+                                      tr("Nie można zapisać zdjęcia:\n%1").arg(q.lastError().text()));
             }
         }
     }
@@ -647,7 +705,9 @@ void MainWindow::onAddPhotoClicked()
 /**
  * @brief Usuwa wybrane zdjęcie z rekordu.
  *
- * Usuwa zdjęcie z bazy danych po potwierdzeniu użytkownika i odświeża podgląd miniaturek.
+ * @section MethodOverview
+ * Usuwa zdjęcie z bazy danych po potwierdzeniu użytkownika, wykonując zapytanie DELETE
+ * i odświeżając podgląd miniaturek w QGraphicsView.
  */
 void MainWindow::onRemovePhotoClicked()
 {
@@ -660,15 +720,17 @@ void MainWindow::onRemovePhotoClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Brak zdjęć w widoku."));
         return;
     }
-    QList<QGraphicsItem*> items = scene->items();
+    QList<QGraphicsItem *> items = scene->items();
     if (m_selectedPhotoIndex < 0 || m_selectedPhotoIndex >= items.size()) {
         return;
     }
-    PhotoItem *selItem = dynamic_cast<PhotoItem*>(items[m_selectedPhotoIndex]);
-    if (!selItem) return;
+    PhotoItem *selItem = dynamic_cast<PhotoItem *>(items[m_selectedPhotoIndex]);
+    if (!selItem)
+        return;
 
     QString photoId = selItem->data(0).toString();
-    auto ans = QMessageBox::question(this, tr("Potwierdzenie"),
+    auto ans = QMessageBox::question(this,
+                                     tr("Potwierdzenie"),
                                      tr("Czy usunąć zdjęcie?"),
                                      QMessageBox::Yes | QMessageBox::No);
     if (ans == QMessageBox::Yes) {
@@ -676,7 +738,8 @@ void MainWindow::onRemovePhotoClicked()
         q.prepare("DELETE FROM photos WHERE id=:id");
         q.bindValue(":id", photoId);
         if (!q.exec()) {
-            QMessageBox::critical(this, tr("Błąd"),
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
                                   tr("Nie można usunąć zdjęcia:\n%1").arg(q.lastError().text()));
         } else {
             loadPhotos(m_recordId);
@@ -689,16 +752,19 @@ void MainWindow::onRemovePhotoClicked()
  * @brief Obsługuje kliknięcie w miniaturę zdjęcia.
  * @param item Wskaźnik na obiekt PhotoItem reprezentujący miniaturę.
  *
- * Ustawia wybraną miniaturę jako aktywną i aktualizuje indeks wybranego zdjęcia.
+ * @section MethodOverview
+ * Ustawia wybraną miniaturę jako aktywną, aktualizuje indeks wybranego zdjęcia
+ * i odznacza pozostałe miniatury w QGraphicsView.
  */
 void MainWindow::onPhotoClicked(PhotoItem *item)
 {
     QGraphicsScene *scene = ui->graphicsView->scene();
-    if (!scene) return;
+    if (!scene)
+        return;
 
-    QList<QGraphicsItem*> its = scene->items();
+    QList<QGraphicsItem *> its = scene->items();
     for (int i = 0; i < its.size(); i++) {
-        PhotoItem *pit = dynamic_cast<PhotoItem*>(its[i]);
+        PhotoItem *pit = dynamic_cast<PhotoItem *>(its[i]);
         if (pit) {
             pit->setSelected(its[i] == item);
             if (its[i] == item) {
@@ -712,7 +778,9 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
 /**
  * @brief Otwiera okno dodawania nowego typu.
  *
- * Wyświetla okno dialogowe do dodania nowego typu eksponatu i aktywuje okno główne po zamknięciu.
+ * @section MethodOverview
+ * Wyświetla okno dialogowe (klasa types) do dodania nowego typu eksponatu
+ * do tabeli types, ustawia referencję do MainWindow i aktywuje okno główne po zamknięciu.
  */
 void MainWindow::onAddTypeClicked()
 {
@@ -726,7 +794,9 @@ void MainWindow::onAddTypeClicked()
 /**
  * @brief Otwiera okno dodawania nowego producenta.
  *
- * Wyświetla okno dialogowe do dodania nowego producenta i aktywuje okno główne po zamknięciu.
+ * @section MethodOverview
+ * Wyświetla okno dialogowe (klasa vendors) do dodania nowego producenta
+ * do tabeli vendors, ustawia referencję do MainWindow i aktywuje okno główne po zamknięciu.
  */
 void MainWindow::onAddVendorClicked()
 {
@@ -740,7 +810,9 @@ void MainWindow::onAddVendorClicked()
 /**
  * @brief Otwiera okno dodawania nowego modelu.
  *
- * Wyświetla okno dialogowe do dodania nowego modelu i aktywuje okno główne po zamknięciu.
+ * @section MethodOverview
+ * Wyświetla okno dialogowe (klasa models) do dodania nowego modelu
+ * do tabeli models, ustawia referencję do MainWindow i aktywuje okno główne po zamknięciu.
  */
 void MainWindow::onAddModelClicked()
 {
@@ -754,7 +826,9 @@ void MainWindow::onAddModelClicked()
 /**
  * @brief Otwiera okno dodawania nowego statusu.
  *
- * Wyświetla okno dialogowe do dodania nowego statusu i aktywuje okno główne po zamknięciu.
+ * @section MethodOverview
+ * Wyświetla okno dialogowe (klasa status) do dodania nowego statusu
+ * do tabeli statuses, ustawia referencję do MainWindow i aktywuje okno główne po zamknięciu.
  */
 void MainWindow::onAddStatusClicked()
 {
@@ -768,7 +842,9 @@ void MainWindow::onAddStatusClicked()
 /**
  * @brief Otwiera okno dodawania nowego miejsca przechowywania.
  *
- * Wyświetla okno dialogowe do dodania nowego miejsca przechowywania i aktywuje okno główne po zamknięciu.
+ * @section MethodOverview
+ * Wyświetla okno dialogowe (klasa storage) do dodania nowego miejsca przechowywania
+ * do tabeli storage_places, ustawia referencję do MainWindow i aktywuje okno główne po zamknięciu.
  */
 void MainWindow::onAddStoragePlaceClicked()
 {

@@ -2,14 +2,30 @@
  * @file ItemFilterProxyModel.cpp
  * @brief Implementacja klasy ItemFilterProxyModel do filtrowania listy eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.1.8
- * @date 2025-04-25
+ * @version 1.2.2
+ * @date 2025-05-03
  *
- * Plik zawiera implementację metod klasy ItemFilterProxyModel, odpowiedzialnej za filtrowanie
- * danych eksponatów na podstawie wartości wybranych w combo boxach (typ, producent, model,
- * status, miejsce przechowywania). Klasa korzysta z QSortFilterProxyModel, umożliwiając
- * dynamiczne filtrowanie wierszy modelu źródłowego (QSqlRelationalTableModel) bez
- * uwzględnienia wielkości liter.
+ * @section Overview
+ * Plik ItemFilterProxyModel.cpp zawiera implementację metod klasy ItemFilterProxyModel, 
+ * która umożliwia dynamiczne filtrowanie listy eksponatów na podstawie atrybutów takich 
+ * jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu 
+ * QSortFilterProxyModel, umożliwiając filtrowanie wierszy modelu źródłowego (np. 
+ * QSqlRelationalTableModel) z ignorowaniem wielkości liter.
+ *
+ * @section Structure
+ * Kod jest podzielony na następujące sekcje:
+ * 1. **Konstruktor** – inicjalizuje model proxy i konfiguruje filtrowanie.
+ * 2. **Metody ustawiania filtrów** – zapisują wartości filtrów i odświeżają widok.
+ * 3. **Metoda filterAcceptsRow** – implementuje logikę filtrowania wierszy.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QSortFilterProxyModel, QModelIndex, QAbstractItemModel.
+ * - **Nagłówek**: ItemFilterProxyModel.h.
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Filtrowanie jest niezależne od wielkości liter, co ułatwia dopasowanie wartości.
+ * - Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2).
  */
 
 /*
@@ -23,8 +39,9 @@
  * @brief Konstruktor klasy ItemFilterProxyModel.
  * @param parent Wskaźnik na obiekt nadrzędny. Domyślnie nullptr.
  *
- * Inicjalizuje model proxy, ustawiając go jako dziecko podanego rodzica i konfigurując
- * filtrowanie bez uwzględnienia wielkości liter.
+ * @section ConstructorOverview
+ * Inicjalizuje model proxy jako dziecko podanego rodzica. Ustawia filtrowanie 
+ * bez uwzględnienia wielkości liter poprzez setFilterCaseSensitivity(Qt::CaseInsensitive).
  */
 ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
@@ -37,7 +54,9 @@ ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
  * @brief Ustawia filtr dla typu eksponatu.
  * @param type QString zawierający nazwę typu eksponatu lub pusty ciąg dla braku filtru.
  *
- * Zapisuje wartość filtru dla typu i odświeża widok poprzez wywołanie invalidateFilter().
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla typu eksponatu w zmiennej m_type i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
  */
 void ItemFilterProxyModel::setTypeFilter(const QString &type)
 {
@@ -49,7 +68,9 @@ void ItemFilterProxyModel::setTypeFilter(const QString &type)
  * @brief Ustawia filtr dla producenta eksponatu.
  * @param vendor QString zawierający nazwę producenta lub pusty ciąg dla braku filtru.
  *
- * Zapisuje wartość filtru dla producenta i odświeża widok poprzez wywołanie invalidateFilter().
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla producenta w zmiennej m_vendor i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
  */
 void ItemFilterProxyModel::setVendorFilter(const QString &vendor)
 {
@@ -61,7 +82,9 @@ void ItemFilterProxyModel::setVendorFilter(const QString &vendor)
  * @brief Ustawia filtr dla modelu eksponatu.
  * @param model QString zawierający nazwę modelu lub pusty ciąg dla braku filtru.
  *
- * Zapisuje wartość filtru dla modelu i odświeża widok poprzez wywołanie invalidateFilter().
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla modelu w zmiennej m_model i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
  */
 void ItemFilterProxyModel::setModelFilter(const QString &model)
 {
@@ -73,7 +96,9 @@ void ItemFilterProxyModel::setModelFilter(const QString &model)
  * @brief Ustawia filtr dla statusu eksponatu.
  * @param status QString zawierający nazwę statusu lub pusty ciąg dla braku filtru.
  *
- * Zapisuje wartość filtru dla statusu i odświeża widok poprzez wywołanie invalidateFilter().
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla statusu w zmiennej m_status i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
  */
 void ItemFilterProxyModel::setStatusFilter(const QString &status)
 {
@@ -85,7 +110,9 @@ void ItemFilterProxyModel::setStatusFilter(const QString &status)
  * @brief Ustawia filtr dla miejsca przechowywania eksponatu.
  * @param storage QString zawierający nazwę miejsca przechowywania lub pusty ciąg dla braku filtru.
  *
- * Zapisuje wartość filtru dla miejsca przechowywania i odświeża widok poprzez wywołanie invalidateFilter().
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla miejsca przechowywania w zmiennej m_storage i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
  */
 void ItemFilterProxyModel::setStorageFilter(const QString &storage)
 {
@@ -99,10 +126,11 @@ void ItemFilterProxyModel::setStorageFilter(const QString &storage)
  * @param sourceParent Indeks rodzica w modelu źródłowym.
  * @return true, jeśli wiersz spełnia wszystkie aktywne filtry; false w przeciwnym razie.
  *
- * Sprawdza, czy wartości w kolumnach modelu źródłowego (typ, producent, model, status,
- * miejsce przechowywania) odpowiadają ustawionym filtrom. Jeśli filtr jest pusty, dana
- * kolumna jest uznawana za pasującą. Kolumny są mapowane na: 2 (typ), 3 (producent),
- * 4 (model), 9 (status), 10 (miejsce przechowywania).
+ * @section MethodOverview
+ * Implementuje logikę filtrowania, sprawdzając, czy wartości w kolumnach modelu 
+ * źródłowego odpowiadają ustawionym filtrom. Używa lambdy pasuje do porównania wartości 
+ * w kolumnach (2: typ, 3: producent, 4: model, 9: status, 10: miejsce przechowywania) 
+ * z wartościami filtrów. Pusty filtr dla danej kolumny oznacza akceptację wszystkich wartości.
  */
 bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {

@@ -1,16 +1,30 @@
 /**
  * @file utils.cpp
  * @brief Implementacja funkcji pomocniczej `setupDatabase` odpowiedzialnej za konfigurację połączenia z bazą danych w aplikacji inwentaryzacyjnej.
- * @version 1.1.8
- * @date 2025-04-25
- * @author
- * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
- * - ChatGPT
- * - GROK
+ * @version 1.2.2
+ * @date 2025-05-03
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *
- * Plik zawiera implementację funkcji `setupDatabase`, która konfiguruje
- * połączenie z bazą danych typu SQLite lub MySQL, zapisując je pod stałą nazwą
- * „default_connection”. Obsługuje parametry połączenia lokalnego i zdalnego.
+ * @section Overview
+ * Plik zawiera implementację funkcji `setupDatabase`, która konfiguruje i otwiera połączenie
+ * z bazą danych typu SQLite lub MySQL, zapisując je pod nazwą "default_connection". Funkcja
+ * obsługuje parametry dla połączeń lokalnych (SQLite) i zdalnych (MySQL), a dla SQLite
+ * automatycznie tworzy schemat bazy danych i wypełnia go przykładowymi danymi słownikowymi.
+ *
+ * @section Structure
+ * Kod zawiera:
+ * 1. **Implementację funkcji `setupDatabase`** – konfiguruje połączenie, otwiera bazę i tworzy schemat dla SQLite.
+ * 2. **Tworzenie schematu SQLite** – definiuje tabele i dane początkowe.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas `QMessageBox`, `QSqlDatabase`, `QSqlError`, `QSqlQuery`, `QUuid`.
+ * - **Nagłówki aplikacji**: Brak (tylko Qt).
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Funkcja jest kluczowa dla inicjalizacji bazy danych w aplikacji, wywoływana np. przez `DatabaseConfigDialog`.
+ * - Schemat SQLite obejmuje tabele: `eksponaty`, `types`, `vendors`, `models`, `statuses`, `storage_places`, `photos`.
+ * - Przykładowe dane słownikowe obejmują typowe wartości dla retro sprzętu komputerowego.
  */
 
 #include <QMessageBox>
@@ -22,21 +36,19 @@
 /**
  * @brief Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą "default_connection".
  *
- * Obsługiwane types:
- * - `"SQLite3"`: korzysta z drivera `QSQLITE`; `dbSource` to ścieżka do pliku bazy.
- * - `"MySQL"`: korzysta z drivera `QMYSQL`; `dbSource` to nazwa bazy danych;
- *    opcjonalnie podaje się `host`, `user`, `password` oraz `port`.
- *
- * Jeśli połączenie o nazwie `default_connection` już istnieje, zostaje ponownie użyte.
- * W przeciwnym razie zostaje utworzone nowe połączenie z odpowiednim konfiguratorem.
+ * @section FunctionOverview
+ * Funkcja konfiguruje połączenie z bazą danych SQLite (`QSQLITE`) lub MySQL (`QMYSQL`).
+ * Dla SQLite `dbSource` to ścieżka do pliku bazy, dla MySQL to nazwa bazy danych.
+ * Jeśli połączenie "default_connection" istnieje, jest usuwane i tworzone od nowa.
+ * Dla SQLite automatycznie tworzy schemat bazy (tabele i dane początkowe) jeśli nie istnieje.
  *
  * @param dbType Typ bazy danych ("SQLite3" lub "MySQL").
  * @param dbSource Dla SQLite – ścieżka do pliku; dla MySQL – nazwa bazy danych.
- * @param host (opcjonalnie) Adres hosta dla MySQL (np. "localhost").
- * @param user (opcjonalnie) Nazwa użytkownika.
- * @param password (opcjonalnie) Hasło użytkownika.
- * @param port (opcjonalnie) Numer portu (dla MySQL; domyślnie 3306).
- * @return `true`, jeśli połączenie zostało nawiązane pomyślnie; w przeciwnym razie `false`.
+ * @param host Adres hosta dla MySQL (np. "localhost", opcjonalny).
+ * @param user Nazwa użytkownika dla MySQL (opcjonalny).
+ * @param password Hasło użytkownika dla MySQL (opcjonalny).
+ * @param port Numer portu dla MySQL (domyślnie 3306, opcjonalny).
+ * @return `true` jeśli połączenie zostało nawiązane pomyślnie; `false` w przypadku błędu.
  */
 bool setupDatabase(const QString &dbType,
                    const QString &dbSource,
@@ -45,13 +57,14 @@ bool setupDatabase(const QString &dbType,
                    const QString &password,
                    int port)
 {
-    // jeśli już jest połączenie o tej samej nazwie, usuń je
+    // Usunięcie istniejącego połączenia o nazwie "default_connection"
     QSqlDatabase::removeDatabase("default_connection");
     QSqlDatabase db = QSqlDatabase::addDatabase(dbType.compare("MySQL", Qt::CaseInsensitive) == 0
                                                     ? "QMYSQL"
                                                     : "QSQLITE",
                                                 "default_connection");
 
+    // Konfiguracja parametrów połączenia
     if (dbType.compare("MySQL", Qt::CaseInsensitive) == 0) {
         db.setHostName(host);
         db.setDatabaseName(dbSource);
@@ -63,6 +76,7 @@ bool setupDatabase(const QString &dbType,
         db.setDatabaseName(dbSource);
     }
 
+    // Próba otwarcia połączenia
     if (!db.open()) {
         QMessageBox::critical(nullptr, QObject::tr("Błąd połączenia"), db.lastError().text());
         return false;

@@ -1,19 +1,34 @@
 /**
  * @file types.h
  * @brief Deklaracja klasy types służącej do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
- * @version 1.1.8
- * @date 2025-04-25
- * @author
- * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
- * - ChatGPT
- * - GROK
+ * @version 1.2.2
+ * @date 2025-05-03
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *
- * Plik zawiera deklarację klasy `types`, reprezentującej okno dialogowe
- * umożliwiające użytkownikowi zarządzanie typami eksponatów (np. Komputer, Monitor, Drukarka).
- * Klasa współpracuje z `MainWindow`, umożliwiając odświeżenie odpowiedniego pola combo box
- * po zakończeniu edycji typów.
+ * @section Overview
+ * Plik zawiera deklarację klasy types, która reprezentuje okno dialogowe do zarządzania
+ * typami eksponatów (np. Komputer, Monitor, Drukarka) w aplikacji inwentaryzacyjnej.
+ * Klasa umożliwia dodawanie, edytowanie i usuwanie typów w tabeli `types` w bazie danych,
+ * a także synchronizację z głównym oknem aplikacji (`MainWindow`) w celu odświeżenia
+ * combo boxów po zapisaniu zmian.
  *
- * Operacje są wykonywane na tabeli `types` w bazie danych.
+ * @section Structure
+ * Plik nagłówkowy zawiera:
+ * 1. **Deklarację klasy types** – dziedziczy po QDialog.
+ * 2. **Metody publiczne** – konstruktor, destruktor, ustawianie MainWindow.
+ * 3. **Sloty prywatne** – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).
+ * 4. **Metody prywatne** – odświeżanie listy typów.
+ * 5. **Zmienne prywatne** – przechowują interfejs, MainWindow i połączenie z bazą danych.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QDialog, QSqlDatabase.
+ * - **Nagłówki aplikacji**: mainwindow.h (deklaracja MainWindow).
+ * - **Namespace Ui**: Zawiera definicję interfejsu użytkownika (ui_types.h).
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa jest częścią systemu słownikowego, współpracuje z MainWindow do aktualizacji combo boxów.
+ * - Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w DatabaseConfigDialog).
  */
 
 #ifndef TYPES_H
@@ -32,8 +47,17 @@ class types;
  * @class types
  * @brief Okno dialogowe do zarządzania typami eksponatów.
  *
- * Klasa dziedziczy po QDialog i udostępnia interfejs do dodawania, edytowania
- * i usuwania typów sprzętu w bazie danych. Zmiany są synchronizowane z głównym oknem aplikacji.
+ * @section ClassOverview
+ * Klasa types dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania
+ * i usuwania typów eksponatów (np. Komputer, Monitor) w bazie danych (tabela `types`).
+ * Współpracuje z klasą MainWindow, aby odświeżyć listę typów w combo boxie po zapisaniu zmian.
+ *
+ * @section Responsibilities
+ * - Wyświetlanie listy typów w QListView.
+ * - Dodawanie nowych typów do tabeli `types` z unikalnym UUID.
+ * - Edycja istniejących typów (zmiana nazwy).
+ * - Usuwanie typów po potwierdzeniu użytkownika.
+ * - Odświeżanie combo boxa typów w MainWindow po zapisaniu zmian.
  */
 class types : public QDialog
 {
@@ -44,14 +68,17 @@ public:
      * @brief Konstruktor klasy types.
      * @param parent Wskaźnik na nadrzędny widget (domyślnie nullptr).
      *
-     * Inicjalizuje interfejs użytkownika oraz połączenie z bazą danych.
+     * @section ConstructorOverview
+     * Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika,
+     * ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.
      */
     explicit types(QWidget *parent = nullptr);
 
     /**
      * @brief Destruktor klasy types.
      *
-     * Usuwa interfejs użytkownika i zwalnia zasoby.
+     * @section DestructorOverview
+     * Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.
      */
     ~types();
 
@@ -59,7 +86,9 @@ public:
      * @brief Ustawia wskaźnik na główne okno aplikacji.
      * @param mainWindow Wskaźnik do obiektu klasy MainWindow.
      *
-     * Pozwala na synchronizację danych w głównym widoku aplikacji.
+     * @section MethodOverview
+     * Umożliwia komunikację z głównym oknem w celu odświeżenia listy typów
+     * w combo boxie po zapisaniu zmian.
      */
     void setMainWindow(MainWindow *mainWindow);
 
@@ -67,28 +96,36 @@ private slots:
     /**
      * @brief Slot obsługujący dodawanie nowego typu.
      *
-     * Wywoływany po kliknięciu przycisku „Dodaj”.
+     * @section SlotOverview
+     * Pobiera nazwę typu z pola tekstowego, generuje UUID, zapisuje typ
+     * w tabeli `types` i odświeża listę.
      */
     void onAddClicked();
 
     /**
      * @brief Slot obsługujący edytowanie zaznaczonego typu.
      *
-     * Wywoływany po kliknięciu przycisku „Edytuj”.
+     * @section SlotOverview
+     * Pobiera wybrany typ, otwiera okno dialogowe do edycji nazwy,
+     * aktualizuje rekord w tabeli `types` i odświeża listę.
      */
     void onEditClicked();
 
     /**
      * @brief Slot obsługujący usunięcie zaznaczonego typu.
      *
-     * Wywoływany po kliknięciu przycisku „Usuń”.
+     * @section SlotOverview
+     * Usuwa wybrany typ z tabeli `types` po potwierdzeniu użytkownika
+     * i odświeża listę.
      */
     void onDeleteClicked();
 
     /**
      * @brief Slot obsługujący zatwierdzenie zmian i zamknięcie okna.
      *
-     * Wywoływany po kliknięciu przycisku „OK”. Odświeża pole wyboru typów w głównym oknie.
+     * @section SlotOverview
+     * Odświeża listę typów w combo boxie MainWindow (jeśli ustawione),
+     * zamyka okno dialogowe z wynikiem zaakceptowania.
      */
     void onOkClicked();
 
@@ -96,7 +133,9 @@ private:
     /**
      * @brief Odświeża listę typów eksponatów w interfejsie.
      *
-     * Pobiera dane z bazy i ustawia jako model dla widoku listy.
+     * @section MethodOverview
+     * Pobiera typy z tabeli `types`, sortuje alfabetycznie
+     * i wyświetla w QListView za pomocą QSqlQueryModel.
      */
     void refreshList();
 

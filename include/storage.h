@@ -1,20 +1,34 @@
 /**
  * @file storage.h
  * @brief Deklaracja klasy storage służącej do zarządzania miejscami przechowywania eksponatów w aplikacji inwentaryzacyjnej.
- * @version 1.1.8
- * @date 2025-04-25
- * @author
- * - Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK
- * - ChatGPT
- * - GROK
+ * @version 1.2.2
+ * @date 2025-05-03
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *
- * Plik zawiera deklarację klasy `storage`, reprezentującej okno dialogowe
- * umożliwiające dodawanie, edytowanie i usuwanie lokalizacji (np. magazynów, półek, pokoi)
- * wykorzystywanych jako miejsca przechowywania eksponatów.
+ * @section Overview
+ * Plik zawiera deklarację klasy storage, która reprezentuje okno dialogowe do zarządzania
+ * miejscami przechowywania eksponatów (np. magazyny, półki, pokoje) w aplikacji inwentaryzacyjnej.
+ * Klasa umożliwia dodawanie, edytowanie i usuwanie lokalizacji w tabeli `storage_places` w bazie danych,
+ * a także synchronizację z głównym oknem aplikacji (`MainWindow`) w celu odświeżenia combo boxów
+ * po zapisaniu zmian.
  *
- * Klasa współpracuje z `MainWindow`, by po zatwierdzeniu zmian możliwe było
- * odświeżenie odpowiedniego pola typu combo box w głównym widoku aplikacji.
- * Operacje wykonywane są na tabeli `storages` w bazie danych.
+ * @section Structure
+ * Plik nagłówkowy zawiera:
+ * 1. **Deklarację klasy storage** – dziedziczy po QDialog.
+ * 2. **Metody publiczne** – konstruktor, destruktor, ustawianie MainWindow.
+ * 3. **Sloty prywatne** – obsługują akcje użytkownika (dodawanie, edycja, usuwanie, zatwierdzanie).
+ * 4. **Metody prywatne** – odświeżanie listy lokalizacji.
+ * 5. **Zmienne prywatne** – przechowują interfejs, MainWindow i połączenie z bazą danych.
+ *
+ * @section Dependencies
+ * - **Qt Framework**: Używa klas QDialog, QSqlDatabase.
+ * - **Nagłówki aplikacji**: mainwindow.h (deklaracja MainWindow).
+ * - **Namespace Ui**: Zawiera definicję interfejsu użytkownika (ui_storage.h).
+ *
+ * @section Notes
+ * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Klasa jest częścią systemu słownikowego, współpracuje z MainWindow do aktualizacji combo boxów.
+ * - Obsługuje MySQL, ale aplikacja wspiera także SQLite (konfigurowane w DatabaseConfigDialog).
  */
 
 #ifndef STORAGE_H
@@ -33,10 +47,18 @@ class storage;
  * @class storage
  * @brief Okno dialogowe do zarządzania miejscami przechowywania eksponatów.
  *
- * Klasa dziedziczy po QDialog i zapewnia interfejs do edycji danych lokalizacyjnych
- * eksponatów (np. regały, szafy, magazyny). Użytkownik może dodawać, edytować i usuwać
- * wpisy z bazy danych. Synchronizacja z głównym oknem umożliwia automatyczne
- * odświeżenie pól wyboru lokalizacji.
+ * @section ClassOverview
+ * Klasa storage dziedziczy po QDialog i zapewnia interfejs do dodawania, edytowania
+ * i usuwania miejsc przechowywania eksponatów (np. regały, magazyny) w bazie danych
+ * (tabela `storage_places`). Współpracuje z klasą MainWindow, aby odświeżyć listę
+ * lokalizacji w combo boxie po zapisaniu zmian.
+ *
+ * @section Responsibilities
+ * - Wyświetlanie listy lokalizacji w QListView.
+ * - Dodawanie nowych lokalizacji do tabeli `storage_places` z unikalnym UUID.
+ * - Edycja istniejących lokalizacji (zmiana nazwy).
+ * - Usuwanie lokalizacji po potwierdzeniu użytkownika.
+ * - Odświeżanie combo boxa lokalizacji w MainWindow po zapisaniu zmian.
  */
 class storage : public QDialog
 {
@@ -47,14 +69,17 @@ public:
      * @brief Konstruktor klasy storage.
      * @param parent Wskaźnik na nadrzędny widget (domyślnie nullptr).
      *
-     * Inicjalizuje interfejs graficzny oraz ustawia połączenie z bazą danych.
+     * @section ConstructorOverview
+     * Inicjalizuje okno dialogowe, konfiguruje interfejs użytkownika,
+     * ustanawia połączenie z bazą danych i podłącza sloty dla przycisków.
      */
     explicit storage(QWidget *parent = nullptr);
 
     /**
      * @brief Destruktor klasy storage.
      *
-     * Zwalnia zasoby interfejsu użytkownika.
+     * @section DestructorOverview
+     * Zwalnia zasoby interfejsu użytkownika i usuwa obiekty dynamiczne.
      */
     ~storage();
 
@@ -62,7 +87,9 @@ public:
      * @brief Ustawia wskaźnik na główne okno aplikacji.
      * @param mainWindow Wskaźnik na obiekt klasy MainWindow.
      *
-     * Pozwala na synchronizację pól w głównym oknie po zatwierdzeniu zmian.
+     * @section MethodOverview
+     * Umożliwia komunikację z głównym oknem w celu odświeżenia listy lokalizacji
+     * w combo boxie po zapisaniu zmian.
      */
     void setMainWindow(MainWindow *mainWindow);
 
@@ -70,28 +97,36 @@ private slots:
     /**
      * @brief Slot wywoływany po kliknięciu przycisku „Dodaj”.
      *
-     * Dodaje nową lokalizację do bazy danych.
+     * @section SlotOverview
+     * Pobiera nazwę lokalizacji z pola tekstowego, generuje UUID, zapisuje lokalizację
+     * w tabeli `storage_places` i odświeża listę.
      */
     void onAddClicked();
 
     /**
      * @brief Slot wywoływany po kliknięciu przycisku „Edytuj”.
      *
-     * Edytuje aktualnie zaznaczoną lokalizację.
+     * @section SlotOverview
+     * Pobiera wybraną lokalizację, otwiera okno dialogowe do edycji nazwy,
+     * aktualizuje rekord w tabeli `storage_places` i odświeża listę.
      */
     void onEditClicked();
 
     /**
      * @brief Slot wywoływany po kliknięciu przycisku „Usuń”.
      *
-     * Usuwa zaznaczoną lokalizację z bazy danych po potwierdzeniu.
+     * @section SlotOverview
+     * Usuwa wybraną lokalizację z tabeli `storage_places` po potwierdzeniu użytkownika
+     * i odświeża listę.
      */
     void onDeleteClicked();
 
     /**
      * @brief Slot wywoływany po kliknięciu przycisku OK.
      *
-     * Zamyka okno dialogowe i odświeża combo box z lokalizacjami w głównym oknie.
+     * @section SlotOverview
+     * Odświeża listę lokalizacji w combo boxie MainWindow (jeśli ustawione),
+     * zamyka okno dialogowe z wynikiem zaakceptowania.
      */
     void onOkClicked();
 
@@ -99,7 +134,9 @@ private:
     /**
      * @brief Odświeża listę lokalizacji w widoku listy.
      *
-     * Pobiera dane z tabeli `storages` w bazie danych i ustawia je w komponencie listy.
+     * @section MethodOverview
+     * Pobiera lokalizacje z tabeli `storage_places`, sortuje alfabetycznie
+     * i wyświetla w QListView za pomocą QSqlQueryModel.
      */
     void refreshList();
 
