@@ -74,19 +74,32 @@ FORMS += \
 TRANSLATIONS += \
     translations/Inwentaryzacja_pl_PL.ts
 
+# Licencje i skrypty
 DISTFILES += \
     LICENSE \
     Refactor-Inwentaryzacja.ps1 \
     deploy_debug.bat \
+    fix_mysql_mac_new.sh \
+    fix_qt_mysql_mac.sh \
+    make_deb.sh \
+    make_rpm.sh \
+    merge.sh \
+    merge_win.ps1 \
+    prepare_dmg.sh \
+    prepare_release.sh \
+    qt_full_installer.ps1 \
+    renumeracja.sh \
+    set_icon.sh
+
+# Dokumentacja techniczna (.md)
+DISTFILES += \
     documentation/DatabaseConfigDialog_cpp.md \
     documentation/DatabaseConfigDialog_h.md \
     documentation/ItemFilterProxyModel_cpp.md \
-    documentation/ItemFilterProxyModel_documentation.md \
     documentation/ItemFilterProxyModel_h.md \
     documentation/fullscreenphotoviewer_cpp.md \
     documentation/fullscreenphotoviewer_h.md \
     documentation/itemList_cpp.md \
-    documentation/itemList_documentation.md \
     documentation/itemList_h.md \
     documentation/main.md \
     documentation/mainwindow_cpp.md \
@@ -104,11 +117,16 @@ DISTFILES += \
     documentation/utils_cpp.md \
     documentation/utils_h.md \
     documentation/vendors_cpp.md \
-    documentation/vendors_h.md \
-    fix_mysql_mac_new.sh \
+    documentation/vendors_h.md
+
+# Czcionki
+DISTFILES += \
     fonts/topaz.ttf \
-    fonts/zxspectrum.ttf \
-    fonts/zxspectrum.ttf \
+    fonts/zxspectrum.ttf
+
+# Obrazy i ikony
+DISTFILES += \
+    images/256ikona.png \
     images/amiga_about.png \
     images/amiga_clone.png \
     images/amiga_delete.png \
@@ -117,10 +135,25 @@ DISTFILES += \
     images/amiga_new.png \
     images/background.png \
     images/icon.icns \
+    images/icon.ico \
+    images/icon.png \
+    images/ikona.ico \
+    images/ikona256.ico \
+    images/ikona_mac.icns \
     images/ikonawin.ico \
     images/installericon.ico \
     images/logo.png \
-    images/watermark.png \
+    images/watermark.png
+
+# Style (QSS)
+DISTFILES += \
+    styles/amiga.qss \
+    styles/atari8bit.qss \
+    styles/default.qss \
+    styles/zxspectrum.qss
+
+# Biblioteki macOS (własne lub redistributable)
+DISTFILES += \
     macos_lib_sql/iconengines/libqsvgicon.dylib \
     macos_lib_sql/imageformats/libqgif.dylib \
     macos_lib_sql/imageformats/libqicns.dylib \
@@ -148,40 +181,27 @@ DISTFILES += \
     macos_lib_sql/sqldrivers/libqsqlodbc.dylib \
     macos_lib_sql/sqldrivers/libqsqlpsql.dylib \
     macos_lib_sql/sqldrivers/libssl.1.1.dylib \
-    macos_lib_sql/styles/libqmacstyle.dylib \
-    make_deb.sh \
-    make_deb.sh \
-    make_rpm.sh \
-    make_rpm.sh \
-    merge.sh \
-    merge.sh \
+    macos_lib_sql/styles/libqmacstyle.dylib
+
+# Biblioteki MySQL dla Windows
+DISTFILES += \
     mysql_dll/libcrypto-3-x64.dll \
     mysql_dll/libmysql.dll \
-    mysql_dll/libssl-3-x64.dll \
-    prepare_dmg.sh \
-    prepare_release.sh \
-    qt_full_installer.ps1 \
-    renumeracja.sh \
-    CHANGELOG.md \
-    Create_MySQL.sql \
-    README.md \
-    createTable.sql \
-    database_example_record.sql \
-    fix_qt_mysql_mac.sh \
-    images/256ikona.png \
-    images/icon.ico \
-    images/icon.png \
-    images/ikona.ico \
-    images/ikona256.ico \
-    images/ikona_mac.icns \
-    merge_win.ps1 \
-    set_icon.sh \
+    mysql_dll/libssl-3-x64.dll
+
+# Pluginy SQL
+DISTFILES += \
     sqldrivers/mysql_native_password.dll \
-    sqldrivers/qsqlmysql.dll \
-    styles/amiga.qss \
-    styles/atari8bit.qss \
-    styles/default.qss \
-    styles/zxspectrum.qss
+    sqldrivers/qsqlmysql.dll
+
+# Skrypty SQL i pliki danych
+DISTFILES += \
+    CHANGELOG.md \
+    README.md \
+    Create_MySQL.sql \
+    createTable.sql \
+    database_example_record.sql
+
 
 RESOURCES += \
         resources.qrc
@@ -216,33 +236,6 @@ release:unix:!macx {
     )
 }
 
-
-
-
-
-# — macOS Release deploy
-#release:macx {
-#    QMAKE_POST_LINK += $$quote( \
-#        echo 🧹 Czyszczenie starego deployu... && \
-#        rm -rf "$${DEPLOY_DIR}" && \
-##        mkdir -p "$${DEPLOY_DIR}" && \
-#        echo 📂 Kopiowanie aplikacji... && \
-#        cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
-#        echo 🧹 Usuwanie niepotrzebnych wtyczek przed macdeployqt... && \
-#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlmysql.dylib" && \
-#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlodbc.dylib" && \
-#        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlpsql.dylib" && \
-#        echo 🚀 Wywołanie macdeployqt... && \
-#        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 && \
-#        echo 💿 Tworzenie DMG... && \
-#        hdiutil create -volname "$${TARGET}" \
-#            -srcfolder "$${DEPLOY_DIR}/$${TARGET}.app" \
-#            -ov -format UDZO "$${DEPLOY_DIR}/$${TARGET}_macOS.dmg" && \
-#        echo ✅ Gotowe: $${DEPLOY_DIR}/$${TARGET}_macOS.dmg \
-#    )
-#}
-
-# — macOS Release deploy
 # — macOS Release deploy
 release:macx {
     QMAKE_POST_LINK += $$quote( \
