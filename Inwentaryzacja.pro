@@ -79,6 +79,7 @@ DISTFILES += \
     LICENSE \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
+    cmake/CMakeLists.txt \
     cmake/README.md \
     cmake/bootstrap.bat \
     cmake/bootstrap.sh \
