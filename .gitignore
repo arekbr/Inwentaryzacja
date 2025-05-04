@@ -3,6 +3,7 @@ build/
 installer/
 releasowa/
 deploy/
+vcpkg*/
 *.exe
 *.log
 *.pro.user*

@@ -81,12 +81,6 @@ DISTFILES += \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
     bootstrap.sh \
-    cmake/CMakeLists.txt \
-    cmake/README.md \
-    cmake/bootstrap.bat \
-    cmake/bootstrap.sh \
-    cmake/cmake \
-    cmake/vcpkg.json \
     deploy_debug.bat \
     fix_mysql_mac_new.sh \
     fix_qt_mysql_mac.sh \
