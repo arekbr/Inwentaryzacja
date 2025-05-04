@@ -76,9 +76,11 @@ TRANSLATIONS += \
 
 # Licencje i skrypty
 DISTFILES += \
+    CMakeLists.txt \
     LICENSE \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
+    bootstrap.sh \
     cmake/CMakeLists.txt \
     cmake/README.md \
     cmake/bootstrap.bat \
@@ -96,7 +98,8 @@ DISTFILES += \
     prepare_release.sh \
     qt_full_installer.ps1 \
     renumeracja.sh \
-    set_icon.sh
+    set_icon.sh \
+    vcpkg.json
 
 # Dokumentacja techniczna (.md)
 DISTFILES += \
