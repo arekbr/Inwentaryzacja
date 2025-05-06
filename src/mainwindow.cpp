@@ -333,6 +333,18 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
 
     setDefaultIfAvailable(ui->New_item_status, "brak");
     setDefaultIfAvailable(ui->New_item_storagePlace, "brak");
+    // Ustaw tryb edycji dla wszystkich PhotoItem w graphicsView, jeśli scena istnieje
+    if (m_editMode) {
+        QGraphicsScene *scene = ui->graphicsView->scene();
+        if (scene) {
+            QList<QGraphicsItem *> items = scene->items();
+            for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+                    photoItem->setEditMode(true);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -618,6 +630,17 @@ void MainWindow::onSaveClicked()
         m_photoPathsBuffer.clear();
     }
 
+    // Wyłącz tryb edycji dla wszystkich PhotoItem
+    QGraphicsScene *scene = ui->graphicsView->scene();
+    if (scene) {
+        QList<QGraphicsItem *> items = scene->items();
+        for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
+            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+                photoItem->setEditMode(false);
+            }
+        }
+    }
+
     emit recordSaved(m_recordId);
     QMessageBox::information(this, tr("Sukces"), tr("Rekord zapisany pomyślnie."));
     close();
@@ -631,6 +654,17 @@ void MainWindow::onSaveClicked()
  */
 void MainWindow::onCancelClicked()
 {
+    // Wyłącz tryb edycji dla wszystkich PhotoItem
+    QGraphicsScene *scene = ui->graphicsView->scene();
+    if (scene) {
+        QList<QGraphicsItem *> items = scene->items();
+        for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
+            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+                photoItem->setEditMode(false);
+            }
+        }
+    }
+
     close();
 }
 

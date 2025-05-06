@@ -89,6 +89,9 @@ public:
      */
     void setSelected(bool selected);
 
+    //// do uzupełnienia dokumentacja
+    void setEditMode(bool editMode);
+
 signals:
     /**
      * @brief Sygnał emitowany po jednokrotnym kliknięciu lewym przyciskiem myszy.
@@ -192,6 +195,9 @@ private:
      * przy zaznaczeniu (m_selected == true).
      */
     QGraphicsRectItem *m_frame;
+
+    // Nowa flaga dla trybu edycji
+    bool m_isEditMode = false;
 
     /**
      * @brief Aktualizuje wygląd ramki zaznaczenia w zależności od stanu.
