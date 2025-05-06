@@ -52,6 +52,7 @@ PhotoItem::PhotoItem(QGraphicsItem *parent)
     , m_pressed(false)
     , m_selected(false)
     , m_frame(new QGraphicsRectItem(this))
+    , m_isEditMode(false) // Inicjalizacja nowej flagi
 {
     setAcceptHoverEvents(true);
     setAcceptTouchEvents(false);
@@ -84,9 +85,14 @@ PhotoItem::~PhotoItem()
 void PhotoItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        // Nic nie rób — czekaj na ewentualny double click
+        if (m_isEditMode) {
+            // W trybie edycji w MainWindow emituj sygnał clicked dla lewego przycisku
+            emit clicked(this);
+        }
+        // Przekaż zdarzenie do QGraphicsPixmapItem dla podwójnego kliknięcia
         QGraphicsPixmapItem::mousePressEvent(event);
     } else if (event->button() == Qt::RightButton) {
+        // Zachowaj obecne zachowanie dla prawego przycisku (dla innych kontekstów)
         emit clicked(this);
     } else {
         QGraphicsPixmapItem::mousePressEvent(event);
@@ -154,6 +160,15 @@ void PhotoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     emit hovered(this);
     QGraphicsPixmapItem::hoverEnterEvent(event);
+}
+
+// Tryb edycji – pozwala MainWindow przechwytywać pojedynczy lewy klik,
+// żeby np. zaznaczyć miniaturę do usunięcia. Poza tym nic nie zmienia.
+void PhotoItem::setEditMode(bool editMode)
+{
+    m_isEditMode = editMode;
+    // Jeśli chcesz wizualnie oznaczyć edytowalne miniatury,
+    // możesz np. zmienić kursor albo ramkę – tu zostawiamy neutralnie.
 }
 
 /**
