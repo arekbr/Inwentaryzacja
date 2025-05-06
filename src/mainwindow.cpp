@@ -2,7 +2,7 @@
  * @file mainwindow.cpp
  * @brief Implementacja klasy MainWindow do zarządzania formularzem eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  *
  * @section Overview

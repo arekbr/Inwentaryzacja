@@ -1,7 +1,7 @@
 /**
  * @file types.cpp
  * @brief Implementacja klasy types do zarządzania typami eksponatów w aplikacji inwentaryzacyjnej.
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *

@@ -2,7 +2,7 @@
  * @file ItemFilterProxyModel.h
  * @brief Deklaracja klasy ItemFilterProxyModel do filtrowania listy eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  *
  * @section Overview

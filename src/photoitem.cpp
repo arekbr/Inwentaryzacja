@@ -2,7 +2,7 @@
  * @file photoitem.cpp
  * @brief Implementacja klasy PhotoItem, interaktywnego elementu graficznego dla zdjęć.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  *
  * @section Overview
