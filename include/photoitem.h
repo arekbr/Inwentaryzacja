@@ -196,7 +196,16 @@ private:
      */
     QGraphicsRectItem *m_frame;
 
-    // Nowa flaga dla trybu edycji
+    /**
+    * @brief Flaga określająca, czy miniatura działa w trybie edycji.
+    *
+    * Gdy ustawiona na `true`, `PhotoItem` przechwytuje pojedyncze kliknięcia
+    * lewym przyciskiem myszy i emituje sygnał `clicked(this)` – umożliwia to
+    * np. zaznaczenie elementu do usunięcia przez klasę MainWindow.
+    *
+    * W trybie nieedytowalnym (`false`) kliknięcia obsługiwane są standardowo
+    * (np. wyświetlanie pełnego zdjęcia).
+    */
     bool m_isEditMode = false;
 
     /**

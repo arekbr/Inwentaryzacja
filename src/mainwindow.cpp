@@ -333,6 +333,7 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
 
     setDefaultIfAvailable(ui->New_item_status, "brak");
     setDefaultIfAvailable(ui->New_item_storagePlace, "brak");
+
     // Ustaw tryb edycji dla wszystkich PhotoItem w graphicsView, jeśli scena istnieje
     if (m_editMode) {
         QGraphicsScene *scene = ui->graphicsView->scene();
