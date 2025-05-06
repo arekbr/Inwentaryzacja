@@ -80,7 +80,9 @@ DISTFILES += \
     LICENSE \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
+    boostrap_mac_silicon.sh \
     bootstrap.sh \
+    bootstrap_mac_x86.sh \
     deploy_debug.bat \
     fix_mysql_mac_new.sh \
     fix_qt_mysql_mac.sh \

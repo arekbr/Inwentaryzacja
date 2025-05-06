@@ -162,8 +162,19 @@ void PhotoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsPixmapItem::hoverEnterEvent(event);
 }
 
-// Tryb edycji – pozwala MainWindow przechwytywać pojedynczy lewy klik,
-// żeby np. zaznaczyć miniaturę do usunięcia. Poza tym nic nie zmienia.
+/**
+ * @brief Ustawia tryb edycji dla obiektu PhotoItem.
+ * @param editMode Jeśli `true`, obiekt działa w trybie edycji; jeśli `false`,
+ *                 wraca do trybu tylko‑podglądu.
+ *
+ * @section MethodOverview
+ * Funkcja przechowuje stan trybu edycji w prywatnej zmiennej `m_isEditMode`.
+ * Gdy tryb edycji jest aktywny, pojedyncze kliknięcie **lewym** przyciskiem
+ * myszy emituje sygnał `clicked(this)`, co pozwala klasie MainWindow
+ * zaznaczyć miniaturę (np. do usunięcia lub innej akcji).  
+ * Metoda nie zmienia wyglądu miniatury; w razie potrzeby można tu
+ * dodać dodatkowe efekty wizualne (zmiana kursora, ramki itp.).
+ */
 void PhotoItem::setEditMode(bool editMode)
 {
     m_isEditMode = editMode;
