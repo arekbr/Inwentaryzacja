@@ -1,7 +1,7 @@
 ##################################################
 ## Inwentaryzacja.pro — Qt/QMake project with
 ## fully-in-.pro, multiplatform deployment
-##################################################
+###################################################
 
 QT       += core gui sql widgets
 
