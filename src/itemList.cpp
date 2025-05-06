@@ -2,7 +2,7 @@
  * @file itemList.cpp
  * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  *
  * @section Overview

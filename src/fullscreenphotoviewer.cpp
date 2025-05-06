@@ -2,7 +2,7 @@
  * @file fullscreenphotoviewer.cpp
  * @brief Pusty plik implementacyjny dla klas ZoomableGraphicsView i FullScreenPhotoViewer.
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  *
  * @section Overview

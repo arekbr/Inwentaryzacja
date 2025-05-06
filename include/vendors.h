@@ -1,7 +1,7 @@
 /**
  * @file vendors.h
  * @brief Deklaracja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.
- * @version 1.2.2
+ * @version \projectnumber
  * @date 2025-05-03
  * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
  *
