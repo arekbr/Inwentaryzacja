@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>491</width>
+    <height>373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,16 +22,6 @@
        <height>25</height>
       </size>
      </property>
-     <item>
-      <property name="text">
-       <string>SQLite3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>MySQL</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item>
@@ -141,28 +131,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="filterSelectSkin">
-     <item>
-      <property name="text">
-       <string>Standard</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Atari 8bit</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Amiga</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>ZX Spectrum</string>
-      </property>
-     </item>
-    </widget>
+    <widget class="QComboBox" name="filterSelectSkin"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

@@ -14,14 +14,16 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="mainLayout">
-    <item>
+   <layout class="QGridLayout" name="mainLayout">
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <item row="0" column="0">
      <layout class="QVBoxLayout" name="leftLayout">
       <item>
        <widget class="QLabel" name="basicInfoLabel">
         <property name="font">
          <font>
-          <pointsize>-1</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -33,7 +35,7 @@
       <item>
        <layout class="QFormLayout" name="basicInfoForm">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="label_name">
           <property name="text">
            <string>Nazwa</string>
           </property>
@@ -43,7 +45,7 @@
          <widget class="QLineEdit" name="New_item_name"/>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_11">
+         <widget class="QLabel" name="label_partnumber">
           <property name="text">
            <string>Part number</string>
           </property>
@@ -53,7 +55,7 @@
          <widget class="QLineEdit" name="New_item_partNumber"/>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="label_revision">
           <property name="text">
            <string>Revision</string>
           </property>
@@ -63,7 +65,7 @@
          <widget class="QLineEdit" name="New_item_revision"/>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_13">
+         <widget class="QLabel" name="label_value">
           <property name="text">
            <string>Ilość</string>
           </property>
@@ -78,7 +80,6 @@
        <widget class="QLabel" name="techDetailsLabel">
         <property name="font">
          <font>
-          <pointsize>-1</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -90,7 +91,7 @@
       <item>
        <layout class="QFormLayout" name="techDetailsForm">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_3">
+         <widget class="QLabel" name="label_type">
           <property name="text">
            <string>Typ</string>
           </property>
@@ -115,7 +116,7 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_4">
+         <widget class="QLabel" name="label_vendor">
           <property name="text">
            <string>Producent</string>
           </property>
@@ -136,7 +137,7 @@
          </layout>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_5">
+         <widget class="QLabel" name="label_model">
           <property name="text">
            <string>Model</string>
           </property>
@@ -157,7 +158,7 @@
          </layout>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="label_serial">
           <property name="text">
            <string>Numer seryjny</string>
           </property>
@@ -167,7 +168,7 @@
          <widget class="QLineEdit" name="New_item_serialNumber"/>
         </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="label_7">
+         <widget class="QLabel" name="label_date">
           <property name="text">
            <string>Data produkcji</string>
           </property>
@@ -182,7 +183,6 @@
        <widget class="QLabel" name="statusLabel">
         <property name="font">
          <font>
-          <pointsize>-1</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -194,7 +194,7 @@
       <item>
        <layout class="QFormLayout" name="statusForm">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_8">
+         <widget class="QLabel" name="label_status">
           <property name="text">
            <string>Status</string>
           </property>
@@ -215,7 +215,7 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_9">
+         <widget class="QLabel" name="label_storage">
           <property name="text">
            <string>Miejsce przechowywania</string>
           </property>
@@ -239,13 +239,12 @@
       </item>
      </layout>
     </item>
-    <item>
+    <item row="0" column="1">
      <layout class="QVBoxLayout" name="rightLayout">
       <item>
-       <widget class="QLabel" name="label_10">
+       <widget class="QLabel" name="label_description">
         <property name="font">
          <font>
-          <pointsize>-1</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -255,10 +254,24 @@
        </widget>
       </item>
       <item>
-       <widget class="QPlainTextEdit" name="New_item_description"/>
+       <widget class="QPlainTextEdit" name="New_item_description">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QGraphicsView" name="graphicsView"/>
+       <widget class="QGraphicsView" name="graphicsView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout">
@@ -280,38 +293,34 @@
       </item>
      </layout>
     </item>
-    <item>
-     <layout class="QVBoxLayout" name="bottomLayout">
+    <item row="1" column="0" colspan="2">
+     <layout class="QHBoxLayout" name="actionButtonsLayout">
       <item>
-       <layout class="QHBoxLayout" name="actionButtonsLayout">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="New_item_PushButton_OK">
-          <property name="text">
-           <string>Zapisz</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="New_item_PushButton_Cancel">
-          <property name="text">
-           <string>Anuluj</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="New_item_PushButton_OK">
+        <property name="text">
+         <string>Zapisz</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="New_item_PushButton_Cancel">
+        <property name="text">
+         <string>Anuluj</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
