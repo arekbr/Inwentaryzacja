@@ -1,11 +1,9 @@
 {
     "name": "inwentaryzacja",
     "version-string": "1.0.0",
+  "builtin-baseline": "41c447cc210dc39aa85d4a5f58b4a1b9e573b3dc",
     "dependencies": [
-        {
-            "name": "mysql-connector-c",
-            "version>=": "8.0.35"
-        },
+        "libmariadb",
         {
             "name": "openssl",
             "version>=": "3.3.2"
