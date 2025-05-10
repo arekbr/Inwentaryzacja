@@ -35,45 +35,65 @@
      <property name="verticalSpacing">
       <number>5</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="labelFilterType">
-       <property name="text"><string>Typ:</string></property>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="filterStatusComboBox"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelFilterStorage">
+       <property name="text">
+        <string>Miejsce:</string>
+       </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="filterTypeComboBox"/>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelFilterStatus">
+       <property name="text">
+        <string>Status:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="filterStorageComboBox"/>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="labelFilterVendor">
-       <property name="text"><string>Producent:</string></property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="filterVendorComboBox"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="labelFilterModel">
-       <property name="text"><string>Model:</string></property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="filterModelComboBox"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="labelFilterStatus">
-       <property name="text"><string>Status:</string></property>
+      <widget class="QLabel" name="labelFilterType">
+       <property name="text">
+        <string>Typ:</string>
+       </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QComboBox" name="filterStatusComboBox"/>
+      <widget class="QComboBox" name="filterModelComboBox"/>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="labelFilterStorage">
-       <property name="text"><string>Miejsce:</string></property>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="filterVendorComboBox"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelFilterModel">
+       <property name="text">
+        <string>Model:</string>
+       </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="filterStorageComboBox"/>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="filterTypeComboBox"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelFilterVendor">
+       <property name="text">
+        <string>Producent:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelFilterName">
+       <property name="text">
+        <string>Nazwa:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="filterNameLineEdit"/>
      </item>
     </layout>
    </item>
@@ -81,8 +101,8 @@
     <widget class="QTableView" name="itemList_tableView">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horStretch>0</horStretch>
-       <verStretch>0</verStretch>
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
     </widget>
@@ -93,8 +113,8 @@
       <widget class="QGraphicsView" name="itemList_graphicsView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horStretch>0</horStretch>
-         <verStretch>0</verStretch>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
         </sizepolicy>
        </property>
       </widget>
@@ -103,32 +123,44 @@
       <layout class="QVBoxLayout" name="buttonsLayout">
        <item>
         <widget class="QPushButton" name="itemList_pushButton_new">
-         <property name="text"><string>Nowy</string></property>
+         <property name="text">
+          <string>Nowy</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_edit">
-         <property name="text"><string>Edycja</string></property>
+         <property name="text">
+          <string>Edycja</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_clone">
-         <property name="text"><string>Klonuj</string></property>
+         <property name="text">
+          <string>Klonuj</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_delete">
-         <property name="text"><string>Kasuj</string></property>
+         <property name="text">
+          <string>Kasuj</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_end">
-         <property name="text"><string>Koniec</string></property>
+         <property name="text">
+          <string>Koniec</string>
+         </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_about">
-         <property name="text"><string>O...</string></property>
+         <property name="text">
+          <string>O...</string>
+         </property>
         </widget>
        </item>
       </layout>

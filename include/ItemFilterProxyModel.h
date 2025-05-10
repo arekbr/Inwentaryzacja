@@ -117,6 +117,16 @@ public:
      */
     void setStorageFilter(const QString &storage);
 
+    /**
+     * @brief Ustawia filtr dla nazwę eksponatu.
+     * @param storage QString zawierający nazwę lub pusty ciąg dla braku filtru.
+     *
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla nazwy i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla nazwy.
+     */
+    void setNameFilter(const QString &filter);
+
 protected:
     /**
      * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
@@ -143,6 +153,8 @@ private:
     QString m_status;
     /// Filtr dla miejsca przechowywania eksponatu (pusty oznacza brak filtru).
     QString m_storage;
+    /// Filtr dla nazwy eksponatu (pusty oznacza brak filtru).
+    QString m_nameFilter;
 };
 
 #endif // ITEMFILTERPROXYMODEL_H

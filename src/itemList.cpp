@@ -39,6 +39,7 @@
 
 #include <QApplication>
 #include <QComboBox>
+#include <QCompleter>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -59,6 +60,7 @@
 #include <QSqlRelation>
 #include <QSqlRelationalDelegate>
 #include <QSqlRelationalTableModel>
+#include <QStringListModel>
 #include <QTimer>
 #include <QUuid>
 #include <QtMath>
@@ -84,21 +86,33 @@ itemList::itemList(QWidget *parent)
     , filterModelComboBox(nullptr)
     , filterStatusComboBox(nullptr)
     , filterStorageComboBox(nullptr)
+    , filterNameLineEdit(nullptr)
     , m_currentRecordId()
     , m_previewWindow(nullptr)
     , m_currentHoveredItem(nullptr)
 {
+    qDebug() << "itemList: Rozpoczynam konstruktor";
     ui->setupUi(this);
+    qDebug() << "itemList: ui->setupUi wykonany";
 
-    // Inicjalizacja pól QComboBox
+    // Inicjalizacja pól QComboBox i QLineEdit
     filterTypeComboBox = ui->filterTypeComboBox;
     filterVendorComboBox = ui->filterVendorComboBox;
     filterModelComboBox = ui->filterModelComboBox;
     filterStatusComboBox = ui->filterStatusComboBox;
     filterStorageComboBox = ui->filterStorageComboBox;
+    filterNameLineEdit = ui->filterNameLineEdit;
+    qDebug() << "itemList: Pola UI zainicjalizowane";
+
+    // Sprawdzenie, czy pola UI nie są nullptr
+    if (!filterNameLineEdit)
+        qDebug() << "itemList: filterNameLineEdit jest nullptr!";
+    if (!filterTypeComboBox)
+        qDebug() << "itemList: filterTypeComboBox jest nullptr!";
 
     // Połączenie z bazą danych
     QSqlDatabase db;
+    qDebug() << "itemList: Przed połączeniem z bazą";
     if (!QSqlDatabase::contains("default_connection")) {
         db = QSqlDatabase::addDatabase("QMYSQL", "default_connection");
         db.setHostName("localhost");
@@ -106,6 +120,7 @@ itemList::itemList(QWidget *parent)
         db.setUserName("user");
         db.setPassword("password");
         if (!db.open()) {
+            qDebug() << "itemList: Błąd otwarcia bazy:" << db.lastError().text();
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie można połączyć z bazą danych:\n%1")
@@ -113,18 +128,28 @@ itemList::itemList(QWidget *parent)
             qApp->quit();
             return;
         }
+        qDebug() << "itemList: Baza otwarta";
         if (!verifyDatabaseSchema(db)) {
+            qDebug() << "itemList: Schemat niepoprawny, tworzę schemat";
             createDatabaseSchema(db);
             insertSampleData(db);
         }
     } else {
         db = QSqlDatabase::database("default_connection");
         if (!db.isOpen()) {
+            qDebug() << "itemList: Połączenie zamknięte";
             QMessageBox::critical(this, tr("Błąd"), tr("Połączenie z bazą danych zamknięte."));
             qApp->quit();
             return;
         }
+        qDebug() << "itemList: Baza już otwarta";
+
+        if (!verifyDatabaseSchema(db)) {
+            createDatabaseSchema(db);
+            insertSampleData(db);
+        }
     }
+    qDebug() << "itemList: Konstruktor zakończony";
 
     // Model źródłowy
     m_sourceModel = new QSqlRelationalTableModel(this, db);
@@ -187,16 +212,13 @@ itemList::itemList(QWidget *parent)
             this,
             &itemList::onTableViewSelectionChanged);
 
-    // Inicjalizacja filtrów
-    initFilters(db);
-
-    // Podłączenie slotów dla kaskadowego filtrowania
-    connect(filterTypeComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    onFilterChanged();
+    // Inicjalizacja timera utrzymującego połączenie
+    m_keepAliveTimer = new QTimer(this);
+    connect(m_keepAliveTimer, &QTimer::timeout, this, []() {
+        QSqlQuery q(QSqlDatabase::database("default_connection"));
+        q.exec("SELECT 1");
+    });
+    m_keepAliveTimer->start(30000);
 
     // Inicjalizacja timera do sprawdzania pozycji kursora
     m_hoverCheckTimer = new QTimer(this);
@@ -213,6 +235,31 @@ itemList::itemList(QWidget *parent)
             }
         }
     });
+
+    // Inicjalizacja timera dla opóźnienia filtrowania
+    m_nameFilterTimer = new QTimer(this);
+    m_nameFilterTimer->setSingleShot(true);
+    connect(m_nameFilterTimer, &QTimer::timeout, this, [this]() {
+        qDebug() << "itemList: Wykonuję opóźnione filtrowanie, tekst:"
+                 << filterNameLineEdit->text();
+        m_proxyModel->setNameFilter(filterNameLineEdit->text());
+        updateFilterComboBoxes();
+    });
+
+    // Inicjalizacja filtrów
+    initFilters(db);
+
+    // Podłączenie slotów dla kaskadowego filtrowania
+    connect(filterTypeComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
+    connect(filterNameLineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+        qDebug() << "itemList: Zmiana tekstu w filterNameLineEdit:" << text;
+        m_nameFilterTimer->start(300); // 300 ms opóźnienia
+    });
+    onFilterChanged();
 }
 
 /**
@@ -234,24 +281,47 @@ itemList::~itemList()
  *
  * @section MethodOverview
  * Wypełnia combo boxy danymi z odpowiednich tabel bazy danych (types, vendors, models, statuses,
- * storage_places) i podłącza sloty do aktualizacji filtrów w modelu proxy.
+ * storage_places), inicjalizuje pole tekstowe dla filtru nazwy i podłącza sloty do aktualizacji filtrów
+ * w modelu proxy.
  */
 void itemList::initFilters(QSqlDatabase &db)
 {
+    qDebug() << "itemList: Rozpoczynam initFilters";
+    if (!db.isOpen()) {
+        qDebug() << "itemList: Baza danych nie jest otwarta w initFilters";
+        return;
+    }
+
+    // Sprawdzenie combo boxów
+    if (!filterTypeComboBox || !filterVendorComboBox || !filterModelComboBox
+        || !filterStatusComboBox || !filterStorageComboBox) {
+        qDebug() << "itemList: Jeden z QComboBox jest nullptr w initFilters!";
+        return;
+    }
+
     auto initFilter =
         [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
+            qDebug() << "itemList: Inicjalizuję filtr dla tabeli:" << table;
             cb->blockSignals(true);
             cb->clear();
             cb->addItem(tr("Wszystkie"));
             QSqlQuery q(db);
-            q.exec(QString("SELECT name FROM %1 ORDER BY name").arg(table));
-            while (q.next())
+            QString query = QString("SELECT name FROM %1 ORDER BY name").arg(table);
+            if (!q.exec(query)) {
+                qDebug() << "itemList: Błąd zapytania dla" << table << ":" << q.lastError().text();
+                cb->blockSignals(false);
+                return;
+            }
+            while (q.next()) {
                 cb->addItem(q.value(0).toString());
+            }
             cb->blockSignals(false);
             connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
                 setter(txt == tr("Wszystkie") ? QString() : txt);
             });
+            qDebug() << "itemList: Filtr dla" << table << "zainicjalizowany";
         };
+
     initFilter(filterTypeComboBox, "types", [this](const QString &v) {
         m_proxyModel->setTypeFilter(v);
     });
@@ -267,6 +337,30 @@ void itemList::initFilters(QSqlDatabase &db)
     initFilter(filterStorageComboBox, "storage_places", [this](const QString &v) {
         m_proxyModel->setStorageFilter(v);
     });
+
+    // Inicjalizacja pola tekstowego dla nazwy
+    if (filterNameLineEdit) {
+        filterNameLineEdit->setPlaceholderText(tr("Wpisz nazwę eksponatu..."));
+        qDebug() << "itemList: Placeholder dla filterNameLineEdit ustawiony";
+
+        // Autouzupełnianie
+        QStringList names;
+        QSqlQuery q(db);
+        if (q.exec("SELECT DISTINCT name FROM eksponaty ORDER BY name")) {
+            while (q.next()) {
+                names << q.value(0).toString();
+            }
+        } else {
+            qDebug() << "itemList: Błąd zapytania autouzupełniania:" << q.lastError().text();
+        }
+        QCompleter *completer = new QCompleter(names, filterNameLineEdit);
+        completer->setCaseSensitivity(Qt::CaseInsensitive);
+        filterNameLineEdit->setCompleter(completer);
+    } else {
+        qDebug() << "itemList: filterNameLineEdit jest nullptr w initFilters!";
+    }
+
+    qDebug() << "itemList: initFilters zakończony";
 }
 
 /**
@@ -290,7 +384,6 @@ void itemList::refreshFilters()
     QString currentModel = filterModelComboBox->currentText();
     QString currentStatus = filterStatusComboBox->currentText();
     QString currentStorage = filterStorageComboBox->currentText();
-
     initFilters(db);
 
     auto restoreFilter = [](QComboBox *cb, const QString &value) {
@@ -707,10 +800,16 @@ void itemList::onRecordSaved(const QString &recordId)
  */
 void itemList::refreshList(const QString &recordId)
 {
-    m_sourceModel->select();
+    qDebug() << "itemList: Rozpoczynam refreshList, recordId:" << recordId;
+    if (!m_sourceModel->select()) {
+        qDebug() << "itemList: Błąd w m_sourceModel->select():"
+                 << m_sourceModel->lastError().text();
+    }
     ui->itemList_tableView->resizeColumnsToContents();
+    qDebug() << "itemList: Tabela odświeżona, wierszy w źródle:" << m_sourceModel->rowCount();
 
     refreshFilters();
+    qDebug() << "itemList: Filtry odświeżone";
 
     if (!recordId.isEmpty()) {
         for (int row = 0; row < m_sourceModel->rowCount(); ++row) {
@@ -721,10 +820,12 @@ void itemList::refreshList(const QString &recordId)
                                                                  QItemSelectionModel::ClearAndSelect
                                                                      | QItemSelectionModel::Rows);
                 m_currentRecordId = recordId;
+                qDebug() << "itemList: Wybrano rekord:" << recordId;
                 break;
             }
         }
     }
+    qDebug() << "itemList: refreshList zakończony";
 }
 
 /**
@@ -960,19 +1061,11 @@ void itemList::insertSampleData(QSqlDatabase &db)
  * @brief Aktualizuje filtry po zmianie wartości w combo boxach.
  *
  * @section MethodOverview
- * Inicjalizuje timer utrzymujący połączenie z bazą danych, ustawia filtry w modelu proxy
- * na podstawie wybranych wartości w combo boxach i odbudowuje listy combo boxów dla
- * filtrowania kaskadowego.
+ * Ustawia filtry w modelu proxy na podstawie wybranych wartości w combo boxach i odbudowuje
+ * listy combo boxów dla filtrowania kaskadowego.
  */
 void itemList::onFilterChanged()
 {
-    m_keepAliveTimer = new QTimer(this);
-    connect(m_keepAliveTimer, &QTimer::timeout, this, []() {
-        QSqlQuery q(QSqlDatabase::database("default_connection"));
-        q.exec("SELECT 1");
-    });
-    m_keepAliveTimer->start(30000);
-
     auto sel = [&](QComboBox *cb) {
         QString t = cb->currentText();
         return t == tr("Wszystkie") ? QString() : t;
@@ -982,8 +1075,20 @@ void itemList::onFilterChanged()
     m_proxyModel->setModelFilter(sel(filterModelComboBox));
     m_proxyModel->setStatusFilter(sel(filterStatusComboBox));
     m_proxyModel->setStorageFilter(sel(filterStorageComboBox));
-
     updateFilterComboBoxes();
+}
+
+/**
+ * @brief Obsługuje zmianę tekstu w polu filtru nazwy.
+ * @param text Tekst wpisany w filterNameLineEdit.
+ *
+ * @section MethodOverview
+ * Ustawia filtr nazwy w modelu proxy i aktualizuje combo boxy dla kaskadowego filtrowania.
+ */
+void itemList::onNameFilterChanged(const QString &text)
+{
+    qDebug() << "itemList: onNameFilterChanged wywołane, tekst:" << text;
+    // Filtrowanie jest teraz obsługiwane przez m_nameFilterTimer
 }
 
 /**
@@ -991,13 +1096,16 @@ void itemList::onFilterChanged()
  *
  * @section MethodOverview
  * Aktualizuje zawartość combo boxów z uwzględnieniem kaskadowego filtrowania, pobierając
- * unikalne wartości z bazy danych z uwzględnieniem innych aktywnych filtrów.
+ * unikalne wartości z bazy danych z uwzględnieniem innych aktywnych filtrów, w tym filtru nazwy.
  */
 void itemList::updateFilterComboBoxes()
 {
+    qDebug() << "itemList: Rozpoczynam updateFilterComboBoxes";
     QSqlDatabase db = QSqlDatabase::database("default_connection");
-    if (!db.isOpen())
+    if (!db.isOpen()) {
+        qDebug() << "itemList: Baza danych nie jest otwarta w updateFilterComboBoxes";
         return;
+    }
 
     QString selType = filterTypeComboBox->currentText() == tr("Wszystkie")
                           ? QString()
@@ -1014,6 +1122,11 @@ void itemList::updateFilterComboBoxes()
     QString selStorage = filterStorageComboBox->currentText() == tr("Wszystkie")
                              ? QString()
                              : filterStorageComboBox->currentText();
+    QString selName = filterNameLineEdit->text().isEmpty() ? QString() : filterNameLineEdit->text();
+
+    qDebug() << "itemList: Filtry: type=" << selType << ", vendor=" << selVendor
+             << ", model=" << selModel << ", status=" << selStatus << ", storage=" << selStorage
+             << ", name=" << selName;
 
     struct Filter
     {
@@ -1036,6 +1149,7 @@ void itemList::updateFilterComboBoxes()
     )";
 
     for (auto &f : filters) {
+        qDebug() << "itemList: Aktualizuję combo box dla:" << f.field;
         f.cb->blockSignals(true);
         QString prev = f.cb->currentText();
         f.cb->clear();
@@ -1047,6 +1161,7 @@ void itemList::updateFilterComboBoxes()
                               "AND (:selModel IS NULL OR models.name = :selModel) "
                               "AND (:selStatus IS NULL OR statuses.name = :selStatus) "
                               "AND (:selStorage IS NULL OR storage_places.name = :selStorage) "
+                              "AND (:selName IS NULL OR eksponaty.name LIKE :selName) "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1057,15 +1172,25 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":selModel", selModel.isEmpty() ? QVariant() : selModel);
         q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant() : selStatus);
         q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant() : selStorage);
+        q.bindValue(":selName", selName.isEmpty() ? QVariant() : QString("%%%1%%").arg(selName));
         if (!q.exec()) {
-            qDebug() << "Błąd updateFilterComboBoxes:" << q.lastError().text();
-        }
-        while (q.next()) {
-            f.cb->addItem(q.value(0).toString());
+            qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"
+                     << q.lastError().text();
+        } else {
+            int count = 0;
+            while (q.next()) {
+                f.cb->addItem(q.value(0).toString());
+                count++;
+            }
+            qDebug() << "itemList: Dodano" << count << "elementów do" << f.field;
         }
 
         int idx = f.cb->findText(prev);
         f.cb->setCurrentIndex(idx != -1 ? idx : 0);
         f.cb->blockSignals(false);
+        qDebug() << "itemList: Combo box dla" << f.field
+                 << "zaktualizowany, wybrano:" << f.cb->currentText();
     }
+    qDebug() << "itemList: updateFilterComboBoxes zakończony";
+    m_proxyModel->invalidate(); // Wymuszenie odświeżenia tabeli
 }

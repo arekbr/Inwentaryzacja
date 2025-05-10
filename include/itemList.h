@@ -207,6 +207,8 @@ private slots:
      */
     void onFilterChanged();
 
+    void onNameFilterChanged(const QString &text);
+
 private:
     /**
      * @brief Weryfikuje schemat bazy danych.
@@ -300,6 +302,9 @@ private:
     /// Combo box dla filtru miejsca przechowywania.
     QComboBox *filterStorageComboBox;
 
+    /// Line edit dla filtru nazwy.
+    QLineEdit *filterNameLineEdit;
+
     /// ID aktualnie wybranego rekordu.
     QString m_currentRecordId;
 
@@ -317,6 +322,9 @@ private:
 
     /// Timer do utrzymywania aktywności połączenia z bazą danych.
     QTimer *m_keepAliveTimer;
+
+    /// Timer do filtrowania.
+    QTimer *m_nameFilterTimer; // Nowy timer dla opóźnienia filtrowania
 };
 
 #endif // ITEMLIST_H
