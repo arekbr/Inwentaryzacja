@@ -12,6 +12,7 @@ vcpkg*/
 *.db
 *.DS_Store
 *.txt
+*.ini
 
 # ale nie ignoruj pliku CMakeLists.txt we wszystkich katalogach
 !**/CMakeLists.txt
