@@ -83,8 +83,9 @@ DISTFILES += \
     boostrap_mac_silicon.sh \
     bootstrap.sh \
     bootstrap_mac_x86.sh \
+    copy_libs_to_project.sh \
     deploy_debug.bat \
-    fix_mysql_mac_new.sh \
+    fix_mariadb_mac.sh \
     fix_qt_mysql_mac.sh \
     make_deb.sh \
     make_rpm.sh \
@@ -128,7 +129,9 @@ DISTFILES += \
 # Czcionki
 DISTFILES += \
     fonts/topaz.ttf \
-    fonts/zxspectrum.ttf
+    fonts/zxspectrum.ttf \
+    EightBit Atari-Ataripl.ttf
+
 
 # Obrazy i ikony
 DISTFILES += \
@@ -160,34 +163,27 @@ DISTFILES += \
 
 # Biblioteki macOS (własne lub redistributable)
 DISTFILES += \
-    macos_lib_sql/iconengines/libqsvgicon.dylib \
-    macos_lib_sql/imageformats/libqgif.dylib \
-    macos_lib_sql/imageformats/libqicns.dylib \
-    macos_lib_sql/imageformats/libqico.dylib \
-    macos_lib_sql/imageformats/libqjpeg.dylib \
-    macos_lib_sql/imageformats/libqmacheif.dylib \
-    macos_lib_sql/imageformats/libqmacjp2.dylib \
-    macos_lib_sql/imageformats/libqpdf.dylib \
-    macos_lib_sql/imageformats/libqtga.dylib \
-    macos_lib_sql/imageformats/libqtiff.dylib \
-    macos_lib_sql/imageformats/libqwbmp.dylib \
-    macos_lib_sql/imageformats/libqwebp.dylib \
-    macos_lib_sql/libcrypto.1.1.dylib \
-    macos_lib_sql/libmysqlclient.21.dylib \
-    macos_lib_sql/libmysqlclient.a \
-    macos_lib_sql/libqsqlite.dylib \
-    macos_lib_sql/libqsqlmysql.dylib \
-    macos_lib_sql/libqsqlodbc.dylib \
-    macos_lib_sql/libqsqlpsql.dylib \
-    macos_lib_sql/libssl.1.1.dylib \
-    macos_lib_sql/platforminputcontexts/libqtvirtualkeyboardplugin.dylib \
-    macos_lib_sql/platforms/libqcocoa.dylib \
-    macos_lib_sql/sqldrivers/libqsqlite.dylib \
-    macos_lib_sql/sqldrivers/libqsqlmysql.dylib \
-    macos_lib_sql/sqldrivers/libqsqlodbc.dylib \
-    macos_lib_sql/sqldrivers/libqsqlpsql.dylib \
-    macos_lib_sql/sqldrivers/libssl.1.1.dylib \
-    macos_lib_sql/styles/libqmacstyle.dylib
+    mac_lib_sql/iconengines/libqsvgicon.dylib \
+    mac_lib_sql/imageformats/libqgif.dylib \
+    mac_lib_sql/imageformats/libqicns.dylib \
+    mac_lib_sql/imageformats/libqico.dylib \
+    mac_lib_sql/imageformats/libqjpeg.dylib \
+    mac_lib_sql/imageformats/libqmacheif.dylib \
+    mac_lib_sql/imageformats/libqmacjp2.dylib \
+    mac_lib_sql/imageformats/libqpdf.dylib \
+    mac_lib_sql/imageformats/libqtga.dylib \
+    mac_lib_sql/imageformats/libqtiff.dylib \
+    mac_lib_sql/imageformats/libqwbmp.dylib \
+    mac_lib_sql/imageformats/libqwebp.dylib \
+    mac_lib_sql/libcrypto.3.dylib \
+    mac_lib_sql/libmariadb.3.dylib \
+    mac_lib_sql/libqsqlite.dylib \
+    mac_lib_sql/libqsqlmysql.dylib \
+    mac_lib_sql/libssl.3.dylib \
+    mac_lib_sql/platforms/libqcocoa.dylib \
+    mac_lib_sql/sqldrivers/libqsqlmysql.dylib \
+    mac_lib_sql/sqldrivers/libqsqlite.dylib \
+    mac_lib_sql/styles/libqmacstyle.dylib
 
 # Biblioteki MySQL dla Windows
 DISTFILES += \
@@ -208,10 +204,8 @@ DISTFILES += \
     createTable.sql \
     database_example_record.sql
 
-
 RESOURCES += \
-        resources.qrc
-
+    resources.qrc
 
 ##################################################
 ## Deployment — only on Release builds
@@ -233,8 +227,6 @@ release:win32 {
         copy /Y $$shell_path($$SQLDRIVERS_DIR\\*.dll) $$shell_path($$SQLDRIVERS_DEST\\)
 }
 
-
-
 # — Linux Release deploy (for .deb and .rpm packages)
 release:unix:!macx {
     QMAKE_POST_LINK += $$quote( \
@@ -251,20 +243,19 @@ release:unix:!macx {
 # — macOS Release deploy
 release:macx {
     QMAKE_POST_LINK += $$quote( \
-        echo 🔌 Kopiowanie i patchowanie bibliotek MySQL do katalogu build... && \
-        $${PWD}/fix_mysql_mac_new.sh "$${OUT_PWD}/$${TARGET}.app" && \
+        echo 📦 Kopiowanie bibliotek do mac_lib_sql... && \
+        $${PWD}/copy_libs_to_project.sh && \
+        echo 🔌 Kopiowanie i patchowanie bibliotek MariaDB do katalogu build... && \
+        $${PWD}/fix_mariadb_mac.sh "$${OUT_PWD}/$${TARGET}.app" && \
         echo 🧹 Czyszczenie starego deployu... && \
         rm -rf "$${DEPLOY_DIR}" && \
         mkdir -p "$${DEPLOY_DIR}" && \
         echo 📂 Kopiowanie aplikacji... && \
         cp -R "$${OUT_PWD}/$${TARGET}.app" "$${DEPLOY_DIR}/" && \
-        echo 🧹 Usuwanie niepotrzebnych wtyczek przed macdeployqt... && \
-        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlodbc.dylib" && \
-        rm -f "$$[QT_INSTALL_PLUGINS]/sqldrivers/libqsqlpsql.dylib" && \
-        echo 🔌 Kopiowanie i patchowanie bibliotek MySQL do katalogu deploy... && \
-        $${PWD}/fix_mysql_mac_new.sh "$${DEPLOY_DIR}/$${TARGET}.app" && \
+        echo 🔌 Kopiowanie i patchowanie bibliotek MariaDB do katalogu deploy... && \
+        $${PWD}/fix_mariadb_mac.sh "$${DEPLOY_DIR}/$${TARGET}.app" && \
         echo 🚀 Wywołanie macdeployqt... && \
-        macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 && \
+        ~/Qt/6.9.0/macos/bin/macdeployqt "$${DEPLOY_DIR}/$${TARGET}.app" -verbose=1 -qmldir=$$PWD && \
         echo 💿 Tworzenie DMG... && \
         hdiutil create -volname "$${TARGET}" \
             -srcfolder "$${DEPLOY_DIR}/$${TARGET}.app" \
