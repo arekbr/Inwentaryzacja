@@ -8,9 +8,9 @@
  * @section Overview
  * Plik ItemFilterProxyModel.cpp zawiera implementację metod klasy ItemFilterProxyModel, 
  * która umożliwia dynamiczne filtrowanie listy eksponatów na podstawie atrybutów takich 
- * jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu 
- * QSortFilterProxyModel, umożliwiając filtrowanie wierszy modelu źródłowego (np. 
- * QSqlRelationalTableModel) z ignorowaniem wielkości liter.
+ * jak typ, producent, model, status, miejsce przechowywania i nazwa. Klasa korzysta z 
+ * mechanizmu QSortFilterProxyModel, umożliwiając filtrowanie wierszy modelu źródłowego 
+ * (np. QSqlRelationalTableModel) z ignorowaniem wielkości liter.
  *
  * @section Structure
  * Kod jest podzielony na następujące sekcje:
@@ -23,15 +23,13 @@
  * - **Nagłówek**: ItemFilterProxyModel.h.
  *
  * @section Notes
- * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dodano jedynie komentarze i dokumentację.
+ * - Kod obsługuje filtrowanie pełnotekstowe dla nazwy eksponatu oraz dokładne dopasowanie 
+ *   dla pozostałych atrybutów.
  * - Filtrowanie jest niezależne od wielkości liter, co ułatwia dopasowanie wartości.
- * - Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. typ w kolumnie 2).
+ * - Klasa zakłada, że model źródłowy ma określoną strukturę kolumn (np. nazwa w kolumnie 1, 
+ *   typ w kolumnie 2).
  */
 
-/*
- * === ItemFilterProxyModel.cpp ===
- * Implementacja filtrowania według wybranych wartości z QComboBox
- */
 #include "ItemFilterProxyModel.h"
 #include <QModelIndex>
 
@@ -121,6 +119,21 @@ void ItemFilterProxyModel::setStorageFilter(const QString &storage)
 }
 
 /**
+ * @brief Ustawia filtr dla nazwy eksponatu.
+ * @param filter QString zawierający fragment nazwy eksponatu lub pusty ciąg dla braku filtru.
+ *
+ * @section MethodOverview
+ * Zapisuje wartość filtru dla nazwy w zmiennej m_nameFilter i wywołuje 
+ * invalidateFilter(), aby odświeżyć widok z uwzględnieniem nowego filtru.
+ */
+void ItemFilterProxyModel::setNameFilter(const QString &filter)
+{
+    qDebug() << "ItemFilterProxyModel: Ustawiam nameFilter:" << filter;
+    m_nameFilter = filter;
+    invalidateFilter();
+}
+
+/**
  * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
  * @param sourceRow Numer wiersza w modelu źródłowym.
  * @param sourceParent Indeks rodzica w modelu źródłowym.
@@ -128,22 +141,32 @@ void ItemFilterProxyModel::setStorageFilter(const QString &storage)
  *
  * @section MethodOverview
  * Implementuje logikę filtrowania, sprawdzając, czy wartości w kolumnach modelu 
- * źródłowego odpowiadają ustawionym filtrom. Używa lambdy pasuje do porównania wartości 
- * w kolumnach (2: typ, 3: producent, 4: model, 9: status, 10: miejsce przechowywania) 
- * z wartościami filtrów. Pusty filtr dla danej kolumny oznacza akceptację wszystkich wartości.
+ * źródłowego odpowiadają ustawionym filtrom. Dla nazwy (kolumna 1) używa contains 
+ * (wyszukiwanie pełnotekstowe), dla pozostałych kolumn (2: typ, 3: producent, 
+ * 4: model, 9: status, 10: miejsce przechowywania) wymaga dokładnego dopasowania.
  */
 bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     const QAbstractItemModel *src = sourceModel();
+    if (!src)
+        return false;
+
     auto pasuje = [&](int col, const QString &wzor) {
         if (wzor.isEmpty())
-            return true; // brak filtra => wszystko pasuje
+            return true; // Brak filtra => wszystko pasuje
         QModelIndex idx = src->index(sourceRow, col, sourceParent);
-        return src->data(idx).toString() == wzor; // porównanie wartości
+        return src->data(idx).toString() == wzor; // Dokładne dopasowanie
     };
 
-    // Kolumny w QSqlRelationalTableModel:
-    // 2 = Typ, 3 = Producent, 4 = Model, 9 = Status, 10 = Miejsce przechowywania
+    // Sprawdź filtr nazwy (kolumna 1)
+    if (!m_nameFilter.isEmpty()) {
+        QModelIndex nameIndex = src->index(sourceRow, 1, sourceParent); // Kolumna 1 to 'name'
+        QString name = src->data(nameIndex).toString();
+        if (!name.contains(m_nameFilter, Qt::CaseInsensitive))
+            return false; // Nazwa nie pasuje do filtra
+    }
+
+    // Sprawdź pozostałe filtry (typ, producent, model, status, miejsce przechowywania)
     return pasuje(2, m_type) && pasuje(3, m_vendor) && pasuje(4, m_model) && pasuje(9, m_status)
            && pasuje(10, m_storage);
 }
