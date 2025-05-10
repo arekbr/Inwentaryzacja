@@ -1,0 +1,12 @@
+{
+    "name": "inwentaryzacja",
+    "version-string": "1.2.2",
+  "builtin-baseline": "41c447cc210dc39aa85d4a5f58b4a1b9e573b3dc",
+    "dependencies": [
+        "libmariadb",
+        {
+            "name": "openssl",
+            "version>=": "3.3.2"
+        }
+    ]
+}

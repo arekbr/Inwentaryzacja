@@ -1,12 +1,30 @@
 {
-    "name": "inwentaryzacja",
-    "version-string": "1.2.2",
-  "builtin-baseline": "41c447cc210dc39aa85d4a5f58b4a1b9e573b3dc",
-    "dependencies": [
-        "libmariadb",
-        {
-            "name": "openssl",
-            "version>=": "3.3.2"
-        }
-    ]
+  "name": "inwentaryzacja",
+  "version-string": "1.2.2",
+
+  // Bootstrap‑y i tak nadpisują to pole na HEAD vcpkg,
+  // więc tu może być cokolwiek – zostaw placeholder:
+  "builtin-baseline": "TO_BE_SET_BY_BOOTSTRAP",
+
+  "dependencies": [
+    // Qt 6 z pluginami SQL (MySQL + SQLite) i Widgets/Gui/Core
+    {
+      "name": "qtbase",
+      "features": [
+        "core",
+        "gui",
+        "widgets",
+        "sql-mysql",
+        "sql-sqlite"
+      ]
+    },
+    "qttools",
+
+    // Bazy danych
+    "libmariadb",
+    "sqlite3",
+
+    // Kryptografia
+    { "name": "openssl", "version>=": "3.3.2" }
+  ]
 }

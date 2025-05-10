@@ -1,90 +1,100 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 project(Inwentaryzacja LANGUAGES CXX)
 
-# ───────────────────────────────  Ogólne ustawienia  ───────────────────────────────
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+# ───────────────────────── General settings ────────────────────────────
+# Require C++17 and enable AUTOMOC/UITools/RCC in a Qt‑idiomatic way
+qt_standard_project_setup()
 
-set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/forms")
-
-# ─────────────  Własny katalog instalacyjny wewnątrz build/  ──────────────
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "" FORCE)
-
-# ───────────────────────────────  Toolchain (vcpkg)  ──────────────────────────────
-if(DEFINED ENV{VCPKG_ROOT})
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-else()
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+# Allow the caller to switch between vcpkg and system packages
+option(USE_VCPKG "Use vcpkg toolchain" ON)
+if(USE_VCPKG AND DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE
+        "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+elseif(USE_VCPKG)
+    message(FATAL_ERROR "USE_VCPKG=ON but VCPKG_ROOT not set")
 endif()
 
-# ───────────────────────────────  Qt 6  ───────────────────────────────────────────
+# Target‑level compile features (portable)
+add_library(project_options INTERFACE)
+set_property(TARGET project_options PROPERTY
+    INTERFACE_COMPILE_FEATURES cxx_std_17)
+
+# ────────────────────────── Qt 6 ───────────────────────────────────────
 if(DEFINED ENV{QT_BIN})
-    set(Qt6_DIR "$ENV{QT_BIN}/lib/cmake/Qt6")
+    list(PREPEND CMAKE_PREFIX_PATH "$ENV{QT_BIN}")
 endif()
-find_package(Qt6 COMPONENTS Core Gui Widgets Sql LinguistTools REQUIRED)
+find_package(Qt6 6.5 COMPONENTS Core Gui Widgets Sql LinguistTools
+             REQUIRED)
 
-# ───────────────────────────────  Biblioteki zewnętrzne  ─────────────────────────
+# ────────────────────────── External libs ──────────────────────────────
 find_package(OpenSSL REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(MARIADB REQUIRED IMPORTED_TARGET libmariadb)
+# SQLite3 has an official CMake package since 3.42 / vcpkg port name "sqlite3"
+find_package(SQLite3 REQUIRED)
+# Prefer official CMake find module (CMake ≥ 3.29) and fall back to pkg‑config
+find_package(MariaDB CONFIG QUIET)
+if(NOT MariaDB_FOUND)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(MariaDB REQUIRED IMPORTED_TARGET libmariadb)
+endif()
 
-# ───────────────────────────────  Pliki źródłowe  ────────────────────────────────
+# ─────────────────────────── Sources ───────────────────────────────────
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
 file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS include/*.h)
-file(GLOB FORM_FILES CONFIGURE_DEPENDS forms/*.ui)
+file(GLOB FORM_FILES      CONFIGURE_DEPENDS forms/*.ui)
 set(TRANSLATION_FILES translations/Inwentaryzacja_pl_PL.ts)
-qt6_add_translations(Inwentaryzacja TS_FILES ${TRANSLATION_FILES} QM_FILES_OUTPUT_VARIABLE QM_FILES)
+qt6_add_translations(Inwentaryzacja TS_FILES ${TRANSLATION_FILES}
+                    QM_FILES_OUTPUT_VARIABLE QM_FILES)
 
 qt_add_executable(Inwentaryzacja
-    ${SOURCE_FILES}
-    ${HEADER_FILES}
-    ${FORM_FILES}
-    resources.qrc
-    ${QM_FILES}
-)
+    ${SOURCE_FILES} ${HEADER_FILES} ${FORM_FILES} resources.qrc ${QM_FILES})
 
-# includes & linking
-get_target_property(QtCore_location Qt6::Core LOCATION)
-get_filename_component(Qt_prefix "${QtCore_location}" DIRECTORY)
-get_filename_component(Qt_prefix "${Qt_prefix}" DIRECTORY) # lib → <prefix>
-set(QT_PLUGINS_DIR "${Qt_prefix}/plugins")
-set(QT_LIB_DIR "${Qt_prefix}/lib")
-
- target_include_directories(Inwentaryzacja PRIVATE ${CMAKE_SOURCE_DIR}/include ${MARIADB_INCLUDE_DIRS})
+# Include paths & link targets
+#   generator‑expressions ensure correct DLL/.so/.dylib selection per‑config
 
 target_link_libraries(Inwentaryzacja PRIVATE
+    project_options
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Sql
     OpenSSL::SSL OpenSSL::Crypto
-    PkgConfig::MARIADB)
+    SQLite::SQLite3
+    
+    # MariaDB can be either imported via pkg‑config or CONFIG
+    $<$<BOOL:MariaDB::mariadbclient>:MariaDB::mariadbclient>
+    $<$<BOOL:PkgConfig::MariaDB>:PkgConfig::MariaDB>
+)
 
-# ───────────────────────────────  Instalacja  ────────────────────────────────────
-install(TARGETS Inwentaryzacja RUNTIME DESTINATION bin)
-
+# ────────────────────────── RPATH (Linux) ──────────────────────────────
 if(UNIX AND NOT APPLE)
-    # Qt i inne biblioteki współdzielone
-    # Qt libraries
-install(DIRECTORY "${QT_LIB_DIR}/" DESTINATION lib FILES_MATCHING PATTERN "libQt6*.so*")
-# ICU runtime libraries required by Qt
-install(DIRECTORY "${QT_LIB_DIR}/" DESTINATION lib FILES_MATCHING PATTERN "libicu*.so*")
-    install(FILES ${OpenSSL_SSL_LIBRARY} ${OpenSSL_CRYPTO_LIBRARY} DESTINATION lib)
-    # Kopiuj biblioteki MariaDB tylko gdy ścieżka jest absolutna (vcpkg)
-foreach(lib ${MARIADB_LIBRARIES})
-    if(IS_ABSOLUTE "${lib}" AND EXISTS "${lib}")
-        install(FILES "${lib}" DESTINATION lib)
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+endif()
+
+# ────────────────────────── Deployment / install ───────────────────────
+include(GNUInstallDirs)
+install(TARGETS Inwentaryzacja RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/translations)
+
+# Copy dependent shared libraries in a cross‑platform, generator‑safe way
+foreach(_t Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Sql
+           OpenSSL::SSL OpenSSL::Crypto
+           SQLite::SQLite3 MariaDB::mariadbclient PkgConfig::MariaDB)
+    if(TARGET "${_t}")
+        install(FILES $<TARGET_FILE:${_t}> DESTINATION ${CMAKE_INSTALL_LIBDIR})
     endif()
 endforeach()
 
-    # pluginy Qt
-    install(DIRECTORY "${QT_PLUGINS_DIR}" DESTINATION .)
-
-    # wrapper startowy
-    install(CODE [[
-        file(WRITE "${CMAKE_INSTALL_PREFIX}/bin/Inwentaryzacja.sh" "#!/usr/bin/env bash\nexport LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH\nexport QT_PLUGIN_PATH=${CMAKE_INSTALL_PREFIX}/plugins\nexec \"${CMAKE_INSTALL_PREFIX}/bin/Inwentaryzacja\" \"$@\"\n")
-        execute_process(COMMAND chmod +x "${CMAKE_INSTALL_PREFIX}/bin/Inwentaryzacja.sh")
-    ]])
+# Platform‑specific deployment helpers
+if(APPLE)
+    # Build a .app bundle and run macdeployqt automatically (Qt ≥ 6.7)
+    set_target_properties(Inwentaryzacja PROPERTIES MACOSX_BUNDLE TRUE)
+    find_package(Qt6 COMPONENTS macOSDeployment REQUIRED)
+    qt6_macos_deploy(TARGETS Inwentaryzacja VERBOSE)
+elseif(WIN32)
+    # Copy Qt & runtime DLLs with windeployqt (Qt 6.7+ has CMake wrapper)
+    find_package(Qt6 COMPONENTS WindowsDeployment REQUIRED)
+    qt6_windeployqt(TARGETS Inwentaryzacja PATHS "${CMAKE_INSTALL_PREFIX}" VERBOSE)
+else() # Linux
+    # Optional wrapper script with LD_LIBRARY_PATH
+    configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/LaunchWrapper.sh.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/Inwentaryzacja.sh @ONLY)
+    install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Inwentaryzacja.sh
+            DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
-
-install(FILES ${QM_FILES} DESTINATION translations)

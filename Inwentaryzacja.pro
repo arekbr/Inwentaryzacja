@@ -77,12 +77,17 @@ TRANSLATIONS += \
 # Licencje i skrypty
 DISTFILES += \
     CMakeLists.txt \
+    CMakeLists.txt.oryg \
     LICENSE \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
     boostrap_mac_silicon.sh \
     bootstrap.sh \
+    bootstrap_linux.sh \
+    bootstrap_mac.sh \
     bootstrap_mac_x86.sh \
+    bootstrap_windows.ps1 \
+    bootstrap_windows.ps1.oryg \
     copy_libs_to_project.sh \
     deploy_debug.bat \
     fix_mariadb_mac.sh \
@@ -96,7 +101,8 @@ DISTFILES += \
     qt_full_installer.ps1 \
     renumeracja.sh \
     set_icon.sh \
-    vcpkg.json
+    vcpkg.json \
+    vcpkg.json.oryg
 
 # Dokumentacja techniczna (.md)
 DISTFILES += \
