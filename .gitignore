@@ -13,6 +13,7 @@ vcpkg*/
 *.DS_Store
 *.txt
 *.ini
+qt_env.sh
 
 # ale nie ignoruj pliku CMakeLists.txt we wszystkich katalogach
 !**/CMakeLists.txt

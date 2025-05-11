@@ -76,6 +76,12 @@ TRANSLATIONS += \
 
 # Licencje i skrypty
 DISTFILES += \
+    1.bootstrap_linux.sh \
+    2.build_qt_mysql_plugin_linux.sh \
+    3.build_inwentaryzacja_linux.sh \
+    4.deploy_linux.sh \
+    5.run_inwentaryzacja_linux.sh \
+    6.make_deb_linux.sh \
     CMakeLists.txt \
     CMakeLists.txt.oryg \
     LICENSE \

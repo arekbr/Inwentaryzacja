@@ -37,6 +37,7 @@
 #include <QFontDatabase>
 #include <QPushButton>
 #include <QSettings>
+#include <QStandardPaths>
 #include "ui_DatabaseConfigDialog.h"
 
 /**
@@ -48,14 +49,10 @@
  */
 static QSettings getSettings()
 {
-    QString settingsPath = QCoreApplication::applicationDirPath() + "/inwentaryzacja.ini";
-    QFile settingsFile(settingsPath);
-    if (!settingsFile.exists()) {
-        QFile file(settingsPath);
-        if (file.open(QIODevice::WriteOnly)) {
-            file.close();
-        }
-    }
+    QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    QDir().mkpath(configDir); // twórz katalog jeśli nie istnieje
+    QString settingsPath = configDir + "/inwentaryzacja.ini";
+    qDebug() << "Używam pliku ustawień:" << settingsPath;
     return QSettings(settingsPath, QSettings::IniFormat);
 }
 
