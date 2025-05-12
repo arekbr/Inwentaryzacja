@@ -11,7 +11,7 @@ CONFIG  += c++17 \
            embed_translations
 CONFIG  -= static
 
-VERSION = 1.2.4
+VERSION = 1.2.5
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_TARGET_COMPANY     = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK

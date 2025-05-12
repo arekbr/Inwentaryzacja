@@ -12,31 +12,31 @@ Dlaczego tak? Bo to frajda, wyzwanie i sposób, żeby mieć narzędzie, jakiego 
 
 ## Co potrafi program?
 
-Inwentaryzacja to więcej niż prosta baza danych. Aktualna wersja (1.2.0) oferuje:
+Inwentaryzacja to więcej niż prosta baza danych. Aktualna wersja (1.2.4) oferuje:
 - **Zarządzanie elementami**: Dodawaj, edytuj, usuwaj komputery i akcesoria z kolekcji.
 - **types i producenci**: Kategoryzuj sprzęt (np. Amiga, Atari) i przypisuj producentów.
 - **Statusy i miejsca przechowywania**: Oznacz, czy sprzęt jest „sprawny”, „do naprawy”, i gdzie leży („strych”, „piwnica”).
 - **Obsługa zdjęć**: Dodawaj fotki swoich retro maszyn i przeglądaj je w pełnym ekranie.
 - **Elastyczna baza danych**: Wybierz między SQLite3 (prosta, lokalna) a MySQL (dla bardziej zaawansowanych).
-- (TODO) **Filtrowanie i wyszukiwanie**: Szybko znajdź sprzęt po nazwie, typie czy statusie.
 - **UUID**: Unikalne identyfikatory dla każdego rekordu, gotowe na duże kolekcje.
+- **Skórki**: Można definiować swoje skórki, żeby można było wpisywać swoje eksponaty w klimacie ulubionego retro kompuera.
 
 Program jest w pełni funkcjonalny, ale wciąż się rozwija – kolejne funkcje już w planach!
 
 ## Jak zacząć?
 
 ### Wymagania
-- **Qt**: Używamy Qt 6.8.3 (testowane z Qt Creator 16.0.1).
+- **Qt**: Używamy Qt 6.9.0 (testowane z Qt Creator 16.0.1).
 - **Baza danych**: Potrzebujesz SQLite3 (wbudowane) lub MySQL (jeśli chcesz serwer).
 - **System**: Działa na Windows, macOS i Linux.
 
 ### Instalacja
-1. Zainstaluj [Qt 6.8.3](https://www.qt.io/download) i Qt Creator.
+1. Zainstaluj [Qt 6.9.0](https://www.qt.io/download) i Qt Creator.
 2. Pobierz kod źródłowy projektu:
 
 git clone https://github.com/arekbr/Inwentaryzacja.git
 
-Masz problemy z kompilacją? Napisz, spróbujemy ogarnąć – wiem, jak to jest, gdy „nic nie działa”! 😜
+Masz problemy z kompilacją? Napisz, spróbujemy ogarnąć – wiem, jak to jest, gdy „nic nie działa”! 😜 Jak wyszło z doświadczeń i pracy, szczególnie chodzi o system macos, to musi być wspierany, żeby skrypty działały. Sama apka się kompiluje, gdyby ktoś chciał, ale CMakelist i skrypty będą działać tylko tam, gdzie brew może w pełni zarządzać systemem. Czyli Ventura to minimum.
 
 ## Chcesz dołączyć?
 
@@ -79,6 +79,7 @@ SQLite: W domenie publicznej, bez ograniczeń. Zobacz sqlite.org.
 MySQL Connector/C: Na licencji GPLv2 z wyjątkiem FOSS, zgodny z LGPL w tym projekcie. Zobacz mysql.com.
 MinGW (biblioteki runtime GCC): Na licencjach permissywnych (GPL z wyjątkami). Zobacz mingw.org.
 Inne zależności (np. OpenSSL, jeśli używane): Sprawdź ich licencje w dystrybucji źródłowej.
+Fonty : przypomnę sobie skąd je pobrałem i wrzucę kto jest autorem. Gdzieś na githubie to było. :)
 
 Aby być w zgodzie z licencjami, upewnij się, że przy dystrybucji aplikacji zapewniasz dostęp do kodu źródłowego bibliotek LGPL/GPL.
 Podziękowania

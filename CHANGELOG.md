@@ -4,6 +4,21 @@ Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym p
 
 Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), a projekt stosuje [Wersjonowanie Semantyczne](https://semver.org/lang/pl/).
 
+## [1.2.5] - 2025-05-12
+
+### Dodano
+  - Filtrowanie
+  - Skrypty dla Debian 12 do budowania całości ze źródeł (od bibliotek i zasobów systemowych po paczkę DEB).
+  - CMakelist.txt (na razie testy tylko dla Debiana przeszły testy)
+
+### Zmieniono
+  - Ścieżkę zapisu pliku .ini z konfiguracją.
+
+### ToDo:
+  - Sprawdzić na czystym Debianie czy wszystko działa jak powinno
+  - Skrypty dla Apple macos
+  - Skrypty dla Windows
+  
 ## [1.2.2] - 2025-05-03
 
 ### Dodano
