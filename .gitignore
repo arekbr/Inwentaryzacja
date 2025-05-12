@@ -4,6 +4,7 @@ installer/
 releasowa/
 deploy/
 vcpkg*/
+mac_lib_sql/
 *.exe
 *.log
 *.pro.user*
