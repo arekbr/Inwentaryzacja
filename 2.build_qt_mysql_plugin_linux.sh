@@ -7,9 +7,9 @@ echo -e "\n🔌 [PLUGIN] Budowa Qt SQL Driverów (w tym qsqlmysql) — generator
 # ==========================
 # Sprawdzenie wymaganych zmiennych
 # ==========================
-if [[ -z "$QT_PATH" ]]; then
-  echo "❌ QT_PATH nie jest ustawiony. Uruchom najpierw 'source ./bootstrap_linux.sh'."
-  exit 1
+if [[ -z "$QT_PATH" && -f qt_env.sh ]]; then
+    echo "ℹ️  Wczytywanie QT_PATH z qt_env.sh"
+    source qt_env.sh
 fi
 
 if [[ -z "$QT_SRC_PATH" ]]; then

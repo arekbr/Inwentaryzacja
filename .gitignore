@@ -5,6 +5,8 @@ releasowa/
 deploy/
 vcpkg*/
 mac_lib_sql/
+build_inwentaryzacja/
+build_qt_sql_drivers/
 *.exe
 *.log
 *.pro.user*
