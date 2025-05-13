@@ -36,6 +36,9 @@ Program jest w pełni funkcjonalny, ale wciąż się rozwija – kolejne funkcje
 
 git clone https://github.com/arekbr/Inwentaryzacja.git
 
+### uruchamianie skryptów 
+W osobnych katalogach są skrypty dla systemów Windows/Linux/Macos. Testowałem to na Windows 11/Debian 12/Macos Ventura 13.75. Pliki trzeba skopiować do głównego katalogu projektu i uruchamiać w kolejności. Wynikiem powinien być gotowy program oraz paczka w zależności od systemu. Instalator exe, plik DEB oraz DMG.
+
 Masz problemy z kompilacją? Napisz, spróbujemy ogarnąć – wiem, jak to jest, gdy „nic nie działa”! 😜 Jak wyszło z doświadczeń i pracy, szczególnie chodzi o system macos, to musi być wspierany, żeby skrypty działały. Sama apka się kompiluje, gdyby ktoś chciał, ale CMakelist i skrypty będą działać tylko tam, gdzie brew może w pełni zarządzać systemem. Czyli Ventura to minimum.
 
 ## Chcesz dołączyć?

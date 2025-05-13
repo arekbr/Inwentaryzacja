@@ -92,6 +92,7 @@ DISTFILES += \
     scripts_build_debian/4.deploy_linux.sh \
     scripts_build_debian/5.run_inwentaryzacja_linux.sh \
     scripts_build_debian/6.make_deb_linux.sh \
+    scripts_build_debian/README.md \
     scripts_build_macos_ventura/1.bootstrap_macos.sh \
     scripts_build_macos_ventura/2.build_qt_mysql_plugin_macos.sh \
     scripts_build_macos_ventura/3.sanitize_qt_sql_plugins_macos.sh \
@@ -100,6 +101,7 @@ DISTFILES += \
     scripts_build_macos_ventura/6.run_inwentaryzacja_macos.sh \
     scripts_build_macos_ventura/7.make_dmg_macos.sh \
     scripts_build_macos_ventura/8.restore_qt_sql_plugins_macos.sh \
+    scripts_build_macos_ventura/README.md \
     scripts_build_windows/1.bootstrap_windows.ps1 \
     scripts_build_windows/2.build_qt_mysql_plugin_windows.ps1 \
     scripts_build_windows/3.build_project_windows.ps1 \
@@ -107,6 +109,7 @@ DISTFILES += \
     scripts_build_windows/5.run_inwentaryzacja_windows.ps1 \
     scripts_build_windows/6.build_interbase_windows.ps1 \
     scripts_build_windows/7.make_installer_windows.ps1 \
+    scripts_build_windows/README.md \
     set_icon.sh \
 
 # Dokumentacja techniczna (.md)
