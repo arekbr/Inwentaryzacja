@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+export CMAKE_OSX_ARCHITECTURES=$(uname -m)
 
 echo -e "\n🍏 [BOOTSTRAP] Inicjalizacja środowiska pod Qt 6.9.0 + MariaDB (macOS Ventura+)\n"
 
@@ -86,7 +87,9 @@ echo "✅ Pakiety zainstalowane"
 echo
 read -p "📂 Czy chcesz użyć własnej instalacji Qt 6.9.0? (y/n) " choice
 if [[ "$choice" == "y" ]]; then
-  read -p "🔍 Podaj ścieżkę do katalogu Qt (np. /Users/Arek/Qt/6.9.0/macos): " QT_PATH
+    DEFAULT_QT_PATH="$HOME/Qt/6.9.0/macos"
+    read -p "🔍 Podaj ścieżkę do katalogu Qt [$DEFAULT_QT_PATH]: " QT_PATH
+    QT_PATH="${QT_PATH:-$DEFAULT_QT_PATH}"
   if [[ ! -d "$QT_PATH" ]]; then
     echo "❌ Błąd: Podana ścieżka nie istnieje."
     exit 1

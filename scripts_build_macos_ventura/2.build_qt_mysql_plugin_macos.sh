@@ -71,6 +71,7 @@ EOF
 echo "⚙️  Konfiguracja CMake + budowa Ninja"
 cmake -G Ninja . \
   -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_SYSTEM_PROCESSOR=$(uname -m)
 
 ninja -j$(sysctl -n hw.logicalcpu)
 
