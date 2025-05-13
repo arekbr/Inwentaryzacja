@@ -112,8 +112,8 @@ Move-Item -Path $cmakeListBackup -Destination $cmakeListFile -Force
 $plugin = Get-ChildItem -Recurse -Filter qsqlmysql.dll | Select-Object -First 1
 if ($plugin) {
     Write-Host "`n✅ Zbudowano plugin: $($plugin.FullName)" -ForegroundColor Green
-    Write-Host "📥 Możesz go teraz skopiować do:"
-    Write-Host "    $env:QT_PATH\plugins\sqldrivers\"
+#    Write-Host "📥 Możesz go teraz skopiować do:"
+#    Write-Host "    $env:QT_PATH\plugins\sqldrivers\"
 } else {
     Write-Error "❌ Nie znaleziono qsqlmysql.dll. Coś poszło nie tak."
     exit 1

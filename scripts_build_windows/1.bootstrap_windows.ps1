@@ -78,16 +78,28 @@ if (-not $toolsOk) {
 # ==========================================
 # Krok 4: Ścieżka do Qt
 # ==========================================
+$defaultQtPath = "C:\Qt\6.9.0\mingw_64"
+$detectedQt = Test-Path $defaultQtPath
+
 $useQt = Read-Host "`n📂 Czy chcesz użyć własnej instalacji Qt 6.9.0? (y/n)"
 $QT_PATH = ""
 $QT_SRC_PATH = ""
 
 if ($useQt -eq "y") {
-    $QT_PATH = Read-Host "🔍 Podaj ścieżkę do katalogu Qt (np. C:\Qt\6.9.0\mingw_64)"
+    if ($detectedQt) {
+        $QT_PATH = Read-Host "🔍 Podaj ścieżkę do katalogu Qt [domyślnie: $defaultQtPath]"
+        if ([string]::IsNullOrWhiteSpace($QT_PATH)) {
+            $QT_PATH = $defaultQtPath
+        }
+    } else {
+        $QT_PATH = Read-Host "🔍 Podaj ścieżkę do katalogu Qt (np. C:\Qt\6.9.0\mingw_64)"
+    }
+
     if (-not (Test-Path $QT_PATH)) {
         Write-Error "❌ Podana ścieżka nie istnieje."
         exit 1
     }
+
     Write-Host "✅ Qt PATH ustawiony na: $QT_PATH"
 
     $QT_SRC_PATH = Join-Path (Split-Path $QT_PATH -Parent) "Src"
@@ -107,6 +119,7 @@ if ($useQt -eq "y") {
 } else {
     Write-Host "`n📥 Qt 6.9.0 zostanie pobrane i zbudowane lokalnie w kolejnym kroku (build_qt.ps1)"
 }
+
 
 # ==========================================
 # Krok 5: Katalog build\
@@ -136,7 +149,7 @@ Write-Host "`n📄 Zapisano qt_env.ps1"
 # ==========================================
 if ($QT_PATH -and $QT_SRC_PATH) {
     Write-Host "`n✅ Środowisko gotowe do budowy pluginu QMYSQL i projektu Inwentaryzacja"
-    Write-Host "➡️  Kolejny krok: .\build_qt_mysql_plugin.ps1"
+    Write-Host "➡️  Kolejny krok: .\2.build_qt_mysql_plugin_windows.ps1"
 } else {
     Write-Host "`n🛑 Qt nie jest jeszcze zainstalowane — kolejny krok to: .\build_qt.ps1 (pełna kompilacja Qt ze źródeł)"
 }
