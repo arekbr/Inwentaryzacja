@@ -1,15 +1,9 @@
-gotowa/
 build/
-installer/
-releasowa/
-deploy/
-vcpkg*/
-mac_lib_sql/
 build_inwentaryzacja/
 build_qt_sql_drivers/
+deploy/
 *.exe
 *.log
-*.pro.user*
 *.zip
 *.dmg
 *.db

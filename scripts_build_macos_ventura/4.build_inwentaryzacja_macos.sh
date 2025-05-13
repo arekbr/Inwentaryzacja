@@ -28,7 +28,7 @@ cd "$BUILD_DIR"
 # Konfiguracja CMake
 # ============================
 echo "⚙️ Konfiguracja CMake (Qt PATH: $QT_PATH)"
-cmake -G Ninja ../.. \
+cmake -G Ninja .. \
   -DCMAKE_PREFIX_PATH="$QT_PATH" \
   -DQt6Sql_NO_PLUGIN_INCLUDES=TRUE
 
