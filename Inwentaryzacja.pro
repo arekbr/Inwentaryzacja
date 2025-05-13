@@ -76,20 +76,6 @@ TRANSLATIONS += \
 
 # Licencje i skrypty
 DISTFILES += \
-    1.bootstrap_linux.sh \
-    1.bootstrap_macos.sh \
-    2.build_qt_mysql_plugin_linux.sh \
-    2.build_qt_mysql_plugin_macos.sh \
-    3.build_inwentaryzacja_linux.sh \
-    3.sanitize_qt_sql_plugins_macos.sh \
-    4.build_inwentaryzacja_macos.sh \
-    4.deploy_linux.sh \
-    5.deploy_macos.sh \
-    5.run_inwentaryzacja_linux.sh \
-    6.make_deb_linux.sh \
-    6.run_inwentaryzacja_macos.sh \
-    7.make_dmg_macos.sh \
-    8.restore_qt_sql_plugins_macos.sh \
     CMakeLists.txt \
     CMakeLists.txt.oryg \
     LICENSE \
