@@ -1,4 +1,3 @@
-build/
 build_inwentaryzacja/
 build_qt_sql_drivers/
 deploy/
@@ -11,6 +10,63 @@ deploy/
 *.txt
 *.ini
 qt_env.sh
+
+
+# Pliki binarne i biblioteki
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.o
+*.obj
+
+# Katalogi bibliotek
+macos_lib_sql/
+mysql_dll/
+mac_lib_sql/
+
+# Katalogi build
+build*/
+cmake-build*/
+out/
+bin/
+lib/
+
+# Dokumentacja Doxygen
+dokumentacja_doxygen/
+*.xml
+
+# Pliki graficzne (opcjonalnie, jeśli ikony są za duże)
+# *.png
+# *.ico
+
+# Pliki tymczasowe
+*.bak
+*.swp
+*~
+
+# Pliki IDE
+.vscode/
+*.code-workspace
+*.pro.user
+.idea/
+*.iml
+
+# Pliki CMake
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+
+# Pliki Qt
+*.moc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Inne
+.DS_Store
+
 
 # ale nie ignoruj pliku CMakeLists.txt we wszystkich katalogach
 !**/CMakeLists.txt
