@@ -77,32 +77,22 @@ TRANSLATIONS += \
 # Licencje i skrypty
 DISTFILES += \
     CMakeLists.txt \
-    CMakeLists.txt.oryg \
     LICENSE \
     Makefile \
     Refactor-Inwentaryzacja.ps1 \
-    boostrap_mac_silicon.sh \
-    bootstrap.sh \
-    bootstrap_linux.sh \
-    bootstrap_mac.sh \
-    bootstrap_mac_x86.sh \
-    bootstrap_windows.ps1 \
-    bootstrap_windows.ps1.oryg \
     copy_libs_to_project.sh \
     deploy_debug.bat \
     fix_mariadb_mac.sh \
-    fix_qt_mysql_mac.sh \
-    make_deb.sh \
-    make_rpm.sh \
     merge.sh \
     merge_win.ps1 \
-    prepare_dmg.sh \
-    prepare_release.sh \
-    qt_full_installer.ps1 \
     renumeracja.sh \
+    scripts_build_debian/1.bootstrap_linux.sh \
+    scripts_build_debian/2.build_qt_mysql_plugin_linux.sh \
+    scripts_build_debian/3.build_inwentaryzacja_linux.sh \
+    scripts_build_debian/4.deploy_linux.sh \
+    scripts_build_debian/5.run_inwentaryzacja_linux.sh \
+    scripts_build_debian/6.make_deb_linux.sh \
     set_icon.sh \
-    vcpkg.json \
-    vcpkg.json.oryg
 
 # Dokumentacja techniczna (.md)
 DISTFILES += \
@@ -166,41 +156,6 @@ DISTFILES += \
     styles/atari8bit.qss \
     styles/default.qss \
     styles/zxspectrum.qss
-
-# Biblioteki macOS (własne lub redistributable)
-DISTFILES += \
-    mac_lib_sql/iconengines/libqsvgicon.dylib \
-    mac_lib_sql/imageformats/libqgif.dylib \
-    mac_lib_sql/imageformats/libqicns.dylib \
-    mac_lib_sql/imageformats/libqico.dylib \
-    mac_lib_sql/imageformats/libqjpeg.dylib \
-    mac_lib_sql/imageformats/libqmacheif.dylib \
-    mac_lib_sql/imageformats/libqmacjp2.dylib \
-    mac_lib_sql/imageformats/libqpdf.dylib \
-    mac_lib_sql/imageformats/libqtga.dylib \
-    mac_lib_sql/imageformats/libqtiff.dylib \
-    mac_lib_sql/imageformats/libqwbmp.dylib \
-    mac_lib_sql/imageformats/libqwebp.dylib \
-    mac_lib_sql/libcrypto.3.dylib \
-    mac_lib_sql/libmariadb.3.dylib \
-    mac_lib_sql/libqsqlite.dylib \
-    mac_lib_sql/libqsqlmysql.dylib \
-    mac_lib_sql/libssl.3.dylib \
-    mac_lib_sql/platforms/libqcocoa.dylib \
-    mac_lib_sql/sqldrivers/libqsqlmysql.dylib \
-    mac_lib_sql/sqldrivers/libqsqlite.dylib \
-    mac_lib_sql/styles/libqmacstyle.dylib
-
-# Biblioteki MySQL dla Windows
-DISTFILES += \
-    mysql_dll/libcrypto-3-x64.dll \
-    mysql_dll/libmysql.dll \
-    mysql_dll/libssl-3-x64.dll
-
-# Pluginy SQL
-DISTFILES += \
-    sqldrivers/mysql_native_password.dll \
-    sqldrivers/qsqlmysql.dll
 
 # Skrypty SQL i pliki danych
 DISTFILES += \
