@@ -107,7 +107,7 @@ DISTFILES += \
     scripts_build_windows/3.build_project_windows.ps1 \
     scripts_build_windows/4.deploy_windows.ps1 \
     scripts_build_windows/5.run_inwentaryzacja_windows.ps1 \
-    scripts_build_windows/7.make_installer_windows.ps1 \
+    scripts_build_windows/6.make_installer_windows.ps1 \
     scripts_build_windows/README.md \
     set_icon.sh \
 
