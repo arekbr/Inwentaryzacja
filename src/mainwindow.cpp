@@ -51,6 +51,7 @@
 #include <QSettings>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QStandardPaths>
 #include <QUuid>
 
 #include "models.h"
@@ -523,11 +524,19 @@ void MainWindow::loadPhotosFromBuffer()
  *
  * @section MethodOverview
  * Waliduje dane, zapisuje rekord w tabeli eksponaty (INSERT dla nowych, UPDATE dla edycji),
- * przenosi zdjęcia z bufora do bazy danych i katalogu "gotowe", emituje sygnał recordSaved
- * i zamyka okno po sukcesie.
+ * przenosi zdjęcia z bufora do bazy danych. Przenoszenie plików do katalogu "gotowe"
+ * wykonywane jest tylko jeśli w pliku konfiguracyjnym inwentaryzacja.ini znajduje się:
+ * [General] przenosic_gotowe=tak. W przeciwnym razie pliki źródłowe zdjęć nie są dotykane.
+ * Po zapisie emitowany jest sygnał recordSaved i okno zostaje zamknięte.
  */
 void MainWindow::onSaveClicked()
 {
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower()
+                              != "nie";
+
     QSqlQuery q(db);
 
     if (!m_editMode) {
@@ -622,16 +631,17 @@ void MainWindow::onSaveClicked()
                 const QString orig = m_photoPathsBuffer.at(i);
                 QFileInfo fi(orig);
                 QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-                QDir().mkpath(doneDir);
-                QString dst = doneDir + QDir::separator() + fi.fileName();
-                QFile::rename(orig, dst);
+                if (m_shouldMovePhotos) {
+                    QDir().mkpath(doneDir);
+                    QString dst = doneDir + QDir::separator() + fi.fileName();
+                    QFile::rename(orig, dst);
+                }
             }
         }
         m_photoBuffer.clear();
         m_photoPathsBuffer.clear();
     }
 
-    // Wyłącz tryb edycji dla wszystkich PhotoItem
     QGraphicsScene *scene = ui->graphicsView->scene();
     if (scene) {
         QList<QGraphicsItem *> items = scene->items();
@@ -673,11 +683,19 @@ void MainWindow::onCancelClicked()
  * @brief Dodaje nowe zdjęcia do rekordu.
  *
  * @section MethodOverview
- * Otwiera okno wyboru plików, ładuje zdjęcia do bufora (dla nowych rekordów) lub bazy danych
- * (dla edycji), przenosi pliki do katalogu "gotowe" i odświeża podgląd miniaturek w QGraphicsView.
+ * Otwiera okno wyboru plików, ładuje zdjęcia do bufora (dla nowych rekordów) lub zapisuje do bazy danych
+ * (dla edytowanych rekordów). Przeniesienie oryginalnych plików do katalogu „gotowe” jest warunkowe i
+ * zależy od ustawienia przenosic_gotowe w pliku konfiguracyjnym inwentaryzacja.ini.
+ * Podgląd miniaturek jest odświeżany po zakończeniu operacji.
  */
 void MainWindow::onAddPhotoClicked()
 {
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower()
+                              != "nie";
+
     QStringList files = QFileDialog::getOpenFileNames(this,
                                                       tr("Wybierz zdjęcia"),
                                                       QString(),
@@ -708,18 +726,21 @@ void MainWindow::onAddPhotoClicked()
             q.bindValue(":exid", m_recordId);
             q.bindValue(":photo", data);
             if (q.exec()) {
-                QFileInfo fi(fn);
-                QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-                if (!QDir().mkpath(doneDir)) {
-                    QMessageBox::warning(this,
-                                         tr("Uwaga"),
-                                         tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
-                }
-                QString dst = doneDir + QDir::separator() + fi.fileName();
-                if (!QFile::rename(fn, dst)) {
-                    QMessageBox::warning(this,
-                                         tr("Uwaga"),
-                                         tr("Nie można przenieść %1 do %2").arg(fn, dst));
+                if (m_shouldMovePhotos) {
+                    QFileInfo fi(fn);
+                    QString doneDir = fi.absolutePath() + QDir::separator()
+                                      + QStringLiteral("gotowe");
+                    if (!QDir().mkpath(doneDir)) {
+                        QMessageBox::warning(this,
+                                             tr("Uwaga"),
+                                             tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
+                    }
+                    QString dst = doneDir + QDir::separator() + fi.fileName();
+                    if (!QFile::rename(fn, dst)) {
+                        QMessageBox::warning(this,
+                                             tr("Uwaga"),
+                                             tr("Nie można przenieść %1 do %2").arg(fn, dst));
+                    }
                 }
             } else {
                 QMessageBox::critical(this,
@@ -733,6 +754,7 @@ void MainWindow::onAddPhotoClicked()
         loadPhotosFromBuffer();
     else
         loadPhotos(m_recordId);
+
     this->raise();
     this->activateWindow();
 }
