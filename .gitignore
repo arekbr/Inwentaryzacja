@@ -75,3 +75,9 @@ qrc_*.cpp
 
 # ale nie ignoruj pliku CMakeLists.txt we wszystkich katalogach
 !**/CMakeLists.txt
+
+# Pliki .ps1 tylko w głównym katalogu
+/*.ps1
+
+# Ale nie ignoruj plików .ps1 w podkatalogach
+!*/**.ps1
