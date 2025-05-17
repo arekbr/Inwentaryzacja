@@ -29,8 +29,9 @@ Write-Host "`n>>> Gotowe: 1. Ścieżki i pliki" -ForegroundColor Green
 # 2. Przygotowanie folderów
 # ---------------------------------------------------------------------------
 
-# Odczytanie wersji z pliku .pro
-$version = (Get-Content "$Root\Inwentaryzacja.pro" | Select-String "VERSION = (.+)").Matches.Groups[1].Value
+# Odczytanie wersji z pliku version.txt
+$version = Get-Content "$Root\..\version.txt" -Raw
+$version = $version.Trim()
 
 # Usuwamy stare wyniki
 Remove-Item $Out, $InstallerExe -Recurse -Force -ErrorAction Ignore

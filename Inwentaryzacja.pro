@@ -11,7 +11,8 @@ CONFIG  += c++17 \
            embed_translations
 CONFIG  -= static
 
-VERSION = 1.2.5
+# Odczyt wersji z pliku
+VERSION = $$cat(version.txt)
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QMAKE_TARGET_COMPANY     = Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK

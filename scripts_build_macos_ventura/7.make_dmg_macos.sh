@@ -2,8 +2,8 @@
 set -e
 
 APP_NAME="Inwentaryzacja"
-# Odczytanie wersji z pliku .pro
-APP_VERSION=$(grep "VERSION = " ../Inwentaryzacja.pro | cut -d'=' -f2 | tr -d ' ')
+# Odczytanie wersji z pliku version.txt
+APP_VERSION=$(cat ../version.txt | tr -d '[:space:]')
 DEPLOY_DIR="deploy"
 APP_PATH="$DEPLOY_DIR/$APP_NAME.app"
 DMG_NAME="${APP_NAME}_${APP_VERSION}_macOS.dmg"

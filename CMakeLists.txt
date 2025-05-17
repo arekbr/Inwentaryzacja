@@ -1,8 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
-project(Inwentaryzacja VERSION 1.2.4 LANGUAGES CXX)
+
+# ================================
+# Odczyt wersji z pliku
+# ================================
+file(READ "version.txt" PROJECT_VERSION_FROM_FILE)
+string(STRIP "${PROJECT_VERSION_FROM_FILE}" PROJECT_VERSION_FROM_FILE)
+
+project(Inwentaryzacja VERSION ${PROJECT_VERSION_FROM_FILE} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# ================================
+# Definicja wersji dla kompilatora
+# ================================
+add_compile_definitions(APP_VERSION="${PROJECT_VERSION}")
 
 # ================================
 # Automatyczne MOC/UIC/RCC
