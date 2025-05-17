@@ -382,7 +382,8 @@ void MainWindow::loadRecord(const QString &recordId)
     query.prepare(R"(
         SELECT name, serial_number, part_number, revision,
                production_year, status_id, type_id, vendor_id,
-               model_id, storage_place_id, description, value
+               model_id, storage_place_id, description, value,
+               has_original_packaging
         FROM eksponaty
         WHERE id = :id
     )");
@@ -398,6 +399,7 @@ void MainWindow::loadRecord(const QString &recordId)
     ui->New_item_revision->setText(query.value("revision").toString());
     ui->New_item_value->setText(query.value("value").toString());
     ui->New_item_description->setPlainText(query.value("description").toString());
+    ui->New_item_hasOriginalPackaging->setChecked(query.value("has_original_packaging").toBool());
 
     int prodYear = query.value("production_year").toInt();
     ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
@@ -545,11 +547,11 @@ void MainWindow::onSaveClicked()
             INSERT INTO eksponaty
             (id, name, serial_number, part_number, revision, production_year,
              status_id, type_id, vendor_id, model_id, storage_place_id,
-             description, value)
+             description, value, has_original_packaging)
             VALUES
             (:id, :name, :serial_number, :part_number, :revision, :production_year,
              :status_id, :type_id, :vendor_id, :model_id, :storage_place_id,
-             :description, :value)
+             :description, :value, :has_original_packaging)
         )");
         q.bindValue(":id", m_recordId);
     } else {
@@ -566,7 +568,8 @@ void MainWindow::onSaveClicked()
                 model_id=:model_id,
                 storage_place_id=:storage_place_id,
                 description=:description,
-                value=:value
+                value=:value,
+                has_original_packaging=:has_original_packaging
             WHERE id=:id
         )");
         q.bindValue(":id", m_recordId);
@@ -577,6 +580,7 @@ void MainWindow::onSaveClicked()
     q.bindValue(":part_number", ui->New_item_partNumber->text());
     q.bindValue(":revision", ui->New_item_revision->text());
     q.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
+    q.bindValue(":has_original_packaging", ui->New_item_hasOriginalPackaging->isChecked());
 
     QString statusId = ui->New_item_status->currentData().toString();
     if (statusId.isEmpty())
@@ -684,7 +688,7 @@ void MainWindow::onCancelClicked()
  *
  * @section MethodOverview
  * Otwiera okno wyboru plików, ładuje zdjęcia do bufora (dla nowych rekordów) lub zapisuje do bazy danych
- * (dla edytowanych rekordów). Przeniesienie oryginalnych plików do katalogu „gotowe” jest warunkowe i
+ * (dla edytowanych rekordów). Przeniesienie oryginalnych plików do katalogu "gotowe" jest warunkowe i
  * zależy od ustawienia przenosic_gotowe w pliku konfiguracyjnym inwentaryzacja.ini.
  * Podgląd miniaturek jest odświeżany po zakończeniu operacji.
  */

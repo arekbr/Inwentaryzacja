@@ -207,7 +207,13 @@ private slots:
      */
     void onFilterChanged();
 
-    void onNameFilterChanged(const QString &text);
+    void onFilterTypeChanged(const QString &text);
+    void onFilterVendorChanged(const QString &text);
+    void onFilterModelChanged(const QString &text);
+    void onFilterStatusChanged(const QString &text);
+    void onFilterStoragePlaceChanged(const QString &text);
+    void onFilterNameChanged(const QString &text);
+    void onFilterOriginalPackagingChanged(bool checked);
 
 private:
     /**

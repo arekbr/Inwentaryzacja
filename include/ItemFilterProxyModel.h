@@ -119,13 +119,23 @@ public:
 
     /**
      * @brief Ustawia filtr dla nazwę eksponatu.
-     * @param storage QString zawierający nazwę lub pusty ciąg dla braku filtru.
+     * @param name QString zawierający nazwę lub pusty ciąg dla braku filtru.
      *
      * @section MethodOverview
      * Zapisuje wartość filtru dla nazwy i wywołuje invalidateFilter(), 
      * aby odświeżyć widok. Pusty ciąg wyłącza filtr dla nazwy.
      */
-    void setNameFilter(const QString &filter);
+    void setNameFilter(const QString &name);
+
+    /**
+     * @brief Ustawia filtr dla oryginalnego pakowania eksponatu.
+     * @param show bool czy pokazywać eksponaty z oryginalnym pakowaniem.
+     *
+     * @section MethodOverview
+     * Zapisuje wartość filtru dla oryginalnego pakowania i wywołuje invalidateFilter(), 
+     * aby odświeżyć widok.
+     */
+    void setOriginalPackagingFilter(bool show);
 
 protected:
     /**
@@ -155,6 +165,10 @@ private:
     QString m_storage;
     /// Filtr dla nazwy eksponatu (pusty oznacza brak filtru).
     QString m_nameFilter;
+    /// Filtr dla oryginalnego pakowania eksponatu.
+    bool m_showOriginalPackaging;
+    /// Flaga czy filtr oryginalnego pakowania jest aktywny.
+    bool m_originalPackagingFilterEnabled;
 };
 
 #endif // ITEMFILTERPROXYMODEL_H

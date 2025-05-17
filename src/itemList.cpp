@@ -176,6 +176,7 @@ itemList::itemList(QWidget *parent)
     m_sourceModel->setHeaderData(10, Qt::Horizontal, tr("Miejsce przechowywania"));
     m_sourceModel->setHeaderData(11, Qt::Horizontal, tr("Opis"));
     m_sourceModel->setHeaderData(12, Qt::Horizontal, tr("Ilość"));
+    m_sourceModel->setHeaderData(13, Qt::Horizontal, tr("Oryg. opak."));
 
     // Model proxy
     m_proxyModel = new ItemFilterProxyModel(this);
@@ -260,6 +261,36 @@ itemList::itemList(QWidget *parent)
         m_nameFilterTimer->start(300); // 300 ms opóźnienia
     });
     onFilterChanged();
+
+    // Podłączenie sygnałów filtrowania
+    connect(ui->filterTypeComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &itemList::onFilterTypeChanged);
+    connect(ui->filterVendorComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &itemList::onFilterVendorChanged);
+    connect(ui->filterModelComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &itemList::onFilterModelChanged);
+    connect(ui->filterStatusComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &itemList::onFilterStatusChanged);
+    connect(ui->filterStorageComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &itemList::onFilterStoragePlaceChanged);
+    connect(ui->filterNameLineEdit,
+            &QLineEdit::textChanged,
+            this,
+            &itemList::onFilterNameChanged);
+    connect(ui->filterOriginalPackaging,
+            &QCheckBox::toggled,
+            this,
+            &itemList::onFilterOriginalPackagingChanged);
 }
 
 /**
@@ -875,7 +906,8 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
             status_id VARCHAR(36) NOT NULL,
             storage_place_id VARCHAR(36) NOT NULL,
             description TEXT,
-            value INT
+            value INT,
+            has_original_packaging BOOLEAN DEFAULT 0
         )
     )");
 
@@ -1085,10 +1117,10 @@ void itemList::onFilterChanged()
  * @section MethodOverview
  * Ustawia filtr nazwy w modelu proxy i aktualizuje combo boxy dla kaskadowego filtrowania.
  */
-void itemList::onNameFilterChanged(const QString &text)
+void itemList::onFilterNameChanged(const QString &text)
 {
-    qDebug() << "itemList: onNameFilterChanged wywołane, tekst:" << text;
-    // Filtrowanie jest teraz obsługiwane przez m_nameFilterTimer
+    qDebug() << "itemList: onFilterNameChanged wywołane, tekst:" << text;
+    m_nameFilterTimer->start(300); // 300 ms opóźnienia
 }
 
 /**
@@ -1193,4 +1225,40 @@ void itemList::updateFilterComboBoxes()
     }
     qDebug() << "itemList: updateFilterComboBoxes zakończony";
     m_proxyModel->invalidate(); // Wymuszenie odświeżenia tabeli
+}
+
+void itemList::onFilterOriginalPackagingChanged(bool checked)
+{
+    m_proxyModel->setOriginalPackagingFilter(checked);
+    updateFilterComboBoxes();
+}
+
+void itemList::onFilterTypeChanged(const QString &text)
+{
+    m_proxyModel->setTypeFilter(text == tr("Wszystkie") ? QString() : text);
+    updateFilterComboBoxes();
+}
+
+void itemList::onFilterVendorChanged(const QString &text)
+{
+    m_proxyModel->setVendorFilter(text == tr("Wszystkie") ? QString() : text);
+    updateFilterComboBoxes();
+}
+
+void itemList::onFilterModelChanged(const QString &text)
+{
+    m_proxyModel->setModelFilter(text == tr("Wszystkie") ? QString() : text);
+    updateFilterComboBoxes();
+}
+
+void itemList::onFilterStatusChanged(const QString &text)
+{
+    m_proxyModel->setStatusFilter(text == tr("Wszystkie") ? QString() : text);
+    updateFilterComboBoxes();
+}
+
+void itemList::onFilterStoragePlaceChanged(const QString &text)
+{
+    m_proxyModel->setStorageFilter(text == tr("Wszystkie") ? QString() : text);
+    updateFilterComboBoxes();
 }

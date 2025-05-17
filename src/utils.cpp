@@ -94,6 +94,24 @@ bool setupDatabase(const QString &dbType,
                 break;
             }
         }
+
+        // Sprawdź czy kolumna has_original_packaging istnieje
+        QSqlQuery checkColumn(db);
+        checkColumn.exec("PRAGMA table_info(eksponaty)");
+        bool hasPackagingExists = false;
+        while (checkColumn.next()) {
+            if (checkColumn.value("name").toString() == "has_original_packaging") {
+                hasPackagingExists = true;
+                break;
+            }
+        }
+
+        // Jeśli kolumna nie istnieje, dodaj ją
+        if (!hasPackagingExists) {
+            QSqlQuery addColumn(db);
+            addColumn.exec("ALTER TABLE eksponaty ADD COLUMN has_original_packaging INTEGER DEFAULT 0");
+        }
+
         if (missing) {
             QSqlQuery q(db);
             // Tabele
@@ -111,7 +129,8 @@ bool setupDatabase(const QString &dbType,
                   status_id TEXT NOT NULL,
                   storage_place_id TEXT NOT NULL,
                   description TEXT,
-                  value INTEGER
+                  value INTEGER,
+                  has_original_packaging INTEGER DEFAULT 0
                 )
             )");
             q.exec(R"(

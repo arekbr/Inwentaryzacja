@@ -16,6 +16,7 @@ CREATE TABLE eksponaty (
     storage_place_id TEXT NOT NULL,
     description TEXT,
     value INTEGER CHECK(value >= 0),
+    has_original_packaging BOOLEAN DEFAULT 0,
     FOREIGN KEY (type_id) REFERENCES types(id) ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT ON UPDATE CASCADE,

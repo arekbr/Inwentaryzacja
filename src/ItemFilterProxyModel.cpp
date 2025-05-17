@@ -43,6 +43,14 @@
  */
 ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
+    , m_type()
+    , m_vendor()
+    , m_model()
+    , m_status()
+    , m_storage()
+    , m_nameFilter()
+    , m_showOriginalPackaging(false)
+    , m_originalPackagingFilterEnabled(false)
 {
     // Filtrowanie bez uwzględnienia wielkości liter
     setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -133,6 +141,13 @@ void ItemFilterProxyModel::setNameFilter(const QString &filter)
     invalidateFilter();
 }
 
+void ItemFilterProxyModel::setOriginalPackagingFilter(bool show)
+{
+    m_showOriginalPackaging = show;
+    m_originalPackagingFilterEnabled = show; // Filtr jest aktywny tylko gdy checkbox jest zaznaczony
+    invalidateFilter();
+}
+
 /**
  * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
  * @param sourceRow Numer wiersza w modelu źródłowym.
@@ -147,26 +162,26 @@ void ItemFilterProxyModel::setNameFilter(const QString &filter)
  */
 bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    const QAbstractItemModel *src = sourceModel();
-    if (!src)
-        return false;
+    QModelIndex typeIndex = sourceModel()->index(sourceRow, 2, sourceParent);
+    QModelIndex vendorIndex = sourceModel()->index(sourceRow, 3, sourceParent);
+    QModelIndex modelIndex = sourceModel()->index(sourceRow, 4, sourceParent);
+    QModelIndex statusIndex = sourceModel()->index(sourceRow, 9, sourceParent);
+    QModelIndex storageIndex = sourceModel()->index(sourceRow, 10, sourceParent);
+    QModelIndex nameIndex = sourceModel()->index(sourceRow, 1, sourceParent);
+    QModelIndex packagingIndex = sourceModel()->index(sourceRow, 13, sourceParent);
 
-    auto pasuje = [&](int col, const QString &wzor) {
-        if (wzor.isEmpty())
-            return true; // Brak filtra => wszystko pasuje
-        QModelIndex idx = src->index(sourceRow, col, sourceParent);
-        return src->data(idx).toString() == wzor; // Dokładne dopasowanie
-    };
+    bool typeMatch = m_type.isEmpty() || sourceModel()->data(typeIndex).toString() == m_type;
+    bool vendorMatch = m_vendor.isEmpty() || sourceModel()->data(vendorIndex).toString() == m_vendor;
+    bool modelMatch = m_model.isEmpty() || sourceModel()->data(modelIndex).toString() == m_model;
+    bool statusMatch = m_status.isEmpty() || sourceModel()->data(statusIndex).toString() == m_status;
+    bool storageMatch = m_storage.isEmpty() || sourceModel()->data(storageIndex).toString() == m_storage;
+    bool nameMatch = m_nameFilter.isEmpty() || 
+                    sourceModel()->data(nameIndex).toString().contains(m_nameFilter, Qt::CaseInsensitive);
+    
+    // Zmiana logiki - filtrujemy tylko gdy checkbox jest zaznaczony
+    bool packagingMatch = !m_originalPackagingFilterEnabled || 
+                         (m_originalPackagingFilterEnabled && sourceModel()->data(packagingIndex).toBool());
 
-    // Sprawdź filtr nazwy (kolumna 1)
-    if (!m_nameFilter.isEmpty()) {
-        QModelIndex nameIndex = src->index(sourceRow, 1, sourceParent); // Kolumna 1 to 'name'
-        QString name = src->data(nameIndex).toString();
-        if (!name.contains(m_nameFilter, Qt::CaseInsensitive))
-            return false; // Nazwa nie pasuje do filtra
-    }
-
-    // Sprawdź pozostałe filtry (typ, producent, model, status, miejsce przechowywania)
-    return pasuje(2, m_type) && pasuje(3, m_vendor) && pasuje(4, m_model) && pasuje(9, m_status)
-           && pasuje(10, m_storage);
+    return typeMatch && vendorMatch && modelMatch && statusMatch && 
+           storageMatch && nameMatch && packagingMatch;
 }
