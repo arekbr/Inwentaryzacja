@@ -30,7 +30,7 @@ Write-Host "`n>>> Gotowe: 1. Ścieżki i pliki" -ForegroundColor Green
 # ---------------------------------------------------------------------------
 
 # Odczytanie wersji z pliku version.txt
-$version = Get-Content "$Root\..\version.txt" -Raw
+$version = Get-Content "$Root\version.txt" -Raw
 $version = $version.Trim()
 
 # Usuwamy stare wyniki
