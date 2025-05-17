@@ -1,94 +1,96 @@
-﻿# 4.deploy_windows.ps1
-$ErrorActionPreference = "Stop"
-$APP_NAME = "Inwentaryzacja.exe"
-$BUILD_DIR = "build_inwentaryzacja"
-$PLUGIN_BUILD_DIR = "build_qt_sql_drivers"
-$DEPLOY_DIR = "deploy"
+﻿<# 4.deploy_windows.ps1
+   Copyright (c) 2025 SMOK
+   Deploy aplikacji Qt 6.x na Windows
+#>
 
-Write-Host "`n🚀 Deploy aplikacji Windows: $APP_NAME" -ForegroundColor Cyan
+param (
+    [string]$APP_NAME          = 'Inwentaryzacja.exe',
+    [string]$BUILD_DIR         = 'build_inwentaryzacja',
+    [string]$PLUGIN_BUILD_DIR  = 'build_qt_sql_drivers',  # katalog z własnym qsqlmysql.dll
+    [string]$DEPLOY_DIR        = 'deploy'
+)
 
-# ============================
-# Wczytanie QT_PATH z pliku, jeśli nie jest ustawiony
-# ============================
-if (-not $env:QT_PATH -and (Test-Path "qt_env.ps1")) {
+$ErrorActionPreference = 'Stop'
+Write-Host "`n🚀  Deploy aplikacji Windows: $APP_NAME" -ForegroundColor Cyan
+
+# ------------------------------------------------------------------
+# 1. QT_PATH: pobierz z env lub z pliku qt_env.ps1
+# ------------------------------------------------------------------
+if (-not $env:QT_PATH -and (Test-Path '.\qt_env.ps1')) {
     Write-Host "ℹ️  Wczytywanie zmiennych z qt_env.ps1"
     . .\qt_env.ps1
 }
 if (-not $env:QT_PATH) {
-    Write-Error "❌ Zmienna QT_PATH nie jest ustawiona."
-    exit 1
+    throw '❌  Zmienna środowiskowa QT_PATH nie jest ustawiona (np. C:\Qt\6.6.2\msvc64).'
 }
 
-$QT_BIN = Join-Path $env:QT_PATH "bin"
-$QT_PLUGINS = Join-Path $env:QT_PATH "plugins"
+$QT_BIN     = Join-Path $env:QT_PATH 'bin'
+$QT_PLUGINS = Join-Path $env:QT_PATH 'plugins'
+$WINDEPLOY  = Join-Path $QT_BIN      'windeployqt.exe'
 
-# ============================
-# Czyszczenie deploy/
-# ============================
+if (-not (Test-Path $WINDEPLOY)) {
+    throw "❌  Nie znaleziono windeployqt w $QT_BIN"
+}
+
+# ------------------------------------------------------------------
+# 2. Oczyść i utwórz katalog deploy/
+# ------------------------------------------------------------------
 if (Test-Path $DEPLOY_DIR) {
-    Write-Host "🧹 Czyszczenie katalogu $DEPLOY_DIR..."
+    Write-Host "🧹  Czyszczenie katalogu $DEPLOY_DIR..."
     Remove-Item -Recurse -Force $DEPLOY_DIR
 }
 New-Item -ItemType Directory -Path $DEPLOY_DIR | Out-Null
 
-# ============================
-# Kopiowanie EXE
-# ============================
-Copy-Item "$BUILD_DIR\$APP_NAME" "$DEPLOY_DIR\"
+# ------------------------------------------------------------------
+# 3. Skopiuj zbudowane .exe
+# ------------------------------------------------------------------
+$exeSrc = Join-Path $BUILD_DIR $APP_NAME
+if (-not (Test-Path $exeSrc)) {
+    throw "❌  Nie znaleziono $exeSrc – upewnij się, że aplikacja została zbudowana."
+}
+Copy-Item $exeSrc $DEPLOY_DIR
+$exeDst = Join-Path $DEPLOY_DIR $APP_NAME
 
-# ============================
-# Tworzenie podkatalogów pluginów
-# ============================
-New-Item -ItemType Directory -Force -Path "$DEPLOY_DIR\platforms" | Out-Null
-New-Item -ItemType Directory -Force -Path "$DEPLOY_DIR\sqldrivers" | Out-Null
+# ------------------------------------------------------------------
+# 4. Uruchom windeployqt (dodaje wszystkie plug-iny i zależności Qt)
+# ------------------------------------------------------------------
+Write-Host "🚚  Uruchamiam windeployqt..."
+& "$WINDEPLOY" `
+    "$exeDst" `
+    --release `
+    --no-translations `
+    --compiler-runtime `
+    --verbose 1 `
+    | Write-Host
 
-# ============================
-# Kopiowanie pluginów Qt
-# ============================
-Copy-Item "$QT_PLUGINS\platforms\qwindows.dll" "$DEPLOY_DIR\platforms\" -ErrorAction SilentlyContinue
-Copy-Item "$QT_PLUGINS\sqldrivers\qsqlite.dll" "$DEPLOY_DIR\sqldrivers\" -ErrorAction SilentlyContinue
+# ------------------------------------------------------------------
+# 5. Dołóż ręcznie zbudowany qsqlmysql.dll
+# ------------------------------------------------------------------
+$mysqlDstDir = Join-Path $DEPLOY_DIR 'plugins\sqldrivers'
+New-Item -ItemType Directory -Force -Path $mysqlDstDir | Out-Null
 
-# ============================
-# Kopiowanie zbudowanego qsqlmysql.dll
-# ============================
-$qsqlmysql = "$PLUGIN_BUILD_DIR\plugins\sqldrivers\qsqlmysql.dll"
+$qsqlmysql = Join-Path $PLUGIN_BUILD_DIR 'plugins\sqldrivers\qsqlmysql.dll'
 if (Test-Path $qsqlmysql) {
-    Copy-Item $qsqlmysql "$DEPLOY_DIR\sqldrivers\"
-    Write-Host "✅ Skopiowano qsqlmysql.dll"
+    Copy-Item $qsqlmysql $mysqlDstDir -Force
+    Write-Host "✅  Dodano własny qsqlmysql.dll"
 } else {
-    Write-Error "❌ Nie znaleziono qsqlmysql.dll. Czy plugin został zbudowany?"
-    exit 1
+    Write-Warning "⚠️  Nie znaleziono $qsqlmysql – driver MySQL nie został skopiowany."
 }
 
-# ============================
-# Kopiowanie zależności DLL
-# ============================
-Write-Host "📦 Kopiowanie DLL z Qt bin/..."
-$qt_dlls = @("Qt6Core.dll", "Qt6Gui.dll", "Qt6Widgets.dll", "Qt6Sql.dll")
-foreach ($dll in $qt_dlls) {
-    $src = Join-Path $QT_BIN $dll
-    if (Test-Path $src) {
-        Copy-Item $src "$DEPLOY_DIR\"
-    } else {
-        Write-Warning "⚠️ Brak $dll"
-    }
-}
-
-# ============================
-# Kopiowanie libmariadb.dll jeśli istnieje
-# ============================
-$libmariadb = Get-ChildItem -Recurse -Filter libmariadb.dll -Path "tools" -ErrorAction SilentlyContinue | Select-Object -First 1
+# ------------------------------------------------------------------
+# 6. Dołóż libmariadb.dll (jeśli istnieje)
+# ------------------------------------------------------------------
+$libmariadb = Get-ChildItem -Recurse -Filter libmariadb*.dll -Path '.' -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($libmariadb) {
-    Copy-Item $libmariadb.FullName "$DEPLOY_DIR\"
-    Write-Host "✅ Skopiowano libmariadb.dll"
+    Copy-Item $libmariadb.FullName $DEPLOY_DIR -Force
+    Write-Host "✅  Dodano $($libmariadb.Name)"
 } else {
-    Write-Warning "⚠️ Nie znaleziono libmariadb.dll — sprawdź czy connector został poprawnie zbudowany"
+    Write-Warning "⚠️  libmariadb.dll nie znalezione – jeśli aplikacja używa MySQL/MariaDB bez TLS, wszystko nadal zadziała."
 }
 
-# ============================
-# Gotowe
-# ============================
-Write-Host "`n✅ Deploy zakończony: zawartość w '$DEPLOY_DIR\'"
-Write-Host "💡 Aby uruchomić aplikację:"
+# ------------------------------------------------------------------
+# 7. Raport końcowy
+# ------------------------------------------------------------------
+Write-Host "`n🎉  Gotowe!  Zawartość paczki w '$DEPLOY_DIR\'" -ForegroundColor Green
 Write-Host "   cd $DEPLOY_DIR"
-Write-Host "   .\$APP_NAME"
+Write-Host "   .\\$APP_NAME"
