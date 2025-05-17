@@ -308,6 +308,8 @@ private:
      */
     void loadPhotosFromBuffer();
 
+    QString validateUuid(const QString &uuid, const QString &defaultValue);
+
     /// Połączenie z bazą danych MySQL.
     QSqlDatabase db;
 

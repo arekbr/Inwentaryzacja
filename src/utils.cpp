@@ -32,6 +32,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QUuid>
+#include "utils.h"
+#include "DatabaseMigration.h"
 
 /**
  * @brief Inicjalizuje połączenie z bazą danych, zapisując je pod nazwą "default_connection".
@@ -80,6 +82,14 @@ bool setupDatabase(const QString &dbType,
     if (!db.open()) {
         QMessageBox::critical(nullptr, QObject::tr("Błąd połączenia"), db.lastError().text());
         return false;
+    }
+
+    // Uruchom migrację UUID jeśli potrzebna
+    DatabaseMigration migration;
+    if (!migration.migrateUUIDs()) {
+        qDebug() << "Ostrzeżenie: Migracja UUID nie powiodła się";
+        // Nie przerywaj połączenia tylko dlatego, że migracja się nie powiodła
+        // Aplikacja może nadal działać z UUID-ami w nawiasach
     }
 
     // --- AUTOMATYCZNE TWORZENIE SCHEMATU DLA SQLITE ---

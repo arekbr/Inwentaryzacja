@@ -34,6 +34,7 @@ DEPENDPATH  += include
 
 SOURCES += \
     src/DatabaseConfigDialog.cpp \
+    src/DatabaseMigration.cpp \
     src/ItemFilterProxyModel.cpp \
     src/fullscreenphotoviewer.cpp \
     src/itemList.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
 
 HEADERS += \
     include/DatabaseConfigDialog.h \
+    include/DatabaseMigration.h \
     include/ItemFilterProxyModel.h \
     include/fullscreenphotoviewer.h \
     include/itemList.h \

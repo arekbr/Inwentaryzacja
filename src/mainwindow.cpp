@@ -53,6 +53,7 @@
 #include <QSqlQuery>
 #include <QStandardPaths>
 #include <QUuid>
+#include <QProgressDialog>
 
 #include "models.h"
 #include "photoitem.h"
@@ -365,7 +366,6 @@ void MainWindow::setCloneMode(const QString &recordId)
     ui->graphicsView->setScene(nullptr);
     m_selectedPhotoIndex = -1;
     m_photoBuffer.clear();
-    m_photoPathsBuffer.clear();
 }
 
 /**
@@ -378,21 +378,35 @@ void MainWindow::setCloneMode(const QString &recordId)
  */
 void MainWindow::loadRecord(const QString &recordId)
 {
+    qDebug() << "MainWindow::loadRecord - Próba wczytania rekordu o ID:" << recordId;
+    
     QSqlQuery query(db);
     query.prepare(R"(
         SELECT name, serial_number, part_number, revision,
                production_year, status_id, type_id, vendor_id,
                model_id, storage_place_id, description, value,
-               has_original_packaging
+               COALESCE(has_original_packaging, 0) as has_original_packaging
         FROM eksponaty
         WHERE id = :id
     )");
     query.bindValue(":id", recordId);
-    if (!query.exec() || !query.next()) {
+    
+    qDebug() << "MainWindow::loadRecord - Wykonuję zapytanie SQL dla ID:" << recordId;
+    
+    if (!query.exec()) {
+        qDebug() << "MainWindow::loadRecord - Błąd wykonania zapytania:" << query.lastError().text();
+        QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
+        return;
+    }
+    
+    if (!query.next()) {
+        qDebug() << "MainWindow::loadRecord - Brak wyników dla ID:" << recordId;
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
         return;
     }
 
+    qDebug() << "MainWindow::loadRecord - Znaleziono rekord, wypełniam pola formularza";
+    
     ui->New_item_name->setText(query.value("name").toString());
     ui->New_item_serialNumber->setText(query.value("serial_number").toString());
     ui->New_item_partNumber->setText(query.value("part_number").toString());
@@ -404,17 +418,41 @@ void MainWindow::loadRecord(const QString &recordId)
     int prodYear = query.value("production_year").toInt();
     ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
 
-    ui->New_item_type->setCurrentIndex(
-        ui->New_item_type->findData(query.value("type_id").toString()));
-    ui->New_item_vendor->setCurrentIndex(
-        ui->New_item_vendor->findData(query.value("vendor_id").toString()));
-    ui->New_item_model->setCurrentIndex(
-        ui->New_item_model->findData(query.value("model_id").toString()));
-    ui->New_item_status->setCurrentIndex(
-        ui->New_item_status->findData(query.value("status_id").toString()));
-    ui->New_item_storagePlace->setCurrentIndex(
-        ui->New_item_storagePlace->findData(query.value("storage_place_id").toString()));
+    // Debugowanie ustawiania combo boxów
+    qDebug() << "MainWindow::loadRecord - Ustawiam combo boxy:";
+    QString typeId = query.value("type_id").toString();
+    QString vendorId = query.value("vendor_id").toString();
+    QString modelId = query.value("model_id").toString();
+    QString statusId = query.value("status_id").toString();
+    QString storagePlaceId = query.value("storage_place_id").toString();
 
+    qDebug() << "  - Type ID:" << typeId;
+    qDebug() << "  - Vendor ID:" << vendorId;
+    qDebug() << "  - Model ID:" << modelId;
+    qDebug() << "  - Status ID:" << statusId;
+    qDebug() << "  - Storage Place ID:" << storagePlaceId;
+
+    // Sprawdzanie indeksów przed ustawieniem
+    int typeIndex = ui->New_item_type->findData(typeId);
+    int vendorIndex = ui->New_item_vendor->findData(vendorId);
+    int modelIndex = ui->New_item_model->findData(modelId);
+    int statusIndex = ui->New_item_status->findData(statusId);
+    int storageIndex = ui->New_item_storagePlace->findData(storagePlaceId);
+
+    qDebug() << "MainWindow::loadRecord - Znalezione indeksy w combo boxach:";
+    qDebug() << "  - Type index:" << typeIndex;
+    qDebug() << "  - Vendor index:" << vendorIndex;
+    qDebug() << "  - Model index:" << modelIndex;
+    qDebug() << "  - Status index:" << statusIndex;
+    qDebug() << "  - Storage index:" << storageIndex;
+
+    if (typeIndex >= 0) ui->New_item_type->setCurrentIndex(typeIndex);
+    if (vendorIndex >= 0) ui->New_item_vendor->setCurrentIndex(vendorIndex);
+    if (modelIndex >= 0) ui->New_item_model->setCurrentIndex(modelIndex);
+    if (statusIndex >= 0) ui->New_item_status->setCurrentIndex(statusIndex);
+    if (storageIndex >= 0) ui->New_item_storagePlace->setCurrentIndex(storageIndex);
+
+    qDebug() << "MainWindow::loadRecord - Wczytywanie rekordu zakończone, przechodzę do wczytywania zdjęć";
     loadPhotos(recordId);
 }
 
@@ -542,7 +580,7 @@ void MainWindow::onSaveClicked()
     QSqlQuery q(db);
 
     if (!m_editMode) {
-        m_recordId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        m_recordId = "{" + QUuid::createUuid().toString(QUuid::WithoutBraces) + "}";
         q.prepare(R"(
             INSERT INTO eksponaty
             (id, name, serial_number, part_number, revision, production_year,
@@ -582,25 +620,11 @@ void MainWindow::onSaveClicked()
     q.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
     q.bindValue(":has_original_packaging", ui->New_item_hasOriginalPackaging->isChecked());
 
-    QString statusId = ui->New_item_status->currentData().toString();
-    if (statusId.isEmpty())
-        statusId = "unknown_status_uuid";
-
-    QString typeId = ui->New_item_type->currentData().toString();
-    if (typeId.isEmpty())
-        typeId = "unknown_type_uuid";
-
-    QString vendorId = ui->New_item_vendor->currentData().toString();
-    if (vendorId.isEmpty())
-        vendorId = "unknown_vendor_uuid";
-
-    QString modelId = ui->New_item_model->currentData().toString();
-    if (modelId.isEmpty())
-        modelId = "unknown_model_uuid";
-
-    QString storageId = ui->New_item_storagePlace->currentData().toString();
-    if (storageId.isEmpty())
-        storageId = "unknown_storage_uuid";
+    QString statusId = validateUuid(ui->New_item_status->currentData().toString(), "{unknown_status_uuid}");
+    QString typeId = validateUuid(ui->New_item_type->currentData().toString(), "{unknown_type_uuid}");
+    QString vendorId = validateUuid(ui->New_item_vendor->currentData().toString(), "{unknown_vendor_uuid}");
+    QString modelId = validateUuid(ui->New_item_model->currentData().toString(), "{unknown_model_uuid}");
+    QString storageId = validateUuid(ui->New_item_storagePlace->currentData().toString(), "{unknown_storage_uuid}");
 
     q.bindValue(":status_id", statusId);
     q.bindValue(":type_id", typeId);
@@ -914,4 +938,19 @@ void MainWindow::onAddStoragePlaceClicked()
     dlg.exec();
     this->raise();
     this->activateWindow();
+}
+
+QString MainWindow::validateUuid(const QString &uuid, const QString &defaultValue) {
+    if (uuid.isEmpty()) return defaultValue;
+    
+    // Po migracji UUID-y nie powinny mieć nawiasów klamrowych
+    if (uuid.startsWith('{') && uuid.endsWith('}')) {
+        // Jeśli nadal ma nawiasy, usuń je
+        QString cleanUuid = uuid.mid(1, uuid.length() - 2);
+        qDebug() << "Znaleziono UUID z nawiasami, usuwam:" << uuid << "->" << cleanUuid;
+        return cleanUuid;
+    }
+    
+    // UUID bez nawiasów jest prawidłowy
+    return uuid;
 }

@@ -135,11 +135,9 @@ void status::onAddClicked()
         return;
     }
 
-    QUuid::createUuid().toString(QUuid::WithoutBraces);
-
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO statuses (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", QUuid::createUuid().toString());
+    query.bindValue(":id", QUuid::createUuid().toString(QUuid::WithoutBraces));
     query.bindValue(":name", newStatus);
     if (!query.exec()) {
         QMessageBox::critical(this,
