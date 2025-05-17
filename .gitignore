@@ -1,6 +1,10 @@
 build_inwentaryzacja/
 build_qt_sql_drivers/
 deploy/
+gotowa/
+installer/
+release_exe/
+tools/
 *.exe
 *.log
 *.zip
@@ -49,7 +53,8 @@ dokumentacja_doxygen/
 # Pliki IDE
 .vscode/
 *.code-workspace
-*.pro.user
+*.pro.user.*
+*.pro.user*
 .idea/
 *.iml
 
