@@ -26,9 +26,15 @@ function Ensure-Tool {
     if ($tool) {
         Write-Host "✅ $name znaleziony w PATH: $($tool.Source)"
         try {
-            $verRaw = & $tool.Source --version 2>&1 | Out-String
+            if ($name -eq "cmake") {
+                $verRaw = (& "$($tool.Source)" --version)[0]
+            } else {
+                $verRaw = & "$($tool.Source)" --version
+            }
             if ($verRaw -match "\d+(\.\d+)+") {
                 Write-Host "   ↪️  Wersja: $($Matches[0])"
+            } else {
+                Write-Host "   ↪️  Wersja: $verRaw"
             }
         } catch {
             Write-Host "   ⚠️  Nie udało się odczytać wersji $name"
@@ -46,9 +52,15 @@ function Ensure-Tool {
             Write-Host "✅ $name znaleziony w: $dir (dodano do PATH)"
 
             try {
-                $verRaw = & "$found.FullName" --version 2>&1 | Out-String
+                if ($name -eq "cmake") {
+                    $verRaw = (& "$($found.FullName)" --version)[0]
+                } else {
+                    $verRaw = & "$($found.FullName)" --version
+                }
                 if ($verRaw -match "\d+(\.\d+)+") {
                     Write-Host "   ↪️  Wersja: $($Matches[0])"
+                } else {
+                    Write-Host "   ↪️  Wersja: $verRaw"
                 }
             } catch {
                 Write-Host "   ⚠️  Nie udało się odczytać wersji $name"
