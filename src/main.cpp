@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
     // Ustawienie metadanych aplikacji: nazwa i wersja.
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.2.2"));
+    QCoreApplication::setApplicationVersion(APP_VERSION);
 
     // Ustawienie ikony aplikacji z zasobów Qt.
     QIcon icon(":/images/icon.png");

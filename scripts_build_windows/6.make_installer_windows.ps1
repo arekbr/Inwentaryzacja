@@ -29,6 +29,9 @@ Write-Host "`n>>> Gotowe: 1. Ścieżki i pliki" -ForegroundColor Green
 # 2. Przygotowanie folderów
 # ---------------------------------------------------------------------------
 
+# Odczytanie wersji z pliku .pro
+$version = (Get-Content "$Root\Inwentaryzacja.pro" | Select-String "VERSION = (.+)").Matches.Groups[1].Value
+
 # Usuwamy stare wyniki
 Remove-Item $Out, $InstallerExe -Recurse -Force -ErrorAction Ignore
 
@@ -62,7 +65,7 @@ $config = @"
 <?xml version="1.0"?>
 <Installer>
     <Name>Inwentaryzacja</Name>
-    <Version>1.1.8</Version>
+    <Version>$version</Version>
     <Title>Instalator Inwentaryzacja</Title>
     <Publisher>Stowarzyszenie Mi&#x142;o&#x15B;nik&#xF3;w Oldschoolowych Komputer&#xF3;w SMOK &amp; ChatGPT &amp; GROK</Publisher>
 
@@ -108,7 +111,7 @@ $package = @"
     </Description>
     <DisplayName xml:lang="en_us">Inventory</DisplayName>
     <Description xml:lang="en_us">Retro computer inventory tool</Description>
-    <Version>1.1.8</Version>
+    <Version>$version</Version>
     <ReleaseDate>2025-04-26</ReleaseDate>
     <Default>true</Default>
     <Script>installscript.qs</Script>

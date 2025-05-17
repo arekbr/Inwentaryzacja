@@ -5,7 +5,8 @@ set -e
 APP_NAME="Inwentaryzacja"
 DEPLOY_DIR="deploy"
 DEB_DIR="deb_pkg"
-VERSION="1.2.4"
+# Odczytanie wersji z pliku .pro
+VERSION=$(grep "VERSION = " ../Inwentaryzacja.pro | cut -d'=' -f2 | tr -d ' ')
 ARCH="amd64"
 MAINTAINER="Stowarzyszenie SMOK <kontakt@smok.technology>"
 DESCRIPTION="Program do inwentaryzacji retro komputerów"
