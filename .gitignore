@@ -14,7 +14,7 @@ tools/
 *.txt
 *.ini
 qt_env.sh
-
+*.json
 
 # Pliki binarne i biblioteki
 *.dll
