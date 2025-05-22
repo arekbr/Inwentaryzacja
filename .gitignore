@@ -1,3 +1,4 @@
+.continue/
 build_inwentaryzacja/
 build_qt_sql_drivers/
 deploy/
@@ -14,7 +15,7 @@ tools/
 *.txt
 *.ini
 qt_env.sh
-
+*.json
 
 # Pliki binarne i biblioteki
 *.dll
