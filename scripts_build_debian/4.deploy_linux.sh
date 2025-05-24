@@ -97,6 +97,13 @@ ldd "$DEPLOY_DIR/sqldrivers/libqsqlmysql.so" | awk '{print $3}' | while read -r 
 done
 
 # ============================
+# Kopiowanie pluginów imageformats
+# ============================
+echo "🖼️  Kopiowanie pluginów imageformats..."
+mkdir -p "$DEPLOY_DIR/imageformats"
+cp "$QT_PLUGIN_DIR/imageformats/"* "$DEPLOY_DIR/imageformats/" 2>/dev/null || echo "⚠️  Brak pluginów imageformats"
+
+# ============================
 # Gotowe
 # ============================
 echo -e "\n✅ Deploy zakończony: $DEPLOY_DIR/ zawiera wszystko do uruchomienia aplikacji"

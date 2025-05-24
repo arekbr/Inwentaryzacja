@@ -472,7 +472,8 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         if (pixmap.loadFromData(imageData)) {
             pixmaps.append(pixmap);
         } else {
-            qDebug() << "Nie można załadować BLOB (MySQL).";
+            qDebug() << "Nie można załadować BLOB (MySQL). Rozmiar danych:" << imageData.size();
+            qDebug() << "Spróbuj sprawdzić obecność bibliotek Qt image plugins (np. libqjpeg, libqpng) w katalogu plugins/imageformats lub LD_LIBRARY_PATH.";
         }
     }
 
