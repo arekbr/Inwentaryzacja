@@ -38,10 +38,12 @@ echo "✅ Pakiety zainstalowane"
 # ==========================================
 # Krok 3: Wskazanie ścieżki do Qt
 # ==========================================
+DEFAULT_QT_PATH="$HOME/Qt/6.9.0/gcc_64"
 echo
 read -p "📂 Czy chcesz użyć własnej instalacji Qt 6.9.0? (y/n) " choice
 if [[ "$choice" == "y" ]]; then
-  read -p "🔍 Podaj ścieżkę do katalogu Qt (np. /home/arekbr/Qt/6.9.0/gcc_64): " QT_PATH
+  read -e -p "🔍 Podaj ścieżkę do katalogu Qt [${DEFAULT_QT_PATH}]: " QT_PATH
+  QT_PATH="${QT_PATH:-$DEFAULT_QT_PATH}"
   if [[ ! -d "$QT_PATH" ]]; then
     echo "❌ Błąd: Podana ścieżka nie istnieje."
     return 1

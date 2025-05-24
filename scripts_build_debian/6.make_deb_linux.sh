@@ -6,7 +6,7 @@ APP_NAME="Inwentaryzacja"
 DEPLOY_DIR="deploy"
 DEB_DIR="deb_pkg"
 # Odczytanie wersji z pliku version.txt
-VERSION=$(cat ../version.txt | tr -d '[:space:]')
+VERSION=$(cat version.txt | tr -d '[:space:]')
 ARCH="amd64"
 MAINTAINER="Stowarzyszenie SMOK <kontakt@smok.technology>"
 DESCRIPTION="Program do inwentaryzacji retro komputerów"
@@ -58,6 +58,16 @@ cp -r "$DEPLOY_DIR/platforms"/* "$DEB_DIR/usr/share/$APP_NAME/platforms/"
 cp -r "$DEPLOY_DIR/sqldrivers"/* "$DEB_DIR/usr/share/$APP_NAME/sqldrivers/"
 cp -u "$DEPLOY_DIR"/*.so* "$DEB_DIR/usr/share/$APP_NAME/" || true
 cp qt_env.sh "$DEB_DIR/usr/share/$APP_NAME/qt_env.sh"
+
+# ============================
+# Kopiowanie pluginów imageformats (np. libqjpeg, libqpng)
+# ============================
+if [[ -d "$DEPLOY_DIR/imageformats" ]]; then
+    mkdir -p "$DEB_DIR/usr/share/$APP_NAME/imageformats"
+    cp -r "$DEPLOY_DIR/imageformats"/* "$DEB_DIR/usr/share/$APP_NAME/imageformats/"
+else
+    echo "⚠️  Brak katalogu $DEPLOY_DIR/imageformats – pluginy Qt imageformats nie zostaną dodane do .deb"
+fi
 
 # ============================
 # Wrapper uruchamiający z exportami z qt_env.sh
