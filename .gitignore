@@ -37,6 +37,7 @@ cmake-build*/
 out/
 bin/
 lib/
+deb_pkg/
 
 # Dokumentacja Doxygen
 dokumentacja_doxygen/
