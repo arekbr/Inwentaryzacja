@@ -82,7 +82,7 @@ SQLite: W domenie publicznej, bez ograniczeń. Zobacz sqlite.org.
 MySQL Connector/C: Na licencji GPLv2 z wyjątkiem FOSS, zgodny z LGPL w tym projekcie. Zobacz mysql.com.
 MinGW (biblioteki runtime GCC): Na licencjach permissywnych (GPL z wyjątkami). Zobacz mingw.org.
 Inne zależności (np. OpenSSL, jeśli używane): Sprawdź ich licencje w dystrybucji źródłowej.
-Fonty : przypomnę sobie skąd je pobrałem i wrzucę kto jest autorem. Gdzieś na githubie to było. :)
+Fonty : ZX Spectrum: Copyright (c) 2016, Jorge Ferrer, Berkelium64 GEOS: Created by Rebecca Bettencourt with FontForge 2.0 (http://fontforge.sf.net), EightBitAtari-Ataripl : Outlines Copyright (c) 2018, Steve Boswell (https://choccyhobnob.com), Amiga Topaz: https://github.com/rewtnull/amigafonts/blob/master/README
 
 Aby być w zgodzie z licencjami, upewnij się, że przy dystrybucji aplikacji zapewniasz dostęp do kodu źródłowego bibliotek LGPL/GPL.
 Podziękowania
