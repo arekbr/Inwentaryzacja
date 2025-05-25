@@ -80,7 +80,7 @@ echo "✅ Utworzono katalog build/"
 # ==========================================
 if [[ -n "$QT_PATH" && -n "$QT_SRC_PATH" ]]; then
   echo -e "\n✅ Środowisko gotowe do budowy pluginu QMYSQL i projektu Inwentaryzacja"
-  echo "➡️  Kolejny krok: ./build_qt_mysql_plugin.sh"
+  echo "➡️  Kolejny krok: ./2.build_qt_mysql_plugin.sh"
 else
   echo -e "\n🛑 Zatrzymujemy się tutaj — kolejny krok to build_qt.sh (pełna kompilacja Qt ze źródeł)"
 fi

@@ -73,7 +73,7 @@ qrc_*.cpp
 
 # Inne
 .DS_Store
-
+*.deb
 
 # ale nie ignoruj pliku CMakeLists.txt we wszystkich katalogach
 !**/CMakeLists.txt
