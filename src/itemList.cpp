@@ -79,19 +79,7 @@
  * ze zdjęciami. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane.
  */
 itemList::itemList(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::itemList)
-    , m_sourceModel(nullptr)
-    , m_proxyModel(nullptr)
-    , filterTypeComboBox(nullptr)
-    , filterVendorComboBox(nullptr)
-    , filterModelComboBox(nullptr)
-    , filterStatusComboBox(nullptr)
-    , filterStorageComboBox(nullptr)
-    , filterNameLineEdit(nullptr)
-    , m_currentRecordId()
-    , m_previewWindow(nullptr)
-    , m_currentHoveredItem(nullptr)
+    : QWidget(parent), ui(new Ui::itemList), m_sourceModel(nullptr), m_proxyModel(nullptr), filterTypeComboBox(nullptr), filterVendorComboBox(nullptr), filterModelComboBox(nullptr), filterStatusComboBox(nullptr), filterStorageComboBox(nullptr), filterNameLineEdit(nullptr), m_currentRecordId(), m_previewWindow(nullptr), m_currentHoveredItem(nullptr)
 {
     qDebug() << "itemList: Rozpoczynam konstruktor";
     ui->setupUi(this);
@@ -115,13 +103,15 @@ itemList::itemList(QWidget *parent)
     // Połączenie z bazą danych
     QSqlDatabase db;
     qDebug() << "itemList: Przed połączeniem z bazą";
-    if (!QSqlDatabase::contains("default_connection")) {
+    if (!QSqlDatabase::contains("default_connection"))
+    {
         db = QSqlDatabase::addDatabase("QMYSQL", "default_connection");
         db.setHostName("localhost");
         db.setDatabaseName("retro_komputery");
         db.setUserName("user");
         db.setPassword("password");
-        if (!db.open()) {
+        if (!db.open())
+        {
             qDebug() << "itemList: Błąd otwarcia bazy:" << db.lastError().text();
             QMessageBox::critical(this,
                                   tr("Błąd"),
@@ -131,14 +121,18 @@ itemList::itemList(QWidget *parent)
             return;
         }
         qDebug() << "itemList: Baza otwarta";
-        if (!verifyDatabaseSchema(db)) {
+        if (!verifyDatabaseSchema(db))
+        {
             qDebug() << "itemList: Schemat niepoprawny, tworzę schemat";
             createDatabaseSchema(db);
             insertSampleData(db);
         }
-    } else {
+    }
+    else
+    {
         db = QSqlDatabase::database("default_connection");
-        if (!db.isOpen()) {
+        if (!db.isOpen())
+        {
             qDebug() << "itemList: Połączenie zamknięte";
             QMessageBox::critical(this, tr("Błąd"), tr("Połączenie z bazą danych zamknięte."));
             qApp->quit();
@@ -146,7 +140,8 @@ itemList::itemList(QWidget *parent)
         }
         qDebug() << "itemList: Baza już otwarta";
 
-        if (!verifyDatabaseSchema(db)) {
+        if (!verifyDatabaseSchema(db))
+        {
             createDatabaseSchema(db);
             insertSampleData(db);
         }
@@ -217,15 +212,16 @@ itemList::itemList(QWidget *parent)
 
     // Inicjalizacja timera utrzymującego połączenie
     m_keepAliveTimer = new QTimer(this);
-    connect(m_keepAliveTimer, &QTimer::timeout, this, []() {
+    connect(m_keepAliveTimer, &QTimer::timeout, this, []()
+            {
         QSqlQuery q(QSqlDatabase::database("default_connection"));
-        q.exec("SELECT 1");
-    });
+        q.exec("SELECT 1"); });
     m_keepAliveTimer->start(30000);
 
     // Inicjalizacja timera do sprawdzania pozycji kursora
     m_hoverCheckTimer = new QTimer(this);
-    connect(m_hoverCheckTimer, &QTimer::timeout, this, [this]() {
+    connect(m_hoverCheckTimer, &QTimer::timeout, this, [this]()
+            {
         QPoint globalPos = QCursor::pos();
         if (m_previewWindow && !m_previewWindow->geometry().contains(globalPos)) {
             QWidget *widgetUnderCursor = QApplication::widgetAt(globalPos);
@@ -236,18 +232,17 @@ itemList::itemList(QWidget *parent)
                     m_currentHoveredItem = nullptr;
                 }
             }
-        }
-    });
+        } });
 
     // Inicjalizacja timera dla opóźnienia filtrowania
     m_nameFilterTimer = new QTimer(this);
     m_nameFilterTimer->setSingleShot(true);
-    connect(m_nameFilterTimer, &QTimer::timeout, this, [this]() {
+    connect(m_nameFilterTimer, &QTimer::timeout, this, [this]()
+            {
         qDebug() << "itemList: Wykonuję opóźnione filtrowanie, tekst:"
                  << filterNameLineEdit->text();
         m_proxyModel->setNameFilter(filterNameLineEdit->text());
-        updateFilterComboBoxes();
-    });
+        updateFilterComboBoxes(); });
 
     // Inicjalizacja filtrów
     initFilters(db);
@@ -258,10 +253,11 @@ itemList::itemList(QWidget *parent)
     connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterNameLineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
-        qDebug() << "itemList: Zmiana tekstu w filterNameLineEdit:" << text;
-        m_nameFilterTimer->start(300); // 300 ms opóźnienia
-    });
+    connect(filterNameLineEdit, &QLineEdit::textChanged, this, [this](const QString &text)
+            {
+                qDebug() << "itemList: Zmiana tekstu w filterNameLineEdit:" << text;
+                m_nameFilterTimer->start(300); // 300 ms opóźnienia
+            });
     onFilterChanged();
 
     // Podłączenie sygnałów filtrowania
@@ -320,76 +316,81 @@ itemList::~itemList()
 void itemList::initFilters(QSqlDatabase &db)
 {
     qDebug() << "itemList: Rozpoczynam initFilters";
-    if (!db.isOpen()) {
+    if (!db.isOpen())
+    {
         qDebug() << "itemList: Baza danych nie jest otwarta w initFilters";
         return;
     }
 
     // Sprawdzenie combo boxów
-    if (!filterTypeComboBox || !filterVendorComboBox || !filterModelComboBox
-        || !filterStatusComboBox || !filterStorageComboBox) {
+    if (!filterTypeComboBox || !filterVendorComboBox || !filterModelComboBox || !filterStatusComboBox || !filterStorageComboBox)
+    {
         qDebug() << "itemList: Jeden z QComboBox jest nullptr w initFilters!";
         return;
     }
 
     auto initFilter =
-        [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter) {
-            qDebug() << "itemList: Inicjalizuję filtr dla tabeli:" << table;
-            cb->blockSignals(true);
-            cb->clear();
-            cb->addItem(tr("Wszystkie"));
-            QSqlQuery q(db);
-            QString query = QString("SELECT name FROM %1 ORDER BY name").arg(table);
-            if (!q.exec(query)) {
-                qDebug() << "itemList: Błąd zapytania dla" << table << ":" << q.lastError().text();
-                cb->blockSignals(false);
-                return;
-            }
-            while (q.next()) {
-                cb->addItem(q.value(0).toString());
-            }
+        [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter)
+    {
+        qDebug() << "itemList: Inicjalizuję filtr dla tabeli:" << table;
+        cb->blockSignals(true);
+        cb->clear();
+        cb->addItem(tr("Wszystkie"));
+        QSqlQuery q(db);
+        QString query = QString("SELECT name FROM %1 ORDER BY name").arg(table);
+        if (!q.exec(query))
+        {
+            qDebug() << "itemList: Błąd zapytania dla" << table << ":" << q.lastError().text();
             cb->blockSignals(false);
-            connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt) {
-                setter(txt == tr("Wszystkie") ? QString() : txt);
-            });
-            qDebug() << "itemList: Filtr dla" << table << "zainicjalizowany";
-        };
+            return;
+        }
+        while (q.next())
+        {
+            cb->addItem(q.value(0).toString());
+        }
+        cb->blockSignals(false);
+        connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt)
+                { setter(txt == tr("Wszystkie") ? QString() : txt); });
+        qDebug() << "itemList: Filtr dla" << table << "zainicjalizowany";
+    };
 
-    initFilter(filterTypeComboBox, "types", [this](const QString &v) {
-        m_proxyModel->setTypeFilter(v);
-    });
-    initFilter(filterVendorComboBox, "vendors", [this](const QString &v) {
-        m_proxyModel->setVendorFilter(v);
-    });
-    initFilter(filterModelComboBox, "models", [this](const QString &v) {
-        m_proxyModel->setModelFilter(v);
-    });
-    initFilter(filterStatusComboBox, "statuses", [this](const QString &v) {
-        m_proxyModel->setStatusFilter(v);
-    });
-    initFilter(filterStorageComboBox, "storage_places", [this](const QString &v) {
-        m_proxyModel->setStorageFilter(v);
-    });
+    initFilter(filterTypeComboBox, "types", [this](const QString &v)
+               { m_proxyModel->setTypeFilter(v); });
+    initFilter(filterVendorComboBox, "vendors", [this](const QString &v)
+               { m_proxyModel->setVendorFilter(v); });
+    initFilter(filterModelComboBox, "models", [this](const QString &v)
+               { m_proxyModel->setModelFilter(v); });
+    initFilter(filterStatusComboBox, "statuses", [this](const QString &v)
+               { m_proxyModel->setStatusFilter(v); });
+    initFilter(filterStorageComboBox, "storage_places", [this](const QString &v)
+               { m_proxyModel->setStorageFilter(v); });
 
     // Inicjalizacja pola tekstowego dla nazwy
-    if (filterNameLineEdit) {
+    if (filterNameLineEdit)
+    {
         filterNameLineEdit->setPlaceholderText(tr("Wpisz nazwę eksponatu..."));
         qDebug() << "itemList: Placeholder dla filterNameLineEdit ustawiony";
 
         // Autouzupełnianie
         QStringList names;
         QSqlQuery q(db);
-        if (q.exec("SELECT DISTINCT name FROM eksponaty ORDER BY name")) {
-            while (q.next()) {
+        if (q.exec("SELECT DISTINCT name FROM eksponaty ORDER BY name"))
+        {
+            while (q.next())
+            {
                 names << q.value(0).toString();
             }
-        } else {
+        }
+        else
+        {
             qDebug() << "itemList: Błąd zapytania autouzupełniania:" << q.lastError().text();
         }
         QCompleter *completer = new QCompleter(names, filterNameLineEdit);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
         filterNameLineEdit->setCompleter(completer);
-    } else {
+    }
+    else
+    {
         qDebug() << "itemList: filterNameLineEdit jest nullptr w initFilters!";
     }
 
@@ -406,7 +407,8 @@ void itemList::initFilters(QSqlDatabase &db)
 void itemList::refreshFilters()
 {
     QSqlDatabase db = QSqlDatabase::database("default_connection");
-    if (!db.isOpen()) {
+    if (!db.isOpen())
+    {
         qDebug()
             << "itemList: Błąd - połączenie z bazą danych zamknięte podczas odświeżania filtrów.";
         return;
@@ -419,10 +421,13 @@ void itemList::refreshFilters()
     QString currentStorage = filterStorageComboBox->currentText();
     initFilters(db);
 
-    auto restoreFilter = [](QComboBox *cb, const QString &value) {
-        if (!value.isEmpty() && value != tr("Wszystkie")) {
+    auto restoreFilter = [](QComboBox *cb, const QString &value)
+    {
+        if (!value.isEmpty() && value != tr("Wszystkie"))
+        {
             int index = cb->findText(value);
-            if (index != -1) {
+            if (index != -1)
+            {
                 cb->setCurrentIndex(index);
             }
         }
@@ -445,7 +450,8 @@ void itemList::refreshFilters()
  */
 void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
 {
-    if (selected.indexes().isEmpty()) {
+    if (selected.indexes().isEmpty())
+    {
         ui->itemList_graphicsView->setScene(nullptr);
         m_currentRecordId.clear();
         return;
@@ -458,7 +464,8 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     QSqlQuery query(QSqlDatabase::database("default_connection"));
     query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", m_currentRecordId);
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qDebug() << "Błąd pobierania zdjęć (MySQL):" << query.lastError().text();
         ui->itemList_graphicsView->setScene(nullptr);
         return;
@@ -468,18 +475,23 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
 
     QList<QPixmap> pixmaps;
-    while (query.next()) {
+    while (query.next())
+    {
         QByteArray imageData = query.value(0).toByteArray();
         QPixmap pixmap;
-        if (pixmap.loadFromData(imageData)) {
+        if (pixmap.loadFromData(imageData))
+        {
             pixmaps.append(pixmap);
-        } else {
+        }
+        else
+        {
             qDebug() << "Nie można załadować BLOB (MySQL). Rozmiar danych:" << imageData.size();
             qDebug() << "Spróbuj sprawdzić obecność bibliotek Qt image plugins (np. libqjpeg, libqpng) w katalogu plugins/imageformats lub LD_LIBRARY_PATH.";
         }
     }
 
-    if (pixmaps.isEmpty()) {
+    if (pixmaps.isEmpty())
+    {
         ui->itemList_graphicsView->setScene(nullptr);
         return;
     }
@@ -494,7 +506,8 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int maxThumbnailHeight = (viewHeight - (rows - 1) * spacing) / rows;
 
     int x = 5, y = 5;
-    for (int i = 0; i < photoCount; i++) {
+    for (int i = 0; i < photoCount; i++)
+    {
         QPixmap original = pixmaps[i];
         QPixmap scaled = original.scaled(maxThumbnailWidth,
                                          maxThumbnailHeight,
@@ -510,7 +523,8 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         connect(item, &PhotoItem::doubleClicked, this, &itemList::onPhotoClicked);
 
         x += scaled.width() + spacing;
-        if ((i + 1) % cols == 0) {
+        if ((i + 1) % cols == 0)
+        {
             x = 5;
             y += scaled.height() + spacing;
         }
@@ -548,7 +562,8 @@ void itemList::onNewButtonClicked()
 void itemList::onEditButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection()) {
+    if (!sel->hasSelection())
+    {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do edycji."));
         return;
     }
@@ -572,7 +587,8 @@ void itemList::onEditButtonClicked()
 void itemList::onCloneButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection()) {
+    if (!sel->hasSelection())
+    {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
         return;
     }
@@ -597,7 +613,8 @@ void itemList::onCloneButtonClicked()
 void itemList::onDeleteButtonClicked()
 {
     auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection()) {
+    if (!sel->hasSelection())
+    {
         QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do usunięcia."));
         return;
     }
@@ -608,16 +625,19 @@ void itemList::onDeleteButtonClicked()
     if (QMessageBox::question(this,
                               tr("Potwierdzenie"),
                               tr("Czy na pewno chcesz usunąć rekord %1?").arg(id),
-                              QMessageBox::Yes | QMessageBox::No)
-        == QMessageBox::Yes) {
+                              QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+    {
         QSqlQuery q(QSqlDatabase::database("default_connection"));
         q.prepare("DELETE FROM eksponaty WHERE id = :id");
         q.bindValue(":id", id);
-        if (!q.exec()) {
+        if (!q.exec())
+        {
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć:\n%1").arg(q.lastError().text()));
-        } else {
+        }
+        else
+        {
             m_sourceModel->select();
             QMessageBox::information(this, tr("Sukces"), tr("Rekord usunięty."));
         }
@@ -643,16 +663,15 @@ void itemList::onEndButtonClicked()
  */
 void itemList::onAboutClicked()
 {
-    const QString html
-        = tr("<h3>%1</h3>"
-             "<p>%2</p>"
-             "<p><b>Autor:</b> %3</p>"
-             "<p><b>Wersja:</b> %4</p>")
-              .arg(QCoreApplication::applicationName(),
-                   QStringLiteral("Program do inwentaryzacji retro komputerów"),
-                   QStringLiteral(
-                       "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
-                   QCoreApplication::applicationVersion());
+    const QString html = tr("<h3>%1</h3>"
+                            "<p>%2</p>"
+                            "<p><b>Autor:</b> %3</p>"
+                            "<p><b>Wersja:</b> %4</p>")
+                             .arg(QCoreApplication::applicationName(),
+                                  QStringLiteral("Program do inwentaryzacji retro komputerów"),
+                                  QStringLiteral(
+                                      "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
+                                  QCoreApplication::applicationVersion());
 
     QMessageBox::about(this, tr("O programie"), html);
 }
@@ -670,7 +689,8 @@ void itemList::onPhotoHovered(PhotoItem *item)
     if (m_previewWindow && m_currentHoveredItem == item)
         return;
 
-    if (m_previewWindow) {
+    if (m_previewWindow)
+    {
         m_previewWindow->close();
         m_previewWindow = nullptr;
         m_currentHoveredItem = nullptr;
@@ -747,7 +767,8 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
     if (item != m_currentHoveredItem)
         return;
 
-    QTimer::singleShot(100, this, [=]() {
+    QTimer::singleShot(100, this, [=]()
+                       {
         QPoint globalCursorPos = QCursor::pos();
         if (m_previewWindow && m_previewWindow->geometry().contains(globalCursorPos)) {
             m_previewHovered = true;
@@ -763,8 +784,7 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
 
             m_previewWindow = nullptr;
             m_previewHovered = false;
-        }
-    });
+        } });
 }
 
 /**
@@ -781,10 +801,13 @@ bool itemList::eventFilter(QObject *watched, QEvent *event)
     if (!watched || !event || !m_previewWindow)
         return QWidget::eventFilter(watched, event);
 
-    if (watched == m_previewWindow) {
-        if (event->type() == QEvent::Leave) {
+    if (watched == m_previewWindow)
+    {
+        if (event->type() == QEvent::Leave)
+        {
             m_previewHovered = false;
-            if (m_previewWindow) {
+            if (m_previewWindow)
+            {
                 m_previewWindow->close();
                 m_previewWindow = nullptr;
                 m_currentHoveredItem = nullptr;
@@ -835,7 +858,8 @@ void itemList::onRecordSaved(const QString &recordId)
 void itemList::refreshList(const QString &recordId)
 {
     qDebug() << "itemList: Rozpoczynam refreshList, recordId:" << recordId;
-    if (!m_sourceModel->select()) {
+    if (!m_sourceModel->select())
+    {
         qDebug() << "itemList: Błąd w m_sourceModel->select():"
                  << m_sourceModel->lastError().text();
     }
@@ -845,14 +869,16 @@ void itemList::refreshList(const QString &recordId)
     refreshFilters();
     qDebug() << "itemList: Filtry odświeżone";
 
-    if (!recordId.isEmpty()) {
-        for (int row = 0; row < m_sourceModel->rowCount(); ++row) {
+    if (!recordId.isEmpty())
+    {
+        for (int row = 0; row < m_sourceModel->rowCount(); ++row)
+        {
             QModelIndex srcIdx = m_sourceModel->index(row, 0);
-            if (m_sourceModel->data(srcIdx).toString() == recordId) {
+            if (m_sourceModel->data(srcIdx).toString() == recordId)
+            {
                 QModelIndex proxyIdx = m_proxyModel->mapFromSource(srcIdx);
                 ui->itemList_tableView->selectionModel()->select(proxyIdx,
-                                                                 QItemSelectionModel::ClearAndSelect
-                                                                     | QItemSelectionModel::Rows);
+                                                                 QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
                 m_currentRecordId = recordId;
                 qDebug() << "itemList: Wybrano rekord:" << recordId;
                 break;
@@ -873,9 +899,9 @@ void itemList::refreshList(const QString &recordId)
  */
 bool itemList::verifyDatabaseSchema(QSqlDatabase &db)
 {
-    QStringList tables
-        = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
-    for (const QString &t : tables) {
+    QStringList tables = {"eksponaty", "types", "vendors", "models", "statuses", "storage_places", "photos"};
+    for (const QString &t : tables)
+    {
         if (!db.tables().contains(t, Qt::CaseInsensitive))
             return false;
     }
@@ -916,7 +942,8 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
 
     // Sprawdź czy kolumna has_original_packaging istnieje
     query.exec("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'eksponaty' AND column_name = 'has_original_packaging'");
-    if (query.next() && query.value(0).toInt() == 0) {
+    if (query.next() && query.value(0).toInt() == 0)
+    {
         // Kolumna nie istnieje, dodaj ją
         query.exec("ALTER TABLE eksponaty ADD COLUMN has_original_packaging BOOLEAN DEFAULT 0");
     }
@@ -965,9 +992,12 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
         )
     )");
 
-    if (query.lastError().isValid()) {
+    if (query.lastError().isValid())
+    {
         qDebug() << "itemList: Błąd tworzenia schematu:" << query.lastError().text();
-    } else {
+    }
+    else
+    {
         qDebug() << "itemList: Schemat utworzony pomyślnie (MySQL).";
     }
 }
@@ -985,7 +1015,8 @@ void itemList::insertSampleData(QSqlDatabase &db)
     qDebug() << "itemList: Wstawianie danych przykładowych (MySQL)";
     QSqlQuery query(db);
 
-    auto genId = []() { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
+    auto genId = []()
+    { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
 
     // types
     QString t1 = genId(), t2 = genId(), t3 = genId();
@@ -1091,10 +1122,13 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 1);
     query.exec();
 
-    if (query.lastError().isValid()) {
+    if (query.lastError().isValid())
+    {
         qDebug() << "itemList: Błąd wstawiania danych przykładowych (MySQL)"
                  << query.lastError().text();
-    } else {
+    }
+    else
+    {
         qDebug() << "itemList: Wstawiono dane przykładowe (MySQL)";
     }
 }
@@ -1108,7 +1142,8 @@ void itemList::insertSampleData(QSqlDatabase &db)
  */
 void itemList::onFilterChanged()
 {
-    auto sel = [&](QComboBox *cb) {
+    auto sel = [&](QComboBox *cb)
+    {
         QString t = cb->currentText();
         return t == tr("Wszystkie") ? QString() : t;
     };
@@ -1144,7 +1179,8 @@ void itemList::updateFilterComboBoxes()
 {
     qDebug() << "itemList: Rozpoczynam updateFilterComboBoxes";
     QSqlDatabase db = QSqlDatabase::database("default_connection");
-    if (!db.isOpen()) {
+    if (!db.isOpen())
+    {
         qDebug() << "itemList: Baza danych nie jest otwarta w updateFilterComboBoxes";
         return;
     }
@@ -1190,7 +1226,8 @@ void itemList::updateFilterComboBoxes()
         JOIN storage_places ON eksponaty.storage_place_id = storage_places.id
     )";
 
-    for (auto &f : filters) {
+    for (auto &f : filters)
+    {
         qDebug() << "itemList: Aktualizuję combo box dla:" << f.field;
         f.cb->blockSignals(true);
         QString prev = f.cb->currentText();
@@ -1215,12 +1252,16 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant() : selStatus);
         q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant() : selStorage);
         q.bindValue(":selName", selName.isEmpty() ? QVariant() : QString("%%%1%%").arg(selName));
-        if (!q.exec()) {
+        if (!q.exec())
+        {
             qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"
                      << q.lastError().text();
-        } else {
+        }
+        else
+        {
             int count = 0;
-            while (q.next()) {
+            while (q.next())
+            {
                 f.cb->addItem(q.value(0).toString());
                 count++;
             }
