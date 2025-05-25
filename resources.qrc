@@ -22,6 +22,8 @@
         <file>fonts/topaz.ttf</file>
         <file>fonts/zxspectrum.ttf</file>
         <file>styles/atari8bit.qss</file>
-        <file>fonts/EightBit Atari-Ataripl.ttf</file>
+        <file>fonts/EightBit_Atari-Ataripl.ttf</file>
+        <file>fonts/Berkelium64.ttf</file>
+        <file>styles/geos.qss</file>
     </qresource>
 </RCC>

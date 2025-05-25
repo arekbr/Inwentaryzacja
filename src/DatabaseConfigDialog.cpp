@@ -66,11 +66,7 @@ static QSettings getSettings()
  * Inicjalizuje interfejs użytkownika, ustawia opcje combo boxów dla typu bazy danych (SQLite3, MySQL) i skórek graficznych (Amiga, Atari 8bit, ZX Spectrum, Standard). Ładuje zapisane ustawienia z QSettings, konfiguruje początkowy stan interfejsu i ustanawia połączenia sygnałów-slotów dla interakcji użytkownika, w tym wybór pliku SQLite.
  */
 DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::DatabaseConfigDialog)
-    , m_topazFontId(-1)
-    , m_zxFontId(-1)
-    , m_atari8bitFontId(-1)
+    : QDialog(parent), ui(new Ui::DatabaseConfigDialog), m_topazFontId(-1), m_zxFontId(-1), m_atari8bitFontId(-1)
 {
     ui->setupUi(this);
 
@@ -103,7 +99,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     // Sekcja: Inicjalizacja combo boxa dla skórki graficznej
     // Wypełnia combo box dostępnymi skórkami graficznymi.
     ui->filterSelectSkin->clear();
-    ui->filterSelectSkin->addItems({"Amiga", "Atari 8bit", "ZX Spectrum", "Standard"});
+    ui->filterSelectSkin->addItems({"Amiga", "Atari 8bit", "ZX Spectrum", "GEOS", "Standard"});
 
     // Sekcja: Ładowanie zapisanych ustawień
     // Wczytuje ustawienia z pliku inwentaryzacja.ini, ustawia wartości pól interfejsu.
@@ -137,7 +133,8 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
 
     // Sekcja: Połączenie dla przycisku wyboru pliku SQLite
     // Obsługuje wybór istniejącego lub nowego pliku SQLite, z opcją utworzenia nowego pliku .db.
-    connect(ui->selectFileButton, &QPushButton::clicked, this, [this]() {
+    connect(ui->selectFileButton, &QPushButton::clicked, this, [this]()
+            {
         if (ui->dbTypeComboBox->currentText() == "SQLite3") {
             QString filePath
                 = QFileDialog::getSaveFileName(this,
@@ -154,8 +151,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
                 }
                 ui->sqlitePathLineEdit->setText(filePath);
             }
-        }
-    });
+        } });
 }
 
 /**
@@ -166,10 +162,12 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
  */
 DatabaseConfigDialog::~DatabaseConfigDialog()
 {
-    if (m_topazFontId != -1) {
+    if (m_topazFontId != -1)
+    {
         QFontDatabase::removeApplicationFont(m_topazFontId);
     }
-    if (m_zxFontId != -1) {
+    if (m_zxFontId != -1)
+    {
         QFontDatabase::removeApplicationFont(m_zxFontId);
     }
     delete ui;
@@ -318,23 +316,37 @@ void DatabaseConfigDialog::onSkinChanged(const QString &skin)
 void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
 {
     QString qssPath;
-    if (skin == "Amiga") {
+    if (skin == "Amiga")
+    {
         qssPath = ":/styles/amiga.qss";
-    } else if (skin == "ZX Spectrum") {
+    }
+    else if (skin == "ZX Spectrum")
+    {
         qssPath = ":/styles/zxspectrum.qss";
-    } else if (skin == "Atari 8bit") {
+    }
+    else if (skin == "Atari 8bit")
+    {
         qssPath = ":/styles/atari8bit.qss";
-    } else {
+    }
+    else if (skin == "GEOS")
+    {
+        qssPath = ":/styles/geos.qss";
+    }
+    else
+    {
         qssPath = ":/styles/default.qss"; // Domyślnie Standard
     }
 
     QFile file(qssPath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
         QString style = QString::fromUtf8(file.readAll());
         qApp->setStyleSheet(style);
         file.close();
         qDebug() << "Załadowano skórkę:" << skin << "z pliku:" << qssPath;
-    } else {
+    }
+    else
+    {
         qWarning() << "Nie można załadować pliku QSS:" << qssPath;
     }
 }
@@ -344,94 +356,174 @@ void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
  * @param skin Nazwa skórki (np. "Amiga", "ZX Spectrum", "Standard").
  *
  * @section MethodOverview
- * Mapuje nazwę skórki na odpowiednią czcionkę (np. topaz.ttf dla Amigi, zxspectrum.ttf dla ZX Spectrum, EightBit Atari-Ataripl.ttf dla Atari 8bit, domyślna systemowa dla Standard). Ładuje czcionkę za pomocą QFontDatabase, ustawia ją dla aplikacji za pomocą qApp->setFont i aktualizuje paletę oraz styl, aby zapewnić propagację czcionki. Loguje sukces lub błąd ładowania.
+ * Mapuje nazwę skórki na odpowiednią czcionkę (np. topaz.ttf dla Amigi, zxspectrum.ttf dla ZX Spectrum, EightBit_Atari-Ataripl.ttf dla Atari 8bit, domyślna systemowa dla Standard). Ładuje czcionkę za pomocą QFontDatabase, ustawia ją dla aplikacji za pomocą qApp->setFont i aktualizuje paletę oraz styl, aby zapewnić propagację czcionki. Loguje sukces lub błąd ładowania.
  */
 void DatabaseConfigDialog::loadFont(const QString &skin)
 {
     QFont font;
-    if (skin == "Amiga") {
-        if (m_topazFontId == -1) {
+    if (skin == "Amiga")
+    {
+        if (m_topazFontId == -1)
+        {
             QFile file(":/fonts/topaz.ttf");
-            if (!file.exists()) {
+            if (!file.exists())
+            {
                 qWarning() << "Plik topaz.ttf nie istnieje w zasobach!";
                 font = QFont(); // Fallback na domyślną czcionkę systemową
-            } else {
+            }
+            else
+            {
                 m_topazFontId = QFontDatabase::addApplicationFont(":/fonts/topaz.ttf");
-                if (m_topazFontId == -1) {
+                if (m_topazFontId == -1)
+                {
                     qWarning() << "Nie można załadować pliku topaz.ttf z zasobów";
                 }
             }
         }
-        if (m_topazFontId != -1) {
+        if (m_topazFontId != -1)
+        {
             QStringList families = QFontDatabase::applicationFontFamilies(m_topazFontId);
-            if (!families.isEmpty()) {
+            if (!families.isEmpty())
+            {
                 font.setFamily(families.first());
                 font.setPointSize(12);
                 qDebug() << "Załadowano czcionkę Topaz dla skórki Amiga, rodzina:"
                          << families.first();
-            } else {
+            }
+            else
+            {
                 qWarning() << "Brak dostępnych rodzin czcionek dla topaz.ttf";
                 font = QFont(); // Fallback
             }
-        } else {
+        }
+        else
+        {
             font = QFont(); // Fallback
         }
-    } else if (skin == "ZX Spectrum") {
-        if (m_zxFontId == -1) {
+    }
+    else if (skin == "ZX Spectrum")
+    {
+        if (m_zxFontId == -1)
+        {
             QFile file(":/fonts/zxspectrum.ttf");
-            if (!file.exists()) {
+            if (!file.exists())
+            {
                 qWarning() << "Plik zxspectrum.ttf nie istnieje w zasobach!";
                 font = QFont(); // Fallback na domyślną czcionkę systemową
-            } else {
+            }
+            else
+            {
                 m_zxFontId = QFontDatabase::addApplicationFont(":/fonts/zxspectrum.ttf");
-                if (m_zxFontId == -1) {
+                if (m_zxFontId == -1)
+                {
                     qWarning() << "Nie można załadować pliku zxspectrum.ttf z zasobów";
                 }
             }
         }
-        if (m_zxFontId != -1) {
+        if (m_zxFontId != -1)
+        {
             QStringList families = QFontDatabase::applicationFontFamilies(m_zxFontId);
-            if (!families.isEmpty()) {
+            if (!families.isEmpty())
+            {
                 font.setFamily(families.first());
                 font.setPointSize(12);
                 qDebug() << "Załadowano czcionkę ZX Spectrum dla skórki ZX Spectrum, rodzina:"
                          << families.first();
-            } else {
+            }
+            else
+            {
                 qWarning() << "Brak dostępnych rodzin czcionek dla zxspectrum.ttf";
                 font = QFont(); // Fallback
             }
-        } else {
+        }
+        else
+        {
             font = QFont(); // Fallback
         }
-    } else if (skin == "Atari 8bit") {
-        if (m_atari8bitFontId == -1) {
-            QFile file(":/fonts/EightBit Atari-Ataripl.ttf");
-            if (!file.exists()) {
-                qWarning() << "Plik EightBit Atari-Ataripl.ttf nie istnieje w zasobach!";
+    }
+    else if (skin == "Atari 8bit")
+    {
+        if (m_atari8bitFontId == -1)
+        {
+            QFile file(":/fonts/EightBit_Atari-Ataripl.ttf");
+            if (!file.exists())
+            {
+                qWarning() << "Plik EightBit_Atari-Ataripl.ttf nie istnieje w zasobach!";
                 font = QFont(); // Fallback na domyślną czcionkę systemową
-            } else {
+            }
+            else
+            {
                 m_atari8bitFontId = QFontDatabase::addApplicationFont(
-                    ":/fonts/EightBit Atari-Ataripl.ttf");
-                if (m_atari8bitFontId == -1) {
-                    qWarning() << "Nie można załadować pliku EightBit Atari-Ataripl.ttf z zasobów";
+                    ":/fonts/EightBit_Atari-Ataripl.ttf");
+                if (m_atari8bitFontId == -1)
+                {
+                    qWarning() << "Nie można załadować pliku EightBit_Atari-Ataripl.ttf z zasobów";
                 }
             }
         }
-        if (m_atari8bitFontId != -1) {
+        if (m_atari8bitFontId != -1)
+        {
             QStringList families = QFontDatabase::applicationFontFamilies(m_atari8bitFontId);
-            if (!families.isEmpty()) {
+            if (!families.isEmpty())
+            {
                 font.setFamily(families.first());
                 font.setPointSize(12);
                 qDebug() << "Załadowano czcionkę EightBit Atari-Ataripl dla skórki Atari, rodzina:"
                          << families.first();
-            } else {
-                qWarning() << "Brak dostępnych rodzin czcionek dla EightBit Atari-Ataripl.ttf";
+            }
+            else
+            {
+                qWarning() << "Brak dostępnych rodzin czcionek dla EightBit_Atari-Ataripl.ttf";
                 font = QFont(); // Fallback
             }
-        } else {
+        }
+        else
+        {
             font = QFont(); // Fallback
         }
-    } else {
+    }
+    else if (skin == "GEOS")
+    {
+        static int c64FontId = -1;
+        if (c64FontId == -1)
+        {
+            QFile file(":/fonts/Berkelium64.ttf");
+            if (!file.exists())
+            {
+                qWarning() << "Plik Berkelium64.ttf nie istnieje w zasobach!";
+                font = QFont();
+            }
+            else
+            {
+                c64FontId = QFontDatabase::addApplicationFont(":/fonts/Berkelium64.ttf");
+                if (c64FontId == -1)
+                {
+                    qWarning() << "Nie można załadować pliku Berkelium64.ttf z zasobów";
+                }
+            }
+        }
+        if (c64FontId != -1)
+        {
+            QStringList families = QFontDatabase::applicationFontFamilies(c64FontId);
+            if (!families.isEmpty())
+            {
+                font.setFamily("Berkelium64");
+                font.setPointSize(12);
+                qDebug() << "Załadowano czcionkę Berkelium64 dla skórki GEOS, rodzina:" << families.first();
+            }
+            else
+            {
+                qWarning() << "Brak dostępnych rodzin czcionek dla Berkelium64.ttf";
+                font = QFont();
+            }
+        }
+        else
+        {
+            font = QFont();
+        }
+    }
+    else
+    {
         // Standard: użyj domyślnej czcionki systemowej
         font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
         font.setPointSize(12); // Spójność z innymi skórkami
@@ -448,6 +540,5 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
 
     // Wymuś aktualizację stylów, aby zapewnić propagację czcionki
     qApp->setStyleSheet(qApp->styleSheet());
-    qDebug() << "Ustawiono czcionkę dla aplikacji:" << font.family()
-             << ", rozmiar:" << font.pointSize();
+    qDebug() << "Ustawiono czcionkę dla aplikacji:" << font.family() << ", rozmiar:" << font.pointSize();
 }

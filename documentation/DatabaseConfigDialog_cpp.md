@@ -69,7 +69,7 @@ Kod jest podzielony na następujące sekcje:
   - `ui_DatabaseConfigDialog.h`: Plik generowany przez Qt Designer.
 - **Zasoby**:
   - Pliki QSS (`:/styles/amiga.qss`, `:/styles/atari8bit.qss`, `:/styles/zxspectrum.qss`, `:/styles/default.qss`).
-  - Czcionki (`:/fonts/topaz.ttf`, `:/fonts/zxspectrum.ttf`, `:/fonts/EightBit Atari-Ataripl.ttf`).
+  - Czcionki (`:/fonts/topaz.ttf`, `:/fonts/zxspectrum.ttf`, `:/fonts/EightBit_Atari-Ataripl.ttf`).
 
 ## Uwagi
 - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.

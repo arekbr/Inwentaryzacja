@@ -19,7 +19,7 @@
  * @section Dependencies
  * - **Qt Framework**: Używa klas QDialog, QString oraz mechanizmów sygnałów i slotów.
  * - **Namespace Ui**: Zawiera definicję interfejsu użytkownika (ui_DatabaseConfigDialog.h).
- * - **Zasoby**: Pliki QSS dla stylów (amiga.qss, atari8bit.qss, zxspectrum.qss, default.qss) oraz czcionki (topaz.ttf, zxspectrum.ttf, EightBit Atari-Ataripl.ttf).
+ * - **Zasoby**: Pliki QSS dla stylów (amiga.qss, atari8bit.qss, zxspectrum.qss, default.qss) oraz czcionki (topaz.ttf, zxspectrum.ttf, EightBit_Atari-Ataripl.ttf).
  *
  * @section Notes
  * - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika. Dokumentacja i komentarze dodano bez ingerencji w oryginalny kod.
@@ -33,8 +33,9 @@
 #include <QDialog>
 #include <QString>
 
-namespace Ui {
-class DatabaseConfigDialog;
+namespace Ui
+{
+    class DatabaseConfigDialog;
 }
 
 /**

@@ -52,7 +52,7 @@ Klasa `DatabaseConfigDialog` odpowiada za:
   - Zawiera definicję interfejsu użytkownika (`ui_DatabaseConfigDialog.h`) generowaną przez Qt Designer.
 - **Zasoby**:
   - Pliki QSS dla stylów (`:/styles/amiga.qss`, `:/styles/atari8bit.qss`, `:/styles/zxspectrum.qss`, `:/styles/default.qss`).
-  - Czcionki (`:/fonts/topaz.ttf`, `:/fonts/zxspectrum.ttf`, `:/fonts/EightBit Atari-Ataripl.ttf`).
+  - Czcionki (`:/fonts/topaz.ttf`, `:/fonts/zxspectrum.ttf`, `:/fonts/EightBit_Atari-Ataripl.ttf`).
 
 ## Uwagi
 - Kod nie został zmodyfikowany, zgodnie z wymaganiami użytkownika.

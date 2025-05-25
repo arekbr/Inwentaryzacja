@@ -1,0 +1,167 @@
+/* Ogólny font GEOS */
+QWidget {
+    font-family: "Berkelium 64", "Berkelium64", "C64_User_Mono", "PxPlus_IBM_VGA8", "Courier New", monospace;
+    font-size: 14px;
+    color: #0915A5; /* Granatowy tekst GEOS */
+    background-color: #C8D0E8; /* Jasno-niebiesko-szare tło GEOS */
+}
+
+/* Główne okno */
+QMainWindow {
+    background-color: #C8D0E8; /* Jasno-niebiesko-szary */
+    border: 2px solid #FFFFFF; /* Biała ramka */
+}
+
+/* Etykiety */
+QLabel {
+    background: transparent;
+    color: #0915A5; /* Granat GEOS */
+}
+
+/* Pola tekstowe, comboboxy, edytory daty */
+QLineEdit, QPlainTextEdit, QComboBox, QDateEdit {
+    background-color: #FFFFFF; /* Białe pola */
+    color: #0915A5; /* Granatowy tekst */
+    border: 2px solid #657B9A; /* Niebiesko-szara ramka */
+    border-radius: 2px;
+    padding: 2px;
+}
+
+/* Lista rozwijana */
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    selection-background-color: #0915A5; /* Granat GEOS */
+    selection-color: #FFFFFF; /* Biały tekst */
+    color: #0915A5;
+}
+
+/* Przyciski */
+QPushButton {
+    background-color: #F0F2F5; /* Bardzo jasny szary */
+    color: #0915A5;
+    border-top: 2px solid #FFFFFF; /* Jasna górna */
+    border-left: 2px solid #FFFFFF; /* Jasna lewa */
+    border-bottom: 2px solid #657B9A; /* Ciemniejsza dolna */
+    border-right: 2px solid #657B9A; /* Ciemniejsza prawa */
+    padding: 5px 15px;
+    font-weight: bold;
+}
+
+QPushButton:pressed {
+    background-color: #B3BDE6; /* Ciemniejsze tło po wciśnięciu */
+    border-top: 2px solid #657B9A;
+    border-left: 2px solid #657B9A;
+    border-bottom: 2px solid #FFFFFF;
+    border-right: 2px solid #FFFFFF;
+}
+
+/* Pasek statusu */
+QStatusBar {
+    background-color: #E0E4F0;
+    color: #0915A5;
+    border-top: 2px solid #657B9A;
+}
+
+/* Widok graficzny */
+QGraphicsView {
+    background-color: #FFFFFF;
+    border: 2px solid #657B9A;
+}
+
+/* Paski przewijania */
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #E0E4F0;
+    border: 1px solid #657B9A;
+}
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #B3BDE6;
+    border: 1px solid #657B9A;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+/* Tabela (QTableView) */
+QTableView {
+    background-color: #FFFFFF;
+    color: #0915A5;
+    border: 2px solid #657B9A;
+    gridline-color: #B3BDE6;
+}
+
+QTableView::item {
+    background-color: #FFFFFF;
+    color: #0915A5;
+}
+
+QTableView::item:selected {
+    background-color: #0915A5;
+    color: #FFFFFF;
+}
+
+/* Nagłówki tabeli */
+QHeaderView::section {
+    background-color: #C8D0E8;
+    color: #0915A5;
+    border: 1px solid #657B9A;
+    padding: 4px;
+    font-weight: bold;
+}
+
+/* Listy i drzewa */
+QListView, QTreeView {
+    background-color: #FFFFFF;
+    color: #0915A5;
+    border: 2px solid #657B9A;
+}
+
+QListView::item:selected, QTreeView::item:selected {
+    background-color: #0915A5;
+    color: #FFFFFF;
+}
+
+/* Zakładki */
+QTabWidget::pane {
+    border: 2px solid #657B9A;
+    background: #C8D0E8;
+}
+
+QTabBar::tab {
+    background: #F0F2F5;
+    border: 2px solid #657B9A;
+    padding: 5px;
+    color: #0915A5;
+}
+
+QTabBar::tab:selected {
+    background: #C8D0E8;
+    color: #0915A5;
+    border-bottom: 2px solid #C8D0E8;
+}
+
+/* Tooltipy, podpowiedzi */
+QToolTip {
+    background: #0915A5;
+    color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+    padding: 2px;
+}
+
+/* Podkreślone shortcuty jak w GEOS */
+QLabel:disabled, QAbstractButton:disabled {
+    color: #B3BDE6;
+}
+
+/* Panel boczny, dockwidget */
+QDockWidget {
+    titlebar-close-icon: url(none); /* styl minimalistyczny */
+    titlebar-normal-icon: url(none);
+    background: #C8D0E8;
+    border: 2px solid #657B9A;
+}
+
+QDockWidget::title {
+    background: #657B9A;
+    color: #FFFFFF;
+    padding: 3px;
+    font-weight: bold;
+}

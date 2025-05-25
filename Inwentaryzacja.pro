@@ -86,6 +86,9 @@ DISTFILES += \
     copy_libs_to_project.sh \
     deploy_debug.bat \
     fix_mariadb_mac.sh \
+    fonts/Berkelium64.ttf \
+    fonts/EightBit_Atari-Ataripl.ttf \
+    fonts/EightBit_Atari-Ataripl.ttf \
     merge.sh \
     merge_win.ps1 \
     renumeracja.sh \
@@ -146,7 +149,8 @@ DISTFILES += \
 DISTFILES += \
     fonts/topaz.ttf \
     fonts/zxspectrum.ttf \
-    EightBit Atari-Ataripl.ttf
+    fonts/Berkelium64.ttf \
+    EightBit_Atari-Ataripl.ttf
 
 
 # Obrazy i ikony
@@ -175,6 +179,7 @@ DISTFILES += \
     styles/amiga.qss \
     styles/atari8bit.qss \
     styles/default.qss \
+    styles/geos.qss \
     styles/zxspectrum.qss
 
 # Skrypty SQL i pliki danych
