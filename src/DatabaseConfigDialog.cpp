@@ -39,6 +39,8 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include "ui_DatabaseConfigDialog.h"
+#include <QLibraryInfo>
+#include <QCoreApplication>
 
 /**
  * @brief Pobiera obiekt QSettings dla aplikacji.
@@ -71,6 +73,13 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     , m_atari8bitFontId(-1)
 {
     ui->setupUi(this);
+
+    // Debug: Ścieżki do pluginów Qt i zmienne środowiskowe
+    qDebug() << "[DEBUG] QT_QPA_PLATFORM_PLUGIN_PATH:" << qgetenv("QT_QPA_PLATFORM_PLUGIN_PATH");
+    qDebug() << "[DEBUG] QT_PLUGIN_PATH:" << qgetenv("QT_PLUGIN_PATH");
+    qDebug() << "[DEBUG] LD_LIBRARY_PATH:" << qgetenv("LD_LIBRARY_PATH");
+    qDebug() << "[DEBUG] QLibraryInfo::PluginsPath:" << QLibraryInfo::path(QLibraryInfo::PluginsPath);
+    qDebug() << "[DEBUG] QCoreApplication::libraryPaths():" << QCoreApplication::libraryPaths();
 
     // Sekcja: Połączenia przycisków dialogowych
     // Łączy sygnały przycisków OK/Anuluj z odpowiednimi slotami (accept, reject).

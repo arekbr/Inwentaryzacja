@@ -65,6 +65,8 @@
 #include <QUuid>
 #include <QtMath>
 #include <functional>
+#include <QLibraryInfo>
+#include <QPluginLoader>
 
 /**
  * @brief Konstruktor klasy itemList.
