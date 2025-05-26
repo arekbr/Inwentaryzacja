@@ -25,5 +25,6 @@
         <file>fonts/EightBit_Atari-Ataripl.ttf</file>
         <file>fonts/Berkelium64.ttf</file>
         <file>styles/geos.qss</file>
+        <file>fonts/c64-multilingualPL.ttf</file>
     </qresource>
 </RCC>

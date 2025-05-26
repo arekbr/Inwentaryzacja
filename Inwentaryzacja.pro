@@ -89,6 +89,8 @@ DISTFILES += \
     fonts/Berkelium64.ttf \
     fonts/EightBit_Atari-Ataripl.ttf \
     fonts/EightBit_Atari-Ataripl.ttf \
+    fonts/c64-multilingualPL.ttf \
+    git_merge_dev_to_main.sh \
     merge.sh \
     merge_win.ps1 \
     renumeracja.sh \
