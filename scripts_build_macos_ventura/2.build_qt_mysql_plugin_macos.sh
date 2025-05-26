@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x   # <--- Jeśli chcesz debugować, zostaw, jeśli nie - usuń
 
 echo -e "\n🔌 [PLUGIN] Budowa Qt SQL Driverów (w tym qsqlmysql) — generator: Ninja (macOS)\n"
 
@@ -70,10 +71,11 @@ EOF
 # ==========================
 echo "⚙️  Konfiguracja CMake + budowa Ninja"
 cmake -G Ninja . \
-  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_SYSTEM_PROCESSOR=$(uname -m)
 
-ninja -j$(sysctl -n hw.logicalcpu)
+CORES=$(sysctl -n hw.logicalcpu)
+ninja -j$CORES
 
 # ==========================
 # Weryfikacja
