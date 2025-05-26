@@ -4,7 +4,20 @@ Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym p
 
 Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), a projekt stosuje [Wersjonowanie Semantyczne](https://semver.org/lang/pl/).
 
+## [1.2.7] - 2025-05-25
+### Dodano
+  - Skrypty budowania aplikacji od zera (Macos/Windows/Linux)
+  - Zapamiętywanie pozycji okien
+  
+## [1.2.6] - 2025-05-25
+### Dodano
+  - Skrypty budowania aplikacji od zera (Macos/Windows/Linux)
+
 ## [1.2.5] - 2025-05-12
+### Dodano
+  - Skrypty budowania aplikacji od zera (Macos/Windows/Linux)
+  - Skórka GEOS
+  - Poprawki kosmetyczne, w większości wewnątrz kodu
 
 ### Dodano
   - Filtrowanie
