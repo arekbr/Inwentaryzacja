@@ -52,6 +52,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStandardPaths>
+#include <QCloseEvent>
 #include <QUuid>
 #include <QProgressDialog>
 
@@ -79,6 +80,13 @@ MainWindow::MainWindow(QWidget *parent)
     , m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    restoreState(settings.value("MainWindow/state").toByteArray());
+
 
     // Pobranie istniejącego połączenia z bazy danych
     db = QSqlDatabase::database("default_connection");
@@ -188,6 +196,16 @@ MainWindow::~MainWindow()
         db.close();
     }
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                       + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/state", saveState());
+    QMainWindow::closeEvent(event);
 }
 
 /**

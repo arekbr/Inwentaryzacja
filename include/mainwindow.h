@@ -39,6 +39,8 @@
 #include <QList>
 #include <QMainWindow>
 #include <QSqlDatabase>
+#include <QCloseEvent>
+
 
 namespace Ui {
 class MainWindow;
@@ -278,6 +280,9 @@ private slots:
      * do tabeli storage_places i odświeża combo box po zamknięciu.
      */
     void onAddStoragePlaceClicked();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     /**

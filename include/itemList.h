@@ -40,6 +40,7 @@
 #include <QSqlRelationalTableModel>
 #include <QWidget>
 #include "ItemFilterProxyModel.h"
+#include <QCloseEvent>
 #include "photoitem.h"
 
 namespace Ui {
@@ -85,6 +86,9 @@ public:
      * Zwalnia zasoby, w tym interfejs użytkownika, model danych, timery i inne obiekty dynamiczne.
      */
     ~itemList();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     /**

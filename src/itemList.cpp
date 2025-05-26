@@ -49,6 +49,8 @@
 #include <QGraphicsScene>
 #include <QGuiApplication>
 #include <QItemSelectionModel>
+#include <QStandardPaths>
+#include <QCloseEvent>
 #include <QMessageBox>
 #include <QPixmap>
 #include <QPushButton>
@@ -84,6 +86,11 @@ itemList::itemList(QWidget *parent)
     qDebug() << "itemList: Rozpoczynam konstruktor";
     ui->setupUi(this);
     qDebug() << "itemList: ui->setupUi wykonany";
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    restoreGeometry(settings.value("itemList/geometry").toByteArray());
 
     // Inicjalizacja pól QComboBox i QLineEdit
     filterTypeComboBox = ui->filterTypeComboBox;
@@ -302,6 +309,15 @@ itemList::~itemList()
     if (m_keepAliveTimer)
         m_keepAliveTimer->stop();
     delete ui;
+}
+
+void itemList::closeEvent(QCloseEvent *event)
+{
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                       + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    settings.setValue("itemList/geometry", saveGeometry());
+    QWidget::closeEvent(event);
 }
 
 /**
