@@ -71,6 +71,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setStyle("Fusion");
 
+    // Krótka informacja diagnostyczna na starcie aplikacji
+    qInfo() << "\u26A1\uFE0F Start aplikacji Inwentaryzacja";
+
     // Ustawienie metadanych aplikacji: nazwa i wersja.
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
     QCoreApplication::setApplicationVersion(APP_VERSION);
