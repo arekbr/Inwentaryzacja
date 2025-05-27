@@ -22,17 +22,7 @@ PacmanOverlay::PacmanOverlay(QWidget *parent)
     {
         qWarning() << "[PACMAN] Sprite sheet (spritesheet.png) not loaded!";
     }
-
-    connect(&m_lifetimeTimer, &QTimer::timeout, this, [this]()
-            {
-        m_showGhost = true;
-        m_pacmanVanishing = true;
-        m_vanishFrame = 0;
-        update();
-        QTimer::singleShot(700, this, [this]() {
-            setVisible(false);
-            emit finished();
-        }); });
+    // Usunięto connect do m_lifetimeTimer (nie będzie automatycznego znikania)
 
     // --- Dodane zmienne do animacji położenia Pac-Mana i ducha ---
     m_pacmanX = 0;
@@ -71,7 +61,7 @@ void PacmanOverlay::start(int durationMs)
     m_mouthClosing = false;
     m_timerId = startTimer(40);                         // timer do animacji szczęki
     m_eatCharTimerId = startTimer(s_eatCharIntervalMs); // timer do zjadania znaków (regulowany)
-    m_lifetimeTimer.start(durationMs);
+    // m_lifetimeTimer.start(durationMs); // USUNIĘTO! Overlay nie znika automatycznie
     m_pacmanX = 0;
     m_ghostX = 0;
     m_ghostChasing = false;
@@ -87,24 +77,9 @@ void PacmanOverlay::start(int durationMs)
     {
         m_initialText.clear();
     }
-    // Duch pojawia się po 2 sekundach na prawej krawędzi pola tekstowego
-    QTimer::singleShot(2000, this, [this]() {
+    // Duch pojawia się po 1.5 sekundy na prawej krawędzi pola tekstowego
+    QTimer::singleShot(1500, this, [this]() {
         m_showGhost = true;
-        int size = 32;
-        int textWidth = 0;
-        if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-        {
-            QFontMetrics fm(le->font());
-            textWidth = fm.horizontalAdvance(le->text());
-        }
-        else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-        {
-            QFontMetrics fm(te->font());
-            textWidth = fm.horizontalAdvance(te->toPlainText());
-        }
-        int startX = textWidth;
-        // Duch na prawej krawędzi pola (nie na tekście, tylko na końcu pola)
-        m_ghostX = -(width() - startX - size); // startX - m_ghostX = width() - size
         update();
     });
 }
@@ -134,18 +109,12 @@ void PacmanOverlay::paintEvent(QPaintEvent *)
     int startX = textWidth;
     int ghostMargin = 4; // odstęp od prawej krawędzi pola
     int ghostX = width() - size - ghostMargin;
-    if (!m_showGhost)
+    // Pac-Man nie znika, zatrzymuje się przy lewej krawędzi
+    int pacmanX = std::max(startX - m_pacmanX, 0);
+    drawPacman(p, pacmanX, y, size);
+    if (m_showGhost)
     {
-        drawPacman(p, startX - m_pacmanX, y, size);
-    }
-    else if (m_pacmanVanishing)
-    {
-        drawPacmanVanish(p, startX - m_pacmanX, y, size);
-        drawGhost(p, ghostX, y, size); // Duch przy prawej krawędzi pola
-    }
-    else
-    {
-        drawGhost(p, ghostX, y, size); // Duch przy prawej krawędzi pola
+        drawGhost(p, ghostX, y, size);
     }
     raise();
 }
@@ -228,25 +197,33 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == m_timerId)
     {
-        if (!m_showGhost && !m_pacmanVanishing)
+        // Pac-Man animuje się, ale nie wychodzi poza lewą krawędź
+        if (!m_pacmanVanishing)
         {
             m_pacmanFrame = (m_pacmanFrame + 1) % 3;
-            m_pacmanX += s_pacmanSpeedPx;
+            // Zatrzymaj Pac-Mana przy lewej krawędzi
+            int textWidth = 0;
+            if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
+            {
+                QFontMetrics fm(le->font());
+                textWidth = fm.horizontalAdvance(le->text());
+            }
+            else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
+            {
+                QFontMetrics fm(te->font());
+                textWidth = fm.horizontalAdvance(te->toPlainText());
+            }
+            int nextX = textWidth - (m_pacmanX + s_pacmanSpeedPx);
+            if (nextX >= 0)
+                m_pacmanX += s_pacmanSpeedPx;
             update();
         }
-        // Ghost nie goni Pac-Mana, tylko stoi
-        if (m_showGhost && !m_pacmanVanishing)
-        {
-            m_ghostFrame = 0; // tylko jeden sprite ducha
-            // Duch stoi w miejscu, nic nie zmieniamy
-            update();
-        }
-        // Pac-Man vanishing animation
+        // Pac-Man vanishing animation (nieużywane w tej wersji)
         if (m_pacmanVanishing)
         {
             m_vanishFrame++;
             if (m_vanishFrame > 5)
-            { // Assume 6 vanish frames
+            {
                 m_pacmanVanishing = false;
             }
             update();
@@ -254,7 +231,7 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
     }
     if (event->timerId() == m_eatCharTimerId)
     {
-        if (m_targetWidget && !m_showGhost && !m_pacmanVanishing)
+        if (m_targetWidget && !m_pacmanVanishing)
         {
             bool any = false;
             if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
@@ -275,6 +252,7 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                     any = true;
                 }
             }
+            // Jeśli nie ma już znaków, Pac-Man się zatrzymuje, ale nie znika
             if (!any)
             {
                 killTimer(m_eatCharTimerId);
