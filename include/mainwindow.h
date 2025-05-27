@@ -41,9 +41,9 @@
 #include <QSqlDatabase>
 #include <QCloseEvent>
 
-
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
 // Forward-deklaracja klasy PhotoItem (używana w slotach)

@@ -33,6 +33,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "PacmanOverlay.h"
 
 // Inne nagłówki
 #include <QCompleter>
@@ -55,6 +56,9 @@
 #include <QCloseEvent>
 #include <QUuid>
 #include <QProgressDialog>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QPlainTextEdit>
 
 #include "models.h"
 #include "photoitem.h"
@@ -182,6 +186,55 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Ustawienia wstępne
     ui->graphicsView->setTransform(QTransform());
+
+    // --- Pacman: tylko raz na całą sesję aplikacji ---
+    static bool pacmanShown = false;
+    auto connectPacmanToTextWidget = [this](QWidget *w) {
+        if (auto le = qobject_cast<QLineEdit *>(w)) {
+            connect(le, &QLineEdit::textEdited, this, [this, le](const QString &text) {
+                static QSet<QLineEdit*> started;
+                if (!pacmanShown && !started.contains(le) && !text.isEmpty()) {
+                    pacmanShown = true;
+                    QTimer::singleShot(5000, this, [this, le]() {
+                        auto overlay = new PacmanOverlay(this);
+                        overlay->setTargetWidget(le);
+                        overlay->start();
+                    });
+                    started.insert(le);
+                }
+            });
+        } else if (auto te = qobject_cast<QTextEdit *>(w)) {
+            connect(te, &QTextEdit::textChanged, this, [this, te]() {
+                static QSet<QTextEdit*> started;
+                if (!pacmanShown && !started.contains(te) && !te->toPlainText().isEmpty()) {
+                    pacmanShown = true;
+                    QTimer::singleShot(5000, this, [this, te]() {
+                        auto overlay = new PacmanOverlay(this);
+                        overlay->setTargetWidget(te);
+                        overlay->start();
+                    });
+                    started.insert(te);
+                }
+            });
+        } else if (auto pe = qobject_cast<QPlainTextEdit *>(w)) {
+            connect(pe, &QPlainTextEdit::textChanged, this, [this, pe]() {
+                static QSet<QPlainTextEdit*> started;
+                if (!pacmanShown && !started.contains(pe) && !pe->toPlainText().isEmpty()) {
+                    pacmanShown = true;
+                    QTimer::singleShot(5000, this, [this, pe]() {
+                        auto overlay = new PacmanOverlay(this);
+                        overlay->setTargetWidget(pe);
+                        overlay->start();
+                    });
+                    started.insert(pe);
+                }
+            });
+        }
+    };
+    // Przeszukaj wszystkie dzieci centralWidget
+    for (auto w : ui->centralwidget->findChildren<QWidget*>()) {
+        connectPacmanToTextWidget(w);
+    }
 }
 
 /**

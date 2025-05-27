@@ -43,6 +43,9 @@
 #include <QLibraryInfo>
 #include <QCoreApplication>
 #include <QTimer>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QPlainTextEdit>
 
 /**
  * @brief Pobiera obiekt QSettings dla aplikacji.
@@ -155,13 +158,16 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             }
         } });
 
-    // Pacman easter egg
+    // Pacman easter egg (usuń lub ogranicz do pól tekstowych)
     QTimer *pacmanTimer = new QTimer(this);
     pacmanTimer->setSingleShot(true);
     pacmanTimer->setInterval(getPacmanDelayMs());
     connect(pacmanTimer, &QTimer::timeout, this, [this]() {
         QWidget *focus = QApplication::focusWidget();
+        // Ogranicz do QLineEdit/QTextEdit/QPlainTextEdit
         if (!focus) return;
+        if (!(qobject_cast<QLineEdit*>(focus) || qobject_cast<QTextEdit*>(focus) || qobject_cast<QPlainTextEdit*>(focus)))
+            return;
         PacmanOverlay *overlay = new PacmanOverlay(this);
         overlay->setTargetWidget(focus);
         overlay->start(5000);

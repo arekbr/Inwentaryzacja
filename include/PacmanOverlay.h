@@ -16,6 +16,9 @@ public:
     static void setEatCharIntervalMs(int ms) { s_eatCharIntervalMs = ms; }
     static int getEatCharIntervalMs() { return s_eatCharIntervalMs; }
 
+    void setCollisionHideMs(int ms) { m_collisionHideMs = ms; }
+    int getCollisionHideMs() const { return m_collisionHideMs; }
+
 signals:
     void finished();
 
@@ -50,6 +53,9 @@ private:
     int m_ghostX;  // Pozycja ducha (przesunięcie w lewo)
     bool m_ghostChasing; // Czy duch już goni Pac-Mana
     double m_ghostSpeedPx; // Prędkość ducha w px/klatkę
+    bool m_pacmanCollided; // Stan kolizji z duchem
+    int m_collisionFrame;  // Numer klatki animacji kolizji (0-10)
+    int m_collisionHideMs; // czas ukrycia po kolizji (ms)
 
     static int s_pacmanSpeedPx;
     static int s_eatCharIntervalMs;
