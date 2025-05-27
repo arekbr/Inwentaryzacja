@@ -61,10 +61,9 @@ void PacmanOverlay::start(int durationMs)
     m_mouthClosing = false;
     m_timerId = startTimer(40);                         // timer do animacji szczęki
     m_eatCharTimerId = startTimer(s_eatCharIntervalMs); // timer do zjadania znaków (regulowany)
-    // m_lifetimeTimer.start(durationMs); // USUNIĘTO! Overlay nie znika automatycznie
     m_pacmanX = 0;
-    m_ghostX = 0;
     m_ghostChasing = false;
+    m_ghostX = 0;
     if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
     {
         m_initialText = le->text();
@@ -77,9 +76,25 @@ void PacmanOverlay::start(int durationMs)
     {
         m_initialText.clear();
     }
-    // Duch pojawia się po 1.5 sekundy na prawej krawędzi pola tekstowego
-    QTimer::singleShot(1500, this, [this]() {
+    // Wyliczanie parametrów ruchu ducha
+    int numChars = m_initialText.length();
+    int eatCharInterval = s_eatCharIntervalMs; // ms na znak
+    int totalEatTimeMs = numChars * eatCharInterval;
+    int ghostDelayMs = 1500; // opóźnienie startu ducha
+    int frameIntervalMs = 40; // timerId = 40 ms
+    int effectiveChaseTimeMs = totalEatTimeMs - ghostDelayMs;
+    int numFrames = (effectiveChaseTimeMs > 0) ? effectiveChaseTimeMs / frameIntervalMs : 1;
+    int size = 32;
+    int ghostStartX = width() - size - 4;
+    int pacmanEndX = 0;
+    int ghostEndX = pacmanEndX; // Duch ma dopaść Pac-Mana przy lewej krawędzi
+    int ghostDistance = ghostStartX - ghostEndX;
+    m_ghostSpeedPx = (numFrames > 0) ? (double)ghostDistance / numFrames : ghostDistance; // teleport jeśli za późno
+    m_ghostX = ghostStartX;
+    // Duch pojawia się po 1.5 sekundy na prawej krawędzi pola tekstowego i zaczyna gonić Pac-Mana
+    QTimer::singleShot(ghostDelayMs, this, [this]() {
         m_showGhost = true;
+        m_ghostChasing = true;
         update();
     });
 }
@@ -107,14 +122,12 @@ void PacmanOverlay::paintEvent(QPaintEvent *)
         textWidth = fm.horizontalAdvance(te->toPlainText());
     }
     int startX = textWidth;
-    int ghostMargin = 4; // odstęp od prawej krawędzi pola
-    int ghostX = width() - size - ghostMargin;
     // Pac-Man nie znika, zatrzymuje się przy lewej krawędzi
     int pacmanX = std::max(startX - m_pacmanX, 0);
     drawPacman(p, pacmanX, y, size);
     if (m_showGhost)
     {
-        drawGhost(p, ghostX, y, size);
+        drawGhost(p, (int)m_ghostX, y, size);
     }
     raise();
 }
@@ -218,6 +231,14 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                 m_pacmanX += s_pacmanSpeedPx;
             update();
         }
+        // Duch goni Pac-Mana
+        if (m_ghostChasing)
+        {
+            m_ghostX -= m_ghostSpeedPx;
+            if (m_ghostX < 0)
+                m_ghostX = 0;
+            update();
+        }
         // Pac-Man vanishing animation (nieużywane w tej wersji)
         if (m_pacmanVanishing)
         {
@@ -256,6 +277,7 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
             if (!any)
             {
                 killTimer(m_eatCharTimerId);
+                m_ghostChasing = false; // Duch zatrzymuje się przy Pac-Manie
             }
         }
     }

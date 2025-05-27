@@ -49,6 +49,7 @@ private:
     int m_pacmanX; // Pozycja Pac-Mana (przesunięcie w lewo)
     int m_ghostX;  // Pozycja ducha (przesunięcie w lewo)
     bool m_ghostChasing; // Czy duch już goni Pac-Mana
+    double m_ghostSpeedPx; // Prędkość ducha w px/klatkę
 
     static int s_pacmanSpeedPx;
     static int s_eatCharIntervalMs;
