@@ -11,6 +11,11 @@ public:
     void setTargetWidget(QWidget *target);
     void start(int durationMs = 5000);
 
+    static void setPacmanSpeedPx(int px) { s_pacmanSpeedPx = px; }
+    static int getPacmanSpeedPx() { return s_pacmanSpeedPx; }
+    static void setEatCharIntervalMs(int ms) { s_eatCharIntervalMs = ms; }
+    static int getEatCharIntervalMs() { return s_eatCharIntervalMs; }
+
 signals:
     void finished();
 
@@ -39,4 +44,12 @@ private:
     void drawPacman(QPainter &p, int x, int y, int size);
     void drawGhost(QPainter &p, int x, int y, int size);
     void drawPacmanVanish(QPainter &p, int x, int y, int size);
+
+    // --- New variables for position animation ---
+    int m_pacmanX; // Pozycja Pac-Mana (przesunięcie w lewo)
+    int m_ghostX;  // Pozycja ducha (przesunięcie w lewo)
+    bool m_ghostChasing; // Czy duch już goni Pac-Mana
+
+    static int s_pacmanSpeedPx;
+    static int s_eatCharIntervalMs;
 };
