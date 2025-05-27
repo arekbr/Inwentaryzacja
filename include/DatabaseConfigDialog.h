@@ -136,6 +136,24 @@ public:
      */
     int mysqlPort() const;
 
+    /**
+     * @brief Ustawia opóźnienie wywołania Pac-Mana.
+     * @param ms Czas opóźnienia w milisekundach.
+     *
+     * @section MethodOverview
+     * Ustawia statyczną zmienną opóźnienia Pac-Mana, która może być używana w całej aplikacji.
+     */
+    static void setPacmanDelayMs(int ms);
+
+    /**
+     * @brief Zwraca opóźnienie wywołania Pac-Mana.
+     * @return int Czas opóźnienia w milisekundach.
+     *
+     * @section MethodOverview
+     * Zwraca aktualną wartość statycznej zmiennej opóźnienia Pac-Mana.
+     */
+    static int getPacmanDelayMs();
+
 public slots:
     /**
      * @brief Zatwierdza wprowadzone dane i zamyka okno dialogowe.
@@ -194,6 +212,9 @@ private:
 
     /// ID czcionki Atari 8bit załadowanej z zasobów.
     int m_atari8bitFontId;
+
+    /// Statyczna zmienna przechowująca opóźnienie wywołania Pac-Mana w milisekundach.
+    static int g_pacmanDelayMs;
 };
 
 #endif // DATABASECONFIGDIALOG_H

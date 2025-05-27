@@ -29,6 +29,7 @@
  */
 
 #include "DatabaseConfigDialog.h"
+#include "PacmanOverlay.h"
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -41,6 +42,7 @@
 #include "ui_DatabaseConfigDialog.h"
 #include <QLibraryInfo>
 #include <QCoreApplication>
+#include <QTimer>
 
 /**
  * @brief Pobiera obiekt QSettings dla aplikacji.
@@ -152,6 +154,20 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
                 ui->sqlitePathLineEdit->setText(filePath);
             }
         } });
+
+    // Pacman easter egg
+    QTimer *pacmanTimer = new QTimer(this);
+    pacmanTimer->setSingleShot(true);
+    pacmanTimer->setInterval(getPacmanDelayMs());
+    connect(pacmanTimer, &QTimer::timeout, this, [this]() {
+        QWidget *focus = QApplication::focusWidget();
+        if (!focus) return;
+        PacmanOverlay *overlay = new PacmanOverlay(this);
+        overlay->setTargetWidget(focus);
+        overlay->start(5000);
+        connect(overlay, &PacmanOverlay::finished, overlay, &PacmanOverlay::deleteLater);
+    });
+    pacmanTimer->start();
 }
 
 /**
@@ -277,6 +293,12 @@ int DatabaseConfigDialog::mysqlPort() const
 {
     return ui->portSpinBox->value();
 }
+
+// --- Pacman easter egg timer param ---
+int DatabaseConfigDialog::g_pacmanDelayMs = 4000; // domyślnie 15*60*1000
+void DatabaseConfigDialog::setPacmanDelayMs(int ms) { g_pacmanDelayMs = ms; }
+int DatabaseConfigDialog::getPacmanDelayMs() { return g_pacmanDelayMs; }
+// ---
 
 /**
  * @brief Obsługuje zmianę typu bazy danych w combo boxie.

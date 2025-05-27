@@ -35,6 +35,7 @@ DEPENDPATH  += include
 
 SOURCES += \
     src/DatabaseConfigDialog.cpp \
+    src/PacmanOverlay.cpp \
     src/DatabaseMigration.cpp \
     src/ItemFilterProxyModel.cpp \
     src/fullscreenphotoviewer.cpp \
@@ -51,6 +52,7 @@ SOURCES += \
 
 HEADERS += \
     include/DatabaseConfigDialog.h \
+    include/PacmanOverlay.h \
     include/DatabaseMigration.h \
     include/ItemFilterProxyModel.h \
     include/fullscreenphotoviewer.h \
@@ -91,6 +93,8 @@ DISTFILES += \
     fonts/EightBit_Atari-Ataripl.ttf \
     fonts/c64-multilingualPL.ttf \
     git_merge_dev_to_main.sh \
+    images/pacman_sprites.png \
+    images/spritesheet.png \
     merge.sh \
     merge_win.ps1 \
     renumeracja.sh \
