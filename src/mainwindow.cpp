@@ -77,24 +77,19 @@
  * do słowników. Ustawia początkowy stan formularza (brak edycji, brak wybranego zdjęcia).
  */
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , m_editMode(false)
-    , m_recordId(QString())
-    , m_selectedPhotoIndex(-1)
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_editMode(false), m_recordId(QString()), m_selectedPhotoIndex(-1)
 {
     ui->setupUi(this);
 
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                           + "/inwentaryzacja.ini",
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
                        QSettings::IniFormat);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/state").toByteArray());
 
-
     // Pobranie istniejącego połączenia z bazy danych
     db = QSqlDatabase::database("default_connection");
-    if (!db.isOpen()) {
+    if (!db.isOpen())
+    {
         QMessageBox::critical(this,
                               tr("Błąd bazy danych"),
                               tr("Brak otwartego połączenia z bazą danych (default_connection)."));
@@ -131,9 +126,11 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::onAddStoragePlaceClicked);
 
     // Automatyczne dodawanie nowych wartości do słowników
-    auto autoInsert = [this](QComboBox *comboBox, const QString &tableName) {
+    auto autoInsert = [this](QComboBox *comboBox, const QString &tableName)
+    {
         comboBox->setEditable(true);
-        connect(comboBox->lineEdit(), &QLineEdit::editingFinished, this, [this, comboBox, tableName]() {
+        connect(comboBox->lineEdit(), &QLineEdit::editingFinished, this, [this, comboBox, tableName]()
+                {
             QString text = comboBox->currentText().trimmed();
             if (text.isEmpty()
                 || comboBox->findText(text, Qt::MatchFixedString | Qt::MatchCaseSensitive) != -1)
@@ -174,8 +171,7 @@ MainWindow::MainWindow(QWidget *parent)
             }
 
             loadComboBoxData(tableName, comboBox);
-            comboBox->setCurrentIndex(comboBox->findText(text));
-        });
+            comboBox->setCurrentIndex(comboBox->findText(text)); });
     };
 
     autoInsert(ui->New_item_type, "types");
@@ -189,9 +185,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // --- Pacman: tylko raz na całą sesję aplikacji ---
     static bool pacmanShown = false;
-    auto connectPacmanToTextWidget = [this](QWidget *w) {
-        if (auto le = qobject_cast<QLineEdit *>(w)) {
-            connect(le, &QLineEdit::textEdited, this, [this, le](const QString &text) {
+    auto connectPacmanToTextWidget = [this](QWidget *w)
+    {
+        if (auto le = qobject_cast<QLineEdit *>(w))
+        {
+            connect(le, &QLineEdit::textEdited, this, [this, le](const QString &text)
+                    {
                 static QSet<QLineEdit*> started;
                 
                 // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
@@ -230,10 +229,12 @@ MainWindow::MainWindow(QWidget *parent)
                         // przez Qt gdy zostanie usunięty rodzic (this)
                     });
                     started.insert(le);
-                }
-            });
-        } else if (auto te = qobject_cast<QTextEdit *>(w)) {
-            connect(te, &QTextEdit::textChanged, this, [this, te]() {
+                } });
+        }
+        else if (auto te = qobject_cast<QTextEdit *>(w))
+        {
+            connect(te, &QTextEdit::textChanged, this, [this, te]()
+                    {
                 static QSet<QTextEdit*> started;
                 
                 // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
@@ -268,10 +269,12 @@ MainWindow::MainWindow(QWidget *parent)
                         overlay->start();
                     });
                     started.insert(te);
-                }
-            });
-        } else if (auto pe = qobject_cast<QPlainTextEdit *>(w)) {
-            connect(pe, &QPlainTextEdit::textChanged, this, [this, pe]() {
+                } });
+        }
+        else if (auto pe = qobject_cast<QPlainTextEdit *>(w))
+        {
+            connect(pe, &QPlainTextEdit::textChanged, this, [this, pe]()
+                    {
                 static QSet<QPlainTextEdit*> started;
                 
                 // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
@@ -306,12 +309,12 @@ MainWindow::MainWindow(QWidget *parent)
                         overlay->start();
                     });
                     started.insert(pe);
-                }
-            });
+                } });
         }
     };
     // Przeszukaj wszystkie dzieci centralWidget
-    for (auto w : ui->centralwidget->findChildren<QWidget*>()) {
+    for (auto w : ui->centralwidget->findChildren<QWidget *>())
+    {
         connectPacmanToTextWidget(w);
     }
 }
@@ -324,7 +327,8 @@ MainWindow::MainWindow(QWidget *parent)
  */
 MainWindow::~MainWindow()
 {
-    if (db.isOpen()) {
+    if (db.isOpen())
+    {
         db.close();
     }
     delete ui;
@@ -332,8 +336,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                       + "/inwentaryzacja.ini",
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
                        QSettings::IniFormat);
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/state", saveState());
@@ -352,9 +355,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
  */
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::MouseButtonPress) {
+    if (event->type() == QEvent::MouseButtonPress)
+    {
         QComboBox *combo = qobject_cast<QComboBox *>(obj);
-        if (combo && combo->view()) {
+        if (combo && combo->view())
+        {
             combo->showPopup();
         }
     }
@@ -419,13 +424,17 @@ void MainWindow::loadComboBoxData(const QString &tableName, QComboBox *comboBox)
 {
     comboBox->clear();
     QSqlQuery query(db);
-    if (query.exec(QString("SELECT id, name FROM %1").arg(tableName))) {
-        while (query.next()) {
+    if (query.exec(QString("SELECT id, name FROM %1").arg(tableName)))
+    {
+        while (query.next())
+        {
             const QString itemName = query.value("name").toString();
             const QString itemId = query.value("id").toString();
             comboBox->addItem(itemName, itemId);
         }
-    } else {
+    }
+    else
+    {
         qDebug() << "Błąd w loadComboBoxData dla" << tableName << ":" << query.lastError().text();
     }
 }
@@ -445,9 +454,12 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
     m_editMode = edit;
     m_recordId = recordId;
 
-    if (m_editMode && !m_recordId.isEmpty()) {
+    if (m_editMode && !m_recordId.isEmpty())
+    {
         loadRecord(m_recordId);
-    } else {
+    }
+    else
+    {
         // Czyszczenie pól
         ui->New_item_name->clear();
         ui->New_item_serialNumber->clear();
@@ -463,7 +475,8 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
                                      ui->New_item_model,
                                      ui->New_item_status,
                                      ui->New_item_storagePlace};
-        for (QComboBox *c : combos) {
+        for (QComboBox *c : combos)
+        {
             c->setEditable(true);
             c->clearEditText();
             c->setCurrentIndex(-1);
@@ -476,9 +489,11 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
         m_photoBuffer.clear();
     }
     // Ustaw domyślne "brak" dla statusu i miejsca przechowywania
-    auto setDefaultIfAvailable = [](QComboBox *comboBox, const QString &targetName) {
+    auto setDefaultIfAvailable = [](QComboBox *comboBox, const QString &targetName)
+    {
         int index = comboBox->findText(targetName, Qt::MatchFixedString | Qt::MatchCaseSensitive);
-        if (index != -1) {
+        if (index != -1)
+        {
             comboBox->setCurrentIndex(index);
         }
     };
@@ -487,12 +502,16 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
     setDefaultIfAvailable(ui->New_item_storagePlace, "brak");
 
     // Ustaw tryb edycji dla wszystkich PhotoItem w graphicsView, jeśli scena istnieje
-    if (m_editMode) {
+    if (m_editMode)
+    {
         QGraphicsScene *scene = ui->graphicsView->scene();
-        if (scene) {
+        if (scene)
+        {
             QList<QGraphicsItem *> items = scene->items();
-            for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
-                if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+            for (auto it = items.constBegin(); it != items.constEnd(); ++it)
+            {
+                if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it))
+                {
                     photoItem->setEditMode(true);
                 }
             }
@@ -529,7 +548,7 @@ void MainWindow::setCloneMode(const QString &recordId)
 void MainWindow::loadRecord(const QString &recordId)
 {
     qDebug() << "MainWindow::loadRecord - Próba wczytania rekordu o ID:" << recordId;
-    
+
     QSqlQuery query(db);
     query.prepare(R"(
         SELECT name, serial_number, part_number, revision,
@@ -540,23 +559,25 @@ void MainWindow::loadRecord(const QString &recordId)
         WHERE id = :id
     )");
     query.bindValue(":id", recordId);
-    
+
     qDebug() << "MainWindow::loadRecord - Wykonuję zapytanie SQL dla ID:" << recordId;
-    
-    if (!query.exec()) {
+
+    if (!query.exec())
+    {
         qDebug() << "MainWindow::loadRecord - Błąd wykonania zapytania:" << query.lastError().text();
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
         return;
     }
-    
-    if (!query.next()) {
+
+    if (!query.next())
+    {
         qDebug() << "MainWindow::loadRecord - Brak wyników dla ID:" << recordId;
         QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
         return;
     }
 
     qDebug() << "MainWindow::loadRecord - Znaleziono rekord, wypełniam pola formularza";
-    
+
     ui->New_item_name->setText(query.value("name").toString());
     ui->New_item_serialNumber->setText(query.value("serial_number").toString());
     ui->New_item_partNumber->setText(query.value("part_number").toString());
@@ -596,11 +617,16 @@ void MainWindow::loadRecord(const QString &recordId)
     qDebug() << "  - Status index:" << statusIndex;
     qDebug() << "  - Storage index:" << storageIndex;
 
-    if (typeIndex >= 0) ui->New_item_type->setCurrentIndex(typeIndex);
-    if (vendorIndex >= 0) ui->New_item_vendor->setCurrentIndex(vendorIndex);
-    if (modelIndex >= 0) ui->New_item_model->setCurrentIndex(modelIndex);
-    if (statusIndex >= 0) ui->New_item_status->setCurrentIndex(statusIndex);
-    if (storageIndex >= 0) ui->New_item_storagePlace->setCurrentIndex(storageIndex);
+    if (typeIndex >= 0)
+        ui->New_item_type->setCurrentIndex(typeIndex);
+    if (vendorIndex >= 0)
+        ui->New_item_vendor->setCurrentIndex(vendorIndex);
+    if (modelIndex >= 0)
+        ui->New_item_model->setCurrentIndex(modelIndex);
+    if (statusIndex >= 0)
+        ui->New_item_status->setCurrentIndex(statusIndex);
+    if (storageIndex >= 0)
+        ui->New_item_storagePlace->setCurrentIndex(storageIndex);
 
     qDebug() << "MainWindow::loadRecord - Wczytywanie rekordu zakończone, przechodzę do wczytywania zdjęć";
     loadPhotos(recordId);
@@ -619,7 +645,8 @@ void MainWindow::loadPhotos(const QString &recordId)
     QSqlQuery query(db);
     query.prepare("SELECT id, photo FROM photos WHERE eksponat_id = :id");
     query.bindValue(":id", recordId);
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
         ui->graphicsView->setScene(nullptr);
         return;
@@ -629,10 +656,12 @@ void MainWindow::loadPhotos(const QString &recordId)
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5, idx = 0;
 
-    while (query.next()) {
+    while (query.next())
+    {
         QByteArray imgData = query.value("photo").toByteArray();
         QPixmap pix;
-        if (!pix.loadFromData(imgData)) {
+        if (!pix.loadFromData(imgData))
+        {
             qDebug() << "Nie można załadować BLOB zdjęcia";
             continue;
         }
@@ -646,20 +675,23 @@ void MainWindow::loadPhotos(const QString &recordId)
         item->setData(0, query.value("id").toString());
         item->setData(1, idx);
 
-        connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
+        connect(item, &PhotoItem::clicked, this, [this, item]()
+                { onPhotoClicked(item); });
 
         item->setPos(x, y);
         scene->addItem(item);
 
         x += (scaled.width() + spacing);
-        if (x + thumbSize > ui->graphicsView->width() - 10) {
+        if (x + thumbSize > ui->graphicsView->width() - 10)
+        {
             x = 5;
             y += (scaled.height() + spacing);
         }
         idx++;
     }
 
-    if (!scene->items().isEmpty()) {
+    if (!scene->items().isEmpty())
+    {
         scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbSize + 5);
         ui->graphicsView->setScene(scene);
         ui->graphicsView->resetTransform();
@@ -669,7 +701,9 @@ void MainWindow::loadPhotos(const QString &recordId)
         if (scaleFactor < 1.0)
             scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
-    } else {
+    }
+    else
+    {
         ui->graphicsView->setScene(nullptr);
         delete scene;
     }
@@ -688,9 +722,11 @@ void MainWindow::loadPhotosFromBuffer()
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5;
 
-    for (int i = 0; i < m_photoBuffer.size(); i++) {
+    for (int i = 0; i < m_photoBuffer.size(); i++)
+    {
         QPixmap pix;
-        if (!pix.loadFromData(m_photoBuffer[i])) {
+        if (!pix.loadFromData(m_photoBuffer[i]))
+        {
             qDebug() << "Błąd loadFromData w buforze zdjęć";
             continue;
         }
@@ -701,7 +737,8 @@ void MainWindow::loadPhotosFromBuffer()
         QGraphicsPixmapItem *it = scene->addPixmap(scaled);
         it->setPos(x, y);
         x += (scaled.width() + spacing);
-        if (x + thumbSize > ui->graphicsView->width() - 10) {
+        if (x + thumbSize > ui->graphicsView->width() - 10)
+        {
             x = 5;
             y += (scaled.height() + spacing);
         }
@@ -721,15 +758,14 @@ void MainWindow::loadPhotosFromBuffer()
  */
 void MainWindow::onSaveClicked()
 {
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                           + "/inwentaryzacja.ini",
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
                        QSettings::IniFormat);
-    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower()
-                              != "nie";
+    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
 
     QSqlQuery q(db);
 
-    if (!m_editMode) {
+    if (!m_editMode)
+    {
         m_recordId = "{" + QUuid::createUuid().toString(QUuid::WithoutBraces) + "}";
         q.prepare(R"(
             INSERT INTO eksponaty
@@ -742,7 +778,9 @@ void MainWindow::onSaveClicked()
              :description, :value, :has_original_packaging)
         )");
         q.bindValue(":id", m_recordId);
-    } else {
+    }
+    else
+    {
         q.prepare(R"(
             UPDATE eksponaty
             SET name=:name,
@@ -786,15 +824,18 @@ void MainWindow::onSaveClicked()
     q.bindValue(":value",
                 ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
 
-    if (!q.exec()) {
+    if (!q.exec())
+    {
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się zapisać:\n%1").arg(q.lastError().text()));
         return;
     }
 
-    if (!m_editMode) {
-        for (int i = 0; i < m_photoBuffer.size(); ++i) {
+    if (!m_editMode)
+    {
+        for (int i = 0; i < m_photoBuffer.size(); ++i)
+        {
             QByteArray ba = m_photoBuffer[i];
             QString pid = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery q2(db);
@@ -805,11 +846,13 @@ void MainWindow::onSaveClicked()
             q2.bindValue(":id", pid);
             q2.bindValue(":exid", m_recordId);
             q2.bindValue(":photo", ba);
-            if (q2.exec()) {
+            if (q2.exec())
+            {
                 const QString orig = m_photoPathsBuffer.at(i);
                 QFileInfo fi(orig);
                 QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-                if (m_shouldMovePhotos) {
+                if (m_shouldMovePhotos)
+                {
                     QDir().mkpath(doneDir);
                     QString dst = doneDir + QDir::separator() + fi.fileName();
                     QFile::rename(orig, dst);
@@ -821,10 +864,13 @@ void MainWindow::onSaveClicked()
     }
 
     QGraphicsScene *scene = ui->graphicsView->scene();
-    if (scene) {
+    if (scene)
+    {
         QList<QGraphicsItem *> items = scene->items();
-        for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
-            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+        for (auto it = items.constBegin(); it != items.constEnd(); ++it)
+        {
+            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it))
+            {
                 photoItem->setEditMode(false);
             }
         }
@@ -845,10 +891,13 @@ void MainWindow::onCancelClicked()
 {
     // Wyłącz tryb edycji dla wszystkich PhotoItem
     QGraphicsScene *scene = ui->graphicsView->scene();
-    if (scene) {
+    if (scene)
+    {
         QList<QGraphicsItem *> items = scene->items();
-        for (auto it = items.constBegin(); it != items.constEnd(); ++it) {
-            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it)) {
+        for (auto it = items.constBegin(); it != items.constEnd(); ++it)
+        {
+            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it))
+            {
                 photoItem->setEditMode(false);
             }
         }
@@ -868,11 +917,9 @@ void MainWindow::onCancelClicked()
  */
 void MainWindow::onAddPhotoClicked()
 {
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                           + "/inwentaryzacja.ini",
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
                        QSettings::IniFormat);
-    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower()
-                              != "nie";
+    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
 
     QStringList files = QFileDialog::getOpenFileNames(this,
                                                       tr("Wybierz zdjęcia"),
@@ -881,19 +928,24 @@ void MainWindow::onAddPhotoClicked()
     if (files.isEmpty())
         return;
 
-    for (const auto &fn : std::as_const(files)) {
+    for (const auto &fn : std::as_const(files))
+    {
         QFile f(fn);
-        if (!f.open(QIODevice::ReadOnly)) {
+        if (!f.open(QIODevice::ReadOnly))
+        {
             qDebug() << "Nie można otworzyć:" << fn;
             continue;
         }
         QByteArray data = f.readAll();
         f.close();
 
-        if (m_recordId.isEmpty()) {
+        if (m_recordId.isEmpty())
+        {
             m_photoBuffer.append(data);
             m_photoPathsBuffer.append(fn);
-        } else {
+        }
+        else
+        {
             QString photoId = QUuid::createUuid().toString(QUuid::WithoutBraces);
             QSqlQuery q(db);
             q.prepare(R"(
@@ -903,24 +955,29 @@ void MainWindow::onAddPhotoClicked()
             q.bindValue(":id", photoId);
             q.bindValue(":exid", m_recordId);
             q.bindValue(":photo", data);
-            if (q.exec()) {
-                if (m_shouldMovePhotos) {
+            if (q.exec())
+            {
+                if (m_shouldMovePhotos)
+                {
                     QFileInfo fi(fn);
-                    QString doneDir = fi.absolutePath() + QDir::separator()
-                                      + QStringLiteral("gotowe");
-                    if (!QDir().mkpath(doneDir)) {
+                    QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
+                    if (!QDir().mkpath(doneDir))
+                    {
                         QMessageBox::warning(this,
                                              tr("Uwaga"),
                                              tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
                     }
                     QString dst = doneDir + QDir::separator() + fi.fileName();
-                    if (!QFile::rename(fn, dst)) {
+                    if (!QFile::rename(fn, dst))
+                    {
                         QMessageBox::warning(this,
                                              tr("Uwaga"),
                                              tr("Nie można przenieść %1 do %2").arg(fn, dst));
                     }
                 }
-            } else {
+            }
+            else
+            {
                 QMessageBox::critical(this,
                                       tr("Błąd"),
                                       tr("Nie można zapisać zdjęcia:\n%1").arg(q.lastError().text()));
@@ -946,17 +1003,20 @@ void MainWindow::onAddPhotoClicked()
  */
 void MainWindow::onRemovePhotoClicked()
 {
-    if (m_selectedPhotoIndex == -1) {
+    if (m_selectedPhotoIndex == -1)
+    {
         QMessageBox::warning(this, tr("Błąd"), tr("Najpierw wybierz zdjęcie do usunięcia."));
         return;
     }
     QGraphicsScene *scene = ui->graphicsView->scene();
-    if (!scene) {
+    if (!scene)
+    {
         QMessageBox::warning(this, tr("Błąd"), tr("Brak zdjęć w widoku."));
         return;
     }
     QList<QGraphicsItem *> items = scene->items();
-    if (m_selectedPhotoIndex < 0 || m_selectedPhotoIndex >= items.size()) {
+    if (m_selectedPhotoIndex < 0 || m_selectedPhotoIndex >= items.size())
+    {
         return;
     }
     PhotoItem *selItem = dynamic_cast<PhotoItem *>(items[m_selectedPhotoIndex]);
@@ -968,15 +1028,19 @@ void MainWindow::onRemovePhotoClicked()
                                      tr("Potwierdzenie"),
                                      tr("Czy usunąć zdjęcie?"),
                                      QMessageBox::Yes | QMessageBox::No);
-    if (ans == QMessageBox::Yes) {
+    if (ans == QMessageBox::Yes)
+    {
         QSqlQuery q(db);
         q.prepare("DELETE FROM photos WHERE id=:id");
         q.bindValue(":id", photoId);
-        if (!q.exec()) {
+        if (!q.exec())
+        {
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie można usunąć zdjęcia:\n%1").arg(q.lastError().text()));
-        } else {
+        }
+        else
+        {
             loadPhotos(m_recordId);
         }
     }
@@ -998,11 +1062,14 @@ void MainWindow::onPhotoClicked(PhotoItem *item)
         return;
 
     QList<QGraphicsItem *> its = scene->items();
-    for (int i = 0; i < its.size(); i++) {
+    for (int i = 0; i < its.size(); i++)
+    {
         PhotoItem *pit = dynamic_cast<PhotoItem *>(its[i]);
-        if (pit) {
+        if (pit)
+        {
             pit->setSelected(its[i] == item);
-            if (its[i] == item) {
+            if (its[i] == item)
+            {
                 m_selectedPhotoIndex = i;
             }
         }
@@ -1090,17 +1157,20 @@ void MainWindow::onAddStoragePlaceClicked()
     this->activateWindow();
 }
 
-QString MainWindow::validateUuid(const QString &uuid, const QString &defaultValue) {
-    if (uuid.isEmpty()) return defaultValue;
-    
+QString MainWindow::validateUuid(const QString &uuid, const QString &defaultValue)
+{
+    if (uuid.isEmpty())
+        return defaultValue;
+
     // Po migracji UUID-y nie powinny mieć nawiasów klamrowych
-    if (uuid.startsWith('{') && uuid.endsWith('}')) {
+    if (uuid.startsWith('{') && uuid.endsWith('}'))
+    {
         // Jeśli nadal ma nawiasy, usuń je
         QString cleanUuid = uuid.mid(1, uuid.length() - 2);
         qDebug() << "Znaleziono UUID z nawiasami, usuwam:" << uuid << "->" << cleanUuid;
         return cleanUuid;
     }
-    
+
     // UUID bez nawiasów jest prawidłowy
     return uuid;
 }
