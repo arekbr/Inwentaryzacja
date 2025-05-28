@@ -2,19 +2,23 @@
 #include <QPainter>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QTimerEvent>
 #include <QPainterPath>
 #include <QImage>
+#include <QDate>
+#include <QtGlobal>      // dla QT_VERSION
+#include <QRandomGenerator> // dla QRandomGenerator w Qt 6.x
 
 PacmanOverlay::PacmanOverlay(QWidget *parent)
-    : QWidget(parent), m_targetWidget(nullptr), m_angle(0), m_timerId(0), m_durationMs(5000), m_showGhost(false),
+    : QWidget(parent), m_targetWidget(nullptr), m_angle(0), m_timerId(0), m_eatCharTimerId(0), m_durationMs(5000), m_showGhost(false),
       m_pacmanFrame(0), m_ghostFrame(0), m_vanishFrame(0), m_pacmanVanishing(false), m_collisionHideMs(3000)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
-    setVisible(false);
+    setVisible(false);  // Domyślnie overlay jest ukryty
 
     // Ładuj nowy sprite sheet
     m_spriteSheet = QPixmap(":/images/spritesheet.png");
@@ -38,6 +42,16 @@ PacmanOverlay::PacmanOverlay(QWidget *parent)
 double PacmanOverlay::s_pacmanSpeedPx = 0.75; // domyślnie 0.75 px na klatkę
 int PacmanOverlay::s_eatCharIntervalMs = 100; // domyślnie 100 ms na znak
 
+// --- Statyczne zmienne do obsługi specjalnych dat aktywacji ---
+bool PacmanOverlay::s_enableBirthdayActivation = true;         // Domyślnie włączone
+int PacmanOverlay::s_birthdayDay = 11;                         // 11 grudnia (urodziny)
+int PacmanOverlay::s_birthdayMonth = 12;                       // Grudzień (12)
+bool PacmanOverlay::s_enablePacManReleaseActivation = true;    // Domyślnie włączone
+bool PacmanOverlay::s_enableRandomActivation = true;           // Domyślnie włączone
+int PacmanOverlay::s_randomActivationChance = 10;              // 10% szans na losową aktywację
+bool PacmanOverlay::s_enableCapacityActivation = true;         // Domyślnie włączone
+int PacmanOverlay::s_capacityCharCount = 22;                   // Domyślnie 22 znaki (premiera Pac-Mana 22.05.1980)
+
 void PacmanOverlay::setTargetWidget(QWidget *target)
 {
     qDebug() << "[PACMAN] setTargetWidget: target=" << target << ", parent before=" << parent();
@@ -47,8 +61,8 @@ void PacmanOverlay::setTargetWidget(QWidget *target)
         setParent(target);
         resize(target->size());
         move(0, 0);
-        show();
-        raise();
+        // NIE pokazuj overlay'a automatycznie - zostanie pokazany tylko po wywołaniu start() i tylko gdy warunki aktywacji są spełnione
+        setVisible(false);
         qDebug() << "[PACMAN] setTargetWidget: parent after=" << parent() << ", geometry=" << geometry();
     }
 }
@@ -58,6 +72,64 @@ void PacmanOverlay::start(int durationMs)
     qDebug() << "[PACMAN DEBUG] start() called, m_durationMs=" << durationMs << ", m_targetWidget=" << m_targetWidget;
     if (!m_targetWidget)
         return;
+        
+    // Sprawdź czy nie została wywołana aktywacja z mainwindow.cpp dla tekstu o długości 22 znaków
+    QString currentText;
+    if (auto le = qobject_cast<QLineEdit*>(m_targetWidget)) {
+        currentText = le->text();
+    } else if (auto te = qobject_cast<QTextEdit*>(m_targetWidget)) {
+        currentText = te->toPlainText();
+    } else if (auto pte = qobject_cast<QPlainTextEdit*>(m_targetWidget)) {
+        currentText = pte->toPlainText();
+    }
+    bool capacityActivation = hasCapacityActivation(currentText);
+    
+    // Jeśli została wywołana bezpośrednio dla tekstu o długości 22 znaki (z mainwindow.cpp),
+    // wyświetl odpowiedni komunikat i przejdź do pełnej aktywacji
+    if (capacityActivation) {
+        qDebug() << "[PACMAN] Aktywacja poprzez dokładną liczbę znaków (" << s_capacityCharCount << ")!";
+    } else {
+        // Standardowa aktywacja w oparciu o datę lub losową szansę
+        bool specialDateActive = isSpecialDate();
+        
+        // Losowa szansa na aktywację (domyślnie 10%)
+        bool randomChance = false;
+        if (s_enableRandomActivation) {
+            // W Qt 6.x użyj QRandomGenerator, w starszych wersjach qrand()
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            randomChance = (QRandomGenerator::global()->bounded(100) < s_randomActivationChance);
+    #else
+            randomChance = (qrand() % 100 < s_randomActivationChance);
+    #endif
+        }
+        
+        // Aktywuj Easter Egg tylko w specjalne daty lub losowo (bez wyzwalacza pojemnościowego)
+        if (!specialDateActive && !randomChance) {
+            qDebug() << "[PACMAN] Easter egg nie aktywowany - nie jest specjalna data, nie wylosowano aktywacji";
+            // Upewnij się, że overlay jest ukryty
+            setVisible(false);
+            // Zatrzymaj animację jeśli była aktywna
+            if (m_timerId) {
+                killTimer(m_timerId);
+                m_timerId = 0;
+            }
+            if (m_eatCharTimerId) {
+                killTimer(m_eatCharTimerId);
+                m_eatCharTimerId = 0;
+            }
+            return;
+        }
+        
+        if (specialDateActive) {
+            qDebug() << "[PACMAN] Aktywacja ze względu na specjalną datę!";
+        } else if (randomChance) {
+            qDebug() << "[PACMAN] Aktywacja losowa!";
+        }
+    }
+    
+    // Emituj sygnał, że easter egg został aktywowany
+    emit finished();
+    
     m_durationMs = durationMs;
     m_showGhost = false;
     // Opóźnij start animacji o 5 sekund
@@ -80,6 +152,10 @@ void PacmanOverlay::start(int durationMs)
         else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
         {
             m_initialText = te->toPlainText();
+        }
+        else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+        {
+            m_initialText = pte->toPlainText();
         }
         else
         {
@@ -109,6 +185,13 @@ void PacmanOverlay::start(int durationMs)
             QFontMetrics fm(te->font());
             textWidth = fm.horizontalAdvance(te->toPlainText());
             QString txt = te->toPlainText();
+            charWidth = txt.isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(txt.at(0));
+        }
+        else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+        {
+            QFontMetrics fm(pte->font());
+            textWidth = fm.horizontalAdvance(pte->toPlainText());
+            QString txt = pte->toPlainText();
             charWidth = txt.isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(txt.at(0));
         }
         
@@ -156,6 +239,11 @@ void PacmanOverlay::paintEvent(QPaintEvent *)
     {
         QFontMetrics fm(te->font());
         textWidth = fm.horizontalAdvance(te->toPlainText());
+    }
+    else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+    {
+        QFontMetrics fm(pte->font());
+        textWidth = fm.horizontalAdvance(pte->toPlainText());
     }
     int startX = textWidth;
     // Pac-Man nie znika, zatrzymuje się przy lewej krawędzi
@@ -289,6 +377,9 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                                 m_ghostChasing = false;
                                 m_showGhost = false;
                                 m_holdingLastFrame = false;
+                                
+                                // Emituj sygnał, że animacja się zakończyła (na wszelki wypadek, choć już emitowaliśmy)
+                                emit finished();
                             });
                         }
                     }
@@ -307,6 +398,11 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                 {
                     QFontMetrics fm(te->font());
                     textWidth = fm.horizontalAdvance(te->toPlainText());
+                }
+                else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+                {
+                    QFontMetrics fm(pte->font());
+                    textWidth = fm.horizontalAdvance(pte->toPlainText());
                 }
                 int nextX = textWidth - (m_pacmanX + s_pacmanSpeedPx);
                 if (nextX >= 0)
@@ -330,6 +426,11 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
             {
                 QFontMetrics fm(te->font());
                 textWidth = fm.horizontalAdvance(te->toPlainText());
+            }
+            else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+            {
+                QFontMetrics fm(pte->font());
+                textWidth = fm.horizontalAdvance(pte->toPlainText());
             }
 
             // Oblicz pozycje Pac-Mana i ducha
@@ -400,6 +501,15 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                     any = true;
                 }
             }
+            else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
+            {
+                QString t = pte->toPlainText();
+                if (!t.isEmpty())
+                {
+                    pte->setPlainText(t.left(t.length() - 1));
+                    any = true;
+                }
+            }
             // Jeśli nie ma już znaków, Pac-Man się zatrzymuje, ale nie znika
             if (!any)
             {
@@ -409,4 +519,30 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
             }
         }
     }
+}
+
+// Helper: Sprawdza czy obecna data jest jedną ze specjalnych dat (urodziny lub premiera Pac-Mana)
+bool PacmanOverlay::isSpecialDate() const
+{
+    QDate currentDate = QDate::currentDate();
+    int currentDay = currentDate.day();
+    int currentMonth = currentDate.month();
+    
+    // Sprawdź czy to dzień premiery Pac-Mana (22 maja 1980)
+    bool isPacManReleaseDate = (currentDay == 22 && currentMonth == 5 && s_enablePacManReleaseActivation);
+    
+    // Sprawdź czy to urodziny użytkownika (11 grudnia)
+    bool isBirthday = (currentDay == s_birthdayDay && currentMonth == s_birthdayMonth && s_enableBirthdayActivation);
+    
+    // Zwróć true, jeśli to którakolwiek ze specjalnych dat
+    return isPacManReleaseDate || isBirthday;
+}
+
+// Helper: Sprawdza czy tekst ma dokładnie wymaganą liczbę znaków (domyślnie 22)
+bool PacmanOverlay::hasCapacityActivation(const QString &text) const
+{
+    if (!s_enableCapacityActivation)
+        return false;
+        
+    return text.length() == s_capacityCharCount;
 }

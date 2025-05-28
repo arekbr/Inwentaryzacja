@@ -193,12 +193,41 @@ MainWindow::MainWindow(QWidget *parent)
         if (auto le = qobject_cast<QLineEdit *>(w)) {
             connect(le, &QLineEdit::textEdited, this, [this, le](const QString &text) {
                 static QSet<QLineEdit*> started;
+                
+                // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
+                bool capacityActivation = (text.length() == 22 && PacmanOverlay::isCapacityActivationEnabled());
+                
+                // Aktywuj Easter egg gdy tekst ma dokładnie 22 znaki
+                if (!pacmanShown && capacityActivation) {
+                    qDebug() << "[PACMAN] Wykryto tekst o długości dokładnie 22 znaki! Aktywacja easter egga.";
+                    auto overlay = new PacmanOverlay(this);
+                    overlay->setTargetWidget(le);
+                    
+                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                        pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                    });
+                    
+                    overlay->start();
+                    return; // Przerwij dalsze wykonanie
+                }
+                
+                // Standardowa aktywacja opóźniona (losowa, specjalne daty)
                 if (!pacmanShown && !started.contains(le) && !text.isEmpty()) {
-                    pacmanShown = true;
+                    // Przenieśmy ustawienie flagi pacmanShown do lambdy po wywołaniu start()
                     QTimer::singleShot(5000, this, [this, le]() {
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(le);
+                        
+                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                            pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                        });
+                        
                         overlay->start();
+                        
+                        // Jeśli start() nie aktywuje easter egga, overlay będzie automatycznie usunięty
+                        // przez Qt gdy zostanie usunięty rodzic (this)
                     });
                     started.insert(le);
                 }
@@ -206,11 +235,36 @@ MainWindow::MainWindow(QWidget *parent)
         } else if (auto te = qobject_cast<QTextEdit *>(w)) {
             connect(te, &QTextEdit::textChanged, this, [this, te]() {
                 static QSet<QTextEdit*> started;
+                
+                // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
+                bool capacityActivation = (te->toPlainText().length() == 22 && PacmanOverlay::isCapacityActivationEnabled());
+                
+                // Aktywuj Easter egg gdy tekst ma dokładnie 22 znaki
+                if (!pacmanShown && capacityActivation) {
+                    qDebug() << "[PACMAN] Wykryto tekst o długości dokładnie 22 znaki! Aktywacja easter egga.";
+                    auto overlay = new PacmanOverlay(this);
+                    overlay->setTargetWidget(te);
+                    
+                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                        pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                    });
+                    
+                    overlay->start();
+                    return; // Przerwij dalsze wykonanie
+                }
+                
+                // Standardowa aktywacja opóźniona (losowa, specjalne daty)
                 if (!pacmanShown && !started.contains(te) && !te->toPlainText().isEmpty()) {
-                    pacmanShown = true;
                     QTimer::singleShot(5000, this, [this, te]() {
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(te);
+                        
+                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                            pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                        });
+                        
                         overlay->start();
                     });
                     started.insert(te);
@@ -219,11 +273,36 @@ MainWindow::MainWindow(QWidget *parent)
         } else if (auto pe = qobject_cast<QPlainTextEdit *>(w)) {
             connect(pe, &QPlainTextEdit::textChanged, this, [this, pe]() {
                 static QSet<QPlainTextEdit*> started;
+                
+                // Nowa logika dla wyzwalacza pojemnościowego (22 znaki)
+                bool capacityActivation = (pe->toPlainText().length() == 22 && PacmanOverlay::isCapacityActivationEnabled());
+                
+                // Aktywuj Easter egg gdy tekst ma dokładnie 22 znaki
+                if (!pacmanShown && capacityActivation) {
+                    qDebug() << "[PACMAN] Wykryto tekst o długości dokładnie 22 znaki! Aktywacja easter egga.";
+                    auto overlay = new PacmanOverlay(this);
+                    overlay->setTargetWidget(pe);
+                    
+                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                        pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                    });
+                    
+                    overlay->start();
+                    return; // Przerwij dalsze wykonanie
+                }
+                
+                // Standardowa aktywacja opóźniona (losowa, specjalne daty)
                 if (!pacmanShown && !started.contains(pe) && !pe->toPlainText().isEmpty()) {
-                    pacmanShown = true;
                     QTimer::singleShot(5000, this, [this, pe]() {
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(pe);
+                        
+                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
+                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                            pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
+                        });
+                        
                         overlay->start();
                     });
                     started.insert(pe);
