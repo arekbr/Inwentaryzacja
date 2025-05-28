@@ -16,6 +16,9 @@ tools/
 *.ini
 qt_env.sh
 *.json
+*.stash
+qmake_qmake_qm_files.qrc
+Makefile
 
 # Pliki binarne i biblioteki
 *.dll
