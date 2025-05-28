@@ -11,8 +11,8 @@ public:
     void setTargetWidget(QWidget *target);
     void start(int durationMs = 5000);
 
-    static void setPacmanSpeedPx(int px) { s_pacmanSpeedPx = px; }
-    static int getPacmanSpeedPx() { return s_pacmanSpeedPx; }
+    static void setPacmanSpeedPx(double px) { s_pacmanSpeedPx = px; }
+    static double getPacmanSpeedPx() { return s_pacmanSpeedPx; }
     static void setEatCharIntervalMs(int ms) { s_eatCharIntervalMs = ms; }
     static int getEatCharIntervalMs() { return s_eatCharIntervalMs; }
 
@@ -35,8 +35,8 @@ private:
     bool m_showGhost;
     QTimer m_lifetimeTimer;
     QString m_initialText; // Dodane: do przechowywania początkowego tekstu
-    int m_mouthDelta; // Dodane: kąt otwarcia szczęki
-    bool m_mouthClosing; // Dodane: kierunek animacji szczęki
+    int m_mouthDelta;      // Dodane: kąt otwarcia szczęki
+    bool m_mouthClosing;   // Dodane: kierunek animacji szczęki
 
     // --- Sprite-based animation ---
     QPixmap m_spriteSheet;
@@ -49,14 +49,14 @@ private:
     void drawPacmanVanish(QPainter &p, int x, int y, int size);
 
     // --- New variables for position animation ---
-    int m_pacmanX; // Pozycja Pac-Mana (przesunięcie w lewo)
-    int m_ghostX;  // Pozycja ducha (przesunięcie w lewo)
-    bool m_ghostChasing; // Czy duch już goni Pac-Mana
+    int m_pacmanX;         // Pozycja Pac-Mana (przesunięcie w lewo)
+    int m_ghostX;          // Pozycja ducha (przesunięcie w lewo)
+    bool m_ghostChasing;   // Czy duch już goni Pac-Mana
     double m_ghostSpeedPx; // Prędkość ducha w px/klatkę
     bool m_pacmanCollided; // Stan kolizji z duchem
     int m_collisionFrame;  // Numer klatki animacji kolizji (0-10)
     int m_collisionHideMs; // czas ukrycia po kolizji (ms)
 
-    static int s_pacmanSpeedPx;
+    static double s_pacmanSpeedPx;
     static int s_eatCharIntervalMs;
 };

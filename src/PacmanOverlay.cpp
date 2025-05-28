@@ -33,8 +33,8 @@ PacmanOverlay::PacmanOverlay(QWidget *parent)
 }
 
 // --- Statyczne zmienne do regulacji prędkości ---
-int PacmanOverlay::s_pacmanSpeedPx = 0.75;    // domyślnie 3 px na klatkę
-int PacmanOverlay::s_eatCharIntervalMs = 100; // domyślnie 500 ms na znak
+double PacmanOverlay::s_pacmanSpeedPx = 0.75; // domyślnie 0.75 px na klatkę
+int PacmanOverlay::s_eatCharIntervalMs = 100; // domyślnie 100 ms na znak
 
 void PacmanOverlay::setTargetWidget(QWidget *target)
 {
@@ -60,7 +60,8 @@ void PacmanOverlay::start(int durationMs)
     m_showGhost = false;
     // Opóźnij start animacji o 5 sekund
     setVisible(false); // Ukryj overlay do czasu startu
-    QTimer::singleShot(5000, this, [this]() {
+    QTimer::singleShot(5000, this, [this]()
+                       {
         setVisible(true);
         m_angle = 0;
         m_mouthDelta = 0;
@@ -87,26 +88,49 @@ void PacmanOverlay::start(int durationMs)
         int numChars = m_initialText.length();
         int eatCharInterval = s_eatCharIntervalMs; // ms na znak
         int totalEatTimeMs = numChars * eatCharInterval;
-        int ghostDelayMs = 1500; // opóźnienie startu ducha
+        int ghostDelayMs = 500; // opóźnienie startu ducha
         int frameIntervalMs = 40; // timerId = 40 ms
         int effectiveChaseTimeMs = totalEatTimeMs - ghostDelayMs;
         int numFrames = (effectiveChaseTimeMs > 0) ? effectiveChaseTimeMs / frameIntervalMs : 1;
-        int size = 32;
-        int ghostStartX = width() - size - 4;
+        
+        // Obliczanie szerokości tekstu i pojedynczego znaku
+        int textWidth = 0;
+        int charWidth = 0;
+        if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
+        {
+            QFontMetrics fm(le->font());
+            textWidth = fm.horizontalAdvance(le->text());
+            charWidth = le->text().isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(le->text().at(0));
+        }
+        else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
+        {
+            QFontMetrics fm(te->font());
+            textWidth = fm.horizontalAdvance(te->toPlainText());
+            QString txt = te->toPlainText();
+            charWidth = txt.isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(txt.at(0));
+        }
+        
+        // Pacman pojawia się zaraz za tekstem
+        int pacmanStartX = textWidth;
+        // Duch pojawia się w odległości równej długości tekstu od końca tekstu
+        int emptySpaceWidthInChars = numChars; // Odległość w znakach równa liczbie znaków w tekście
+        int ghostStartX = textWidth + (emptySpaceWidthInChars * charWidth);
+        
         int pacmanEndX = 0;
         int ghostEndX = pacmanEndX; // Duch ma dopaść Pac-Mana przy lewej krawędzi
         int ghostDistance = ghostStartX - ghostEndX;
         m_ghostSpeedPx = (numFrames > 0) ? (double)ghostDistance / numFrames : ghostDistance; // teleport jeśli za późno
         m_ghostX = ghostStartX;
         qDebug() << "[PACMAN DEBUG] ghostDelayMs=" << ghostDelayMs << ", totalEatTimeMs=" << totalEatTimeMs << ", m_ghostSpeedPx=" << m_ghostSpeedPx;
+        qDebug() << "[PACMAN DEBUG] numChars=" << numChars << ", textWidth=" << textWidth << ", charWidth=" << charWidth 
+                 << ", ghostStartX=" << ghostStartX << ", pacmanStartX=" << pacmanStartX;
         // Duch pojawia się po 1.5 sekundy na prawej krawędzi pola tekstowego i zaczyna gonić Pac-Mana
         QTimer::singleShot(ghostDelayMs, this, [this]() {
             m_showGhost = true;
             m_ghostChasing = true;
             update();
             qDebug() << "[PACMAN DEBUG] Ghost chase started!";
-        });
-    });
+        }); });
 }
 
 void PacmanOverlay::paintEvent(QPaintEvent *)
@@ -152,9 +176,12 @@ void PacmanOverlay::drawPacman(QPainter &p, int x, int y, int size)
     if (m_pacmanCollided)
     {
         // Najpierw klatki 0-6 z rzędu 6 (ostatni rząd), potem 0-10 z rzędu 6 (ostatni rząd)
-        if (m_collisionFrame < 7) {
+        if (m_collisionFrame < 7)
+        {
             src = QRect(m_collisionFrame * frameW, 6 * frameH, frameW, frameH);
-        } else {
+        }
+        else
+        {
             int frameInRow = (m_collisionFrame - 7) % 11;
             src = QRect(frameInRow * frameW, 6 * frameH, frameW, frameH);
         }
@@ -232,14 +259,20 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
     {
         if (!m_pacmanVanishing)
         {
-            if (m_pacmanCollided) {
+            if (m_pacmanCollided)
+            {
                 // Animacja kolizji: 0-6 z rzędu 6, potem 0-10 z rzędu 6 (zapętlenie na 0-10 z rzędu 6)
-                if (m_collisionFrame < 7 + 11 - 1) {
+                if (m_collisionFrame < 7 + 11 - 1)
+                {
                     m_collisionFrame++;
-                } else {
+                }
+                else
+                {
                     m_collisionFrame = 7 + ((m_collisionFrame - 7 + 1) % 11);
                 }
-            } else {
+            }
+            else
+            {
                 m_pacmanFrame = (m_pacmanFrame + 1) % 3;
                 int textWidth = 0;
                 if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
@@ -262,7 +295,7 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
         if (m_ghostChasing)
         {
             // Oblicz aktualną pozycję Pac-Mana
-            int size = 32;  // rozmiar Pac-Mana i ducha
+            int size = 32; // rozmiar Pac-Mana i ducha
             int pacmanX = 0;
             int textWidth = 0;
             if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
@@ -275,44 +308,45 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                 QFontMetrics fm(te->font());
                 textWidth = fm.horizontalAdvance(te->toPlainText());
             }
-            
+
             // Oblicz pozycje Pac-Mana i ducha
             pacmanX = std::max(textWidth - m_pacmanX, 0);
             double nextGhostX = m_ghostX - m_ghostSpeedPx;
-            
+
             // Sprawdź czy nastąpi kolizja (duch dotyka Pac-Mana)
             if (nextGhostX <= pacmanX + size)
             {
                 // Zatrzymaj ducha tuż przed Pac-Manem, nie nachodzą na siebie
-                m_ghostX = pacmanX + size;  // Pozycja ducha dokładnie przy prawej krawędzi Pac-Mana
-                m_ghostChasing = false;     // Zatrzymaj ruch ducha
-                
+                m_ghostX = pacmanX + size; // Pozycja ducha dokładnie przy prawej krawędzi Pac-Mana
+                m_ghostChasing = false;    // Zatrzymaj ruch ducha
+
                 // Zatrzymaj także timer zjadania znaków
                 if (m_eatCharTimerId)
                 {
                     killTimer(m_eatCharTimerId);
                     m_eatCharTimerId = 0;
                 }
-                
+
                 // Aktywuj animację kolizji dla Pac-Mana (klatki z 7. rzędu)
                 m_pacmanCollided = true;
                 m_collisionFrame = 0;
                 qDebug() << "[PACMAN] Duch dogonił Pac-Mana! Rozpoczynam animację kolizji.";
                 update();
                 // Dodaj automatyczne ukrycie overlay po m_collisionHideMs ms
-                QTimer::singleShot(m_collisionHideMs, this, [this]() {
-                    this->setVisible(false);
-                    // Resetuj stan animacji, by można było ponownie uruchomić efekt
-                    m_pacmanCollided = false;
-                    m_collisionFrame = 0;
-                    m_pacmanX = 0;
-                    m_ghostX = 0;
-                    m_ghostChasing = false;
-                    m_showGhost = false;
-                    // Można dodać inne resetowane pola jeśli potrzeba
-                });
+                QTimer::singleShot(m_collisionHideMs, this, [this]()
+                                   {
+                                       this->setVisible(false);
+                                       // Resetuj stan animacji, by można było ponownie uruchomić efekt
+                                       m_pacmanCollided = false;
+                                       m_collisionFrame = 0;
+                                       m_pacmanX = 0;
+                                       m_ghostX = 0;
+                                       m_ghostChasing = false;
+                                       m_showGhost = false;
+                                       // Można dodać inne resetowane pola jeśli potrzeba
+                                   });
             }
-            else 
+            else
             {
                 // Kontynuuj ruch ducha
                 m_ghostX = nextGhostX;
