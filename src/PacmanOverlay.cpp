@@ -30,6 +30,8 @@ PacmanOverlay::PacmanOverlay(QWidget *parent)
     m_ghostChasing = false;
     m_pacmanCollided = false;
     m_collisionFrame = 0;
+    m_holdingLastFrame = false;
+    m_lastFrameHoldTimeMs = 2000; // 2 sekundy na zatrzymanie ostatniej klatki
 }
 
 // --- Statyczne zmienne do regulacji prędkości ---
@@ -261,14 +263,35 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
         {
             if (m_pacmanCollided)
             {
-                // Animacja kolizji: 0-6 z rzędu 6, potem 0-10 z rzędu 6 (zapętlenie na 0-10 z rzędu 6)
-                if (m_collisionFrame < 7 + 11 - 1)
+                // Jeśli trzymamy ostatnią klatkę, nie rób nic
+                if (!m_holdingLastFrame)
                 {
-                    m_collisionFrame++;
-                }
-                else
-                {
-                    m_collisionFrame = 7 + ((m_collisionFrame - 7 + 1) % 11);
+                    // Animacja kolizji: 0-6 z rzędu 6, potem 0-10 z rzędu 6
+                    if (m_collisionFrame < 7 + 11 - 1)
+                    {
+                        m_collisionFrame++;
+                        
+                        // Sprawdź, czy osiągnęliśmy ostatnią klatkę (7+10=17)
+                        if (m_collisionFrame == 7 + 11 - 1)
+                        {
+                            m_holdingLastFrame = true;
+                            qDebug() << "[PACMAN] Zatrzymuję ostatnią klatkę animacji na" << m_lastFrameHoldTimeMs << "ms";
+                            
+                            // Ustaw timer, po którym ukryjemy overlay
+                            QTimer::singleShot(m_lastFrameHoldTimeMs, this, [this]()
+                            {
+                                this->setVisible(false);
+                                // Resetuj stan animacji
+                                m_pacmanCollided = false;
+                                m_collisionFrame = 0;
+                                m_pacmanX = 0;
+                                m_ghostX = 0;
+                                m_ghostChasing = false;
+                                m_showGhost = false;
+                                m_holdingLastFrame = false;
+                            });
+                        }
+                    }
                 }
             }
             else
@@ -330,21 +353,9 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                 // Aktywuj animację kolizji dla Pac-Mana (klatki z 7. rzędu)
                 m_pacmanCollided = true;
                 m_collisionFrame = 0;
+                m_holdingLastFrame = false;
                 qDebug() << "[PACMAN] Duch dogonił Pac-Mana! Rozpoczynam animację kolizji.";
                 update();
-                // Dodaj automatyczne ukrycie overlay po m_collisionHideMs ms
-                QTimer::singleShot(m_collisionHideMs, this, [this]()
-                                   {
-                                       this->setVisible(false);
-                                       // Resetuj stan animacji, by można było ponownie uruchomić efekt
-                                       m_pacmanCollided = false;
-                                       m_collisionFrame = 0;
-                                       m_pacmanX = 0;
-                                       m_ghostX = 0;
-                                       m_ghostChasing = false;
-                                       m_showGhost = false;
-                                       // Można dodać inne resetowane pola jeśli potrzeba
-                                   });
             }
             else
             {

@@ -56,6 +56,8 @@ private:
     bool m_pacmanCollided; // Stan kolizji z duchem
     int m_collisionFrame;  // Numer klatki animacji kolizji (0-10)
     int m_collisionHideMs; // czas ukrycia po kolizji (ms)
+    bool m_holdingLastFrame; // Stan zatrzymania na ostatniej klatce
+    int m_lastFrameHoldTimeMs; // Czas zatrzymania na ostatniej klatce (ms)
 
     static double s_pacmanSpeedPx;
     static int s_eatCharIntervalMs;
