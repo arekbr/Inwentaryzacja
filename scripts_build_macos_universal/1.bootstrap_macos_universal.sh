@@ -115,7 +115,77 @@ echo "✅ Pakiety zainstalowane"
 # ==========================================
 echo -e "\n📱 Konfiguracja Qt..."
 
-read -p "📂 Czy chcesz użyć własnej instalacji Qt 6.9.0? (y/n) " choice
+# ==========================================
+# Krok 5a: Automatyczne wykrywanie Qt
+# ==========================================
+echo "🔍 Automatyczne wykrywanie instalacji Qt..."
+
+# Szukaj dostępnych wersji Qt
+QT_VERSIONS=()
+if [[ -d "$HOME/Qt" ]]; then
+  while IFS= read -r -d '' version_dir; do
+    version=$(basename "$version_dir")
+    if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      if [[ -d "$version_dir/macos" ]]; then
+        QT_VERSIONS+=("$version:$version_dir/macos")
+      fi
+    fi
+  done < <(find "$HOME/Qt" -maxdepth 1 -type d -name "[0-9]*" -print0 2>/dev/null)
+fi
+
+# Pokaż znalezione wersje
+if [[ ${#QT_VERSIONS[@]} -gt 0 ]]; then
+  echo "📦 Znalezione instalacje Qt:"
+  for i in "${!QT_VERSIONS[@]}"; do
+    version_info="${QT_VERSIONS[$i]}"
+    version="${version_info%:*}"
+    path="${version_info#*:}"
+    
+    # Sprawdź typ architektury
+    if [[ -f "$path/bin/qmake" ]]; then
+      arch_info=$(file "$path/bin/qmake" 2>/dev/null | grep -o "universal binary\|x86_64\|arm64" | head -1)
+      arch_info="${arch_info:-unknown}"
+    else
+      arch_info="missing"
+    fi
+    
+    echo "   $((i+1))) Qt $version ($arch_info) - $path"
+  done
+  
+  # Automatycznie wybierz najnowszą wersję
+  LATEST_VERSION=""
+  LATEST_PATH=""
+  for version_info in "${QT_VERSIONS[@]}"; do
+    version="${version_info%:*}"
+    path="${version_info#*:}"
+    if [[ -z "$LATEST_VERSION" ]] || [[ "$version" > "$LATEST_VERSION" ]]; then
+      LATEST_VERSION="$version"
+      LATEST_PATH="$path"
+    fi
+  done
+  
+  echo "🎯 Najnowsza wersja: Qt $LATEST_VERSION"
+  DEFAULT_QT_PATH="$LATEST_PATH"
+else
+  echo "⚠️  Nie znaleziono automatycznie instalacji Qt w $HOME/Qt"
+  # Próbuj znaleźć jakąkolwiek instalację Qt w standardowych lokalizacjach
+  for possible_qt_dir in "$HOME/Qt/"*"/macos" "/opt/homebrew/lib/QtCore.framework/../.." "/usr/local/lib/QtCore.framework/../.."; do
+    if [[ -d "$possible_qt_dir" && -f "$possible_qt_dir/bin/qmake" ]]; then
+      DEFAULT_QT_PATH="$possible_qt_dir"
+      echo "📦 Znaleziono Qt w: $possible_qt_dir"
+      break
+    fi
+  done
+  
+  # Jeśli nic nie znaleziono, ustaw ogólną ścieżkę
+  if [[ -z "$DEFAULT_QT_PATH" ]]; then
+    DEFAULT_QT_PATH="$HOME/Qt/[WERSJA]/macos"
+  fi
+fi
+
+read -p "📂 Czy chcesz użyć własnej instalacji Qt? (y/n) [y]: " choice
+choice="${choice:-y}"
+
 if [[ "$choice" == "y" ]]; then
   if [[ "$BUILD_TYPE" == "universal" ]]; then
     echo "🔍 Dla universal build potrzebujesz Qt skompilowane jako universal binary"
@@ -124,11 +194,11 @@ if [[ "$choice" == "y" ]]; then
     echo "   2) Własne Qt zbudowane jako universal"
     echo "   3) Osobne instalacje Qt dla każdej architektury"
     
-    read -p "❓ Którą opcję wybierasz? (1/2/3) " qt_option
+    read -p "❓ Którą opcję wybierasz? (1/2/3) [1]: " qt_option
+    qt_option="${qt_option:-1}"
     
     case $qt_option in
       1|2)
-        DEFAULT_QT_PATH="$HOME/Qt/6.9.0/macos"
         read -p "🔍 Podaj ścieżkę do katalogu Qt [$DEFAULT_QT_PATH]: " QT_PATH
         QT_PATH="${QT_PATH:-$DEFAULT_QT_PATH}"
         
@@ -149,8 +219,32 @@ if [[ "$choice" == "y" ]]; then
         fi
         ;;
       3)
-        read -p "🔍 Podaj ścieżkę do Qt Intel (x86_64): " QT_PATH_INTEL
-        read -p "🔍 Podaj ścieżkę do Qt ARM (arm64): " QT_PATH_ARM
+        echo "🔍 Konfiguracja dual-arch Qt..."
+        
+        # Proponuj automatyczne ścieżki jeśli są dostępne
+        INTEL_DEFAULT=""
+        ARM_DEFAULT=""
+        
+        for version_info in "${QT_VERSIONS[@]}"; do
+          version="${version_info%:*}"
+          path="${version_info#*:}"
+          
+          if [[ -f "$path/bin/qmake" ]]; then
+            arch_info=$(file "$path/bin/qmake" 2>/dev/null)
+            if echo "$arch_info" | grep -q "x86_64" && [[ -z "$INTEL_DEFAULT" ]]; then
+              INTEL_DEFAULT="$path"
+            fi
+            if echo "$arch_info" | grep -q "arm64" && [[ -z "$ARM_DEFAULT" ]]; then
+              ARM_DEFAULT="$path"
+            fi
+          fi
+        done
+        
+        read -p "🔍 Podaj ścieżkę do Qt Intel (x86_64) [${INTEL_DEFAULT:-$HOME/Qt/[WERSJA]/macos_intel}]: " QT_PATH_INTEL
+        QT_PATH_INTEL="${QT_PATH_INTEL:-${INTEL_DEFAULT:-$HOME/Qt/[WERSJA]/macos_intel}}"
+        
+        read -p "🔍 Podaj ścieżkę do Qt ARM (arm64) [${ARM_DEFAULT:-$HOME/Qt/[WERSJA]/macos_arm}]: " QT_PATH_ARM
+        QT_PATH_ARM="${QT_PATH_ARM:-${ARM_DEFAULT:-$HOME/Qt/[WERSJA]/macos_arm}}"
         
         if [[ ! -d "$QT_PATH_INTEL" || ! -d "$QT_PATH_ARM" ]]; then
           echo "❌ Błąd: Jedna z podanych ścieżek nie istnieje."
@@ -164,7 +258,6 @@ if [[ "$choice" == "y" ]]; then
     esac
   else
     # Single architecture build
-    DEFAULT_QT_PATH="$HOME/Qt/6.9.0/macos"
     read -p "🔍 Podaj ścieżkę do katalogu Qt [$DEFAULT_QT_PATH]: " QT_PATH
     QT_PATH="${QT_PATH:-$DEFAULT_QT_PATH}"
     
