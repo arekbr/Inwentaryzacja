@@ -4,6 +4,20 @@ Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym p
 
 Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), a projekt stosuje [Wersjonowanie Semantyczne](https://semver.org/lang/pl/).
 
+## [1.3.0-beta.1] - 2026-01-18
+
+### Dodano
+- Lepsze skrypty budowania i deploy dla Debian (automatyczna detekcja Qt oraz pluginu qsqlmysql, mniej twardych ścieżek).
+
+### Zmieniono
+- Usprawnienia filtrów: mniej zbędnych połączeń sygnałów, cache autouzupełniania.
+- Reuse `QGraphicsScene` w podglądzie zdjęć (mniej alokacji).
+- Transakcje przy zapisie rekordów/zdjęć oraz danych przykładowych.
+- Migracja UUID nie uruchamia się na pustej bazie i działa po utworzeniu schematu SQLite.
+
+### Naprawiono
+- `set_icon.sh` i pomocnicze skrypty mają walidację argumentów i działają niezależnie od CWD.
+
 ## [1.2.5] - 2025-05-12
 
 ### Dodano
