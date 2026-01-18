@@ -78,11 +78,19 @@ qt6_add_resources(RESOURCES resources.qrc)
 # ================================
 # Tworzenie binarki
 # ================================
-qt6_add_executable(${PROJECT_NAME}
+set(APP_EXECUTABLE_TYPE "")
+set(WINDOWS_APP_ICON "")
+if(WIN32)
+    set(APP_EXECUTABLE_TYPE WIN32)
+    set(WINDOWS_APP_ICON "${CMAKE_CURRENT_SOURCE_DIR}/windows_app.rc")
+endif()
+
+qt6_add_executable(${PROJECT_NAME} ${APP_EXECUTABLE_TYPE}
     ${SOURCES}
     ${HEADERS}
     ${FORMS}
     ${RESOURCES}
+    ${WINDOWS_APP_ICON}
 )
 
 # ================================

@@ -6,11 +6,21 @@
 
 $ErrorActionPreference = 'Stop'
 
+function Resolve-ProjectRoot {
+    param([string]$startDir)
+    foreach ($dir in @($startDir, (Join-Path $startDir ".."), (Get-Location).Path)) {
+        if ($dir -and (Test-Path (Join-Path $dir "CMakeLists.txt"))) {
+            return (Resolve-Path $dir).Path
+        }
+    }
+    throw "Nie znaleziono CMakeLists.txt - uruchom skrypt z katalogu projektu."
+}
+
 # ---------------------------------------------------------------------------
 # 1. Ścieżki i pliki (dopasowane do projektu)
 # ---------------------------------------------------------------------------
 
-$Root          = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Root          = Resolve-ProjectRoot -startDir $PSScriptRoot
 $Out           = "$Root\installer"
 $AppSrc        = "$Root\deploy"
 $InstallerExe  = "$Root\release_exe\InwentaryzacjaInstaller.exe"

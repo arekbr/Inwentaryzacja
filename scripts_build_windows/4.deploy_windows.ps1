@@ -10,15 +10,34 @@ param (
     [string]$DEPLOY_DIR        = 'deploy'
 )
 
+function Resolve-ProjectRoot {
+    param([string]$startDir)
+    foreach ($dir in @($startDir, (Join-Path $startDir ".."), (Get-Location).Path)) {
+        if ($dir -and (Test-Path (Join-Path $dir "CMakeLists.txt"))) {
+            return (Resolve-Path $dir).Path
+        }
+    }
+    throw "Nie znaleziono CMakeLists.txt - uruchom skrypt z katalogu projektu."
+}
+function Resolve-ProjectPath {
+    param([string]$basePath, [string]$projectRoot)
+    if ([IO.Path]::IsPathRooted($basePath)) { return $basePath }
+    return (Join-Path $projectRoot $basePath)
+}
+$PROJECT_ROOT = Resolve-ProjectRoot -startDir $PSScriptRoot
+$BUILD_DIR = Resolve-ProjectPath -basePath $BUILD_DIR -projectRoot $PROJECT_ROOT
+$PLUGIN_BUILD_DIR = Resolve-ProjectPath -basePath $PLUGIN_BUILD_DIR -projectRoot $PROJECT_ROOT
+$DEPLOY_DIR = Resolve-ProjectPath -basePath $DEPLOY_DIR -projectRoot $PROJECT_ROOT
+
 $ErrorActionPreference = 'Stop'
 Write-Host "`n🚀  Deploy aplikacji Windows: $APP_NAME" -ForegroundColor Cyan
 
 # ------------------------------------------------------------------
 # 1. QT_PATH: pobierz z env lub z pliku qt_env.ps1
 # ------------------------------------------------------------------
-if (-not $env:QT_PATH -and (Test-Path '.\qt_env.ps1')) {
-    Write-Host "ℹ️  Wczytywanie zmiennych z qt_env.ps1"
-    . .\qt_env.ps1
+if (-not $env:QT_PATH -and (Test-Path (Join-Path $PROJECT_ROOT "qt_env.ps1"))) {
+    Write-Host "??  Wczytywanie zmiennych z qt_env.ps1"
+    . (Join-Path $PROJECT_ROOT "qt_env.ps1")
 }
 if (-not $env:QT_PATH) {
     throw '❌  Zmienna środowiskowa QT_PATH nie jest ustawiona (np. C:\Qt\6.6.2\msvc64).'
@@ -80,7 +99,7 @@ if (Test-Path $qsqlmysql) {
 # ------------------------------------------------------------------
 # 6. Dołóż libmariadb.dll (jeśli istnieje)
 # ------------------------------------------------------------------
-$libmariadb = Get-ChildItem -Recurse -Filter libmariadb*.dll -Path '.' -ErrorAction SilentlyContinue | Select-Object -First 1
+$libmariadb = Get-ChildItem -Recurse -Filter libmariadb*.dll -Path $PROJECT_ROOT -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($libmariadb) {
     Copy-Item $libmariadb.FullName $DEPLOY_DIR -Force
     Write-Host "✅  Dodano $($libmariadb.Name)"

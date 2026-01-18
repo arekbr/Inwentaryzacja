@@ -1,15 +1,27 @@
 ﻿# 2.build_qt_mysql_plugin_windows.ps1
+# Project-root aware paths
+function Resolve-ProjectRoot {
+    param([string]$startDir)
+    foreach ($dir in @($startDir, (Join-Path $startDir ".."), (Get-Location).Path)) {
+        if ($dir -and (Test-Path (Join-Path $dir "CMakeLists.txt"))) {
+            return (Resolve-Path $dir).Path
+        }
+    }
+    throw "Nie znaleziono CMakeLists.txt - uruchom skrypt z katalogu projektu."
+}
+$PROJECT_ROOT = Resolve-ProjectRoot -startDir $PSScriptRoot
+
 Write-Host "`n🔌 [PLUGIN] Budowa Qt SQL Driverów (qsqlmysql) — generator: Ninja" -ForegroundColor Cyan
 $ErrorActionPreference = "Stop"
 
-$toolsDir = "tools"
+$toolsDir = Join-Path $PROJECT_ROOT "tools"
 $srcSubdir = "mariadb_src"
 $buildSubdir = "mariadb_build"
 $installSubdir = "mariadb_built"
 
 # ========= [1] Wczytaj QT_PATH / QT_SRC_PATH =========
-if (-not $env:QT_PATH -and (Test-Path "qt_env.ps1")) {
-    . .\qt_env.ps1
+if (-not $env:QT_PATH -and (Test-Path (Join-Path $PROJECT_ROOT "qt_env.ps1"))) {
+    . (Join-Path $PROJECT_ROOT "qt_env.ps1")
 }
 $qtSrcMysqlDir = Join-Path $env:QT_SRC_PATH "qtbase/src/plugins/sqldrivers/mysql"
 $cmakeListFile = Join-Path $qtSrcMysqlDir "CMakeLists.txt"
@@ -59,6 +71,13 @@ $unpacked = Get-ChildItem $toolsDir | Where-Object { $_.PSIsContainer -and $_.Na
 Remove-Item "$toolsDir\$srcSubdir" -Recurse -Force -ErrorAction SilentlyContinue
 Move-Item $unpacked.FullName "$toolsDir\$srcSubdir"
 
+# ========= [4a] Podniesienie minimalnej wersji CMake (zgodnosc z nowym CMake) =========
+$mariadbCmake = Join-Path "$toolsDir\$srcSubdir" "CMakeLists.txt"
+if (Test-Path $mariadbCmake) {
+    (Get-Content $mariadbCmake) -replace 'cmake_minimum_required\(VERSION\s+[0-9\.]+\)', 'cmake_minimum_required(VERSION 3.5)' | Set-Content $mariadbCmake -Encoding UTF8
+}
+
+
 # ========= [5] Patch strerror_r → strerror_s =========
 $maNet = Join-Path "$toolsDir\$srcSubdir\libmariadb" "ma_net.c"
 if (Test-Path $maNet) {
@@ -74,12 +93,21 @@ Push-Location $buildDir
 cmake ../$srcSubdir -G Ninja `
   -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_INSTALL_PREFIX="$installDir" `
+  "-DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5" `
   -DWITH_SSL=OFF `
   -DWITH_EXTERNAL_ZLIB=NO `
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON `
   -DCMAKE_CXX_COMPILER="$CXX_COMPILER"
 
+if ($LASTEXITCODE -ne 0) {
+    throw "Konfiguracja MariaDB Connector/C nie powiodla sie (cmake)."
+}
+
 ninja install
+if ($LASTEXITCODE -ne 0) {
+    throw "Budowa MariaDB Connector/C nie powiodla sie (ninja install)."
+}
+
 Pop-Location
 
 # ========= [7] Wylicz INCLUDE/LIB dla Qt pluginu =========
@@ -104,7 +132,7 @@ if (-not (Select-String -Path $cmakeListFile -Pattern "MySQL::MySQL")) {
 }
 
 # ========= [9] Przygotuj build_qt_sql_drivers od zera =========
-$pluginBuildDir = "build_qt_sql_drivers"
+$pluginBuildDir = Join-Path $PROJECT_ROOT "build_qt_sql_drivers"
 if (Test-Path $pluginBuildDir) {
     Write-Host "🧽 Usuwam poprzednią konfigurację: $pluginBuildDir"
     Remove-Item -Recurse -Force $pluginBuildDir
@@ -142,4 +170,4 @@ if ($plugin) {
 }
 
 # ========= [13] Powrót do głównego katalogu =========
-Set-Location $PSScriptRoot
+Set-Location $PROJECT_ROOT

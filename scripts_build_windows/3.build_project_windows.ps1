@@ -1,7 +1,19 @@
 ﻿# 3.build_project_windows.ps1
+# Project-root aware paths
+function Resolve-ProjectRoot {
+    param([string]$startDir)
+    foreach ($dir in @($startDir, (Join-Path $startDir ".."), (Get-Location).Path)) {
+        if ($dir -and (Test-Path (Join-Path $dir "CMakeLists.txt"))) {
+            return (Resolve-Path $dir).Path
+        }
+    }
+    throw "Nie znaleziono CMakeLists.txt - uruchom skrypt z katalogu projektu."
+}
+$PROJECT_ROOT = Resolve-ProjectRoot -startDir $PSScriptRoot
+
 $ErrorActionPreference = "Stop"
 $APP_NAME = "Inwentaryzacja"
-$BUILD_DIR = "build_inwentaryzacja"
+$BUILD_DIR = Join-Path $PROJECT_ROOT "build_inwentaryzacja"
 
 Write-Host "`n🏗️  Budowa aplikacji $APP_NAME (Windows + Qt)" -ForegroundColor Cyan
 
@@ -30,9 +42,9 @@ $CXX_COMPILER = Find-QtCompiler
 # ============================
 # Wczytywanie QT_PATH
 # ============================
-if (-not $env:QT_PATH -and (Test-Path "qt_env.ps1")) {
-    Write-Host "ℹ️  Wczytywanie zmiennych z qt_env.ps1"
-    . .\qt_env.ps1
+if (-not $env:QT_PATH -and (Test-Path (Join-Path $PROJECT_ROOT "qt_env.ps1"))) {
+    Write-Host "??  Wczytywanie zmiennych z qt_env.ps1"
+    . (Join-Path $PROJECT_ROOT "qt_env.ps1")
 }
 
 if (-not $env:QT_PATH) {
@@ -47,13 +59,13 @@ if (-not (Test-Path $BUILD_DIR)) {
     Write-Host "📁 Tworzenie katalogu: $BUILD_DIR"
     New-Item -ItemType Directory -Path $BUILD_DIR | Out-Null
 }
-Set-Location $BUILD_DIR
 
 # ============================
 # Konfiguracja CMake
 # ============================
 Write-Host "⚙️  Konfiguracja CMake..."
-cmake .. -G Ninja `
+cmake -G Ninja -S "$PROJECT_ROOT" -B "$BUILD_DIR" `
+  -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_PREFIX_PATH="$env:QT_PATH" `
   -DCMAKE_CXX_COMPILER="$CXX_COMPILER"
 
@@ -61,12 +73,12 @@ cmake .. -G Ninja `
 # Budowanie
 # ============================
 Write-Host "🔨 Budowanie projektu z użyciem Ninja..."
-ninja
+cmake --build "$BUILD_DIR"
 
 # ============================
 # Weryfikacja binarki
 # ============================
-if (Test-Path "$APP_NAME.exe") {
+if (Test-Path (Join-Path $BUILD_DIR "$APP_NAME.exe")) {
     Write-Host "`n✅ Zbudowano aplikację: $BUILD_DIR\$APP_NAME.exe" -ForegroundColor Green
 } else {
     Write-Error "❌ Budowa nie powiodła się — brak pliku $APP_NAME.exe"
@@ -74,4 +86,3 @@ if (Test-Path "$APP_NAME.exe") {
 }
 
 # ========= [5] Powrót do głównego katalogu =========
-Set-Location $PSScriptRoot

@@ -1,4 +1,20 @@
 ﻿# 1.bootstrap_windows.ps1
+# Przygotowanie srodowiska Qt 6.9.0 + MariaDB (Windows)
+
+# ==========================================
+# Ustal katalog projektu (tam, gdzie CMakeLists.txt)
+# ==========================================
+function Resolve-ProjectRoot {
+    param([string]$startDir)
+    foreach ($dir in @($startDir, (Join-Path $startDir ".."), (Get-Location).Path)) {
+        if ($dir -and (Test-Path (Join-Path $dir "CMakeLists.txt"))) {
+            return (Resolve-Path $dir).Path
+        }
+    }
+    throw "Nie znaleziono CMakeLists.txt - uruchom skrypt z katalogu projektu."
+}
+$PROJECT_ROOT = Resolve-ProjectRoot -startDir $PSScriptRoot
+
 # Przygotowanie środowiska Qt 6.9.0 + MariaDB (Windows)
 
 Write-Host "`n📦 [BOOTSTRAP] Inicjalizacja środowiska pod Qt 6.9.0 + MariaDB (Windows)" -ForegroundColor Cyan
@@ -136,8 +152,8 @@ if ($useQt -eq "y") {
 # ==========================================
 # Krok 5: Katalog build\
 # ==========================================
-if (-not (Test-Path "build")) {
-    New-Item -ItemType Directory -Path "build" | Out-Null
+if (-not (Test-Path (Join-Path $PROJECT_ROOT "build"))) {
+    New-Item -ItemType Directory -Path (Join-Path $PROJECT_ROOT "build") | Out-Null
     Write-Host "✅ Utworzono katalog build\"
 } else {
     Write-Host "✅ Katalog build\ już istnieje"
@@ -152,7 +168,7 @@ if (-not (Test-Path "build")) {
 `$env:QMAKE = '$QT_PATH\bin\qmake.exe'
 `$env:CMAKE_PREFIX_PATH = '$QT_PATH'
 `$env:PATH = '$QT_PATH\bin;' + `$env:PATH
-"@ | Set-Content -Path "qt_env.ps1" -Encoding UTF8
+"@ | Set-Content -Path (Join-Path $PROJECT_ROOT "qt_env.ps1") -Encoding UTF8
 
 Write-Host "`n📄 Zapisano qt_env.ps1"
 

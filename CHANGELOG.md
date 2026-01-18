@@ -1,4 +1,4 @@
-# Dziennik zmian
+﻿# Dziennik zmian
 
 Wszystkie istotne zmiany w projekcie Inwentaryzacja będą dokumentowane w tym pliku.
 
@@ -8,6 +8,7 @@ Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), 
 
 ### Dodano
 - Lepsze skrypty budowania i deploy dla Debian (automatyczna detekcja Qt oraz pluginu qsqlmysql, mniej twardych ścieżek).
+- Poprawione skrypty Windows: automatyczne wykrywanie katalogu projektu, stabilniejsze sciezki i build Release, ikona EXE z pliku .rc.
 
 ### Zmieniono
 - Usprawnienia filtrów: mniej zbędnych połączeń sygnałów, cache autouzupełniania.
