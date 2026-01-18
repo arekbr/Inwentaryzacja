@@ -111,7 +111,7 @@ Write-Host ">> Upload..."
 Write-Host ">> upload_url(raw): $uploadUrlRaw"
 Write-Host ">> upload_url: $uploadUrl"
 $encodedName = [System.Uri]::EscapeDataString($assetName)
-$uploadUri = "$uploadUrl?name=$encodedName"
+$uploadUri = "${uploadUrl}?name=$encodedName"
 Write-Host ">> upload_uri: $uploadUri"
 [void][System.Uri]::new($uploadUri)
 Invoke-RestMethod -Method Post `
