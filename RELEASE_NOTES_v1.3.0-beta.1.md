@@ -1,4 +1,4 @@
-# Inwentaryzacja v1.3.0-beta.1 (pre-release)
+﻿# Inwentaryzacja v1.3.0-beta.1 (pre-release)
 
 Cel: wersja beta do testów stabilności przed pełnym wydaniem.
 
@@ -14,6 +14,13 @@ Instalacja/uruchomienie (Debian):
 2. `./scripts_build_debian/3.build_inwentaryzacja_linux.sh`
 3. `./scripts_build_debian/4.deploy_linux.sh`
 4. `./scripts_build_debian/6.make_deb_linux.sh`
+
+Instalacja/uruchomienie (Windows):
+1. `.\scripts_build_windows\1.bootstrap_windows.ps1`
+2. `.\scripts_build_windows\2.build_qt_mysql_plugin_windows.ps1`
+3. `.\scripts_build_windows\3.build_project_windows.ps1`
+4. `.\scripts_build_windows\4.deploy_windows.ps1`
+5. `.\scripts_build_windows\6.make_installer_windows.ps1`
 
 Uwagi:
 - Jeśli brakuje `libqsqlmysql.so`, doinstaluj `libqt6sql6-mysql` albo zbuduj plugin ze źródeł Qt.
