@@ -7,6 +7,7 @@ Najważniejsze zmiany:
 - Reuse `QGraphicsScene` dla miniaturek zdjęć (mniej alokacji, stabilniejsze UI).
 - Transakcje przy zapisie rekordów i zdjęć; poprawiona obsługa błędów.
 - Migracja UUID uruchamiana bezpiecznie (pomijana na pustej bazie, po schemacie SQLite).
+- Skrypty Windows: stabilniejsze sciezki, build Release, ikona EXE, upload instalatora do GitHub Release.
 - Skrypty dla Debiana działają bez twardych ścieżek; wykrywanie systemowego `libqsqlmysql.so`.
 
 Instalacja/uruchomienie (Debian):
