@@ -103,15 +103,19 @@ if ($release.assets) {
 
 $uploadUrlRaw = $release.upload_url
 $uploadUrl = $uploadUrlRaw -replace "\{.*\}", ""
-$uploadUrl = $uploadUrl.Trim()
+$uploadUrl = ($uploadUrl -replace "\s", "").Trim()
 if ($uploadUrl -notmatch "^https?://") {
     throw "Nieprawidlowy upload_url: $uploadUrlRaw"
 }
 Write-Host ">> Upload..."
 Write-Host ">> upload_url(raw): $uploadUrlRaw"
 Write-Host ">> upload_url: $uploadUrl"
+$encodedName = [System.Uri]::EscapeDataString($assetName)
+$uploadUri = "$uploadUrl?name=$encodedName"
+Write-Host ">> upload_uri: $uploadUri"
+[void][System.Uri]::new($uploadUri)
 Invoke-RestMethod -Method Post `
-    -Uri "$uploadUrl?name=$assetName" `
+    -Uri $uploadUri `
     -Headers $headers `
     -ContentType "application/octet-stream" `
     -InFile $AssetPath | Out-Null
