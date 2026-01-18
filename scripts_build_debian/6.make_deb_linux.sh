@@ -3,10 +3,12 @@
 set -e
 
 APP_NAME="Inwentaryzacja"
-DEPLOY_DIR="deploy"
-DEB_DIR="deb_pkg"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+DEPLOY_DIR="$ROOT_DIR/deploy"
+DEB_DIR="$ROOT_DIR/deb_pkg"
 # Odczytanie wersji z pliku version.txt
-VERSION=$(cat version.txt | tr -d '[:space:]')
+VERSION=$(cat "$ROOT_DIR/version.txt" | tr -d '[:space:]')
 ARCH="amd64"
 MAINTAINER="Stowarzyszenie SMOK <kontakt@smok.technology>"
 DESCRIPTION="Program do inwentaryzacji retro komputerów"
@@ -14,8 +16,8 @@ DESCRIPTION="Program do inwentaryzacji retro komputerów"
 # ============================
 # Wczytanie QT_PATH z pliku qt_env.sh
 # ============================
-if [[ -z "$QT_PATH" && -f qt_env.sh ]]; then
-    source qt_env.sh
+if [[ -z "$QT_PATH" && -f "$ROOT_DIR/qt_env.sh" ]]; then
+    source "$ROOT_DIR/qt_env.sh"
 fi
 
 if [[ -z "$QT_PATH" ]]; then
@@ -57,7 +59,7 @@ cp "$DEPLOY_DIR/$APP_NAME" "$DEB_DIR/usr/bin/$APP_NAME-bin"
 cp -r "$DEPLOY_DIR/platforms"/* "$DEB_DIR/usr/share/$APP_NAME/platforms/"
 cp -r "$DEPLOY_DIR/sqldrivers"/* "$DEB_DIR/usr/share/$APP_NAME/sqldrivers/"
 cp -u "$DEPLOY_DIR"/*.so* "$DEB_DIR/usr/share/$APP_NAME/" || true
-cp qt_env.sh "$DEB_DIR/usr/share/$APP_NAME/qt_env.sh"
+cp "$ROOT_DIR/qt_env.sh" "$DEB_DIR/usr/share/$APP_NAME/qt_env.sh"
 
 # ============================
 # Kopiowanie pluginów imageformats (np. libqjpeg, libqpng)
@@ -109,8 +111,8 @@ EOF
 # ============================
 # Kopiowanie ikony
 # ============================
-if [[ -f "images/icon.png" ]]; then
-    cp "images/icon.png" "$DEB_DIR/usr/share/icons/hicolor/256x256/apps/$APP_NAME.png"
+if [[ -f "$ROOT_DIR/images/icon.png" ]]; then
+    cp "$ROOT_DIR/images/icon.png" "$DEB_DIR/usr/share/icons/hicolor/256x256/apps/$APP_NAME.png"
 else
     echo "⚠️  Ostrzeżenie: Brak pliku ikony: images/icon.png"
 fi
@@ -119,6 +121,6 @@ fi
 # Budowa pakietu .deb
 # ============================
 echo "📦 Budowanie .deb..."
-dpkg-deb --build "$DEB_DIR"
+dpkg-deb --build --root-owner-group "$DEB_DIR"
 mv "$DEB_DIR.deb" "${APP_NAME}_${VERSION}_${ARCH}.deb"
 echo "✅ Gotowe: ${APP_NAME}_${VERSION}_${ARCH}.deb"

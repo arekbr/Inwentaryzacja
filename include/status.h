@@ -38,6 +38,7 @@
 #include <QSqlDatabase>
 
 class MainWindow;
+class QSqlQueryModel;
 
 namespace Ui {
 class status;
@@ -147,6 +148,9 @@ private:
 
     /// Obiekt reprezentujący połączenie z bazą danych.
     QSqlDatabase m_db;
+
+    /// Model danych dla listy statusów.
+    QSqlQueryModel *m_model;
 };
 
 #endif // STATUS_H

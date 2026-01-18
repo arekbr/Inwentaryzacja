@@ -38,6 +38,7 @@
 #include <QSqlDatabase>
 
 class MainWindow;
+class QSqlQueryModel;
 
 namespace Ui {
 class types;
@@ -147,6 +148,9 @@ private:
 
     /// Obiekt połączenia z bazą danych.
     QSqlDatabase m_db;
+
+    /// Model danych dla listy typów.
+    QSqlQueryModel *m_model;
 };
 
 #endif // TYPES_H

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 # ================================
 # Odczyt wersji z pliku
 # ================================
-file(READ "version.txt" PROJECT_VERSION_FROM_FILE)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" PROJECT_VERSION_FROM_FILE)
 string(STRIP "${PROJECT_VERSION_FROM_FILE}" PROJECT_VERSION_FROM_FILE)
 
 project(Inwentaryzacja VERSION ${PROJECT_VERSION_FROM_FILE} LANGUAGES CXX)

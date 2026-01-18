@@ -38,6 +38,7 @@
 #include <QSqlDatabase>
 
 class MainWindow;
+class QSqlQueryModel;
 
 namespace Ui {
 class storage;
@@ -148,6 +149,9 @@ private:
 
     /// Obiekt połączenia z bazą danych.
     QSqlDatabase m_db;
+
+    /// Model danych dla listy miejsc przechowywania.
+    QSqlQueryModel *m_model;
 };
 
 #endif // STORAGE_H

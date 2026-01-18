@@ -56,10 +56,15 @@ models::models(QWidget *parent)
     , ui(new Ui::models)
     , m_mainWindow(nullptr)
     , m_vendorId(QString()) // Pusty string jako "brak ID"
+    , m_model(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
     setWindowTitle(tr("Zarządzanie modelami sprzętu"));
+
+    m_model = new QSqlQueryModel(this);
+    ui->listView->setModel(m_model);
+    ui->listView->setModelColumn(0);
 
     // Połączenie przycisków
     connect(ui->pushButton_add, &QPushButton::clicked, this, &models::onAddClicked);
@@ -118,16 +123,13 @@ void models::setVendorId(const QString &vendorId)
  */
 void models::refreshList()
 {
-    QSqlQueryModel *queryModel = new QSqlQueryModel(this);
-    queryModel->setQuery("SELECT name FROM models ORDER BY name ASC", m_db);
-    if (queryModel->lastError().isValid()) {
+    m_model->setQuery("SELECT name FROM models ORDER BY name ASC", m_db);
+    if (m_model->lastError().isValid()) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Błąd pobierania danych: %1").arg(queryModel->lastError().text()));
+                              tr("Błąd pobierania danych: %1").arg(m_model->lastError().text()));
         return;
     }
-    ui->listView->setModel(queryModel);
-    ui->listView->setModelColumn(0);
 }
 
 /**

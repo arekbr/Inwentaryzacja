@@ -37,6 +37,7 @@
 #include <QSqlDatabase>
 
 class MainWindow;
+class QSqlQueryModel;
 
 namespace Ui {
 class models;
@@ -156,6 +157,9 @@ private:
     QSqlDatabase m_db;
     /// Identyfikator producenta (np. UUID).
     QString m_vendorId;
+
+    /// Model danych dla listy modeli.
+    QSqlQueryModel *m_model;
 };
 
 #endif // MODELS_H

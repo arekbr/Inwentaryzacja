@@ -52,6 +52,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStandardPaths>
+#include <QVector>
+#include <QPair>
 #include <QUuid>
 #include <QProgressDialog>
 
@@ -77,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_editMode(false)
     , m_recordId(QString())
     , m_selectedPhotoIndex(-1)
+    , m_photoScene(nullptr)
 {
     ui->setupUi(this);
 
@@ -475,7 +478,11 @@ void MainWindow::loadPhotos(const QString &recordId)
         return;
     }
 
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    if (!m_photoScene) {
+        m_photoScene = new QGraphicsScene(this);
+    } else {
+        m_photoScene->clear();
+    }
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5, idx = 0;
 
@@ -499,7 +506,7 @@ void MainWindow::loadPhotos(const QString &recordId)
         connect(item, &PhotoItem::clicked, this, [this, item]() { onPhotoClicked(item); });
 
         item->setPos(x, y);
-        scene->addItem(item);
+        m_photoScene->addItem(item);
 
         x += (scaled.width() + spacing);
         if (x + thumbSize > ui->graphicsView->width() - 10) {
@@ -509,19 +516,19 @@ void MainWindow::loadPhotos(const QString &recordId)
         idx++;
     }
 
-    if (!scene->items().isEmpty()) {
-        scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbSize + 5);
-        ui->graphicsView->setScene(scene);
+    if (!m_photoScene->items().isEmpty()) {
+        m_photoScene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbSize + 5);
+        ui->graphicsView->setScene(m_photoScene);
         ui->graphicsView->resetTransform();
 
-        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
-                                 (ui->graphicsView->height() - 10.0) / scene->height());
+        qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / m_photoScene->width(),
+                                 (ui->graphicsView->height() - 10.0) / m_photoScene->height());
         if (scaleFactor < 1.0)
             scaleFactor = 1.0;
         ui->graphicsView->scale(scaleFactor, scaleFactor);
     } else {
-        ui->graphicsView->setScene(nullptr);
-        delete scene;
+        m_photoScene->clear();
+        ui->graphicsView->setScene(m_photoScene);
     }
 }
 
@@ -534,7 +541,11 @@ void MainWindow::loadPhotos(const QString &recordId)
  */
 void MainWindow::loadPhotosFromBuffer()
 {
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    if (!m_photoScene) {
+        m_photoScene = new QGraphicsScene(this);
+    } else {
+        m_photoScene->clear();
+    }
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5;
 
@@ -548,7 +559,7 @@ void MainWindow::loadPhotosFromBuffer()
                                     thumbSize,
                                     Qt::KeepAspectRatio,
                                     Qt::SmoothTransformation);
-        QGraphicsPixmapItem *it = scene->addPixmap(scaled);
+        QGraphicsPixmapItem *it = m_photoScene->addPixmap(scaled);
         it->setPos(x, y);
         x += (scaled.width() + spacing);
         if (x + thumbSize > ui->graphicsView->width() - 10) {
@@ -556,7 +567,7 @@ void MainWindow::loadPhotosFromBuffer()
             y += (scaled.height() + spacing);
         }
     }
-    ui->graphicsView->setScene(scene);
+    ui->graphicsView->setScene(m_photoScene);
 }
 
 /**
@@ -578,6 +589,10 @@ void MainWindow::onSaveClicked()
                               != "nie";
 
     QSqlQuery q(db);
+    bool transactionStarted = db.transaction();
+    if (!transactionStarted) {
+        qDebug() << "Nie udało się rozpocząć transakcji zapisu:" << db.lastError().text();
+    }
 
     if (!m_editMode) {
         m_recordId = "{" + QUuid::createUuid().toString(QUuid::WithoutBraces) + "}";
@@ -637,6 +652,9 @@ void MainWindow::onSaveClicked()
                 ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
 
     if (!q.exec()) {
+        if (transactionStarted) {
+            db.rollback();
+        }
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się zapisać:\n%1").arg(q.lastError().text()));
@@ -644,6 +662,7 @@ void MainWindow::onSaveClicked()
     }
 
     if (!m_editMode) {
+        QVector<QPair<QString, QString>> pendingMoves;
         for (int i = 0; i < m_photoBuffer.size(); ++i) {
             QByteArray ba = m_photoBuffer[i];
             QString pid = QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -655,19 +674,52 @@ void MainWindow::onSaveClicked()
             q2.bindValue(":id", pid);
             q2.bindValue(":exid", m_recordId);
             q2.bindValue(":photo", ba);
-            if (q2.exec()) {
+            if (!q2.exec()) {
+                if (transactionStarted) {
+                    db.rollback();
+                }
+                QMessageBox::critical(this,
+                                      tr("Błąd"),
+                                      tr("Nie można zapisać zdjęcia:\n%1")
+                                          .arg(q2.lastError().text()));
+                return;
+            }
+            if (m_shouldMovePhotos) {
                 const QString orig = m_photoPathsBuffer.at(i);
                 QFileInfo fi(orig);
                 QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-                if (m_shouldMovePhotos) {
-                    QDir().mkpath(doneDir);
-                    QString dst = doneDir + QDir::separator() + fi.fileName();
-                    QFile::rename(orig, dst);
-                }
+                QString dst = doneDir + QDir::separator() + fi.fileName();
+                pendingMoves.append({orig, dst});
+            }
+        }
+        if (transactionStarted && !db.commit()) {
+            db.rollback();
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się zatwierdzić zapisu:\n%1")
+                                      .arg(db.lastError().text()));
+            return;
+        }
+        for (const auto &move : pendingMoves) {
+            QFileInfo fi(move.first);
+            QDir().mkpath(fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe"));
+            if (!QFile::rename(move.first, move.second)) {
+                QMessageBox::warning(this,
+                                     tr("Uwaga"),
+                                     tr("Nie można przenieść %1 do %2")
+                                         .arg(move.first, move.second));
             }
         }
         m_photoBuffer.clear();
         m_photoPathsBuffer.clear();
+    }
+    else if (transactionStarted && !db.commit()) {
+        db.rollback();
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zatwierdzić zapisu:\n%1")
+                                  .arg(db.lastError().text()));
+        return;
     }
 
     QGraphicsScene *scene = ui->graphicsView->scene();
@@ -731,6 +783,13 @@ void MainWindow::onAddPhotoClicked()
     if (files.isEmpty())
         return;
 
+    QVector<QPair<QString, QString>> pendingMoves;
+    bool transactionStarted = !m_recordId.isEmpty() && db.transaction();
+    if (!m_recordId.isEmpty() && !transactionStarted) {
+        qDebug() << "Nie udało się rozpocząć transakcji dodawania zdjęć:"
+                 << db.lastError().text();
+    }
+
     for (const auto &fn : std::as_const(files)) {
         QFile f(fn);
         if (!f.open(QIODevice::ReadOnly)) {
@@ -753,28 +812,45 @@ void MainWindow::onAddPhotoClicked()
             q.bindValue(":id", photoId);
             q.bindValue(":exid", m_recordId);
             q.bindValue(":photo", data);
-            if (q.exec()) {
-                if (m_shouldMovePhotos) {
-                    QFileInfo fi(fn);
-                    QString doneDir = fi.absolutePath() + QDir::separator()
-                                      + QStringLiteral("gotowe");
-                    if (!QDir().mkpath(doneDir)) {
-                        QMessageBox::warning(this,
-                                             tr("Uwaga"),
-                                             tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
-                    }
-                    QString dst = doneDir + QDir::separator() + fi.fileName();
-                    if (!QFile::rename(fn, dst)) {
-                        QMessageBox::warning(this,
-                                             tr("Uwaga"),
-                                             tr("Nie można przenieść %1 do %2").arg(fn, dst));
-                    }
+            if (!q.exec()) {
+                if (transactionStarted) {
+                    db.rollback();
                 }
-            } else {
                 QMessageBox::critical(this,
                                       tr("Błąd"),
                                       tr("Nie można zapisać zdjęcia:\n%1").arg(q.lastError().text()));
+                return;
             }
+            if (m_shouldMovePhotos) {
+                QFileInfo fi(fn);
+                QString doneDir = fi.absolutePath() + QDir::separator()
+                                  + QStringLiteral("gotowe");
+                QString dst = doneDir + QDir::separator() + fi.fileName();
+                pendingMoves.append({fn, dst});
+            }
+        }
+    }
+
+    if (transactionStarted && !db.commit()) {
+        db.rollback();
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zatwierdzić dodawania zdjęć:\n%1")
+                                  .arg(db.lastError().text()));
+        return;
+    }
+    for (const auto &move : pendingMoves) {
+        QFileInfo fi(move.first);
+        QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
+        if (!QDir().mkpath(doneDir)) {
+            QMessageBox::warning(this,
+                                 tr("Uwaga"),
+                                 tr("Nie udało się utworzyć katalogu:\n%1").arg(doneDir));
+        }
+        if (!QFile::rename(move.first, move.second)) {
+            QMessageBox::warning(this,
+                                 tr("Uwaga"),
+                                 tr("Nie można przenieść %1 do %2").arg(move.first, move.second));
         }
     }
 

@@ -3,18 +3,20 @@
 set -e
 
 APP_NAME="Inwentaryzacja"
-DEPLOY_DIR="deploy"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+DEPLOY_DIR="$ROOT_DIR/deploy"
 
 # ============================
 # Wczytanie QT_PATH z pliku, jeśli nie jest ustawiony
 # ============================
-if [[ -z "$QT_PATH" && -f qt_env.sh ]]; then
+if [[ -z "$QT_PATH" && -f "$ROOT_DIR/qt_env.sh" ]]; then
     echo "ℹ️  Wczytywanie QT_PATH z qt_env.sh"
-    source qt_env.sh
+    source "$ROOT_DIR/qt_env.sh"
 fi
 
 if [[ -z "$QT_PATH" ]]; then
-    echo "❌ QT_PATH nie jest ustawiony. Ustaw QT_PATH lub użyj najpierw 'source ./bootstrap_linux.sh'."
+    echo "❌ QT_PATH nie jest ustawiony. Ustaw QT_PATH lub uruchom 1.bootstrap_linux.sh."
     exit 1
 fi
 

@@ -54,6 +54,8 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QSettings>
+#include <QSignalBlocker>
+#include <QStringListModel>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -64,7 +66,6 @@
 #include <QTimer>
 #include <QUuid>
 #include <QtMath>
-#include <functional>
 #include <QLibraryInfo>
 #include <QPluginLoader>
 
@@ -79,7 +80,27 @@
  * ze zdjęciami. W razie potrzeby tworzy schemat bazy danych i wstawia przykładowe dane.
  */
 itemList::itemList(QWidget *parent)
-    : QWidget(parent), ui(new Ui::itemList), m_sourceModel(nullptr), m_proxyModel(nullptr), filterTypeComboBox(nullptr), filterVendorComboBox(nullptr), filterModelComboBox(nullptr), filterStatusComboBox(nullptr), filterStorageComboBox(nullptr), filterNameLineEdit(nullptr), m_currentRecordId(), m_previewWindow(nullptr), m_currentHoveredItem(nullptr)
+    : QWidget(parent)
+    , ui(new Ui::itemList)
+    , m_sourceModel(nullptr)
+    , m_proxyModel(nullptr)
+    , filterTypeComboBox(nullptr)
+    , filterVendorComboBox(nullptr)
+    , filterModelComboBox(nullptr)
+    , filterStatusComboBox(nullptr)
+    , filterStorageComboBox(nullptr)
+    , filterNameLineEdit(nullptr)
+    , m_currentRecordId()
+    , m_previewWindow(nullptr)
+    , m_previewHovered(false)
+    , m_currentHoveredItem(nullptr)
+    , m_hoverCheckTimer(nullptr)
+    , m_keepAliveTimer(nullptr)
+    , m_nameFilterTimer(nullptr)
+    , m_photoScene(nullptr)
+    , m_nameCompleter(nullptr)
+    , m_nameCompleterModel(nullptr)
+    , m_namesDirty(true)
 {
     qDebug() << "itemList: Rozpoczynam konstruktor";
     ui->setupUi(this);
@@ -210,13 +231,15 @@ itemList::itemList(QWidget *parent)
             this,
             &itemList::onTableViewSelectionChanged);
 
-    // Inicjalizacja timera utrzymującego połączenie
-    m_keepAliveTimer = new QTimer(this);
-    connect(m_keepAliveTimer, &QTimer::timeout, this, []()
-            {
-        QSqlQuery q(QSqlDatabase::database("default_connection"));
-        q.exec("SELECT 1"); });
-    m_keepAliveTimer->start(30000);
+    if (db.driverName() == "QMYSQL") {
+        // Inicjalizacja timera utrzymującego połączenie (tylko MySQL)
+        m_keepAliveTimer = new QTimer(this);
+        connect(m_keepAliveTimer, &QTimer::timeout, this, []()
+                {
+            QSqlQuery q(QSqlDatabase::database("default_connection"));
+            q.exec("SELECT 1"); });
+        m_keepAliveTimer->start(30000);
+    }
 
     // Inicjalizacja timera do sprawdzania pozycji kursora
     m_hoverCheckTimer = new QTimer(this);
@@ -247,12 +270,6 @@ itemList::itemList(QWidget *parent)
     // Inicjalizacja filtrów
     initFilters(db);
 
-    // Podłączenie slotów dla kaskadowego filtrowania
-    connect(filterTypeComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
     connect(filterNameLineEdit, &QLineEdit::textChanged, this, [this](const QString &text)
             {
                 qDebug() << "itemList: Zmiana tekstu w filterNameLineEdit:" << text;
@@ -281,10 +298,6 @@ itemList::itemList(QWidget *parent)
             &QComboBox::currentTextChanged,
             this,
             &itemList::onFilterStoragePlaceChanged);
-    connect(ui->filterNameLineEdit,
-            &QLineEdit::textChanged,
-            this,
-            &itemList::onFilterNameChanged);
     connect(ui->filterOriginalPackaging,
             &QCheckBox::toggled,
             this,
@@ -329,11 +342,10 @@ void itemList::initFilters(QSqlDatabase &db)
         return;
     }
 
-    auto initFilter =
-        [&](QComboBox *cb, const QString &table, std::function<void(const QString &)> setter)
+    auto initFilter = [&](QComboBox *cb, const QString &table)
     {
         qDebug() << "itemList: Inicjalizuję filtr dla tabeli:" << table;
-        cb->blockSignals(true);
+        QSignalBlocker blocker(cb);
         cb->clear();
         cb->addItem(tr("Wszystkie"));
         QSqlQuery q(db);
@@ -341,53 +353,50 @@ void itemList::initFilters(QSqlDatabase &db)
         if (!q.exec(query))
         {
             qDebug() << "itemList: Błąd zapytania dla" << table << ":" << q.lastError().text();
-            cb->blockSignals(false);
             return;
         }
         while (q.next())
         {
             cb->addItem(q.value(0).toString());
         }
-        cb->blockSignals(false);
-        connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt)
-                { setter(txt == tr("Wszystkie") ? QString() : txt); });
         qDebug() << "itemList: Filtr dla" << table << "zainicjalizowany";
     };
 
-    initFilter(filterTypeComboBox, "types", [this](const QString &v)
-               { m_proxyModel->setTypeFilter(v); });
-    initFilter(filterVendorComboBox, "vendors", [this](const QString &v)
-               { m_proxyModel->setVendorFilter(v); });
-    initFilter(filterModelComboBox, "models", [this](const QString &v)
-               { m_proxyModel->setModelFilter(v); });
-    initFilter(filterStatusComboBox, "statuses", [this](const QString &v)
-               { m_proxyModel->setStatusFilter(v); });
-    initFilter(filterStorageComboBox, "storage_places", [this](const QString &v)
-               { m_proxyModel->setStorageFilter(v); });
+    initFilter(filterTypeComboBox, "types");
+    initFilter(filterVendorComboBox, "vendors");
+    initFilter(filterModelComboBox, "models");
+    initFilter(filterStatusComboBox, "statuses");
+    initFilter(filterStorageComboBox, "storage_places");
 
     // Inicjalizacja pola tekstowego dla nazwy
     if (filterNameLineEdit)
     {
-        filterNameLineEdit->setPlaceholderText(tr("Wpisz nazwę eksponatu..."));
+        if (!m_nameCompleter) {
+            filterNameLineEdit->setPlaceholderText(tr("Wpisz nazwę eksponatu..."));
+            m_nameCompleterModel = new QStringListModel(this);
+            m_nameCompleter = new QCompleter(m_nameCompleterModel, filterNameLineEdit);
+            m_nameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+            filterNameLineEdit->setCompleter(m_nameCompleter);
+        }
         qDebug() << "itemList: Placeholder dla filterNameLineEdit ustawiony";
 
-        // Autouzupełnianie
-        QStringList names;
-        QSqlQuery q(db);
-        if (q.exec("SELECT DISTINCT name FROM eksponaty ORDER BY name"))
-        {
-            while (q.next())
+        if (m_namesDirty) {
+            QStringList names;
+            QSqlQuery q(db);
+            if (q.exec("SELECT DISTINCT name FROM eksponaty ORDER BY name"))
             {
-                names << q.value(0).toString();
+                while (q.next())
+                {
+                    names << q.value(0).toString();
+                }
             }
+            else
+            {
+                qDebug() << "itemList: Błąd zapytania autouzupełniania:" << q.lastError().text();
+            }
+            m_nameCompleterModel->setStringList(names);
+            m_namesDirty = false;
         }
-        else
-        {
-            qDebug() << "itemList: Błąd zapytania autouzupełniania:" << q.lastError().text();
-        }
-        QCompleter *completer = new QCompleter(names, filterNameLineEdit);
-        completer->setCaseSensitivity(Qt::CaseInsensitive);
-        filterNameLineEdit->setCompleter(completer);
     }
     else
     {
@@ -452,7 +461,9 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 {
     if (selected.indexes().isEmpty())
     {
-        ui->itemList_graphicsView->setScene(nullptr);
+        if (m_photoScene) {
+            m_photoScene->clear();
+        }
         m_currentRecordId.clear();
         return;
     }
@@ -467,7 +478,9 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     if (!query.exec())
     {
         qDebug() << "Błąd pobierania zdjęć (MySQL):" << query.lastError().text();
-        ui->itemList_graphicsView->setScene(nullptr);
+        if (m_photoScene) {
+            m_photoScene->clear();
+        }
         return;
     }
 
@@ -492,11 +505,17 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
     if (pixmaps.isEmpty())
     {
-        ui->itemList_graphicsView->setScene(nullptr);
+        if (m_photoScene) {
+            m_photoScene->clear();
+        }
         return;
     }
 
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    if (!m_photoScene) {
+        m_photoScene = new QGraphicsScene(this);
+    } else {
+        m_photoScene->clear();
+    }
     const int spacing = 5;
     int photoCount = pixmaps.size();
 
@@ -517,7 +536,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         item->setPixmap(scaled);
         item->setData(0, QVariant(original));
         item->setPos(x, y);
-        scene->addItem(item);
+        m_photoScene->addItem(item);
 
         connect(item, &PhotoItem::clicked, this, &itemList::onPhotoHovered);
         connect(item, &PhotoItem::doubleClicked, this, &itemList::onPhotoClicked);
@@ -532,9 +551,9 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
     int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
     int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
-    scene->setSceneRect(0, 0, totalWidth, totalHeight);
-    ui->itemList_graphicsView->setScene(scene);
-    ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+    m_photoScene->setSceneRect(0, 0, totalWidth, totalHeight);
+    ui->itemList_graphicsView->setScene(m_photoScene);
+    ui->itemList_graphicsView->fitInView(m_photoScene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 /**
@@ -866,6 +885,7 @@ void itemList::refreshList(const QString &recordId)
     ui->itemList_tableView->resizeColumnsToContents();
     qDebug() << "itemList: Tabela odświeżona, wierszy w źródle:" << m_sourceModel->rowCount();
 
+    m_namesDirty = true;
     refreshFilters();
     qDebug() << "itemList: Filtry odświeżone";
 
@@ -1014,6 +1034,11 @@ void itemList::insertSampleData(QSqlDatabase &db)
 {
     qDebug() << "itemList: Wstawianie danych przykładowych (MySQL)";
     QSqlQuery query(db);
+    bool transactionStarted = db.transaction();
+    if (!transactionStarted) {
+        qDebug() << "itemList: Nie udało się rozpocząć transakcji dla danych przykładowych:"
+                 << db.lastError().text();
+    }
 
     auto genId = []()
     { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
@@ -1122,6 +1147,12 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":val", 1);
     query.exec();
 
+    if (transactionStarted && !db.commit()) {
+        qDebug() << "itemList: Nie udało się zatwierdzić transakcji danych przykładowych:"
+                 << db.lastError().text();
+        db.rollback();
+    }
+
     if (query.lastError().isValid())
     {
         qDebug() << "itemList: Błąd wstawiania danych przykładowych (MySQL)"
@@ -1229,7 +1260,7 @@ void itemList::updateFilterComboBoxes()
     for (auto &f : filters)
     {
         qDebug() << "itemList: Aktualizuję combo box dla:" << f.field;
-        f.cb->blockSignals(true);
+        QSignalBlocker blocker(f.cb);
         QString prev = f.cb->currentText();
         f.cb->clear();
         f.cb->addItem(tr("Wszystkie"));
@@ -1270,7 +1301,6 @@ void itemList::updateFilterComboBoxes()
 
         int idx = f.cb->findText(prev);
         f.cb->setCurrentIndex(idx != -1 ? idx : 0);
-        f.cb->blockSignals(false);
         qDebug() << "itemList: Combo box dla" << f.field
                  << "zaktualizowany, wybrano:" << f.cb->currentText();
     }

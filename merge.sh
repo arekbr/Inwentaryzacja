@@ -1,7 +1,11 @@
 #!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR" && pwd)"
 
 # Nazwa pliku wynikowego
-outputFile="combined_sources.txt"
+outputFile="$ROOT_DIR/combined_sources.txt"
 
 # Czyścimy plik jeśli istnieje
 > "$outputFile"
@@ -24,7 +28,7 @@ is_in_excluded_dir() {
 
 # Pętla po rozszerzeniach
 for ext in "${extensions[@]}"; do
-    find . -type f -name "$ext" | while read -r file; do
+    find "$ROOT_DIR" -type f -name "$ext" | while read -r file; do
         # Pomijamy pliki w wykluczonych folderach
         if ! is_in_excluded_dir "$file"; then
             echo "========" >> "$outputFile"

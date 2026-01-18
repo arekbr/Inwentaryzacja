@@ -1,10 +1,23 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
-APP_PATH="build/Qt_6_5_3_for_macOS-Release/Inwentaryzacja.app"
-QT_PATH="/Users/Arek/Qt/6.5.3/macos"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR" && pwd)"
+
+APP_PATH="${APP_PATH:-$ROOT_DIR/build/Qt_6_5_3_for_macOS-Release/Inwentaryzacja.app}"
+QT_PATH="${QT_PATH:-/Users/Arek/Qt/6.5.3/macos}"
 DEPLOYQT="$QT_PATH/bin/macdeployqt"
+
+if [[ ! -d "$APP_PATH" ]]; then
+    echo "❌ Brak aplikacji: $APP_PATH"
+    exit 1
+fi
+
+if [[ ! -x "$DEPLOYQT" ]]; then
+    echo "❌ Brak narzedzia macdeployqt: $DEPLOYQT"
+    exit 1
+fi
 
 echo "🚀 Uruchamianie macdeployqt..."
 "$DEPLOYQT" "$APP_PATH" -verbose=1
@@ -26,4 +39,3 @@ else
 fi
 
 echo "✅ Gotowe! Aplikacja przygotowana do dystrybucji."
-

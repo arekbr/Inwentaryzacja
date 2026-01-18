@@ -16,6 +16,15 @@ bool DatabaseMigration::migrateUUIDs()
 
     bool success = true;
 
+    QStringList requiredTables = {"statuses", "storage_places", "eksponaty", "photos"};
+    QStringList existingTables = db.tables();
+    for (const QString &table : requiredTables) {
+        if (!existingTables.contains(table, Qt::CaseInsensitive)) {
+            qDebug() << "Brak wymaganych tabel, pomijam migracje UUID.";
+            return true;
+        }
+    }
+
     // Dodaj brakujące kolumny (niezależnie od tego czy są UUID-y do migracji)
     if (!addMissingColumns()) {
         qDebug() << "Nie udało się dodać brakujących kolumn";
@@ -28,14 +37,13 @@ bool DatabaseMigration::migrateUUIDs()
         success = false;
     }
 
-    // Sprawdź czy migracja jest potrzebna
-    if (!checkForBracedUUIDs()) {
+    bool needsMigration = checkForBracedUUIDs();
+    if (!needsMigration) {
         qDebug() << "Nie znaleziono UUID-ów z nawiasami klamrowymi, migracja nie jest potrzebna.";
         return success;
     }
 
-    // Jeśli są UUID-y do migracji, wykonaj migrację
-    if (checkForBracedUUIDs()) {
+    if (needsMigration) {
         // Rozpocznij proces migracji
         if (!disableForeignKeyChecks()) {
             qDebug() << "Nie udało się wyłączyć sprawdzania kluczy obcych";

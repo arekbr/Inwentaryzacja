@@ -54,10 +54,15 @@ types::types(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::types)
     , m_mainWindow(nullptr)
+    , m_model(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection"); // MySQL
     setWindowTitle(tr("Zarządzanie typami sprzętu"));
+
+    m_model = new QSqlQueryModel(this);
+    ui->listView->setModel(m_model);
+    ui->listView->setModelColumn(0);
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, &types::onAddClicked);
     connect(ui->pushButton_edit, &QPushButton::clicked, this, &types::onEditClicked);
@@ -102,16 +107,13 @@ void types::setMainWindow(MainWindow *mainWindow)
  */
 void types::refreshList()
 {
-    QSqlQueryModel *model = new QSqlQueryModel(this);
-    model->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
-    if (model->lastError().isValid()) {
+    m_model->setQuery("SELECT name FROM types ORDER BY name ASC", m_db);
+    if (m_model->lastError().isValid()) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Błąd pobierania (MySQL): %1").arg(model->lastError().text()));
+                              tr("Błąd pobierania (MySQL): %1").arg(m_model->lastError().text()));
         return;
     }
-    ui->listView->setModel(model);
-    ui->listView->setModelColumn(0);
 }
 
 /**

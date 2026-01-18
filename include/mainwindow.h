@@ -46,6 +46,7 @@ class MainWindow;
 
 // Forward-deklaracja klasy PhotoItem (używana w slotach)
 class PhotoItem;
+class QGraphicsScene;
 
 /**
  * @class MainWindow
@@ -330,6 +331,9 @@ private:
 
     /// Bufor przechowujący ścieżki do zdjęć przed zapisaniem do bazy.
     QStringList m_photoPathsBuffer;
+
+    /// Scena do wyświetlania miniaturek zdjęć.
+    QGraphicsScene *m_photoScene;
 };
 
 #endif // MAINWINDOW_H

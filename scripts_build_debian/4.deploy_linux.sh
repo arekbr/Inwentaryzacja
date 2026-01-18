@@ -3,16 +3,18 @@
 set -e
 
 APP_NAME="Inwentaryzacja"
-DEPLOY_DIR="deploy"
-BUILD_DIR="build_inwentaryzacja"
-PLUGIN_BUILD_DIR="build_qt_sql_drivers"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+DEPLOY_DIR="$ROOT_DIR/deploy"
+BUILD_DIR="$ROOT_DIR/build_inwentaryzacja"
+PLUGIN_BUILD_DIR="$ROOT_DIR/build_qt_sql_drivers"
 
 # ============================
 # Wczytanie QT_PATH z pliku, jeśli nie jest ustawiony
 # ============================
-if [[ -z "$QT_PATH" && -f qt_env.sh ]]; then
+if [[ -z "$QT_PATH" && -f "$ROOT_DIR/qt_env.sh" ]]; then
     echo "ℹ️  Wczytywanie QT_PATH z qt_env.sh"
-    source qt_env.sh
+    source "$ROOT_DIR/qt_env.sh"
 fi
 
 if [[ -z "$QT_PATH" ]]; then
@@ -21,7 +23,23 @@ if [[ -z "$QT_PATH" ]]; then
 fi
 
 QT_LIB_DIR="$QT_PATH/lib"
-QT_PLUGIN_DIR="$QT_PATH/plugins"
+QT_PLUGIN_DIR=""
+if command -v qtpaths6 >/dev/null 2>&1; then
+    QT_PLUGIN_DIR="$(qtpaths6 --plugin-dir)"
+elif command -v qtpaths >/dev/null 2>&1; then
+    QT_PLUGIN_DIR="$(qtpaths --plugin-dir)"
+fi
+
+if [[ -z "$QT_PLUGIN_DIR" ]]; then
+    if [[ -d "$QT_PATH/plugins" ]]; then
+        QT_PLUGIN_DIR="$QT_PATH/plugins"
+    elif [[ -d "/usr/lib/x86_64-linux-gnu/qt6/plugins" ]]; then
+        QT_PLUGIN_DIR="/usr/lib/x86_64-linux-gnu/qt6/plugins"
+    else
+        echo "❌ Nie znaleziono katalogu pluginow Qt."
+        exit 1
+    fi
+fi
 
 
 echo -e "\n🚀 Rozpoczynam deploy dla Linuxa..."
@@ -58,9 +76,12 @@ cp "$QT_PLUGIN_DIR/sqldrivers/libqsqlite.so" "$DEPLOY_DIR/sqldrivers/" || echo "
 # ============================
 if [[ -f "$PLUGIN_BUILD_DIR/plugins/sqldrivers/libqsqlmysql.so" ]]; then
     cp "$PLUGIN_BUILD_DIR/plugins/sqldrivers/libqsqlmysql.so" "$DEPLOY_DIR/sqldrivers/"
-    echo "✅ Skopiowano libqsqlmysql.so"
+    echo "✅ Skopiowano libqsqlmysql.so (z budowy)"
+elif [[ -f "$QT_PLUGIN_DIR/sqldrivers/libqsqlmysql.so" ]]; then
+    cp "$QT_PLUGIN_DIR/sqldrivers/libqsqlmysql.so" "$DEPLOY_DIR/sqldrivers/"
+    echo "✅ Skopiowano libqsqlmysql.so (z systemu)"
 else
-    echo "❌ Nie znaleziono libqsqlmysql.so. Czy plugin został zbudowany?"
+    echo "❌ Nie znaleziono libqsqlmysql.so. Zainstaluj pakiet Qt SQL MySQL lub zbuduj plugin."
     exit 1
 fi
 

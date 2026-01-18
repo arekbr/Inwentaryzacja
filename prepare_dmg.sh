@@ -1,13 +1,26 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 ### 🔧 KONFIGURACJA ###
 APP_NAME="Inwentaryzacja"
-QT_PATH="/Users/Arek/Qt/6.5.3/macos"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR" && pwd)"
+
+QT_PATH="${QT_PATH:-/Users/Arek/Qt/6.5.3/macos}"
 DEPLOYQT="$QT_PATH/bin/macdeployqt"
-APP_DIR="build/Qt_6_5_3_for_macOS-Release/${APP_NAME}.app"
-DMG_NAME="${APP_NAME}_macOS.dmg"
+APP_DIR="${APP_DIR:-$ROOT_DIR/build/Qt_6_5_3_for_macOS-Release/${APP_NAME}.app}"
+DMG_NAME="${DMG_NAME:-${APP_NAME}_macOS.dmg}"
+
+if [[ ! -d "$APP_DIR" ]]; then
+    echo "❌ Brak aplikacji: $APP_DIR"
+    exit 1
+fi
+
+if [[ ! -x "$DEPLOYQT" ]]; then
+    echo "❌ Brak narzedzia macdeployqt: $DEPLOYQT"
+    exit 1
+fi
 
 echo "🚀 [1/4] macdeployqt..."
 "$DEPLOYQT" "$APP_DIR" -verbose=1
@@ -27,11 +40,10 @@ else
 fi
 
 echo "💿 [4/4] Tworzenie prostego DMG..."
-mkdir -p tmp_dmg
-cp -R "$APP_DIR" tmp_dmg/
+TMP_DMG="$(mktemp -d)"
+cp -R "$APP_DIR" "$TMP_DMG/"
 
-hdiutil create -volname "$APP_NAME" -srcfolder tmp_dmg -ov -format UDZO "$DMG_NAME"
-rm -rf tmp_dmg
+hdiutil create -volname "$APP_NAME" -srcfolder "$TMP_DMG" -ov -format UDZO "$DMG_NAME"
+rm -rf "$TMP_DMG"
 
 echo "✅ Gotowe! Wygenerowano: $DMG_NAME"
-

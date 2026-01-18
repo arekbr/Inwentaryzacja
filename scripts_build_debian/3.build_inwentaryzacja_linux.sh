@@ -3,14 +3,16 @@
 set -e
 
 APP_NAME="Inwentaryzacja"
-BUILD_DIR="build_inwentaryzacja"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+BUILD_DIR="$ROOT_DIR/build_inwentaryzacja"
 
 # ============================
 # Wczytanie QT_PATH i QT_SRC_PATH z pliku, jeśli nie są ustawione
 # ============================
-if [[ (-z "$QT_PATH" || -z "$QT_SRC_PATH") && -f qt_env.sh ]]; then
+if [[ (-z "$QT_PATH" || -z "$QT_SRC_PATH") && -f "$ROOT_DIR/qt_env.sh" ]]; then
     echo "ℹ️  Wczytywanie zmiennych środowiskowych z qt_env.sh"
-    source qt_env.sh
+    source "$ROOT_DIR/qt_env.sh"
 fi
 
 if [[ -z "$QT_PATH" ]]; then
@@ -28,7 +30,7 @@ mkdir -p "$BUILD_DIR"
 # Konfiguracja CMake z poprawną ścieżką źródeł (tu: bieżący katalog)
 # ============================
 echo "⚙️ Konfiguracja CMake (Qt PATH: $QT_PATH)"
-cmake -G Ninja -S . -B "$BUILD_DIR" -DCMAKE_PREFIX_PATH="$QT_PATH"
+cmake -G Ninja -S "$ROOT_DIR" -B "$BUILD_DIR" -DCMAKE_PREFIX_PATH="$QT_PATH"
 
 # ============================
 # Budowa z użyciem Ninja

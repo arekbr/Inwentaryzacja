@@ -54,10 +54,15 @@ status::status(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::status)
     , m_mainWindow(nullptr)
+    , m_model(nullptr)
 {
     ui->setupUi(this);
     m_db = QSqlDatabase::database("default_connection");
     setWindowTitle(tr("Zarządzanie statusami"));
+
+    m_model = new QSqlQueryModel(this);
+    ui->listView->setModel(m_model);
+    ui->listView->setModelColumn(0);
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, &status::onAddClicked);
     connect(ui->pushButton_edit, &QPushButton::clicked, this, &status::onEditClicked);
@@ -102,16 +107,13 @@ void status::setMainWindow(MainWindow *mainWindow)
  */
 void status::refreshList()
 {
-    QSqlQueryModel *queryModel = new QSqlQueryModel(this);
-    queryModel->setQuery("SELECT name FROM statuses ORDER BY name ASC", m_db);
-    if (queryModel->lastError().isValid()) {
+    m_model->setQuery("SELECT name FROM statuses ORDER BY name ASC", m_db);
+    if (m_model->lastError().isValid()) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Błąd pobierania danych: %1").arg(queryModel->lastError().text()));
+                              tr("Błąd pobierania danych: %1").arg(m_model->lastError().text()));
         return;
     }
-    ui->listView->setModel(queryModel);
-    ui->listView->setModelColumn(0);
 }
 
 /**

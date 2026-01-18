@@ -46,6 +46,10 @@ namespace Ui {
 class itemList;
 }
 
+class QCompleter;
+class QGraphicsScene;
+class QStringListModel;
+
 /**
  * @class itemList
  * @brief Widget zarządzający listą eksponatów z interfejsem użytkownika.
@@ -331,6 +335,15 @@ private:
 
     /// Timer do filtrowania.
     QTimer *m_nameFilterTimer; // Nowy timer dla opóźnienia filtrowania
+
+    /// Scena do wyświetlania miniaturek zdjęć.
+    QGraphicsScene *m_photoScene;
+
+    /// Completer i model dla filtru nazwy.
+    QCompleter *m_nameCompleter;
+    QStringListModel *m_nameCompleterModel;
+    bool m_namesDirty;
+
 };
 
 #endif // ITEMLIST_H

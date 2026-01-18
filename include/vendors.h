@@ -38,6 +38,7 @@
 #include <QSqlDatabase>
 
 class MainWindow;
+class QSqlQueryModel;
 
 namespace Ui {
 class vendors;
@@ -147,6 +148,9 @@ private:
 
     /// Obiekt połączenia z bazą danych.
     QSqlDatabase m_db;
+
+    /// Model danych dla listy producentów.
+    QSqlQueryModel *m_model;
 };
 
 #endif // VENDORS_H

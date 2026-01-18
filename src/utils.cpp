@@ -84,12 +84,13 @@ bool setupDatabase(const QString &dbType,
         return false;
     }
 
-    // Uruchom migrację UUID jeśli potrzebna
-    DatabaseMigration migration;
-    if (!migration.migrateUUIDs()) {
-        qDebug() << "Ostrzeżenie: Migracja UUID nie powiodła się";
-        // Nie przerywaj połączenia tylko dlatego, że migracja się nie powiodła
-        // Aplikacja może nadal działać z UUID-ami w nawiasach
+    if (dbType.compare("MySQL", Qt::CaseInsensitive) == 0) {
+        DatabaseMigration migration;
+        if (!migration.migrateUUIDs()) {
+            qDebug() << "Ostrzeżenie: Migracja UUID nie powiodła się";
+            // Nie przerywaj połączenia tylko dlatego, że migracja się nie powiodła
+            // Aplikacja może nadal działać z UUID-ami w nawiasach
+        }
     }
 
     // --- AUTOMATYCZNE TWORZENIE SCHEMATU DLA SQLITE ---
@@ -123,6 +124,11 @@ bool setupDatabase(const QString &dbType,
         }
 
         if (missing) {
+            bool transactionStarted = db.transaction();
+            if (!transactionStarted) {
+                qDebug() << "Nie udało się rozpocząć transakcji SQLite:" << db.lastError().text();
+            }
+
             QSqlQuery q(db);
             // Tabele
             q.exec(R"(
@@ -223,6 +229,19 @@ bool setupDatabase(const QString &dbType,
             q.exec(QString("INSERT OR IGNORE INTO storage_places(id,name) "
                            "VALUES('%1','Półka B3')")
                        .arg(sp2));
+
+            if (transactionStarted && !db.commit()) {
+                qDebug() << "Nie udało się zatwierdzić transakcji SQLite:"
+                         << db.lastError().text();
+                db.rollback();
+            }
+        }
+
+        DatabaseMigration migration;
+        if (!migration.migrateUUIDs()) {
+            qDebug() << "Ostrzeżenie: Migracja UUID nie powiodła się";
+            // Nie przerywaj połączenia tylko dlatego, że migracja się nie powiodła
+            // Aplikacja może nadal działać z UUID-ami w nawiasach
         }
     }
 
