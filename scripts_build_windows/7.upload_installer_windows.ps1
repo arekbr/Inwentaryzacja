@@ -101,11 +101,15 @@ if ($release.assets) {
     }
 }
 
-$uploadUrl = $release.upload_url -replace "\{.*\}", ""
+$uploadUrlRaw = $release.upload_url
+$uploadUrl = $uploadUrlRaw -replace "\{.*\}", ""
+$uploadUrl = $uploadUrl.Trim()
 if ($uploadUrl -notmatch "^https?://") {
-    throw "Nieprawidlowy upload_url: $($release.upload_url)"
+    throw "Nieprawidlowy upload_url: $uploadUrlRaw"
 }
 Write-Host ">> Upload..."
+Write-Host ">> upload_url(raw): $uploadUrlRaw"
+Write-Host ">> upload_url: $uploadUrl"
 Invoke-RestMethod -Method Post `
     -Uri "$uploadUrl?name=$assetName" `
     -Headers $headers `
