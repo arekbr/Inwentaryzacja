@@ -15,6 +15,8 @@ Naprawiono:
 - Okno listy uruchamia się w trybie zmaksymalizowanym po wyborze bazy.
 - Styl STANDARD: przywrócono natywną strzałkę list rozwijanych.
 - CMake akceptuje wersje z sufiksem beta w `version.txt`.
+- Instalator Windows ma wersję w nazwie pliku (np. InwentaryzacjaInstaller-1.3.0-beta.1.exe).
+
 
 Instalacja/uruchomienie (Debian):
 1. `./scripts_build_debian/1.bootstrap_linux.sh`

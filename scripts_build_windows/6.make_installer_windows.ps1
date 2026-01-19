@@ -23,7 +23,8 @@ function Resolve-ProjectRoot {
 $Root          = Resolve-ProjectRoot -startDir $PSScriptRoot
 $Out           = "$Root\installer"
 $AppSrc        = "$Root\deploy"
-$InstallerExe  = "$Root\release_exe\InwentaryzacjaInstaller.exe"
+$InstallerExeDir = "$Root\release_exe"
+$InstallerExe    = "$InstallerExeDir\InwentaryzacjaInstaller.exe"
 
 $IFW           = 'C:\Qt\Tools\QtInstallerFramework\4.9'
 $BinaryCreator = "$IFW\bin\binarycreator.exe"
@@ -42,6 +43,8 @@ Write-Host "`n>>> Gotowe: 1. Ścieżki i pliki" -ForegroundColor Green
 # Odczytanie wersji z pliku version.txt
 $version = Get-Content "$Root\version.txt" -Raw
 $version = $version.Trim()
+$safeVersion = $version -replace '[^0-9A-Za-z.+-]', '_'
+$InstallerExe = "$InstallerExeDir\InwentaryzacjaInstaller-$safeVersion.exe"
 
 # Usuwamy stare wyniki
 Remove-Item $Out, $InstallerExe -Recurse -Force -ErrorAction Ignore
@@ -54,7 +57,7 @@ New-Item -Path "$Out\packages\org.smok.inwentaryzacja\data" -ItemType Directory 
 
 # <-- TU DODAJEMY
 # Tworzymy katalog, do którego będziemy kopiować InwentaryzacjaInstaller.exe (i później interbase.dll)
-New-Item -Path "$Root\release_exe" -ItemType Directory -Force | Out-Null
+New-Item -Path "$InstallerExeDir" -ItemType Directory -Force | Out-Null
 
 Write-Host "`n>>> Gotowe: 2. Przygotowanie folderów" -ForegroundColor Green
 
