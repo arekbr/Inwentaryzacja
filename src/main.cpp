@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     // Sekcja 5: Uruchamianie głównego okna
     // Tworzy i wyświetla główne okno aplikacji (klasa itemList), które zawiera główny interfejs użytkownika.
     itemList w;
-    w.show();
+    w.showMaximized();
 
     // Sekcja 6: Pętla zdarzeń Qt
     // Uruchamia główną pętlę zdarzeń Qt, która obsługuje interakcje użytkownika i zdarzenia systemowe.

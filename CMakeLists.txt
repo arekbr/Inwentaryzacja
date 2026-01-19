@@ -5,8 +5,16 @@ cmake_minimum_required(VERSION 3.20)
 # ================================
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" PROJECT_VERSION_FROM_FILE)
 string(STRIP "${PROJECT_VERSION_FROM_FILE}" PROJECT_VERSION_FROM_FILE)
+string(REGEX REPLACE "^[^0-9]*" "" PROJECT_VERSION_FROM_FILE "${PROJECT_VERSION_FROM_FILE}")
 
-project(Inwentaryzacja VERSION ${PROJECT_VERSION_FROM_FILE} LANGUAGES CXX)
+set(PROJECT_VERSION_FULL "${PROJECT_VERSION_FROM_FILE}")
+set(PROJECT_VERSION_NUM "${PROJECT_VERSION_FROM_FILE}")
+string(REGEX REPLACE "[^0-9\\.].*$" "" PROJECT_VERSION_NUM "${PROJECT_VERSION_NUM}")
+if(PROJECT_VERSION_NUM STREQUAL "")
+    message(FATAL_ERROR "Invalid version in version.txt: ${PROJECT_VERSION_FROM_FILE}")
+endif()
+
+project(Inwentaryzacja VERSION ${PROJECT_VERSION_NUM} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,7 +22,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ================================
 # Definicja wersji dla kompilatora
 # ================================
-add_compile_definitions(APP_VERSION="${PROJECT_VERSION}")
+add_compile_definitions(APP_VERSION="${PROJECT_VERSION_FULL}")
 
 # ================================
 # Automatyczne MOC/UIC/RCC

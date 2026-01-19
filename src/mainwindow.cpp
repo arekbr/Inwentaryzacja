@@ -595,7 +595,7 @@ void MainWindow::onSaveClicked()
     }
 
     if (!m_editMode) {
-        m_recordId = "{" + QUuid::createUuid().toString(QUuid::WithoutBraces) + "}";
+        m_recordId = QUuid::createUuid().toString(QUuid::WithoutBraces);
         q.prepare(R"(
             INSERT INTO eksponaty
             (id, name, serial_number, part_number, revision, production_year,

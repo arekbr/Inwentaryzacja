@@ -33,12 +33,6 @@ QComboBox QAbstractItemView {
     selection-color: #FFFFFF;
 }
 
-QComboBox::drop-down {
-    border: none;
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
-}
 
 /* Przyciski */
 QPushButton {

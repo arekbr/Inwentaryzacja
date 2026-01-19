@@ -26,3 +26,9 @@ Instalacja/uruchomienie (Windows):
 Uwagi:
 - Jeśli brakuje `libqsqlmysql.so`, doinstaluj `libqt6sql6-mysql` albo zbuduj plugin ze źródeł Qt.
 - To pre-release: zbieramy feedback przed finalnym wydaniem.
+
+Naprawiono:
+- Zapis nowych rekordow dla MySQL (UUID bez klamer, zgodne z VARCHAR(36)).
+- Okno listy uruchamia sie w trybie zmaksymalizowanym po wyborze bazy.
+- Styl STANDARD: przywrocono natywna strzalke list rozwijanych.
+- CMake akceptuje wersje z sufiksem beta w version.txt.

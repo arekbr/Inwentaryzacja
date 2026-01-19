@@ -19,6 +19,10 @@ Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), 
 
 ### Naprawiono
 - `set_icon.sh` i pomocnicze skrypty mają walidację argumentów i działają niezależnie od CWD.
+- Zapis nowych rekordow dla MySQL (UUID bez klamer, zgodne z VARCHAR(36)).
+- Okno listy uruchamia sie w trybie zmaksymalizowanym po wyborze bazy.
+- Styl STANDARD: przywrocono natywna strzalke list rozwijanych.
+- CMake akceptuje wersje z sufiksem beta w version.txt.
 
 ## [1.2.5] - 2025-05-12
 
