@@ -32,7 +32,14 @@ if (-not $Tag) {
 }
 
 if (-not $AssetPath) {
-    $AssetPath = Join-Path $PROJECT_ROOT "release_exe\InwentaryzacjaInstaller.exe"
+    $version = (Get-Content (Join-Path $PROJECT_ROOT "version.txt") -Raw).Trim()
+    $safeVersion = $version -replace '[^0-9A-Za-z.+-]', '_'
+    $versionedPath = Join-Path $PROJECT_ROOT "release_exe\InwentaryzacjaInstaller-$safeVersion.exe"
+    if (Test-Path $versionedPath) {
+        $AssetPath = $versionedPath
+    } else {
+        $AssetPath = Join-Path $PROJECT_ROOT "release_exe\InwentaryzacjaInstaller.exe"
+    }
 }
 
 if (-not (Test-Path $AssetPath)) {
