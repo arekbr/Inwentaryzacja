@@ -13,6 +13,8 @@ jobs:
   debian:
     name: Debian Package
     runs-on: ubuntu-24.04
+    container:
+      image: debian:13
 
     steps:
       - name: Checkout
@@ -21,10 +23,10 @@ jobs:
       - name: Install build dependencies
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y \
             cmake ninja-build build-essential pkg-config dpkg-dev \
-            qt6-base-dev qt6-base-dev-tools qt6-tools-dev-tools \
+            qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools linguist-qt6 \
             libqt6sql6-sqlite libqt6sql6-mysql libmariadb-dev-compat
 
       - name: Configure and build
