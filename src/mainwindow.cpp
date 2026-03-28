@@ -35,6 +35,7 @@
 #include "ui_mainwindow.h"
 #include "ItemRepository.h"
 #include "PacmanOverlay.h"
+#include "PhotoService.h"
 
 // Inne nagłówki
 #include <QCompleter>
@@ -851,22 +852,11 @@ void MainWindow::onSaveClicked()
     }
     m_recordId = savedItemId;
 
+    PhotoService photoService(db);
     QStringList moveFailures;
     if (!m_editMode)
     {
-        for (int i = 0; i < m_photoPathsBuffer.size(); ++i)
-        {
-            const QString orig = m_photoPathsBuffer.at(i);
-            QFileInfo fi(orig);
-            QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-            if (m_shouldMovePhotos)
-            {
-                QDir().mkpath(doneDir);
-                QString dst = doneDir + QDir::separator() + fi.fileName();
-                if (!QFile::rename(orig, dst))
-                    moveFailures.append(fi.fileName());
-            }
-        }
+        moveFailures = photoService.movePhotosToDone(m_photoPathsBuffer, m_shouldMovePhotos);
 
         m_photoBuffer.clear();
         m_photoPathsBuffer.clear();
