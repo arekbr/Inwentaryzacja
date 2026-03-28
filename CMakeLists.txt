@@ -29,7 +29,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 # ================================
 # Qt6 (bez Sql na razie)
 # ================================
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Test)
 
 # ================================
 # Specjalna obsługa Sql (przed ładowaniem aliasów pluginów)
@@ -85,6 +85,16 @@ qt6_add_executable(${PROJECT_NAME}
     ${RESOURCES}
 )
 
+enable_testing()
+
+qt6_add_executable(${PROJECT_NAME}Tests
+    tests/repository_tests.cpp
+    src/ItemRepository.cpp
+    src/DictionaryRepository.cpp
+    src/PhotoService.cpp
+    src/DatabaseSchemaUtils.cpp
+)
+
 # ================================
 # Include directories
 # ================================
@@ -102,3 +112,17 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Sql
 )
+
+target_include_directories(${PROJECT_NAME}Tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(${PROJECT_NAME}Tests PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Sql
+    Qt6::Test
+)
+
+add_test(NAME repository_tests COMMAND ${PROJECT_NAME}Tests)
+set_tests_properties(repository_tests PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
