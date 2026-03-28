@@ -317,6 +317,8 @@ private:
     void loadPhotosFromBuffer();
 
     bool collectValidatedItemData(ItemRecordData *itemData);
+    bool validateNumericValue(int *value);
+    bool validateModelVendorConsistency(const QString &vendorId, const QString &modelId);
     void setPhotoItemsEditMode(bool enabled);
     void showStoredPhotos(const QList<StoredPhoto> &photos);
     void showBufferPhotos(const QList<QPixmap> &pixmaps);

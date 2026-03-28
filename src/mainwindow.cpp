@@ -49,6 +49,7 @@
 #include <QGraphicsScene>
 #include <QGuiApplication>
 #include <QInputDialog>
+#include <QIntValidator>
 #include <QMessageBox>
 #include <QScreen>
 #include <QSettings>
@@ -60,6 +61,8 @@
 #include <QProgressDialog>
 #include <QLineEdit>
 #include <QTextEdit>
+
+#include <limits>
 
 namespace {
 
@@ -118,6 +121,8 @@ MainWindow::MainWindow(QWidget *parent)
     loadComboBoxData("models", ui->New_item_model);
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
+    ui->New_item_value->setValidator(new QIntValidator(0, std::numeric_limits<int>::max(), this));
+    ui->New_item_ProductionDate->setDisplayFormat(QStringLiteral("yyyy"));
 
     // Podpinanie sygnałów i slotów przycisków
     connect(ui->New_item_PushButton_OK, &QPushButton::clicked, this, &MainWindow::onSaveClicked);
@@ -606,8 +611,11 @@ void MainWindow::loadRecord(const QString &recordId)
     ui->New_item_description->setPlainText(query.value("description").toString());
     ui->New_item_hasOriginalPackaging->setChecked(query.value("has_original_packaging").toBool());
 
-    int prodYear = query.value("production_year").toInt();
-    ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
+    const int prodYear = query.value("production_year").toInt();
+    if (prodYear > 0)
+        ui->New_item_ProductionDate->setDate(QDate(prodYear, 1, 1));
+    else
+        ui->New_item_ProductionDate->setDate(QDate::currentDate());
 
     // Debugowanie ustawiania combo boxów
     qDebug() << "MainWindow::loadRecord - Ustawiam combo boxy:";
@@ -806,24 +814,86 @@ bool MainWindow::collectValidatedItemData(ItemRecordData *itemData)
         return true;
     };
 
+    int itemValue = 0;
+    if (!validateNumericValue(&itemValue))
+        return false;
+
     itemData->id = m_recordId;
     itemData->name = itemName;
-    itemData->serialNumber = ui->New_item_serialNumber->text();
-    itemData->partNumber = ui->New_item_partNumber->text();
-    itemData->revision = ui->New_item_revision->text();
+    itemData->serialNumber = ui->New_item_serialNumber->text().trimmed();
+    itemData->partNumber = ui->New_item_partNumber->text().trimmed();
+    itemData->revision = ui->New_item_revision->text().trimmed();
     itemData->productionYear = ui->New_item_ProductionDate->date().year();
-    itemData->description = ui->New_item_description->toPlainText();
-    itemData->value = ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt();
+    itemData->description = ui->New_item_description->toPlainText().trimmed();
+    itemData->value = itemValue;
     itemData->hasOriginalPackaging = ui->New_item_hasOriginalPackaging->isChecked();
     itemData->editMode = m_editMode;
 
-    return requireSelection(ui->New_item_status, tr("Status"), &itemData->statusId)
-           && requireSelection(ui->New_item_type, tr("Typ"), &itemData->typeId)
-           && requireSelection(ui->New_item_vendor, tr("Producent"), &itemData->vendorId)
-           && requireSelection(ui->New_item_model, tr("Model"), &itemData->modelId)
-           && requireSelection(ui->New_item_storagePlace,
-                               tr("Miejsce przechowywania"),
-                               &itemData->storagePlaceId);
+    if (!requireSelection(ui->New_item_status, tr("Status"), &itemData->statusId)
+        || !requireSelection(ui->New_item_type, tr("Typ"), &itemData->typeId)
+        || !requireSelection(ui->New_item_vendor, tr("Producent"), &itemData->vendorId)
+        || !requireSelection(ui->New_item_model, tr("Model"), &itemData->modelId)
+        || !requireSelection(ui->New_item_storagePlace,
+                             tr("Miejsce przechowywania"),
+                             &itemData->storagePlaceId))
+    {
+        return false;
+    }
+
+    return validateModelVendorConsistency(itemData->vendorId, itemData->modelId);
+}
+
+bool MainWindow::validateNumericValue(int *value)
+{
+    const QString rawValue = ui->New_item_value->text().trimmed();
+    if (rawValue.isEmpty())
+    {
+        *value = 0;
+        return true;
+    }
+
+    bool ok = false;
+    const int parsedValue = rawValue.toInt(&ok);
+    if (!ok)
+    {
+        QMessageBox::warning(this,
+                             tr("Błędna wartość"),
+                             tr("Pole \"Wartość\" musi zawierać liczbę całkowitą."));
+        ui->New_item_value->setFocus();
+        ui->New_item_value->selectAll();
+        return false;
+    }
+
+    *value = parsedValue;
+    return true;
+}
+
+bool MainWindow::validateModelVendorConsistency(const QString &vendorId, const QString &modelId)
+{
+    QSqlQuery query(db);
+    query.prepare(QStringLiteral("SELECT 1 FROM models WHERE id = :model_id AND vendor_id = :vendor_id"));
+    query.bindValue(QStringLiteral(":model_id"), modelId);
+    query.bindValue(QStringLiteral(":vendor_id"), vendorId);
+
+    if (!query.exec())
+    {
+        QMessageBox::warning(this,
+                             tr("Błąd walidacji"),
+                             tr("Nie udało się sprawdzić zgodności modelu i producenta:\n%1")
+                                 .arg(query.lastError().text()));
+        ui->New_item_model->setFocus();
+        return false;
+    }
+
+    if (query.next())
+        return true;
+
+    QMessageBox::warning(this,
+                         tr("Niespójne dane"),
+                         tr("Wybrany model nie należy do wskazanego producenta.\n"
+                            "Wybierz zgodny model albo zmień producenta."));
+    ui->New_item_model->setFocus();
+    return false;
 }
 
 /**
