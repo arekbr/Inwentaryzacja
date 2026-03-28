@@ -140,6 +140,7 @@ void types::onAddClicked()
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się dodać:\n%1").arg(q.lastError().text()));
+        return;
     }
     refreshList();
     ui->type_lineEdit->clear();

@@ -580,7 +580,10 @@ void MainWindow::loadRecord(const QString &recordId)
     if (!query.exec())
     {
         qDebug() << "MainWindow::loadRecord - Błąd wykonania zapytania:" << query.lastError().text();
-        QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono rekordu o ID %1").arg(recordId));
+        QMessageBox::warning(this,
+                             tr("Błąd"),
+                             tr("Nie udało się wczytać rekordu o ID %1:\n%2")
+                                 .arg(recordId, query.lastError().text()));
         return;
     }
 

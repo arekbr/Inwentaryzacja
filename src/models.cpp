@@ -174,6 +174,7 @@ void models::onAddClicked()
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się dodać modelu:\n%1").arg(query.lastError().text()));
+        return;
     }
 
     refreshList();

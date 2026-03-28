@@ -148,6 +148,7 @@ void storage::onAddClicked()
                               tr("Błąd"),
                               tr("Nie udało się dodać miejsca przechowywania: %1")
                                   .arg(query.lastError().text()));
+        return;
     }
     refreshList();
     ui->lineEdit->clear();

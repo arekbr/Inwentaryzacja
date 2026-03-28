@@ -410,25 +410,37 @@ bool DatabaseMigration::fixBrokenUUIDs()
     }
 
     // Końcowa weryfikacja
-    query.exec("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%}' OR id LIKE '{%'");
+    if (!query.exec("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%}' OR id LIKE '{%'")) {
+        qDebug() << "Nie udało się zweryfikować UUID w tabeli statuses:" << query.lastError().text();
+        success = false;
+    }
     if (query.next() && query.value(0).toInt() > 0) {
         qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli statuses:" << query.value(0).toInt();
         success = false;
     }
 
-    query.exec("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%}' OR id LIKE '{%'");
+    if (!query.exec("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%}' OR id LIKE '{%'")) {
+        qDebug() << "Nie udało się zweryfikować UUID w tabeli storage_places:" << query.lastError().text();
+        success = false;
+    }
     if (query.next() && query.value(0).toInt() > 0) {
         qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli storage_places:" << query.value(0).toInt();
         success = false;
     }
 
-    query.exec("SELECT COUNT(*) as count_eksponaty FROM eksponaty WHERE status_id LIKE '{%}' OR storage_place_id LIKE '{%}'");
+    if (!query.exec("SELECT COUNT(*) as count_eksponaty FROM eksponaty WHERE status_id LIKE '{%}' OR storage_place_id LIKE '{%}'")) {
+        qDebug() << "Nie udało się zweryfikować UUID w tabeli eksponaty:" << query.lastError().text();
+        success = false;
+    }
     if (query.next() && query.value(0).toInt() > 0) {
         qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli eksponaty:" << query.value(0).toInt();
         success = false;
     }
 
-    query.exec("SELECT COUNT(*) as count_photos FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'");
+    if (!query.exec("SELECT COUNT(*) as count_photos FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'")) {
+        qDebug() << "Nie udało się zweryfikować UUID w tabeli photos:" << query.lastError().text();
+        success = false;
+    }
     if (query.next() && query.value(0).toInt() > 0) {
         qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli photos:" << query.value(0).toInt();
         success = false;

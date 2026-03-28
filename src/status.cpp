@@ -143,6 +143,7 @@ void status::onAddClicked()
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się dodać statusu: %1").arg(query.lastError().text()));
+        return;
     }
     refreshList();
     ui->lineEdit->clear();

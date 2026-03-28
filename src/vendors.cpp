@@ -142,6 +142,7 @@ void vendors::onAddClicked()
                               tr("Błąd"),
                               tr("Nie udało się dodać producenta:\n%1")
                                   .arg(query.lastError().text()));
+        return;
     }
     refreshList();
     ui->lineEdit->clear();
