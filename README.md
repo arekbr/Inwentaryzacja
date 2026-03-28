@@ -40,7 +40,7 @@ git clone https://github.com/arekbr/Inwentaryzacja.git
 W osobnych katalogach są skrypty dla systemów Windows/Linux/Macos. Testowałem to na Windows 11/Debian 12/Macos Ventura 13.75. Pliki trzeba skopiować do głównego katalogu projektu i uruchamiać w kolejności. Wynikiem powinien być gotowy program oraz paczka w zależności od systemu. Instalator exe, plik DEB oraz DMG.
 
 ### GitHub Actions – zdalne buildy instalatorów
-Repo ma też workflow GitHub Actions w `.github/workflows/build-installers.yml`, który buduje zdalnie:
+Repo ma też workflow GitHub Actions w `.github/workflows/build-installers-v2.yml`, który buduje zdalnie:
 - pakiet `Debian .deb`
 - instalator `Windows x64`
 - paczkę `macOS Intel`
@@ -53,6 +53,22 @@ Wyniki lądują jako:
 - pliki release, jeśli workflow został uruchomiony z taga `v*`
 
 Skrypty pakujące używane przez CI są w katalogu `ci/`.
+
+### Szybki release
+Najprostszy proces wydania nowej wersji wygląda tak:
+- zaktualizuj `version.txt`
+- zacommituj zmiany i wypchnij branchę
+- utwórz tag, np. `v1.2.8`
+- wypchnij tag na GitHub
+
+Przykład:
+
+```bash
+git tag v1.2.8
+git push origin v1.2.8
+```
+
+Po wypchnięciu taga workflow `Build Installers V2` zbuduje paczki i doda je do GitHub Release.
 
 Masz problemy z kompilacją? Napisz, spróbujemy ogarnąć – wiem, jak to jest, gdy „nic nie działa”! 😜 Jak wyszło z doświadczeń i pracy, szczególnie chodzi o system macos, to musi być wspierany, żeby skrypty działały. Sama apka się kompiluje, gdyby ktoś chciał, ale CMakelist i skrypty będą działać tylko tam, gdzie brew może w pełni zarządzać systemem. Czyli Ventura to minimum.
 
