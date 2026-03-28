@@ -160,8 +160,15 @@ void models::onAddClicked()
         vendorId = m_mainWindow->getNewItemVendorComboBox()->currentData().toString();
     }
 
+    if (vendorId.isEmpty()) {
+        QMessageBox::warning(this,
+                             tr("Błąd"),
+                             tr("Przed dodaniem modelu wybierz poprawnego producenta."));
+        return;
+    }
+
     query.bindValue(":name", newModel);
-    query.bindValue(":vendor_id", vendorId.isEmpty() ? QString("unknown_vendor_uuid") : vendorId);
+    query.bindValue(":vendor_id", vendorId);
 
     if (!query.exec()) {
         QMessageBox::critical(this,

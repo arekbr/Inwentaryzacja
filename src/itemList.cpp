@@ -984,7 +984,10 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
     )");
 
     // Sprawdź czy kolumna has_original_packaging istnieje
-    query.exec("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'eksponaty' AND column_name = 'has_original_packaging'");
+    query.exec("SELECT COUNT(*) FROM information_schema.columns "
+               "WHERE table_schema = DATABASE() "
+               "AND table_name = 'eksponaty' "
+               "AND column_name = 'has_original_packaging'");
     if (query.next() && query.value(0).toInt() == 0)
     {
         // Kolumna nie istnieje, dodaj ją
