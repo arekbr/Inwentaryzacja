@@ -32,6 +32,7 @@
 
 #include "itemList.h"
 #include "ItemFilterProxyModel.h"
+#include "ItemRepository.h"
 #include "fullscreenphotoviewer.h"
 #include "mainwindow.h"
 #include "photoitem.h"
@@ -641,46 +642,13 @@ void itemList::onDeleteButtonClicked()
                               tr("Czy na pewno chcesz usunąć rekord %1?").arg(id),
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
     {
-        QSqlDatabase db = QSqlDatabase::database("default_connection");
-        if (!db.transaction())
+        ItemRepository repository(QSqlDatabase::database("default_connection"));
+        QString errorMessage;
+        if (!repository.deleteItem(id, &errorMessage))
         {
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się rozpocząć transakcji:\n%1")
-                                      .arg(db.lastError().text()));
-            return;
-        }
-
-        QSqlQuery q(db);
-        q.prepare("DELETE FROM photos WHERE eksponat_id = :id");
-        q.bindValue(":id", id);
-        if (!q.exec())
-        {
-            db.rollback();
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się usunąć zdjęć:\n%1").arg(q.lastError().text()));
-            return;
-        }
-
-        q.prepare("DELETE FROM eksponaty WHERE id = :id");
-        q.bindValue(":id", id);
-        if (!q.exec())
-        {
-            db.rollback();
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się usunąć rekordu:\n%1").arg(q.lastError().text()));
-            return;
-        }
-
-        if (!db.commit())
-        {
-            db.rollback();
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się zatwierdzić usuwania:\n%1")
-                                      .arg(db.lastError().text()));
+                                  tr("Nie udało się usunąć rekordu:\n%1").arg(errorMessage));
         }
         else
         {
