@@ -60,6 +60,11 @@ bool DatabaseMigration::migrateUUIDs()
             success = false;
         }
 
+        if (!updatePhotosTable()) {
+            qDebug() << "Nie udało się zaktualizować tabeli zdjęć";
+            success = false;
+        }
+
         // Włącz ponownie sprawdzanie kluczy obcych
         if (!enableForeignKeyChecks()) {
             qDebug() << "Nie udało się włączyć sprawdzania kluczy obcych";
@@ -261,6 +266,30 @@ bool DatabaseMigration::updateEksponatyTable()
         }
     }
     
+    return true;
+}
+
+bool DatabaseMigration::updatePhotosTable()
+{
+    QSqlQuery query(db);
+    QSqlQuery updateQuery(db);
+
+    query.exec("SELECT id FROM photos WHERE id LIKE '{%}'");
+
+    while (query.next()) {
+        QString oldId = query.value("id").toString();
+        QString newId = removeBraces(oldId);
+
+        updateQuery.prepare("UPDATE photos SET id = ? WHERE id = ?");
+        updateQuery.addBindValue(newId);
+        updateQuery.addBindValue(oldId);
+
+        if (!updateQuery.exec()) {
+            qDebug() << "Nie udało się zaktualizować ID zdjęcia:" << oldId << "Błąd:" << updateQuery.lastError().text();
+            return false;
+        }
+    }
+
     return true;
 }
 

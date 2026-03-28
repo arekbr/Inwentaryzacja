@@ -23,6 +23,7 @@ private:
     bool updateStatusesTable();
     bool updateStoragePlacesTable();
     bool updateEksponatyTable();
+    bool updatePhotosTable();
     bool verifyMigration();
     bool addMissingColumns();
     bool fixBrokenUUIDs();
