@@ -39,6 +39,20 @@ git clone https://github.com/arekbr/Inwentaryzacja.git
 ### uruchamianie skryptów 
 W osobnych katalogach są skrypty dla systemów Windows/Linux/Macos. Testowałem to na Windows 11/Debian 12/Macos Ventura 13.75. Pliki trzeba skopiować do głównego katalogu projektu i uruchamiać w kolejności. Wynikiem powinien być gotowy program oraz paczka w zależności od systemu. Instalator exe, plik DEB oraz DMG.
 
+### GitHub Actions – zdalne buildy instalatorów
+Repo ma też workflow GitHub Actions w `.github/workflows/build-installers.yml`, który buduje zdalnie:
+- instalator `Windows x64`
+- paczkę `macOS Intel`
+- paczkę `macOS ARM`
+
+Workflow można uruchomić ręcznie z zakładki `Actions` albo automatycznie po pushu na wybrane gałęzie i tagi `v*`.
+
+Wyniki lądują jako:
+- `Artifacts` w danym uruchomieniu workflow
+- pliki release, jeśli workflow został uruchomiony z taga `v*`
+
+Skrypty pakujące używane przez CI są w katalogu `ci/`.
+
 Masz problemy z kompilacją? Napisz, spróbujemy ogarnąć – wiem, jak to jest, gdy „nic nie działa”! 😜 Jak wyszło z doświadczeń i pracy, szczególnie chodzi o system macos, to musi być wspierany, żeby skrypty działały. Sama apka się kompiluje, gdyby ktoś chciał, ale CMakelist i skrypty będą działać tylko tam, gdzie brew może w pełni zarządzać systemem. Czyli Ventura to minimum.
 
 ## Chcesz dołączyć?
