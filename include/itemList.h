@@ -43,6 +43,8 @@
 #include <QCloseEvent>
 #include "photoitem.h"
 
+struct StoredPhoto;
+
 namespace Ui {
 class itemList;
 }
@@ -246,6 +248,12 @@ private:
      * zachowując wybrane wartości.
      */
     void updateFilterComboBoxes();
+
+    QString selectedRecordIdOrWarn(const QString &message) const;
+    void openRecordWindowForNew();
+    void openRecordWindowForEdit(const QString &recordId);
+    void openRecordWindowForClone(const QString &recordId);
+    void showStoredPhotos(const QList<StoredPhoto> &photos);
 
     /**
      * @brief Obsługuje zdarzenia filtrowania (np. opuszczenie okna podglądu).

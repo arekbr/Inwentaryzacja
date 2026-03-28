@@ -496,6 +496,14 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         return;
     }
 
+    showStoredPhotos(photos);
+}
+
+void itemList::showStoredPhotos(const QList<StoredPhoto> &photos)
+{
+    int viewWidth = ui->itemList_graphicsView->viewport()->width() - 10;
+    int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
+
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int spacing = 5;
     int photoCount = photos.size();
@@ -537,6 +545,47 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
+QString itemList::selectedRecordIdOrWarn(const QString &message) const
+{
+    auto *sel = ui->itemList_tableView->selectionModel();
+    if (!sel->hasSelection())
+    {
+        QMessageBox::information(const_cast<itemList *>(this), tr("Informacja"), message);
+        return QString();
+    }
+
+    QModelIndex proxyIdx = sel->selectedRows().first();
+    QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
+    return m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
+}
+
+void itemList::openRecordWindowForNew()
+{
+    MainWindow *w = new MainWindow(this);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setEditMode(false, QString());
+    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    w->show();
+}
+
+void itemList::openRecordWindowForEdit(const QString &recordId)
+{
+    MainWindow *w = new MainWindow(this);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setEditMode(true, recordId);
+    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    w->show();
+}
+
+void itemList::openRecordWindowForClone(const QString &recordId)
+{
+    MainWindow *w = new MainWindow(this);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setCloneMode(recordId);
+    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
+    w->show();
+}
+
 /**
  * @brief Otwiera okno dodawania nowego eksponatu.
  *
@@ -546,11 +595,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
  */
 void itemList::onNewButtonClicked()
 {
-    MainWindow *w = new MainWindow(this);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->setEditMode(false, QString());
-    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
-    w->show();
+    openRecordWindowForNew();
 }
 
 /**
@@ -561,21 +606,11 @@ void itemList::onNewButtonClicked()
  */
 void itemList::onEditButtonClicked()
 {
-    auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection())
-    {
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do edycji."));
+    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do edycji."));
+    if (id.isEmpty())
         return;
-    }
-    QModelIndex proxyIdx = sel->selectedRows().first();
-    QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
-    QString id = m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
 
-    MainWindow *w = new MainWindow(this);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->setEditMode(true, id);
-    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
-    w->show();
+    openRecordWindowForEdit(id);
 }
 
 /**
@@ -586,21 +621,11 @@ void itemList::onEditButtonClicked()
  */
 void itemList::onCloneButtonClicked()
 {
-    auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection())
-    {
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do klonowania."));
+    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do klonowania."));
+    if (id.isEmpty())
         return;
-    }
-    QModelIndex proxyIdx = sel->selectedRows().first();
-    QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
-    QString id = m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
 
-    MainWindow *w = new MainWindow(this);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    w->setCloneMode(id);
-    connect(w, &MainWindow::recordSaved, this, &itemList::onRecordSaved);
-    w->show();
+    openRecordWindowForClone(id);
 }
 
 /**
@@ -612,15 +637,9 @@ void itemList::onCloneButtonClicked()
  */
 void itemList::onDeleteButtonClicked()
 {
-    auto *sel = ui->itemList_tableView->selectionModel();
-    if (!sel->hasSelection())
-    {
-        QMessageBox::information(this, tr("Informacja"), tr("Proszę wybrać rekord do usunięcia."));
+    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do usunięcia."));
+    if (id.isEmpty())
         return;
-    }
-    QModelIndex proxyIdx = sel->selectedRows().first();
-    QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
-    QString id = m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
 
     if (QMessageBox::question(this,
                               tr("Potwierdzenie"),
