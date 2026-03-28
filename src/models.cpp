@@ -200,30 +200,15 @@ void models::onEditClicked()
                                             currentName,
                                             &ok);
     if (ok && !newName.trimmed().isEmpty()) {
-        QSqlQuery query(m_db);
-        query.prepare("SELECT id FROM models WHERE name = :name");
-        query.bindValue(":name", currentName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.renameEntry("models", currentName, newName.trimmed(), &errorMessage)) {
+            const QString message = errorMessage == tr("Nie znaleziono rekordu do edycji.")
+                                        ? tr("Nie znaleziono modelu do edycji.")
+                                        : tr("Nie udało się zaktualizować modelu:\n%1").arg(errorMessage);
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się odczytać modelu do edycji:\n%1")
-                                      .arg(query.lastError().text()));
-            return;
-        }
-        if (!query.next()) {
-            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono modelu do edycji."));
-            return;
-        }
-        QString id = query.value(0).toString();
-        QSqlQuery updateQuery(m_db);
-        updateQuery.prepare("UPDATE models SET name = :newName WHERE id = :id");
-        updateQuery.bindValue(":newName", newName.trimmed());
-        updateQuery.bindValue(":id", id);
-        if (!updateQuery.exec()) {
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się zaktualizować modelu:\n%1")
-                                      .arg(updateQuery.lastError().text()));
+                                  message);
             return;
         }
     }
@@ -254,14 +239,13 @@ void models::onDeleteClicked()
                                     tr("Czy na pewno chcesz usunąć model: %1?").arg(modelName),
                                     QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::Yes) {
-        QSqlQuery query(m_db);
-        query.prepare("DELETE FROM models WHERE name = :name");
-        query.bindValue(":name", modelName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.deleteEntry("models", modelName, &errorMessage, "name")) {
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć modelu:\n%1")
-                                      .arg(query.lastError().text()));
+                                      .arg(errorMessage));
             return;
         }
     }

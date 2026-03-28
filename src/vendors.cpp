@@ -170,30 +170,15 @@ void vendors::onEditClicked()
                                             currentName,
                                             &ok);
     if (ok && !newName.trimmed().isEmpty()) {
-        QSqlQuery query(m_db);
-        query.prepare("SELECT id FROM vendors WHERE name = :name");
-        query.bindValue(":name", currentName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.renameEntry("vendors", currentName, newName.trimmed(), &errorMessage)) {
+            const QString message = errorMessage == tr("Nie znaleziono rekordu do edycji.")
+                                        ? tr("Nie znaleziono producenta do edycji.")
+                                        : tr("Nie udało się zaktualizować producenta:\n%1").arg(errorMessage);
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się odczytać producenta do edycji:\n%1")
-                                      .arg(query.lastError().text()));
-            return;
-        }
-        if (!query.next()) {
-            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono producenta do edycji."));
-            return;
-        }
-        QString id = query.value(0).toString();
-        QSqlQuery updateQuery(m_db);
-        updateQuery.prepare("UPDATE vendors SET name = :newName WHERE id = :id");
-        updateQuery.bindValue(":newName", newName.trimmed());
-        updateQuery.bindValue(":id", id);
-        if (!updateQuery.exec()) {
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się zaktualizować producenta:\n%1")
-                                      .arg(updateQuery.lastError().text()));
+                                  message);
             return;
         }
     }
@@ -225,14 +210,13 @@ void vendors::onDeleteClicked()
                                     tr("Czy na pewno chcesz usunąć producenta: %1?").arg(vendorName),
                                     QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::Yes) {
-        QSqlQuery query(m_db);
-        query.prepare("DELETE FROM vendors WHERE name = :name");
-        query.bindValue(":name", vendorName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.deleteEntry("vendors", vendorName, &errorMessage, "name")) {
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć producenta:\n%1")
-                                      .arg(query.lastError().text()));
+                                      .arg(errorMessage));
             return;
         }
     }

@@ -166,30 +166,15 @@ void types::onEditClicked()
                                             oldName,
                                             &ok);
     if (ok && !newName.trimmed().isEmpty()) {
-        QSqlQuery q(m_db);
-        q.prepare("SELECT id FROM types WHERE name=:nm");
-        q.bindValue(":nm", oldName);
-        if (!q.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.renameEntry("types", oldName, newName.trimmed(), &errorMessage)) {
+            const QString message = errorMessage == tr("Nie znaleziono rekordu do edycji.")
+                                        ? tr("Nie znaleziono typu do edycji.")
+                                        : tr("Nie udało się zaktualizować:\n%1").arg(errorMessage);
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się odczytać typu do edycji:\n%1")
-                                      .arg(q.lastError().text()));
-            return;
-        }
-        if (!q.next()) {
-            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono typu do edycji."));
-            return;
-        }
-        QString id = q.value(0).toString();
-        QSqlQuery q2(m_db);
-        q2.prepare("UPDATE types SET name=:n WHERE id=:id");
-        q2.bindValue(":n", newName.trimmed());
-        q2.bindValue(":id", id);
-        if (!q2.exec()) {
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się zaktualizować:\n%1")
-                                      .arg(q2.lastError().text()));
+                                  message);
             return;
         }
     }
@@ -218,13 +203,12 @@ void types::onDeleteClicked()
                                      tr("Usunąć typ %1?").arg(name),
                                      QMessageBox::Yes | QMessageBox::No);
     if (ans == QMessageBox::Yes) {
-        QSqlQuery q(m_db);
-        q.prepare("DELETE FROM types WHERE name=:n");
-        q.bindValue(":n", name);
-        if (!q.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.deleteEntry("types", name, &errorMessage, "name")) {
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się usunąć:\n%1").arg(q.lastError().text()));
+                                  tr("Nie udało się usunąć:\n%1").arg(errorMessage));
             return;
         }
     }

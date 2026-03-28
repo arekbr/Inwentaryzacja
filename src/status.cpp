@@ -173,30 +173,15 @@ void status::onEditClicked()
                                             currentName,
                                             &ok);
     if (ok && !newName.trimmed().isEmpty()) {
-        QSqlQuery query(m_db);
-        query.prepare("SELECT id FROM statuses WHERE name = :name");
-        query.bindValue(":name", currentName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.renameEntry("statuses", currentName, newName.trimmed(), &errorMessage)) {
+            const QString message = errorMessage == tr("Nie znaleziono rekordu do edycji.")
+                                        ? tr("Nie znaleziono statusu do edycji.")
+                                        : tr("Nie udało się zaktualizować statusu: %1").arg(errorMessage);
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się odczytać statusu do edycji: %1")
-                                      .arg(query.lastError().text()));
-            return;
-        }
-        if (!query.next()) {
-            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono statusu do edycji."));
-            return;
-        }
-        QString id = query.value("id").toString();
-        QSqlQuery updateQuery(m_db);
-        updateQuery.prepare("UPDATE statuses SET name = :newName WHERE id = :id");
-        updateQuery.bindValue(":newName", newName.trimmed());
-        updateQuery.bindValue(":id", id);
-        if (!updateQuery.exec()) {
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie udało się zaktualizować statusu: %1")
-                                      .arg(updateQuery.lastError().text()));
+                                  message);
             return;
         }
     }
@@ -227,14 +212,13 @@ void status::onDeleteClicked()
                                     tr("Czy na pewno chcesz usunąć status: %1?").arg(statusName),
                                     QMessageBox::Yes | QMessageBox::No);
     if (ret == QMessageBox::Yes) {
-        QSqlQuery query(m_db);
-        query.prepare("DELETE FROM statuses WHERE name = :name");
-        query.bindValue(":name", statusName);
-        if (!query.exec()) {
+        DictionaryRepository repository(m_db);
+        QString errorMessage;
+        if (!repository.deleteEntry("statuses", statusName, &errorMessage, "name")) {
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć statusu: %1")
-                                      .arg(query.lastError().text()));
+                                      .arg(errorMessage));
             return;
         }
     }
