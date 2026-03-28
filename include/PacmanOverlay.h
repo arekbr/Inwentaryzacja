@@ -70,8 +70,9 @@ private:
     void drawPacmanVanish(QPainter &p, int x, int y, int size);
 
     // --- New variables for position animation ---
-    int m_pacmanX;             // Pozycja Pac-Mana (przesunięcie w lewo)
-    int m_ghostX;              // Pozycja ducha (przesunięcie w lewo)
+    double m_pacmanX;          // Aktualna pozycja Pac-Mana
+    double m_targetPacmanX;    // Docelowa pozycja Pac-Mana zsynchronizowana z tekstem
+    double m_ghostX;           // Pozycja ducha (przesunięcie w lewo)
     bool m_ghostChasing;       // Czy duch już goni Pac-Mana
     double m_ghostSpeedPx;     // Prędkość ducha w px/klatkę
     bool m_pacmanCollided;     // Stan kolizji z duchem

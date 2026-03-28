@@ -10,6 +10,75 @@
 #include <QtGlobal>         // dla QT_VERSION
 #include <QRandomGenerator> // dla QRandomGenerator w Qt 6.x
 
+#include <cmath>
+
+namespace {
+
+QString targetWidgetText(QWidget *widget)
+{
+    if (auto le = qobject_cast<QLineEdit *>(widget))
+        return le->text();
+    if (auto te = qobject_cast<QTextEdit *>(widget))
+        return te->toPlainText();
+    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
+        return pte->toPlainText();
+    return QString();
+}
+
+int targetWidgetTextWidth(QWidget *widget)
+{
+    const QString text = targetWidgetText(widget);
+    if (auto le = qobject_cast<QLineEdit *>(widget))
+        return QFontMetrics(le->font()).horizontalAdvance(text);
+    if (auto te = qobject_cast<QTextEdit *>(widget))
+        return QFontMetrics(te->font()).horizontalAdvance(text);
+    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
+        return QFontMetrics(pte->font()).horizontalAdvance(text);
+    return 0;
+}
+
+int targetWidgetApproxCharWidth(QWidget *widget)
+{
+    const QString text = targetWidgetText(widget);
+    const QChar sampleChar = text.isEmpty() ? QLatin1Char(' ') : text.at(text.length() - 1);
+
+    if (auto le = qobject_cast<QLineEdit *>(widget))
+        return QFontMetrics(le->font()).horizontalAdvance(sampleChar);
+    if (auto te = qobject_cast<QTextEdit *>(widget))
+        return QFontMetrics(te->font()).horizontalAdvance(sampleChar);
+    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
+        return QFontMetrics(pte->font()).horizontalAdvance(sampleChar);
+    return 0;
+}
+
+bool removeLastCharacter(QWidget *widget)
+{
+    if (auto le = qobject_cast<QLineEdit *>(widget)) {
+        const QString text = le->text();
+        if (text.isEmpty())
+            return false;
+        le->setText(text.left(text.length() - 1));
+        return true;
+    }
+    if (auto te = qobject_cast<QTextEdit *>(widget)) {
+        const QString text = te->toPlainText();
+        if (text.isEmpty())
+            return false;
+        te->setPlainText(text.left(text.length() - 1));
+        return true;
+    }
+    if (auto pte = qobject_cast<QPlainTextEdit *>(widget)) {
+        const QString text = pte->toPlainText();
+        if (text.isEmpty())
+            return false;
+        pte->setPlainText(text.left(text.length() - 1));
+        return true;
+    }
+    return false;
+}
+
+}
+
 PacmanOverlay::PacmanOverlay(QWidget *parent)
     : QWidget(parent), m_targetWidget(nullptr), m_angle(0), m_timerId(0), m_eatCharTimerId(0), m_durationMs(5000), m_showGhost(false),
       m_pacmanFrame(0), m_ghostFrame(0), m_vanishFrame(0), m_pacmanVanishing(false), m_collisionHideMs(3000)
@@ -29,8 +98,9 @@ PacmanOverlay::PacmanOverlay(QWidget *parent)
     // Usunięto connect do m_lifetimeTimer (nie będzie automatycznego znikania)
 
     // --- Dodane zmienne do animacji położenia Pac-Mana i ducha ---
-    m_pacmanX = 0;
-    m_ghostX = 0;
+    m_pacmanX = 0.0;
+    m_targetPacmanX = 0.0;
+    m_ghostX = 0.0;
     m_ghostChasing = false;
     m_pacmanCollided = false;
     m_collisionFrame = 0;
@@ -74,19 +144,7 @@ void PacmanOverlay::start(int durationMs)
         return;
 
     // Sprawdź czy nie została wywołana aktywacja z mainwindow.cpp dla tekstu o długości 22 znaków
-    QString currentText;
-    if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-    {
-        currentText = le->text();
-    }
-    else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-    {
-        currentText = te->toPlainText();
-    }
-    else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-    {
-        currentText = pte->toPlainText();
-    }
+    const QString currentText = targetWidgetText(m_targetWidget);
     bool capacityActivation = hasCapacityActivation(currentText);
 
     // Jeśli została wywołana bezpośrednio dla tekstu o długości 22 znaki (z mainwindow.cpp),
@@ -157,25 +215,11 @@ void PacmanOverlay::start(int durationMs)
         m_mouthClosing = false;
         m_timerId = startTimer(40);                         // timer do animacji szczęki
         m_eatCharTimerId = startTimer(s_eatCharIntervalMs); // timer do zjadania znaków (regulowany)
-        m_pacmanX = 0;
+        m_pacmanX = 0.0;
+        m_targetPacmanX = 0.0;
         m_ghostChasing = false;
-        m_ghostX = 0;
-        if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-        {
-            m_initialText = le->text();
-        }
-        else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-        {
-            m_initialText = te->toPlainText();
-        }
-        else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-        {
-            m_initialText = pte->toPlainText();
-        }
-        else
-        {
-            m_initialText.clear();
-        }
+        m_ghostX = 0.0;
+        m_initialText = targetWidgetText(m_targetWidget);
         qDebug() << "[PACMAN DEBUG] initialText=" << m_initialText;
         // Wyliczanie parametrów ruchu ducha
         int numChars = m_initialText.length();
@@ -187,28 +231,10 @@ void PacmanOverlay::start(int durationMs)
         int numFrames = (effectiveChaseTimeMs > 0) ? effectiveChaseTimeMs / frameIntervalMs : 1;
         
         // Obliczanie szerokości tekstu i pojedynczego znaku
-        int textWidth = 0;
-        int charWidth = 0;
-        if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-        {
-            QFontMetrics fm(le->font());
-            textWidth = fm.horizontalAdvance(le->text());
-            charWidth = le->text().isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(le->text().at(0));
-        }
-        else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-        {
-            QFontMetrics fm(te->font());
-            textWidth = fm.horizontalAdvance(te->toPlainText());
-            QString txt = te->toPlainText();
-            charWidth = txt.isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(txt.at(0));
-        }
-        else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-        {
-            QFontMetrics fm(pte->font());
-            textWidth = fm.horizontalAdvance(pte->toPlainText());
-            QString txt = pte->toPlainText();
-            charWidth = txt.isEmpty() ? fm.horizontalAdvance(QLatin1Char(' ')) : fm.horizontalAdvance(txt.at(0));
-        }
+        const int textWidth = targetWidgetTextWidth(m_targetWidget);
+        const int charWidth = targetWidgetApproxCharWidth(m_targetWidget);
+        m_pacmanX = textWidth;
+        m_targetPacmanX = textWidth;
         
         // Pacman pojawia się zaraz za tekstem
         int pacmanStartX = textWidth;
@@ -244,25 +270,7 @@ void PacmanOverlay::paintEvent(QPaintEvent *)
     p.setRenderHint(QPainter::Antialiasing);
     int size = 32;
     int y = (height() - size) / 2;
-    int textWidth = 0;
-    if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-    {
-        QFontMetrics fm(le->font());
-        textWidth = fm.horizontalAdvance(le->text());
-    }
-    else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-    {
-        QFontMetrics fm(te->font());
-        textWidth = fm.horizontalAdvance(te->toPlainText());
-    }
-    else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-    {
-        QFontMetrics fm(pte->font());
-        textWidth = fm.horizontalAdvance(pte->toPlainText());
-    }
-    int startX = textWidth;
-    // Pac-Man nie znika, zatrzymuje się przy lewej krawędzi
-    int pacmanX = std::max(startX - m_pacmanX, 0);
+    int pacmanX = std::max(static_cast<int>(std::round(m_pacmanX)), 0);
     drawPacman(p, pacmanX, y, size);
     if (m_showGhost)
     {
@@ -387,8 +395,9 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
                                 // Resetuj stan animacji
                                 m_pacmanCollided = false;
                                 m_collisionFrame = 0;
-                                m_pacmanX = 0;
-                                m_ghostX = 0;
+                                m_pacmanX = 0.0;
+                                m_targetPacmanX = 0.0;
+                                m_ghostX = 0.0;
                                 m_ghostChasing = false;
                                 m_showGhost = false;
                                 m_holdingLastFrame = false;
@@ -402,25 +411,10 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
             else
             {
                 m_pacmanFrame = (m_pacmanFrame + 1) % 3;
-                int textWidth = 0;
-                if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-                {
-                    QFontMetrics fm(le->font());
-                    textWidth = fm.horizontalAdvance(le->text());
-                }
-                else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-                {
-                    QFontMetrics fm(te->font());
-                    textWidth = fm.horizontalAdvance(te->toPlainText());
-                }
-                else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-                {
-                    QFontMetrics fm(pte->font());
-                    textWidth = fm.horizontalAdvance(pte->toPlainText());
-                }
-                int nextX = textWidth - (m_pacmanX + s_pacmanSpeedPx);
-                if (nextX >= 0)
-                    m_pacmanX += s_pacmanSpeedPx;
+                if (m_pacmanX > m_targetPacmanX)
+                    m_pacmanX = std::max(m_targetPacmanX, m_pacmanX - s_pacmanSpeedPx);
+                else if (m_pacmanX < m_targetPacmanX)
+                    m_pacmanX = std::min(m_targetPacmanX, m_pacmanX + s_pacmanSpeedPx);
             }
             update();
         }
@@ -429,26 +423,7 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
         {
             // Oblicz aktualną pozycję Pac-Mana
             int size = 32; // rozmiar Pac-Mana i ducha
-            int pacmanX = 0;
-            int textWidth = 0;
-            if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-            {
-                QFontMetrics fm(le->font());
-                textWidth = fm.horizontalAdvance(le->text());
-            }
-            else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-            {
-                QFontMetrics fm(te->font());
-                textWidth = fm.horizontalAdvance(te->toPlainText());
-            }
-            else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-            {
-                QFontMetrics fm(pte->font());
-                textWidth = fm.horizontalAdvance(pte->toPlainText());
-            }
-
-            // Oblicz pozycje Pac-Mana i ducha
-            pacmanX = std::max(textWidth - m_pacmanX, 0);
+            const int pacmanX = std::max(static_cast<int>(std::round(m_pacmanX)), 0);
             double nextGhostX = m_ghostX - m_ghostSpeedPx;
 
             // Sprawdź czy nastąpi kolizja (duch dotyka Pac-Mana)
@@ -496,34 +471,8 @@ void PacmanOverlay::timerEvent(QTimerEvent *event)
     {
         if (m_targetWidget && !m_pacmanVanishing)
         {
-            bool any = false;
-            if (auto le = qobject_cast<QLineEdit *>(m_targetWidget))
-            {
-                QString t = le->text();
-                if (!t.isEmpty())
-                {
-                    le->setText(t.left(t.length() - 1));
-                    any = true;
-                }
-            }
-            else if (auto te = qobject_cast<QTextEdit *>(m_targetWidget))
-            {
-                QString t = te->toPlainText();
-                if (!t.isEmpty())
-                {
-                    te->setPlainText(t.left(t.length() - 1));
-                    any = true;
-                }
-            }
-            else if (auto pte = qobject_cast<QPlainTextEdit *>(m_targetWidget))
-            {
-                QString t = pte->toPlainText();
-                if (!t.isEmpty())
-                {
-                    pte->setPlainText(t.left(t.length() - 1));
-                    any = true;
-                }
-            }
+            const bool any = removeLastCharacter(m_targetWidget);
+            m_targetPacmanX = targetWidgetTextWidth(m_targetWidget);
             // Jeśli nie ma już znaków, Pac-Man się zatrzymuje, ale nie znika
             if (!any)
             {
