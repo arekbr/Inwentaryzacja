@@ -210,19 +210,28 @@ void models::onEditClicked()
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM models WHERE name = :name");
         query.bindValue(":name", currentName);
-        if (query.exec() && query.next()) {
-            QString id = query.value(0).toString();
-            QSqlQuery updateQuery(m_db);
-            updateQuery.prepare("UPDATE models SET name = :newName WHERE id = :id");
-            updateQuery.bindValue(":newName", newName.trimmed());
-            updateQuery.bindValue(":id", id);
-            if (!updateQuery.exec()) {
-                QMessageBox::critical(this,
-                                      tr("Błąd"),
-                                      tr("Nie udało się zaktualizować modelu:\n%1")
-                                          .arg(updateQuery.lastError().text()));
-                return;
-            }
+        if (!query.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się odczytać modelu do edycji:\n%1")
+                                      .arg(query.lastError().text()));
+            return;
+        }
+        if (!query.next()) {
+            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono modelu do edycji."));
+            return;
+        }
+        QString id = query.value(0).toString();
+        QSqlQuery updateQuery(m_db);
+        updateQuery.prepare("UPDATE models SET name = :newName WHERE id = :id");
+        updateQuery.bindValue(":newName", newName.trimmed());
+        updateQuery.bindValue(":id", id);
+        if (!updateQuery.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się zaktualizować modelu:\n%1")
+                                      .arg(updateQuery.lastError().text()));
+            return;
         }
     }
 

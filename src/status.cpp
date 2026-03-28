@@ -178,19 +178,28 @@ void status::onEditClicked()
         QSqlQuery query(m_db);
         query.prepare("SELECT id FROM statuses WHERE name = :name");
         query.bindValue(":name", currentName);
-        if (query.exec() && query.next()) {
-            QString id = query.value("id").toString();
-            QSqlQuery updateQuery(m_db);
-            updateQuery.prepare("UPDATE statuses SET name = :newName WHERE id = :id");
-            updateQuery.bindValue(":newName", newName.trimmed());
-            updateQuery.bindValue(":id", id);
-            if (!updateQuery.exec()) {
-                QMessageBox::critical(this,
-                                      tr("Błąd"),
-                                      tr("Nie udało się zaktualizować statusu: %1")
-                                          .arg(updateQuery.lastError().text()));
-                return;
-            }
+        if (!query.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się odczytać statusu do edycji: %1")
+                                      .arg(query.lastError().text()));
+            return;
+        }
+        if (!query.next()) {
+            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono statusu do edycji."));
+            return;
+        }
+        QString id = query.value("id").toString();
+        QSqlQuery updateQuery(m_db);
+        updateQuery.prepare("UPDATE statuses SET name = :newName WHERE id = :id");
+        updateQuery.bindValue(":newName", newName.trimmed());
+        updateQuery.bindValue(":id", id);
+        if (!updateQuery.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się zaktualizować statusu: %1")
+                                      .arg(updateQuery.lastError().text()));
+            return;
         }
     }
 

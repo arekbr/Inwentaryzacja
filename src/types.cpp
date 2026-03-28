@@ -174,19 +174,28 @@ void types::onEditClicked()
         QSqlQuery q(m_db);
         q.prepare("SELECT id FROM types WHERE name=:nm");
         q.bindValue(":nm", oldName);
-        if (q.exec() && q.next()) {
-            QString id = q.value(0).toString();
-            QSqlQuery q2(m_db);
-            q2.prepare("UPDATE types SET name=:n WHERE id=:id");
-            q2.bindValue(":n", newName.trimmed());
-            q2.bindValue(":id", id);
-            if (!q2.exec()) {
-                QMessageBox::critical(this,
-                                      tr("Błąd"),
-                                      tr("Nie udało się zaktualizować:\n%1")
-                                          .arg(q2.lastError().text()));
-                return;
-            }
+        if (!q.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się odczytać typu do edycji:\n%1")
+                                      .arg(q.lastError().text()));
+            return;
+        }
+        if (!q.next()) {
+            QMessageBox::warning(this, tr("Błąd"), tr("Nie znaleziono typu do edycji."));
+            return;
+        }
+        QString id = q.value(0).toString();
+        QSqlQuery q2(m_db);
+        q2.prepare("UPDATE types SET name=:n WHERE id=:id");
+        q2.bindValue(":n", newName.trimmed());
+        q2.bindValue(":id", id);
+        if (!q2.exec()) {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się zaktualizować:\n%1")
+                                      .arg(q2.lastError().text()));
+            return;
         }
     }
     refreshList();
