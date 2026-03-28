@@ -466,6 +466,9 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
 
     if (m_editMode && !m_recordId.isEmpty())
     {
+        m_selectedPhotoIndex = -1;
+        m_photoBuffer.clear();
+        m_photoPathsBuffer.clear();
         loadRecord(m_recordId);
     }
     else
@@ -497,6 +500,7 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
         replaceScene(ui->graphicsView, nullptr);
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
+        m_photoPathsBuffer.clear();
     }
     // Ustaw domyślne "brak" dla statusu i miejsca przechowywania
     auto setDefaultIfAvailable = [](QComboBox *comboBox, const QString &targetName)
@@ -545,6 +549,7 @@ void MainWindow::setCloneMode(const QString &recordId)
     replaceScene(ui->graphicsView, nullptr);
     m_selectedPhotoIndex = -1;
     m_photoBuffer.clear();
+    m_photoPathsBuffer.clear();
 }
 
 /**
@@ -772,6 +777,46 @@ void MainWindow::onSaveClicked()
                        QSettings::IniFormat);
     bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
 
+    const QString itemName = ui->New_item_name->text().trimmed();
+    if (itemName.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Brak danych"), tr("Nazwa eksponatu jest wymagana."));
+        ui->New_item_name->setFocus();
+        return;
+    }
+
+    auto requireSelection = [this](QComboBox *comboBox, const QString &fieldLabel, QString *target)
+    {
+        const QString selectedId = validateUuid(comboBox->currentData().toString(), QString());
+        if (selectedId.isEmpty())
+        {
+            QMessageBox::warning(this,
+                                 tr("Brak danych"),
+                                 tr("Pole \"%1\" wymaga wyboru poprawnej wartości.")
+                                     .arg(fieldLabel));
+            comboBox->setFocus();
+            return false;
+        }
+
+        *target = selectedId;
+        return true;
+    };
+
+    QString statusId;
+    QString typeId;
+    QString vendorId;
+    QString modelId;
+    QString storageId;
+    if (!requireSelection(ui->New_item_status, tr("Status"), &statusId)
+        || !requireSelection(ui->New_item_type, tr("Typ"), &typeId)
+        || !requireSelection(ui->New_item_vendor, tr("Producent"), &vendorId)
+        || !requireSelection(ui->New_item_model, tr("Model"), &modelId)
+        || !requireSelection(ui->New_item_storagePlace, tr("Miejsce przechowywania"),
+                             &storageId))
+    {
+        return;
+    }
+
     if (!db.transaction())
     {
         QMessageBox::critical(this,
@@ -819,18 +864,12 @@ void MainWindow::onSaveClicked()
         q.bindValue(":id", m_recordId);
     }
 
-    q.bindValue(":name", ui->New_item_name->text());
+    q.bindValue(":name", itemName);
     q.bindValue(":serial_number", ui->New_item_serialNumber->text());
     q.bindValue(":part_number", ui->New_item_partNumber->text());
     q.bindValue(":revision", ui->New_item_revision->text());
     q.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
     q.bindValue(":has_original_packaging", ui->New_item_hasOriginalPackaging->isChecked());
-
-    QString statusId = validateUuid(ui->New_item_status->currentData().toString(), "{unknown_status_uuid}");
-    QString typeId = validateUuid(ui->New_item_type->currentData().toString(), "{unknown_type_uuid}");
-    QString vendorId = validateUuid(ui->New_item_vendor->currentData().toString(), "{unknown_vendor_uuid}");
-    QString modelId = validateUuid(ui->New_item_model->currentData().toString(), "{unknown_model_uuid}");
-    QString storageId = validateUuid(ui->New_item_storagePlace->currentData().toString(), "{unknown_storage_uuid}");
 
     q.bindValue(":status_id", statusId);
     q.bindValue(":type_id", typeId);
