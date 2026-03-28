@@ -61,6 +61,9 @@ fi
 
 mkdir -p "$ROOT_DIR/$OUTPUT_DIR"
 dpkg-deb --build "$STAGE_DIR"
-mv "$STAGE_DIR.deb" "$ROOT_DIR/$OUTPUT_DIR/${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
+PACKAGE_PATH="$ROOT_DIR/$OUTPUT_DIR/${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
+if [[ "$STAGE_DIR.deb" != "$PACKAGE_PATH" ]]; then
+    mv "$STAGE_DIR.deb" "$PACKAGE_PATH"
+fi
 
-echo "✅ Gotowe: $ROOT_DIR/$OUTPUT_DIR/${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
+echo "✅ Gotowe: $PACKAGE_PATH"
