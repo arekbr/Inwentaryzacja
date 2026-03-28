@@ -135,9 +135,12 @@ bool seedDictionaryData(QSqlDatabase &db)
         return false;
     }
 
-    const QString s1 = genId(), s2 = genId(), s3 = genId();
+    const QString s0 = genId(), s1 = genId(), s2 = genId(), s3 = genId();
     if (!execSchemaQuery(query,
-                         QString("%1 INTO statuses(id,name) VALUES('%2','Sprawny')").arg(insertPrefix, s1),
+                         QString("%1 INTO statuses(id,name) VALUES('%2','brak')").arg(insertPrefix, s0),
+                         "Błąd dodawania statusu brak:")
+        || !execSchemaQuery(query,
+                            QString("%1 INTO statuses(id,name) VALUES('%2','Sprawny')").arg(insertPrefix, s1),
                          "Błąd dodawania statusu Sprawny:")
         || !execSchemaQuery(query,
                             QString("%1 INTO statuses(id,name) VALUES('%2','Uszkodzony')").arg(insertPrefix, s2),
@@ -149,11 +152,15 @@ bool seedDictionaryData(QSqlDatabase &db)
         return false;
     }
 
-    const QString sp1 = genId(), sp2 = genId();
+    const QString sp0 = genId(), sp1 = genId(), sp2 = genId();
     return execSchemaQuery(query,
-                           QString("%1 INTO storage_places(id,name) VALUES('%2','Magazyn 1')")
-                               .arg(insertPrefix, sp1),
-                           "Błąd dodawania miejsca Magazyn 1:")
+                           QString("%1 INTO storage_places(id,name) VALUES('%2','brak')")
+                               .arg(insertPrefix, sp0),
+                           "Błąd dodawania miejsca brak:")
+           && execSchemaQuery(query,
+                              QString("%1 INTO storage_places(id,name) VALUES('%2','Magazyn 1')")
+                                  .arg(insertPrefix, sp1),
+                              "Błąd dodawania miejsca Magazyn 1:")
            && execSchemaQuery(query,
                               QString("%1 INTO storage_places(id,name) VALUES('%2','Półka B3')")
                                   .arg(insertPrefix, sp2),

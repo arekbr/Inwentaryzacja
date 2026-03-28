@@ -91,12 +91,30 @@ qt6_add_executable(${PROJECT_NAME}Tests
     tests/repository_tests.cpp
     include/DatabaseMigration.h
     include/ItemFormValidator.h
+    include/mainwindow.h
+    include/photoitem.h
+    include/fullscreenphotoviewer.h
+    include/PacmanOverlay.h
+    include/types.h
+    include/vendors.h
+    include/models.h
+    include/status.h
+    include/storage.h
     src/ItemRepository.cpp
     src/DictionaryRepository.cpp
     src/ItemFormValidator.cpp
     src/PhotoService.cpp
     src/DatabaseMigration.cpp
     src/DatabaseSchemaUtils.cpp
+    src/mainwindow.cpp
+    src/photoitem.cpp
+    src/fullscreenphotoviewer.cpp
+    src/PacmanOverlay.cpp
+    src/types.cpp
+    src/vendors.cpp
+    src/models.cpp
+    src/status.cpp
+    src/storage.cpp
     src/utils.cpp
 )
 
@@ -120,6 +138,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME}Tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/forms
 )
 
 target_link_libraries(${PROJECT_NAME}Tests PRIVATE

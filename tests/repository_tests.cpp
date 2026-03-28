@@ -4,11 +4,14 @@
 #include "DatabaseMigration.h"
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
+#include "mainwindow.h"
 #include "PhotoService.h"
 #include "utils.h"
 
 #include <QBuffer>
+#include <QComboBox>
 #include <QImage>
+#include <QLineEdit>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -41,6 +44,9 @@ private slots:
     void itemFormValidator_rejectsInvalidNumericValue();
     void itemFormValidator_requiresSelection();
     void itemFormValidator_checksModelVendorConsistency();
+    void mainWindow_loadsComboBoxesOnConstruction();
+    void mainWindow_setEditModeForNewRecordClearsFieldsAndDefaultsSelections();
+    void mainWindow_setEditModeLoadsExistingRecord();
 
 private:
     QString lookupId(const QString &tableName, const QString &name) const;
@@ -503,6 +509,119 @@ void RepositoryTests::itemFormValidator_checksModelVendorConsistency()
         ItemFormValidator::validateModelVendorConsistency(m_db, commodoreVendorId, atariModelId);
     QVERIFY(!invalidResult.isValid);
     QCOMPARE(invalidResult.field, ItemValidationField::Model);
+}
+
+void RepositoryTests::mainWindow_loadsComboBoxesOnConstruction()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("mainwindow.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    {
+        MainWindow window;
+        QVERIFY(window.getNewItemTypeComboBox());
+        QVERIFY(window.getNewItemVendorComboBox());
+        QVERIFY(window.getNewItemModelComboBox());
+        QVERIFY(window.getNewItemStatusComboBox());
+        QVERIFY(window.getNewItemStoragePlaceComboBox());
+
+        QVERIFY(window.getNewItemTypeComboBox()->count() > 0);
+        QVERIFY(window.getNewItemVendorComboBox()->count() > 0);
+        QVERIFY(window.getNewItemModelComboBox()->count() > 0);
+        QVERIFY(window.getNewItemStatusComboBox()->count() > 0);
+        QVERIFY(window.getNewItemStoragePlaceComboBox()->count() > 0);
+    }
+
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("default_connection"));
+    db.close();
+    db = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::mainWindow_setEditModeForNewRecordClearsFieldsAndDefaultsSelections()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("mainwindow-new.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    {
+        MainWindow window;
+        window.setEditMode(false, QString());
+
+        QLineEdit *nameEdit = window.findChild<QLineEdit *>(QStringLiteral("New_item_name"));
+        QVERIFY(nameEdit);
+        QCOMPARE(nameEdit->text(), QString());
+
+        QCOMPARE(window.getNewItemStatusComboBox()->currentText(), QStringLiteral("brak"));
+        QCOMPARE(window.getNewItemStoragePlaceComboBox()->currentText(), QStringLiteral("brak"));
+    }
+
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("default_connection"));
+    db.close();
+    db = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::mainWindow_setEditModeLoadsExistingRecord()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("mainwindow-edit.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    QSqlDatabase formDb = QSqlDatabase::database(QStringLiteral("default_connection"));
+    QVERIFY(formDb.isOpen());
+
+    ItemRepository repository(formDb);
+    QString savedItemId;
+    QString errorMessage;
+
+    auto lookupIdInDb = [&formDb](const QString &tableName, const QString &name)
+    {
+        QSqlQuery query(formDb);
+        query.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+        query.bindValue(QStringLiteral(":name"), name);
+        if (!query.exec() || !query.next())
+            return QString();
+        return query.value(0).toString();
+    };
+
+    ItemRecordData item;
+    item.name = QStringLiteral("Eksponat UI");
+    item.serialNumber = QStringLiteral("UI-001");
+    item.statusId = lookupIdInDb(QStringLiteral("statuses"), QStringLiteral("Sprawny"));
+    item.typeId = lookupIdInDb(QStringLiteral("types"), QStringLiteral("Komputer"));
+    item.vendorId = lookupIdInDb(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    item.modelId = lookupIdInDb(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    item.storagePlaceId = lookupIdInDb(QStringLiteral("storage_places"), QStringLiteral("Magazyn 1"));
+    QVERIFY2(repository.saveItem(item, {}, &savedItemId, &errorMessage), qPrintable(errorMessage));
+
+    {
+        MainWindow window;
+        window.setEditMode(true, savedItemId);
+
+        QLineEdit *nameEdit = window.findChild<QLineEdit *>(QStringLiteral("New_item_name"));
+        QLineEdit *serialEdit = window.findChild<QLineEdit *>(QStringLiteral("New_item_serialNumber"));
+        QVERIFY(nameEdit);
+        QVERIFY(serialEdit);
+
+        QCOMPARE(nameEdit->text(), QStringLiteral("Eksponat UI"));
+        QCOMPARE(serialEdit->text(), QStringLiteral("UI-001"));
+        QCOMPARE(window.getNewItemVendorComboBox()->currentText(), QStringLiteral("Atari"));
+        QCOMPARE(window.getNewItemModelComboBox()->currentText(), QStringLiteral("Atari 800XL"));
+    }
+
+    formDb.close();
+    formDb = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
 }
 
 QTEST_MAIN(RepositoryTests)
