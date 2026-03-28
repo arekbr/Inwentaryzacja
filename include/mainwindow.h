@@ -48,6 +48,9 @@ namespace Ui
 
 // Forward-deklaracja klasy PhotoItem (używana w slotach)
 class PhotoItem;
+class QPixmap;
+struct ItemRecordData;
+struct StoredPhoto;
 
 /**
  * @class MainWindow
@@ -312,6 +315,11 @@ private:
      * w QGraphicsView.
      */
     void loadPhotosFromBuffer();
+
+    bool collectValidatedItemData(ItemRecordData *itemData);
+    void setPhotoItemsEditMode(bool enabled);
+    void showStoredPhotos(const QList<StoredPhoto> &photos);
+    void showBufferPhotos(const QList<QPixmap> &pixmaps);
 
     QString validateUuid(const QString &uuid, const QString &defaultValue);
 

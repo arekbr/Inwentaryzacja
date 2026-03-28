@@ -672,6 +672,11 @@ void MainWindow::loadPhotos(const QString &recordId)
         return;
     }
 
+    showStoredPhotos(photos);
+}
+
+void MainWindow::showStoredPhotos(const QList<StoredPhoto> &photos)
+{
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5, idx = 0;
@@ -733,6 +738,11 @@ void MainWindow::loadPhotosFromBuffer()
 {
     PhotoService photoService(db);
     const QList<QPixmap> pixmaps = photoService.loadPixmapsFromBuffer(m_photoBuffer);
+    showBufferPhotos(pixmaps);
+}
+
+void MainWindow::showBufferPhotos(const QList<QPixmap> &pixmaps)
+{
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5;
@@ -755,28 +765,28 @@ void MainWindow::loadPhotosFromBuffer()
     replaceScene(ui->graphicsView, scene);
 }
 
-/**
- * @brief Zapisuje dane z formularza do bazy danych.
- *
- * @section MethodOverview
- * Waliduje dane, zapisuje rekord w tabeli eksponaty (INSERT dla nowych, UPDATE dla edycji),
- * przenosi zdjęcia z bufora do bazy danych. Przenoszenie plików do katalogu "gotowe"
- * wykonywane jest tylko jeśli w pliku konfiguracyjnym inwentaryzacja.ini znajduje się:
- * [General] przenosic_gotowe=tak. W przeciwnym razie pliki źródłowe zdjęć nie są dotykane.
- * Po zapisie emitowany jest sygnał recordSaved i okno zostaje zamknięte.
- */
-void MainWindow::onSaveClicked()
+void MainWindow::setPhotoItemsEditMode(bool enabled)
 {
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
-                       QSettings::IniFormat);
-    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
+    QGraphicsScene *scene = ui->graphicsView->scene();
+    if (!scene)
+        return;
 
+    const QList<QGraphicsItem *> items = scene->items();
+    for (QGraphicsItem *graphicsItem : items)
+    {
+        if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(graphicsItem))
+            photoItem->setEditMode(enabled);
+    }
+}
+
+bool MainWindow::collectValidatedItemData(ItemRecordData *itemData)
+{
     const QString itemName = ui->New_item_name->text().trimmed();
     if (itemName.isEmpty())
     {
         QMessageBox::warning(this, tr("Brak danych"), tr("Nazwa eksponatu jest wymagana."));
         ui->New_item_name->setFocus();
-        return;
+        return false;
     }
 
     auto requireSelection = [this](QComboBox *comboBox, const QString &fieldLabel, QString *target)
@@ -796,37 +806,46 @@ void MainWindow::onSaveClicked()
         return true;
     };
 
-    QString statusId;
-    QString typeId;
-    QString vendorId;
-    QString modelId;
-    QString storageId;
-    if (!requireSelection(ui->New_item_status, tr("Status"), &statusId)
-        || !requireSelection(ui->New_item_type, tr("Typ"), &typeId)
-        || !requireSelection(ui->New_item_vendor, tr("Producent"), &vendorId)
-        || !requireSelection(ui->New_item_model, tr("Model"), &modelId)
-        || !requireSelection(ui->New_item_storagePlace, tr("Miejsce przechowywania"),
-                             &storageId))
-    {
-        return;
-    }
+    itemData->id = m_recordId;
+    itemData->name = itemName;
+    itemData->serialNumber = ui->New_item_serialNumber->text();
+    itemData->partNumber = ui->New_item_partNumber->text();
+    itemData->revision = ui->New_item_revision->text();
+    itemData->productionYear = ui->New_item_ProductionDate->date().year();
+    itemData->description = ui->New_item_description->toPlainText();
+    itemData->value = ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt();
+    itemData->hasOriginalPackaging = ui->New_item_hasOriginalPackaging->isChecked();
+    itemData->editMode = m_editMode;
+
+    return requireSelection(ui->New_item_status, tr("Status"), &itemData->statusId)
+           && requireSelection(ui->New_item_type, tr("Typ"), &itemData->typeId)
+           && requireSelection(ui->New_item_vendor, tr("Producent"), &itemData->vendorId)
+           && requireSelection(ui->New_item_model, tr("Model"), &itemData->modelId)
+           && requireSelection(ui->New_item_storagePlace,
+                               tr("Miejsce przechowywania"),
+                               &itemData->storagePlaceId);
+}
+
+/**
+ * @brief Zapisuje dane z formularza do bazy danych.
+ *
+ * @section MethodOverview
+ * Waliduje dane, zapisuje rekord w tabeli eksponaty (INSERT dla nowych, UPDATE dla edycji),
+ * przenosi zdjęcia z bufora do bazy danych. Przenoszenie plików do katalogu "gotowe"
+ * wykonywane jest tylko jeśli w pliku konfiguracyjnym inwentaryzacja.ini znajduje się:
+ * [General] przenosic_gotowe=tak. W przeciwnym razie pliki źródłowe zdjęć nie są dotykane.
+ * Po zapisie emitowany jest sygnał recordSaved i okno zostaje zamknięte.
+ */
+void MainWindow::onSaveClicked()
+{
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/inwentaryzacja.ini",
+                       QSettings::IniFormat);
+    bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
 
     ItemRecordData itemData;
-    itemData.id = m_recordId;
-    itemData.name = itemName;
-    itemData.serialNumber = ui->New_item_serialNumber->text();
-    itemData.partNumber = ui->New_item_partNumber->text();
-    itemData.revision = ui->New_item_revision->text();
-    itemData.productionYear = ui->New_item_ProductionDate->date().year();
-    itemData.statusId = statusId;
-    itemData.typeId = typeId;
-    itemData.vendorId = vendorId;
-    itemData.modelId = modelId;
-    itemData.storagePlaceId = storageId;
-    itemData.description = ui->New_item_description->toPlainText();
-    itemData.value = ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt();
-    itemData.hasOriginalPackaging = ui->New_item_hasOriginalPackaging->isChecked();
-    itemData.editMode = m_editMode;
+    if (!collectValidatedItemData(&itemData)) {
+        return;
+    }
 
     ItemRepository repository(db);
     QString savedItemId;
@@ -851,18 +870,7 @@ void MainWindow::onSaveClicked()
         m_photoPathsBuffer.clear();
     }
 
-    QGraphicsScene *scene = ui->graphicsView->scene();
-    if (scene)
-    {
-        QList<QGraphicsItem *> items = scene->items();
-        for (auto it = items.constBegin(); it != items.constEnd(); ++it)
-        {
-            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it))
-            {
-                photoItem->setEditMode(false);
-            }
-        }
-    }
+    setPhotoItemsEditMode(false);
 
     emit recordSaved(m_recordId);
     if (moveFailures.isEmpty())
@@ -887,19 +895,7 @@ void MainWindow::onSaveClicked()
  */
 void MainWindow::onCancelClicked()
 {
-    // Wyłącz tryb edycji dla wszystkich PhotoItem
-    QGraphicsScene *scene = ui->graphicsView->scene();
-    if (scene)
-    {
-        QList<QGraphicsItem *> items = scene->items();
-        for (auto it = items.constBegin(); it != items.constEnd(); ++it)
-        {
-            if (PhotoItem *photoItem = dynamic_cast<PhotoItem *>(*it))
-            {
-                photoItem->setEditMode(false);
-            }
-        }
-    }
+    setPhotoItemsEditMode(false);
 
     close();
 }
