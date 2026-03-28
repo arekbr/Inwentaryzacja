@@ -559,6 +559,17 @@ QString itemList::selectedRecordIdOrWarn(const QString &message) const
     return m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
 }
 
+QString itemList::selectedRecordName() const
+{
+    auto *sel = ui->itemList_tableView->selectionModel();
+    if (!sel || !sel->hasSelection())
+        return QString();
+
+    const QModelIndex proxyIdx = sel->selectedRows().first();
+    const QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
+    return m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 1)).toString();
+}
+
 void itemList::openRecordWindowForNew()
 {
     MainWindow *w = new MainWindow(this);
@@ -641,9 +652,12 @@ void itemList::onDeleteButtonClicked()
     if (id.isEmpty())
         return;
 
+    const QString recordName = selectedRecordName();
+    const QString displayName = recordName.isEmpty() ? id : recordName;
+
     if (QMessageBox::question(this,
                               tr("Potwierdzenie"),
-                              tr("Czy na pewno chcesz usunąć rekord %1?").arg(id),
+                              tr("Czy na pewno chcesz usunąć rekord „%1”?").arg(displayName),
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
     {
         ItemRepository repository(QSqlDatabase::database("default_connection"));
@@ -656,6 +670,10 @@ void itemList::onDeleteButtonClicked()
         }
         else
         {
+            if (ui->itemList_tableView->selectionModel())
+                ui->itemList_tableView->selectionModel()->clearSelection();
+            replaceScene(ui->itemList_graphicsView, nullptr);
+            m_currentRecordId.clear();
             m_sourceModel->select();
             QMessageBox::information(this, tr("Sukces"), tr("Rekord usunięty."));
         }

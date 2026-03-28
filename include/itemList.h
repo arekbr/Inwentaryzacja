@@ -250,6 +250,7 @@ private:
     void updateFilterComboBoxes();
 
     QString selectedRecordIdOrWarn(const QString &message) const;
+    QString selectedRecordName() const;
     void openRecordWindowForNew();
     void openRecordWindowForEdit(const QString &recordId);
     void openRecordWindowForClone(const QString &recordId);
