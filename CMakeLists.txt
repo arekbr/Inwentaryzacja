@@ -89,10 +89,13 @@ enable_testing()
 
 qt6_add_executable(${PROJECT_NAME}Tests
     tests/repository_tests.cpp
+    include/DatabaseMigration.h
     src/ItemRepository.cpp
     src/DictionaryRepository.cpp
     src/PhotoService.cpp
+    src/DatabaseMigration.cpp
     src/DatabaseSchemaUtils.cpp
+    src/utils.cpp
 )
 
 # ================================
@@ -120,6 +123,7 @@ target_include_directories(${PROJECT_NAME}Tests PRIVATE
 target_link_libraries(${PROJECT_NAME}Tests PRIVATE
     Qt6::Core
     Qt6::Gui
+    Qt6::Widgets
     Qt6::Sql
     Qt6::Test
 )

@@ -27,6 +27,7 @@ private:
     bool verifyMigration();
     bool addMissingColumns();
     bool fixBrokenUUIDs();
+    bool hasMigrationTables() const;
     
     // Funkcja pomocnicza do usuwania nawiasów klamrowych z UUID
     QString removeBraces(const QString &uuid);

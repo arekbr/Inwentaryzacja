@@ -1,6 +1,7 @@
 #include <QtTest>
 
 #include "DictionaryRepository.h"
+#include "DatabaseMigration.h"
 #include "ItemRepository.h"
 #include "PhotoService.h"
 #include "utils.h"
@@ -10,6 +11,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QTemporaryDir>
 #include <QUuid>
 
 class RepositoryTests : public QObject
@@ -24,6 +26,8 @@ private slots:
     void itemRepository_deletesRecordAndPhotos();
     void dictionaryRepository_supportsCrud();
     void photoService_loadsStoredPhotos();
+    void databaseMigration_removesBracesFromAllRelevantTables();
+    void databaseMigration_fixesKnownBrokenUuids();
 
 private:
     QString lookupId(const QString &tableName, const QString &name) const;
@@ -181,6 +185,147 @@ void RepositoryTests::photoService_loadsStoredPhotos()
     QCOMPARE(photos.size(), 1);
     QVERIFY(!photos.first().id.isEmpty());
     QVERIFY(!photos.first().pixmap.isNull());
+}
+
+void RepositoryTests::databaseMigration_removesBracesFromAllRelevantTables()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("migration.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    QSqlDatabase migrationDb = QSqlDatabase::database(QStringLiteral("default_connection"));
+    QVERIFY(migrationDb.isOpen());
+
+    const QString statusId = QStringLiteral("{11111111-1111-1111-1111-111111111111}");
+    const QString storageId = QStringLiteral("{22222222-2222-2222-2222-222222222222}");
+    const QString itemId = QStringLiteral("{33333333-3333-3333-3333-333333333333}");
+    const QString photoId = QStringLiteral("{44444444-4444-4444-4444-444444444444}");
+
+    auto lookupIdInDb = [&migrationDb](const QString &tableName, const QString &name)
+    {
+        QSqlQuery lookupQuery(migrationDb);
+        lookupQuery.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+        lookupQuery.bindValue(QStringLiteral(":name"), name);
+        if (!lookupQuery.exec() || !lookupQuery.next())
+            return QString();
+        return lookupQuery.value(0).toString();
+    };
+
+    const QString typeId = lookupIdInDb(QStringLiteral("types"), QStringLiteral("Komputer"));
+    const QString vendorId = lookupIdInDb(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    const QString modelId = lookupIdInDb(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    QVERIFY(!typeId.isEmpty());
+    QVERIFY(!vendorId.isEmpty());
+    QVERIFY(!modelId.isEmpty());
+
+    QSqlQuery query(migrationDb);
+    QVERIFY(query.exec(QStringLiteral("INSERT INTO statuses (id, name) VALUES ('%1', 'Status testowy UUID')").arg(statusId)));
+    QVERIFY(query.exec(QStringLiteral("INSERT INTO storage_places (id, name) VALUES ('%1', 'Miejsce testowe UUID')").arg(storageId)));
+    QVERIFY(query.exec(QStringLiteral(
+        "INSERT INTO eksponaty (id, name, type_id, vendor_id, model_id, status_id, storage_place_id, value, has_original_packaging) "
+        "VALUES ('%1', 'Eksponat UUID', '%2', '%3', '%4', '%5', '%6', 7, 0)")
+                           .arg(itemId, typeId, vendorId, modelId, statusId, storageId)));
+    QVERIFY(query.exec(QStringLiteral("INSERT INTO photos (id, eksponat_id, photo) VALUES ('%1', '%2', X'89504E470D0A1A0A')")
+                           .arg(photoId, itemId)));
+
+    {
+        DatabaseMigration migration;
+        QVERIFY(migration.migrateUUIDs());
+    }
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM statuses WHERE id LIKE '{%}'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 0);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM storage_places WHERE id LIKE '{%}'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 0);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM eksponaty WHERE id LIKE '{%}' OR status_id LIKE '{%}' OR storage_place_id LIKE '{%}'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 0);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 0);
+
+    QVERIFY(query.exec(QStringLiteral("SELECT COUNT(*) FROM eksponaty WHERE id = '%1'")
+                           .arg(QString(itemId).remove('{').remove('}'))));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
+
+    query = QSqlQuery();
+    migrationDb.close();
+    migrationDb = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::databaseMigration_fixesKnownBrokenUuids()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("migration-broken.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    QSqlDatabase migrationDb = QSqlDatabase::database(QStringLiteral("default_connection"));
+    QVERIFY(migrationDb.isOpen());
+
+    auto lookupIdInDb = [&migrationDb](const QString &tableName, const QString &name)
+    {
+        QSqlQuery lookupQuery(migrationDb);
+        lookupQuery.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+        lookupQuery.bindValue(QStringLiteral(":name"), name);
+        if (!lookupQuery.exec() || !lookupQuery.next())
+            return QString();
+        return lookupQuery.value(0).toString();
+    };
+
+    const QString typeId = lookupIdInDb(QStringLiteral("types"), QStringLiteral("Komputer"));
+    const QString vendorId = lookupIdInDb(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    const QString modelId = lookupIdInDb(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    QVERIFY(!typeId.isEmpty());
+    QVERIFY(!vendorId.isEmpty());
+    QVERIFY(!modelId.isEmpty());
+
+    QSqlQuery query(migrationDb);
+    QVERIFY(query.exec("INSERT INTO statuses (id, name) VALUES ('{b0ffafe8-a847-4b6f-bf65-54096df6ade', 'brak test')"));
+    QVERIFY(query.exec("INSERT INTO statuses (id, name) VALUES ('{42668524-b93e-4c88-ba04-0d0fbf7683e', 'Sprawny test')"));
+    QVERIFY(query.exec("INSERT INTO storage_places (id, name) VALUES ('{c120da85-24f7-45f6-8df1-5a4245952ef', 'brak miejsce test')"));
+    QVERIFY(query.exec(QStringLiteral(
+        "INSERT INTO eksponaty (id, name, type_id, vendor_id, model_id, status_id, storage_place_id, value, has_original_packaging) "
+        "VALUES ('test-broken-item', 'Eksponat broken UUID', '%1', '%2', '%3', '{42668524-b93e-4c88-ba04-0d0fbf7683e', '{c120da85-24f7-45f6-8df1-5a4245952ef', 5, 0)")
+                           .arg(typeId, vendorId, modelId)));
+
+    {
+        DatabaseMigration migration;
+        QVERIFY(migration.migrateUUIDs());
+    }
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM statuses WHERE id = 'b0ffafe8-a847-4b6f-bf65-54096df6ade'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM statuses WHERE id = '42668524-b93e-4c88-ba04-0d0fbf7683e'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM storage_places WHERE id = 'c120da85-24f7-45f6-8df1-5a4245952ef'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
+
+    QVERIFY(query.exec("SELECT COUNT(*) FROM eksponaty WHERE status_id = '42668524-b93e-4c88-ba04-0d0fbf7683e' AND storage_place_id = 'c120da85-24f7-45f6-8df1-5a4245952ef'"));
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 1);
+
+    query = QSqlQuery();
+    migrationDb.close();
+    migrationDb = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
 }
 
 QTEST_MAIN(RepositoryTests)

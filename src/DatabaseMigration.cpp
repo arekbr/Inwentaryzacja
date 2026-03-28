@@ -14,6 +14,11 @@ bool DatabaseMigration::migrateUUIDs()
 {
     qDebug() << "Rozpoczynam proces migracji UUID...";
 
+    if (!hasMigrationTables()) {
+        qDebug() << "Brak pełnego schematu wymagającego migracji UUID - pomijam migrację.";
+        return true;
+    }
+
     bool success = true;
 
     // Dodaj brakujące kolumny (niezależnie od tego czy są UUID-y do migracji)
@@ -324,6 +329,24 @@ QString DatabaseMigration::removeBraces(const QString &uuid)
     return result;
 }
 
+bool DatabaseMigration::hasMigrationTables() const
+{
+    static const QStringList requiredTables = {
+        QStringLiteral("statuses"),
+        QStringLiteral("storage_places"),
+        QStringLiteral("eksponaty"),
+        QStringLiteral("photos")
+    };
+
+    const QStringList existingTables = db.tables();
+    for (const QString &tableName : requiredTables) {
+        if (!existingTables.contains(tableName, Qt::CaseInsensitive))
+            return false;
+    }
+
+    return true;
+}
+
 bool DatabaseMigration::fixBrokenUUIDs()
 {
     qDebug() << "Rozpoczynam naprawę uszkodzonych UUID-ów...";
@@ -410,7 +433,7 @@ bool DatabaseMigration::fixBrokenUUIDs()
     }
 
     // Końcowa weryfikacja
-    if (!query.exec("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%}' OR id LIKE '{%'")) {
+    if (!query.exec("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%' AND id NOT LIKE '%}'")) {
         qDebug() << "Nie udało się zweryfikować UUID w tabeli statuses:" << query.lastError().text();
         success = false;
     }
@@ -419,7 +442,7 @@ bool DatabaseMigration::fixBrokenUUIDs()
         success = false;
     }
 
-    if (!query.exec("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%}' OR id LIKE '{%'")) {
+    if (!query.exec("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%' AND id NOT LIKE '%}'")) {
         qDebug() << "Nie udało się zweryfikować UUID w tabeli storage_places:" << query.lastError().text();
         success = false;
     }
@@ -428,7 +451,9 @@ bool DatabaseMigration::fixBrokenUUIDs()
         success = false;
     }
 
-    if (!query.exec("SELECT COUNT(*) as count_eksponaty FROM eksponaty WHERE status_id LIKE '{%}' OR storage_place_id LIKE '{%}'")) {
+    if (!query.exec("SELECT COUNT(*) as count_eksponaty FROM eksponaty "
+                    "WHERE (status_id LIKE '{%' AND status_id NOT LIKE '%}') "
+                    "OR (storage_place_id LIKE '{%' AND storage_place_id NOT LIKE '%}')")) {
         qDebug() << "Nie udało się zweryfikować UUID w tabeli eksponaty:" << query.lastError().text();
         success = false;
     }
@@ -437,7 +462,9 @@ bool DatabaseMigration::fixBrokenUUIDs()
         success = false;
     }
 
-    if (!query.exec("SELECT COUNT(*) as count_photos FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'")) {
+    if (!query.exec("SELECT COUNT(*) as count_photos FROM photos "
+                    "WHERE (id LIKE '{%' AND id NOT LIKE '%}') "
+                    "OR (eksponat_id LIKE '{%' AND eksponat_id NOT LIKE '%}')")) {
         qDebug() << "Nie udało się zweryfikować UUID w tabeli photos:" << query.lastError().text();
         success = false;
     }
