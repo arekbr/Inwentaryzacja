@@ -116,29 +116,18 @@ bool DatabaseMigration::addMissingColumns()
 
 bool DatabaseMigration::checkForBracedUUIDs()
 {
-    QSqlQuery query(db);
-    
-    // Sprawdź tabelę statusów
-    query.exec("SELECT id FROM statuses WHERE id LIKE '{%}' LIMIT 1");
-    if (query.next()) return true;
-    
-    // Sprawdź tabelę miejsc przechowywania
-    query.exec("SELECT id FROM storage_places WHERE id LIKE '{%}' LIMIT 1");
-    if (query.next()) return true;
-    
-    // Sprawdź rekordy i referencje w tabeli eksponatów
-    query.exec("SELECT id FROM eksponaty "
-               "WHERE id LIKE '{%}' "
-               "OR status_id LIKE '{%}' "
-               "OR storage_place_id LIKE '{%}' "
-               "LIMIT 1");
-    if (query.next()) return true;
-
-    // Sprawdź rekordy i referencje w tabeli zdjęć
-    query.exec("SELECT id FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}' LIMIT 1");
-    if (query.next()) return true;
-    
-    return false;
+    return hasMatchingRows(QStringLiteral("SELECT id FROM statuses WHERE id LIKE '{%}' LIMIT 1"),
+                           QStringLiteral("Nie udało się sprawdzić UUID w tabeli statuses"))
+           || hasMatchingRows(QStringLiteral("SELECT id FROM storage_places WHERE id LIKE '{%}' LIMIT 1"),
+                              QStringLiteral("Nie udało się sprawdzić UUID w tabeli storage_places"))
+           || hasMatchingRows(QStringLiteral("SELECT id FROM eksponaty "
+                                            "WHERE id LIKE '{%}' "
+                                            "OR status_id LIKE '{%}' "
+                                            "OR storage_place_id LIKE '{%}' "
+                                            "LIMIT 1"),
+                              QStringLiteral("Nie udało się sprawdzić UUID w tabeli eksponaty"))
+           || hasMatchingRows(QStringLiteral("SELECT id FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}' LIMIT 1"),
+                              QStringLiteral("Nie udało się sprawdzić UUID w tabeli photos"));
 }
 
 bool DatabaseMigration::disableForeignKeyChecks()
@@ -163,162 +152,50 @@ bool DatabaseMigration::enableForeignKeyChecks()
 
 bool DatabaseMigration::updateStatusesTable()
 {
-    QSqlQuery query(db);
-    QSqlQuery updateQuery(db);
-    
-    // Pobierz wszystkie rekordy statusów z UUID-ami w nawiasach
-    query.exec("SELECT id, name FROM statuses WHERE id LIKE '{%}'");
-    
-    while (query.next()) {
-        QString oldId = query.value("id").toString();
-        QString newId = removeBraces(oldId);
-        QString name = query.value("name").toString();
-        
-        // Zaktualizuj rekord statusu
-        updateQuery.prepare("UPDATE statuses SET id = ? WHERE id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować statusu:" << name << "Błąd:" << updateQuery.lastError().text();
-            return false;
-        }
-        
-        // Zaktualizuj referencje w tabeli eksponatów
-        updateQuery.prepare("UPDATE eksponaty SET status_id = ? WHERE status_id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować referencji do statusu w tabeli eksponatów dla:" << name;
-            return false;
-        }
-    }
-    
-    return true;
+    return updateBracedIds(QStringLiteral("SELECT id FROM statuses WHERE id LIKE '{%}'"),
+                           QStringLiteral("UPDATE statuses SET id = ? WHERE id = ?"),
+                           QStringLiteral("UPDATE eksponaty SET status_id = ? WHERE status_id = ?"),
+                           QStringLiteral("statusów"),
+                           QStringLiteral("statusów w tabeli eksponatów"));
 }
 
 bool DatabaseMigration::updateStoragePlacesTable()
 {
-    QSqlQuery query(db);
-    QSqlQuery updateQuery(db);
-    
-    // Pobierz wszystkie rekordy miejsc przechowywania z UUID-ami w nawiasach
-    query.exec("SELECT id, name FROM storage_places WHERE id LIKE '{%}'");
-    
-    while (query.next()) {
-        QString oldId = query.value("id").toString();
-        QString newId = removeBraces(oldId);
-        QString name = query.value("name").toString();
-        
-        // Zaktualizuj rekord miejsca przechowywania
-        updateQuery.prepare("UPDATE storage_places SET id = ? WHERE id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować miejsca przechowywania:" << name << "Błąd:" << updateQuery.lastError().text();
-            return false;
-        }
-        
-        // Zaktualizuj referencje w tabeli eksponatów
-        updateQuery.prepare("UPDATE eksponaty SET storage_place_id = ? WHERE storage_place_id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować referencji do miejsca przechowywania w tabeli eksponatów dla:" << name;
-            return false;
-        }
-    }
-    
-    return true;
+    return updateBracedIds(QStringLiteral("SELECT id FROM storage_places WHERE id LIKE '{%}'"),
+                           QStringLiteral("UPDATE storage_places SET id = ? WHERE id = ?"),
+                           QStringLiteral("UPDATE eksponaty SET storage_place_id = ? WHERE storage_place_id = ?"),
+                           QStringLiteral("miejsc przechowywania"),
+                           QStringLiteral("miejsc przechowywania w tabeli eksponatów"));
 }
 
 bool DatabaseMigration::updateEksponatyTable()
 {
-    QSqlQuery query(db);
-    QSqlQuery updateQuery(db);
-    
-    // Pobierz wszystkie rekordy eksponatów z UUID-ami w nawiasach
-    query.exec("SELECT id FROM eksponaty WHERE id LIKE '{%}'");
-    
-    while (query.next()) {
-        QString oldId = query.value("id").toString();
-        QString newId = removeBraces(oldId);
-        
-        // Zaktualizuj rekord eksponatu
-        updateQuery.prepare("UPDATE eksponaty SET id = ? WHERE id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować ID eksponatu:" << oldId << "Błąd:" << updateQuery.lastError().text();
-            return false;
-        }
-        
-        // Zaktualizuj referencje w tabeli zdjęć
-        updateQuery.prepare("UPDATE photos SET eksponat_id = ? WHERE eksponat_id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-        
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować referencji do eksponatu w tabeli zdjęć dla:" << oldId;
-            return false;
-        }
-    }
-    
-    return true;
+    return updateBracedIds(QStringLiteral("SELECT id FROM eksponaty WHERE id LIKE '{%}'"),
+                           QStringLiteral("UPDATE eksponaty SET id = ? WHERE id = ?"),
+                           QStringLiteral("UPDATE photos SET eksponat_id = ? WHERE eksponat_id = ?"),
+                           QStringLiteral("eksponatów"),
+                           QStringLiteral("eksponatów w tabeli zdjęć"));
 }
 
 bool DatabaseMigration::updatePhotosTable()
 {
-    QSqlQuery query(db);
-    QSqlQuery updateQuery(db);
-
-    query.exec("SELECT id FROM photos WHERE id LIKE '{%}'");
-
-    while (query.next()) {
-        QString oldId = query.value("id").toString();
-        QString newId = removeBraces(oldId);
-
-        updateQuery.prepare("UPDATE photos SET id = ? WHERE id = ?");
-        updateQuery.addBindValue(newId);
-        updateQuery.addBindValue(oldId);
-
-        if (!updateQuery.exec()) {
-            qDebug() << "Nie udało się zaktualizować ID zdjęcia:" << oldId << "Błąd:" << updateQuery.lastError().text();
-            return false;
-        }
-    }
-
-    return true;
+    return updateBracedIds(QStringLiteral("SELECT id FROM photos WHERE id LIKE '{%}'"),
+                           QStringLiteral("UPDATE photos SET id = ? WHERE id = ?"),
+                           QString(),
+                           QStringLiteral("zdjęć"));
 }
 
 bool DatabaseMigration::verifyMigration()
 {
-    QSqlQuery query(db);
-    
-    // Sprawdź czy pozostały jakieś UUID-y z nawiasami w tabelach
-    QStringList checks = {
-        "SELECT COUNT(*) FROM statuses WHERE id LIKE '{%}'",
-        "SELECT COUNT(*) FROM storage_places WHERE id LIKE '{%}'",
-        "SELECT COUNT(*) FROM eksponaty WHERE id LIKE '{%}' OR status_id LIKE '{%}' OR storage_place_id LIKE '{%}'",
-        "SELECT COUNT(*) FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'"
-    };
-    
-    for (const QString &check : checks) {
-        if (!query.exec(check)) {
-            qDebug() << "Weryfikacja migracji nie mogła wykonać zapytania:" << query.lastError().text();
-            return false;
-        }
-        if (query.next() && query.value(0).toInt() > 0) {
-            qDebug() << "Weryfikacja nie powiodła się: Znaleziono pozostałe UUID-y z nawiasami";
-            return false;
-        }
-    }
-    
-    return true;
+    return verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) FROM statuses WHERE id LIKE '{%}'"),
+                                  QStringLiteral("statuses"))
+           && verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) FROM storage_places WHERE id LIKE '{%}'"),
+                                     QStringLiteral("storage_places"))
+           && verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) FROM eksponaty "
+                                                    "WHERE id LIKE '{%}' OR status_id LIKE '{%}' OR storage_place_id LIKE '{%}'"),
+                                     QStringLiteral("eksponaty"))
+           && verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'"),
+                                     QStringLiteral("photos"));
 }
 
 QString DatabaseMigration::removeBraces(const QString &uuid)
@@ -347,84 +224,168 @@ bool DatabaseMigration::hasMigrationTables() const
     return true;
 }
 
+bool DatabaseMigration::hasMatchingRows(const QString &sql, const QString &errorContext)
+{
+    QSqlQuery query(db);
+    if (!query.exec(sql)) {
+        qDebug() << errorContext << query.lastError().text();
+        return false;
+    }
+
+    return query.next();
+}
+
+bool DatabaseMigration::executeStatement(const QString &sql,
+                                         const QList<QVariant> &bindValues,
+                                         const QString &errorContext,
+                                         int *affectedRows)
+{
+    QSqlQuery query(db);
+    query.prepare(sql);
+    for (const QVariant &bindValue : bindValues)
+        query.addBindValue(bindValue);
+
+    if (!query.exec()) {
+        qDebug() << errorContext << query.lastError().text();
+        return false;
+    }
+
+    if (affectedRows)
+        *affectedRows = query.numRowsAffected();
+    return true;
+}
+
+bool DatabaseMigration::updateBracedIds(const QString &selectSql,
+                                        const QString &updatePrimarySql,
+                                        const QString &updateReferenceSql,
+                                        const QString &entityLabel,
+                                        const QString &referenceLabel)
+{
+    QSqlQuery query(db);
+    if (!query.exec(selectSql)) {
+        qDebug() << "Nie udało się pobrać rekordów do migracji" << entityLabel << query.lastError().text();
+        return false;
+    }
+
+    while (query.next()) {
+        const QString oldId = query.value(0).toString();
+        const QString newId = removeBraces(oldId);
+
+        if (!executeStatement(updatePrimarySql,
+                              {newId, oldId},
+                              QStringLiteral("Nie udało się zaktualizować UUID dla %1").arg(entityLabel))) {
+            return false;
+        }
+
+        if (!updateReferenceSql.isEmpty()
+            && !executeStatement(updateReferenceSql,
+                                 {newId, oldId},
+                                 QStringLiteral("Nie udało się zaktualizować referencji %1").arg(referenceLabel))) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool DatabaseMigration::fixBrokenUuidValue(const QString &tableName,
+                                           const QString &oldId,
+                                           const QString &newId,
+                                           const QString &entityLabel,
+                                           const QString &referenceTable,
+                                           const QString &referenceColumn,
+                                           const QString &referenceLabel)
+{
+    int affectedRows = 0;
+    if (!executeStatement(QStringLiteral("UPDATE %1 SET id = ? WHERE id = ?").arg(tableName),
+                          {newId, oldId},
+                          QStringLiteral("Błąd podczas naprawy UUID %1:").arg(entityLabel),
+                          &affectedRows)) {
+        return false;
+    }
+
+    if (affectedRows <= 0)
+        return true;
+
+    qDebug() << "Zaktualizowano" << entityLabel << "(" << affectedRows << " rekord)";
+
+    if (referenceTable.isEmpty() || referenceColumn.isEmpty())
+        return true;
+
+    int updatedReferences = 0;
+    if (!executeStatement(QStringLiteral("UPDATE %1 SET %2 = ? WHERE %2 = ?").arg(referenceTable, referenceColumn),
+                          {newId, oldId},
+                          QStringLiteral("Błąd podczas aktualizacji referencji %1:").arg(referenceLabel),
+                          &updatedReferences)) {
+        return false;
+    }
+
+    qDebug() << "Zaktualizowano referencje" << referenceLabel << "(" << updatedReferences << " rekordów)";
+    return true;
+}
+
+bool DatabaseMigration::verifyNoMalformedUuids(const QString &sql, const QString &label)
+{
+    QSqlQuery query(db);
+    if (!query.exec(sql)) {
+        qDebug() << "Weryfikacja migracji nie mogła wykonać zapytania dla" << label << ":"
+                 << query.lastError().text();
+        return false;
+    }
+
+    if (!query.next())
+        return true;
+
+    if (query.value(0).toInt() > 0) {
+        qDebug() << "Weryfikacja nie powiodła się: znaleziono pozostałe UUID-y w tabeli" << label;
+        return false;
+    }
+
+    return true;
+}
+
 bool DatabaseMigration::fixBrokenUUIDs()
 {
     qDebug() << "Rozpoczynam naprawę uszkodzonych UUID-ów...";
     bool success = true;
-    QSqlQuery query(db);
-
     // Wyłącz sprawdzanie kluczy obcych
     if (!disableForeignKeyChecks()) {
         qDebug() << "Nie udało się wyłączyć sprawdzania kluczy obcych";
         return false;
     }
 
-    // 1. Naprawa statusu "brak"
-    query.prepare("UPDATE statuses SET id = 'b0ffafe8-a847-4b6f-bf65-54096df6ade' "
-                 "WHERE id = '{b0ffafe8-a847-4b6f-bf65-54096df6ade'");
-    if (!query.exec()) {
-        qDebug() << "Błąd podczas naprawy UUID statusu 'brak':" << query.lastError().text();
-        success = false;
-    } else if (query.numRowsAffected() > 0) {
-        qDebug() << "Zaktualizowano status 'brak' (" << query.numRowsAffected() << " rekord)";
-        
-        query.prepare("UPDATE eksponaty SET status_id = 'b0ffafe8-a847-4b6f-bf65-54096df6ade' "
-                     "WHERE status_id = '{b0ffafe8-a847-4b6f-bf65-54096df6ade'");
-        if (!query.exec()) {
-            qDebug() << "Błąd podczas aktualizacji referencji do statusu 'brak':" << query.lastError().text();
-            success = false;
-        } else {
-            qDebug() << "Zaktualizowano referencje do statusu 'brak' (" << query.numRowsAffected() << " rekordów)";
-        }
-    }
+    success = fixBrokenUuidValue(QStringLiteral("statuses"),
+                                 QStringLiteral("{b0ffafe8-a847-4b6f-bf65-54096df6ade"),
+                                 QStringLiteral("b0ffafe8-a847-4b6f-bf65-54096df6ade"),
+                                 QStringLiteral("status 'brak'"),
+                                 QStringLiteral("eksponaty"),
+                                 QStringLiteral("status_id"),
+                                 QStringLiteral("do statusu 'brak'"))
+              && success;
 
-    // 2. Naprawa statusu "Sprawny"
-    query.prepare("UPDATE statuses SET id = '42668524-b93e-4c88-ba04-0d0fbf7683e' "
-                 "WHERE id = '{42668524-b93e-4c88-ba04-0d0fbf7683e'");
-    if (!query.exec()) {
-        qDebug() << "Błąd podczas naprawy UUID statusu 'Sprawny':" << query.lastError().text();
-        success = false;
-    } else if (query.numRowsAffected() > 0) {
-        qDebug() << "Zaktualizowano status 'Sprawny' (" << query.numRowsAffected() << " rekord)";
-        
-        query.prepare("UPDATE eksponaty SET status_id = '42668524-b93e-4c88-ba04-0d0fbf7683e' "
-                     "WHERE status_id = '{42668524-b93e-4c88-ba04-0d0fbf7683e'");
-        if (!query.exec()) {
-            qDebug() << "Błąd podczas aktualizacji referencji do statusu 'Sprawny':" << query.lastError().text();
-            success = false;
-        } else {
-            qDebug() << "Zaktualizowano referencje do statusu 'Sprawny' (" << query.numRowsAffected() << " rekordów)";
-        }
-    }
+    success = fixBrokenUuidValue(QStringLiteral("statuses"),
+                                 QStringLiteral("{42668524-b93e-4c88-ba04-0d0fbf7683e"),
+                                 QStringLiteral("42668524-b93e-4c88-ba04-0d0fbf7683e"),
+                                 QStringLiteral("status 'Sprawny'"),
+                                 QStringLiteral("eksponaty"),
+                                 QStringLiteral("status_id"),
+                                 QStringLiteral("do statusu 'Sprawny'"))
+              && success;
 
-    // 3. Naprawa statusu "uszkodzony" (bez referencji w eksponatach)
-    query.prepare("UPDATE statuses SET id = '62a1ee77-f482-4036-b979-7eb8bd9f4fb' "
-                 "WHERE id = '{62a1ee77-f482-4036-b979-7eb8bd9f4fb'");
-    if (!query.exec()) {
-        qDebug() << "Błąd podczas naprawy UUID statusu 'uszkodzony':" << query.lastError().text();
-        success = false;
-    } else if (query.numRowsAffected() > 0) {
-        qDebug() << "Zaktualizowano status 'uszkodzony' (" << query.numRowsAffected() << " rekord)";
-    }
+    success = fixBrokenUuidValue(QStringLiteral("statuses"),
+                                 QStringLiteral("{62a1ee77-f482-4036-b979-7eb8bd9f4fb"),
+                                 QStringLiteral("62a1ee77-f482-4036-b979-7eb8bd9f4fb"),
+                                 QStringLiteral("status 'uszkodzony'"))
+              && success;
 
-    // 4. Naprawa miejsca przechowywania "brak"
-    query.prepare("UPDATE storage_places SET id = 'c120da85-24f7-45f6-8df1-5a4245952ef' "
-                 "WHERE id = '{c120da85-24f7-45f6-8df1-5a4245952ef'");
-    if (!query.exec()) {
-        qDebug() << "Błąd podczas naprawy UUID miejsca przechowywania 'brak':" << query.lastError().text();
-        success = false;
-    } else if (query.numRowsAffected() > 0) {
-        qDebug() << "Zaktualizowano miejsce przechowywania 'brak' (" << query.numRowsAffected() << " rekord)";
-        
-        query.prepare("UPDATE eksponaty SET storage_place_id = 'c120da85-24f7-45f6-8df1-5a4245952ef' "
-                     "WHERE storage_place_id = '{c120da85-24f7-45f6-8df1-5a4245952ef'");
-        if (!query.exec()) {
-            qDebug() << "Błąd podczas aktualizacji referencji do miejsca przechowywania 'brak':" << query.lastError().text();
-            success = false;
-        } else {
-            qDebug() << "Zaktualizowano referencje do miejsca przechowywania 'brak' (" << query.numRowsAffected() << " rekordów)";
-        }
-    }
+    success = fixBrokenUuidValue(QStringLiteral("storage_places"),
+                                 QStringLiteral("{c120da85-24f7-45f6-8df1-5a4245952ef"),
+                                 QStringLiteral("c120da85-24f7-45f6-8df1-5a4245952ef"),
+                                 QStringLiteral("miejsce przechowywania 'brak'"),
+                                 QStringLiteral("eksponaty"),
+                                 QStringLiteral("storage_place_id"),
+                                 QStringLiteral("do miejsca przechowywania 'brak'"))
+              && success;
 
     // Włącz z powrotem sprawdzanie kluczy obcych
     if (!enableForeignKeyChecks()) {
@@ -432,46 +393,22 @@ bool DatabaseMigration::fixBrokenUUIDs()
         success = false;
     }
 
-    // Końcowa weryfikacja
-    if (!query.exec("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%' AND id NOT LIKE '%}'")) {
-        qDebug() << "Nie udało się zweryfikować UUID w tabeli statuses:" << query.lastError().text();
-        success = false;
-    }
-    if (query.next() && query.value(0).toInt() > 0) {
-        qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli statuses:" << query.value(0).toInt();
-        success = false;
-    }
-
-    if (!query.exec("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%' AND id NOT LIKE '%}'")) {
-        qDebug() << "Nie udało się zweryfikować UUID w tabeli storage_places:" << query.lastError().text();
-        success = false;
-    }
-    if (query.next() && query.value(0).toInt() > 0) {
-        qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli storage_places:" << query.value(0).toInt();
-        success = false;
-    }
-
-    if (!query.exec("SELECT COUNT(*) as count_eksponaty FROM eksponaty "
-                    "WHERE (status_id LIKE '{%' AND status_id NOT LIKE '%}') "
-                    "OR (storage_place_id LIKE '{%' AND storage_place_id NOT LIKE '%}')")) {
-        qDebug() << "Nie udało się zweryfikować UUID w tabeli eksponaty:" << query.lastError().text();
-        success = false;
-    }
-    if (query.next() && query.value(0).toInt() > 0) {
-        qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli eksponaty:" << query.value(0).toInt();
-        success = false;
-    }
-
-    if (!query.exec("SELECT COUNT(*) as count_photos FROM photos "
-                    "WHERE (id LIKE '{%' AND id NOT LIKE '%}') "
-                    "OR (eksponat_id LIKE '{%' AND eksponat_id NOT LIKE '%}')")) {
-        qDebug() << "Nie udało się zweryfikować UUID w tabeli photos:" << query.lastError().text();
-        success = false;
-    }
-    if (query.next() && query.value(0).toInt() > 0) {
-        qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli photos:" << query.value(0).toInt();
-        success = false;
-    }
+    success = verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) as count_status FROM statuses WHERE id LIKE '{%' AND id NOT LIKE '%}'"),
+                                     QStringLiteral("statuses"))
+              && success;
+    success = verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) as count_storage FROM storage_places WHERE id LIKE '{%' AND id NOT LIKE '%}'"),
+                                     QStringLiteral("storage_places"))
+              && success;
+    success = verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) as count_eksponaty FROM eksponaty "
+                                                    "WHERE (status_id LIKE '{%' AND status_id NOT LIKE '%}') "
+                                                    "OR (storage_place_id LIKE '{%' AND storage_place_id NOT LIKE '%}')"),
+                                     QStringLiteral("eksponaty"))
+              && success;
+    success = verifyNoMalformedUuids(QStringLiteral("SELECT COUNT(*) as count_photos FROM photos "
+                                                    "WHERE (id LIKE '{%' AND id NOT LIKE '%}') "
+                                                    "OR (eksponat_id LIKE '{%' AND eksponat_id NOT LIKE '%}')"),
+                                     QStringLiteral("photos"))
+              && success;
 
     if (success) {
         qDebug() << "Naprawa UUID-ów zakończona sukcesem - wszystkie ID są teraz w poprawnym formacie";
