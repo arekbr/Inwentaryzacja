@@ -11,6 +11,8 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QFile>
+#include <QFileInfo>
 #include <QTemporaryDir>
 #include <QUuid>
 
@@ -24,10 +26,15 @@ private slots:
 
     void itemRepository_savesRecordAndPhotos();
     void itemRepository_deletesRecordAndPhotos();
+    void itemRepository_updatesExistingRecordWithoutDuplicatingPhotos();
     void dictionaryRepository_supportsCrud();
+    void dictionaryRepository_addsModelWithParentVendor();
     void photoService_loadsStoredPhotos();
+    void photoService_movesPhotosToDoneWhenEnabled();
+    void photoService_keepsPhotosInPlaceWhenMoveDisabled();
     void databaseMigration_removesBracesFromAllRelevantTables();
     void databaseMigration_fixesKnownBrokenUuids();
+    void databaseMigration_isNoOpWithoutSchema();
 
 private:
     QString lookupId(const QString &tableName, const QString &name) const;
@@ -150,6 +157,42 @@ void RepositoryTests::itemRepository_deletesRecordAndPhotos()
     QCOMPARE(photoQuery.value(0).toInt(), 0);
 }
 
+void RepositoryTests::itemRepository_updatesExistingRecordWithoutDuplicatingPhotos()
+{
+    ItemRepository repository(m_db);
+    QString savedItemId;
+    QString errorMessage;
+
+    QVERIFY2(repository.saveItem(createSampleItem(), {createPhotoBytes()}, &savedItemId, &errorMessage),
+             qPrintable(errorMessage));
+
+    ItemRecordData updatedItem = createSampleItem();
+    updatedItem.id = savedItemId;
+    updatedItem.name = QStringLiteral("Eksponat po edycji");
+    updatedItem.value = 999;
+    updatedItem.editMode = true;
+
+    QString updatedItemId;
+    QVERIFY2(repository.saveItem(updatedItem, {createPhotoBytes()}, &updatedItemId, &errorMessage),
+             qPrintable(errorMessage));
+    QCOMPARE(updatedItemId, savedItemId);
+
+    QSqlQuery itemQuery(m_db);
+    itemQuery.prepare(QStringLiteral("SELECT name, value FROM eksponaty WHERE id = :id"));
+    itemQuery.bindValue(QStringLiteral(":id"), savedItemId);
+    QVERIFY(itemQuery.exec());
+    QVERIFY(itemQuery.next());
+    QCOMPARE(itemQuery.value(0).toString(), QStringLiteral("Eksponat po edycji"));
+    QCOMPARE(itemQuery.value(1).toInt(), 999);
+
+    QSqlQuery photoQuery(m_db);
+    photoQuery.prepare(QStringLiteral("SELECT COUNT(*) FROM photos WHERE eksponat_id = :id"));
+    photoQuery.bindValue(QStringLiteral(":id"), savedItemId);
+    QVERIFY(photoQuery.exec());
+    QVERIFY(photoQuery.next());
+    QCOMPARE(photoQuery.value(0).toInt(), 1);
+}
+
 void RepositoryTests::dictionaryRepository_supportsCrud()
 {
     DictionaryRepository repository(m_db);
@@ -170,6 +213,28 @@ void RepositoryTests::dictionaryRepository_supportsCrud()
     QVERIFY(lookupId(QStringLiteral("types"), renamedTypeName).isEmpty());
 }
 
+void RepositoryTests::dictionaryRepository_addsModelWithParentVendor()
+{
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    const QString vendorId = lookupId(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    QVERIFY(!vendorId.isEmpty());
+
+    QVERIFY2(repository.addEntry(QStringLiteral("models"),
+                                 QStringLiteral("Atari Test Model"),
+                                 &errorMessage,
+                                 QStringLiteral("vendor_id"),
+                                 vendorId),
+             qPrintable(errorMessage));
+
+    QSqlQuery query(m_db);
+    query.prepare(QStringLiteral("SELECT vendor_id FROM models WHERE name = :name"));
+    query.bindValue(QStringLiteral(":name"), QStringLiteral("Atari Test Model"));
+    QVERIFY(query.exec());
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toString(), vendorId);
+}
+
 void RepositoryTests::photoService_loadsStoredPhotos()
 {
     ItemRepository repository(m_db);
@@ -185,6 +250,42 @@ void RepositoryTests::photoService_loadsStoredPhotos()
     QCOMPARE(photos.size(), 1);
     QVERIFY(!photos.first().id.isEmpty());
     QVERIFY(!photos.first().pixmap.isNull());
+}
+
+void RepositoryTests::photoService_movesPhotosToDoneWhenEnabled()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString sourcePath = tempDir.filePath(QStringLiteral("photo.png"));
+    QFile file(sourcePath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write(createPhotoBytes());
+    file.close();
+
+    PhotoService photoService(m_db);
+    const QStringList failures = photoService.movePhotosToDone({sourcePath}, true);
+    QVERIFY(failures.isEmpty());
+    QVERIFY(!QFileInfo::exists(sourcePath));
+    QVERIFY(QFileInfo::exists(tempDir.filePath(QStringLiteral("gotowe/photo.png"))));
+}
+
+void RepositoryTests::photoService_keepsPhotosInPlaceWhenMoveDisabled()
+{
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString sourcePath = tempDir.filePath(QStringLiteral("photo.png"));
+    QFile file(sourcePath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.write(createPhotoBytes());
+    file.close();
+
+    PhotoService photoService(m_db);
+    const QStringList failures = photoService.movePhotosToDone({sourcePath}, false);
+    QVERIFY(failures.isEmpty());
+    QVERIFY(QFileInfo::exists(sourcePath));
+    QVERIFY(!QFileInfo::exists(tempDir.filePath(QStringLiteral("gotowe/photo.png"))));
 }
 
 void RepositoryTests::databaseMigration_removesBracesFromAllRelevantTables()
@@ -325,6 +426,24 @@ void RepositoryTests::databaseMigration_fixesKnownBrokenUuids()
     query = QSqlQuery();
     migrationDb.close();
     migrationDb = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::databaseMigration_isNoOpWithoutSchema()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QSqlDatabase emptyDb = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("default_connection"));
+    emptyDb.setDatabaseName(QStringLiteral(":memory:"));
+    QVERIFY2(emptyDb.open(), qPrintable(emptyDb.lastError().text()));
+
+    {
+        DatabaseMigration migration;
+        QVERIFY(migration.migrateUUIDs());
+    }
+
+    emptyDb.close();
+    emptyDb = QSqlDatabase();
     QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
 }
 
