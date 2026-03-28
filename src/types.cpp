@@ -32,12 +32,12 @@
  */
 
 #include "types.h"
+#include "DictionaryRepository.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QUuid>
 #include "mainwindow.h"
 #include "ui_types.h"
 
@@ -129,17 +129,12 @@ void types::onAddClicked()
         QMessageBox::warning(this, tr("Błąd"), tr("Nazwa typu nie może być pusta."));
         return;
     }
-    QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
-
-    QSqlQuery q(m_db);
-    q.prepare("INSERT INTO types (id, name) VALUES (:id, :name)");
-    q.bindValue(":id", uuid);
-    q.bindValue(":name", txt);
-
-    if (!q.exec()) {
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    if (!repository.addEntry("types", txt, &errorMessage)) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Nie udało się dodać:\n%1").arg(q.lastError().text()));
+                              tr("Nie udało się dodać:\n%1").arg(errorMessage));
         return;
     }
     refreshList();

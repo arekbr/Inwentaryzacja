@@ -33,12 +33,12 @@
  */
 
 #include "models.h"
+#include "DictionaryRepository.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QUuid>
 #include "mainwindow.h"
 #include "ui_models.h"
 
@@ -147,12 +147,6 @@ void models::onAddClicked()
         return;
     }
 
-    QString modelId = QUuid::createUuid().toString(QUuid::WithoutBraces);
-
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO models (id, name, vendor_id) VALUES (:id, :name, :vendor_id)");
-    query.bindValue(":id", modelId);
-
     QString vendorId;
     if (!m_vendorId.isEmpty()) {
         vendorId = m_vendorId;
@@ -167,13 +161,12 @@ void models::onAddClicked()
         return;
     }
 
-    query.bindValue(":name", newModel);
-    query.bindValue(":vendor_id", vendorId);
-
-    if (!query.exec()) {
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    if (!repository.addEntry("models", newModel, &errorMessage, "vendor_id", vendorId)) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Nie udało się dodać modelu:\n%1").arg(query.lastError().text()));
+                              tr("Nie udało się dodać modelu:\n%1").arg(errorMessage));
         return;
     }
 

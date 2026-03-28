@@ -32,12 +32,12 @@
  */
 
 #include "vendors.h"
+#include "DictionaryRepository.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QUuid> // dodane
 #include "mainwindow.h"
 #include "ui_vendors.h"
 
@@ -131,17 +131,13 @@ void vendors::onAddClicked()
         return;
     }
 
-    QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
-
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO vendors (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", newId);
-    query.bindValue(":name", newVendor);
-    if (!query.exec()) {
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    if (!repository.addEntry("vendors", newVendor, &errorMessage)) {
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się dodać producenta:\n%1")
-                                  .arg(query.lastError().text()));
+                                  .arg(errorMessage));
         return;
     }
     refreshList();

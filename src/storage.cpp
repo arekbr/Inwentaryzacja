@@ -33,12 +33,12 @@
  */
 
 #include "storage.h"
+#include "DictionaryRepository.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QUuid>
 #include "mainwindow.h"
 #include "ui_storage.h"
 
@@ -139,15 +139,13 @@ void storage::onAddClicked()
         return;
     }
 
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO storage_places (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", QUuid::createUuid().toString(QUuid::WithoutBraces));
-    query.bindValue(":name", newStorage);
-    if (!query.exec()) {
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    if (!repository.addEntry("storage_places", newStorage, &errorMessage)) {
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się dodać miejsca przechowywania: %1")
-                                  .arg(query.lastError().text()));
+                                  .arg(errorMessage));
         return;
     }
     refreshList();

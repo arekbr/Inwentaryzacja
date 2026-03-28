@@ -32,12 +32,12 @@
  */
 
 #include "status.h"
+#include "DictionaryRepository.h"
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QUuid>
 #include "mainwindow.h"
 #include "ui_status.h"
 
@@ -135,14 +135,12 @@ void status::onAddClicked()
         return;
     }
 
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO statuses (id, name) VALUES (:id, :name)");
-    query.bindValue(":id", QUuid::createUuid().toString(QUuid::WithoutBraces));
-    query.bindValue(":name", newStatus);
-    if (!query.exec()) {
+    DictionaryRepository repository(m_db);
+    QString errorMessage;
+    if (!repository.addEntry("statuses", newStatus, &errorMessage)) {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Nie udało się dodać statusu: %1").arg(query.lastError().text()));
+                              tr("Nie udało się dodać statusu: %1").arg(errorMessage));
         return;
     }
     refreshList();
