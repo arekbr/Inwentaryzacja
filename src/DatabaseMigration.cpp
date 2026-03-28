@@ -36,46 +36,43 @@ bool DatabaseMigration::migrateUUIDs()
         return success;
     }
 
-    // Jeśli są UUID-y do migracji, wykonaj migrację
-    if (hasBracedUuids) {
-        // Rozpocznij proces migracji
-        if (!disableForeignKeyChecks()) {
-            qDebug() << "Nie udało się wyłączyć sprawdzania kluczy obcych";
-            return false;
-        }
-        
-        // Aktualizuj tabele we właściwej kolejności
-        if (!updateStatusesTable()) {
-            qDebug() << "Nie udało się zaktualizować tabeli statusów";
-            success = false;
-        }
-        
-        if (!updateStoragePlacesTable()) {
-            qDebug() << "Nie udało się zaktualizować tabeli miejsc przechowywania";
-            success = false;
-        }
-        
-        if (!updateEksponatyTable()) {
-            qDebug() << "Nie udało się zaktualizować tabeli eksponatów";
-            success = false;
-        }
+    // Rozpocznij proces migracji
+    if (!disableForeignKeyChecks()) {
+        qDebug() << "Nie udało się wyłączyć sprawdzania kluczy obcych";
+        return false;
+    }
+    
+    // Aktualizuj tabele we właściwej kolejności
+    if (!updateStatusesTable()) {
+        qDebug() << "Nie udało się zaktualizować tabeli statusów";
+        success = false;
+    }
+    
+    if (!updateStoragePlacesTable()) {
+        qDebug() << "Nie udało się zaktualizować tabeli miejsc przechowywania";
+        success = false;
+    }
+    
+    if (!updateEksponatyTable()) {
+        qDebug() << "Nie udało się zaktualizować tabeli eksponatów";
+        success = false;
+    }
 
-        if (!updatePhotosTable()) {
-            qDebug() << "Nie udało się zaktualizować tabeli zdjęć";
-            success = false;
-        }
+    if (!updatePhotosTable()) {
+        qDebug() << "Nie udało się zaktualizować tabeli zdjęć";
+        success = false;
+    }
 
-        // Włącz ponownie sprawdzanie kluczy obcych
-        if (!enableForeignKeyChecks()) {
-            qDebug() << "Nie udało się włączyć sprawdzania kluczy obcych";
-            success = false;
-        }
+    // Włącz ponownie sprawdzanie kluczy obcych
+    if (!enableForeignKeyChecks()) {
+        qDebug() << "Nie udało się włączyć sprawdzania kluczy obcych";
+        success = false;
+    }
 
-        // Zweryfikuj migrację
-        if (success && !verifyMigration()) {
-            qDebug() << "Weryfikacja migracji nie powiodła się";
-            success = false;
-        }
+    // Zweryfikuj migrację
+    if (success && !verifyMigration()) {
+        qDebug() << "Weryfikacja migracji nie powiodła się";
+        success = false;
     }
 
     if (success) {
@@ -306,7 +303,10 @@ bool DatabaseMigration::verifyMigration()
     };
     
     for (const QString &check : checks) {
-        query.exec(check);
+        if (!query.exec(check)) {
+            qDebug() << "Weryfikacja migracji nie mogła wykonać zapytania:" << query.lastError().text();
+            return false;
+        }
         if (query.next() && query.value(0).toInt() > 0) {
             qDebug() << "Weryfikacja nie powiodła się: Znaleziono pozostałe UUID-y z nawiasami";
             return false;
