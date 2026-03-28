@@ -33,6 +33,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ItemRepository.h"
 #include "PacmanOverlay.h"
 
 // Inne nagłówki
@@ -820,112 +821,35 @@ void MainWindow::onSaveClicked()
         return;
     }
 
-    if (!db.transaction())
+    ItemRecordData itemData;
+    itemData.id = m_recordId;
+    itemData.name = itemName;
+    itemData.serialNumber = ui->New_item_serialNumber->text();
+    itemData.partNumber = ui->New_item_partNumber->text();
+    itemData.revision = ui->New_item_revision->text();
+    itemData.productionYear = ui->New_item_ProductionDate->date().year();
+    itemData.statusId = statusId;
+    itemData.typeId = typeId;
+    itemData.vendorId = vendorId;
+    itemData.modelId = modelId;
+    itemData.storagePlaceId = storageId;
+    itemData.description = ui->New_item_description->toPlainText();
+    itemData.value = ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt();
+    itemData.hasOriginalPackaging = ui->New_item_hasOriginalPackaging->isChecked();
+    itemData.editMode = m_editMode;
+
+    ItemRepository repository(db);
+    QString savedItemId;
+    QString errorMessage;
+    const QList<QByteArray> newPhotos = m_editMode ? QList<QByteArray>() : m_photoBuffer;
+    if (!repository.saveItem(itemData, newPhotos, &savedItemId, &errorMessage))
     {
         QMessageBox::critical(this,
                               tr("Błąd"),
-                              tr("Nie udało się rozpocząć transakcji:\n%1").arg(db.lastError().text()));
+                              tr("Nie udało się zapisać:\n%1").arg(errorMessage));
         return;
     }
-
-    QSqlQuery q(db);
-
-    if (!m_editMode)
-    {
-        m_recordId = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        q.prepare(R"(
-            INSERT INTO eksponaty
-            (id, name, serial_number, part_number, revision, production_year,
-             status_id, type_id, vendor_id, model_id, storage_place_id,
-             description, value, has_original_packaging)
-            VALUES
-            (:id, :name, :serial_number, :part_number, :revision, :production_year,
-             :status_id, :type_id, :vendor_id, :model_id, :storage_place_id,
-             :description, :value, :has_original_packaging)
-        )");
-        q.bindValue(":id", m_recordId);
-    }
-    else
-    {
-        q.prepare(R"(
-            UPDATE eksponaty
-            SET name=:name,
-                serial_number=:serial_number,
-                part_number=:part_number,
-                revision=:revision,
-                production_year=:production_year,
-                status_id=:status_id,
-                type_id=:type_id,
-                vendor_id=:vendor_id,
-                model_id=:model_id,
-                storage_place_id=:storage_place_id,
-                description=:description,
-                value=:value,
-                has_original_packaging=:has_original_packaging
-            WHERE id=:id
-        )");
-        q.bindValue(":id", m_recordId);
-    }
-
-    q.bindValue(":name", itemName);
-    q.bindValue(":serial_number", ui->New_item_serialNumber->text());
-    q.bindValue(":part_number", ui->New_item_partNumber->text());
-    q.bindValue(":revision", ui->New_item_revision->text());
-    q.bindValue(":production_year", ui->New_item_ProductionDate->date().year());
-    q.bindValue(":has_original_packaging", ui->New_item_hasOriginalPackaging->isChecked());
-
-    q.bindValue(":status_id", statusId);
-    q.bindValue(":type_id", typeId);
-    q.bindValue(":vendor_id", vendorId);
-    q.bindValue(":model_id", modelId);
-    q.bindValue(":storage_place_id", storageId);
-
-    q.bindValue(":description", ui->New_item_description->toPlainText());
-    q.bindValue(":value",
-                ui->New_item_value->text().isEmpty() ? 0 : ui->New_item_value->text().toInt());
-
-    if (!q.exec())
-    {
-        db.rollback();
-        QMessageBox::critical(this,
-                              tr("Błąd"),
-                              tr("Nie udało się zapisać:\n%1").arg(q.lastError().text()));
-        return;
-    }
-
-    if (!m_editMode)
-    {
-        for (int i = 0; i < m_photoBuffer.size(); ++i)
-        {
-            QByteArray ba = m_photoBuffer[i];
-            QString pid = QUuid::createUuid().toString(QUuid::WithoutBraces);
-            QSqlQuery q2(db);
-            q2.prepare(R"(
-                INSERT INTO photos (id, eksponat_id, photo)
-                VALUES (:id, :exid, :photo)
-            )");
-            q2.bindValue(":id", pid);
-            q2.bindValue(":exid", m_recordId);
-            q2.bindValue(":photo", ba);
-            if (!q2.exec())
-            {
-                db.rollback();
-                QMessageBox::critical(this,
-                                      tr("Błąd"),
-                                      tr("Nie udało się zapisać zdjęcia:\n%1").arg(q2.lastError().text()));
-                return;
-            }
-        }
-    }
-
-    if (!db.commit())
-    {
-        db.rollback();
-        QMessageBox::critical(this,
-                              tr("Błąd"),
-                              tr("Nie udało się zatwierdzić zmian:\n%1").arg(db.lastError().text()));
-        return;
-    }
+    m_recordId = savedItemId;
 
     QStringList moveFailures;
     if (!m_editMode)
