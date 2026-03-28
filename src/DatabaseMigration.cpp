@@ -428,6 +428,12 @@ bool DatabaseMigration::fixBrokenUUIDs()
         success = false;
     }
 
+    query.exec("SELECT COUNT(*) as count_photos FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}'");
+    if (query.next() && query.value(0).toInt() > 0) {
+        qDebug() << "UWAGA: Nadal istnieją niepoprawne UUID w tabeli photos:" << query.value(0).toInt();
+        success = false;
+    }
+
     if (success) {
         qDebug() << "Naprawa UUID-ów zakończona sukcesem - wszystkie ID są teraz w poprawnym formacie";
     } else {
