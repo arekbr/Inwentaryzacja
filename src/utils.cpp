@@ -84,6 +84,11 @@ bool setupDatabase(const QString &dbType,
         return false;
     }
 
+    if (db.driverName() == "QSQLITE") {
+        QSqlQuery pragmaQuery(db);
+        pragmaQuery.exec("PRAGMA foreign_keys = ON");
+    }
+
     // Uruchom migrację UUID jeśli potrzebna
     DatabaseMigration migration;
     if (!migration.migrateUUIDs()) {
@@ -181,6 +186,7 @@ bool setupDatabase(const QString &dbType,
                   photo BLOB NOT NULL
                 )
             )");
+            q.exec("CREATE INDEX IF NOT EXISTS idx_photos_eksponat_id ON photos(eksponat_id)");
 
             // Przykładowe dane słownikowe
             auto genId = []() { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
