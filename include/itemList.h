@@ -221,36 +221,6 @@ private slots:
 
 private:
     /**
-     * @brief Weryfikuje schemat bazy danych.
-     * @param db Referencja do obiektu bazy danych.
-     * @return true, jeśli schemat jest poprawny; false w przeciwnym razie.
-     *
-     * @section MethodOverview
-     * Sprawdza, czy wszystkie wymagane tabele istnieją w bazie danych.
-     */
-    bool verifyDatabaseSchema(QSqlDatabase &db);
-
-    /**
-     * @brief Tworzy schemat bazy danych, jeśli nie istnieje.
-     * @param db Referencja do obiektu bazy danych.
-     *
-     * @section MethodOverview
-     * Tworzy tabele dla eksponatów, typów, producentów, modeli, statusów, miejsc przechowywania
-     * i zdjęć.
-     */
-    void createDatabaseSchema(QSqlDatabase &db);
-
-    /**
-     * @brief Wstawia przykładowe dane do bazy danych.
-     * @param db Referencja do obiektu bazy danych.
-     *
-     * @section MethodOverview
-     * Wstawia przykładowe rekordy dla typów, producentów, modeli, statusów, miejsc przechowywania
-     * i eksponatów.
-     */
-    void insertSampleData(QSqlDatabase &db);
-
-    /**
      * @brief Inicjalizuje filtry combo boxów.
      * @param db Referencja do obiektu bazy danych.
      *
