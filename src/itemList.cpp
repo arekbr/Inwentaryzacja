@@ -36,6 +36,7 @@
 #include "mainwindow.h"
 #include "photoitem.h"
 #include "ui_itemList.h"
+#include "utils.h"
 
 #include <QApplication>
 #include <QComboBox>
@@ -143,10 +144,13 @@ itemList::itemList(QWidget *parent)
     }
     qDebug() << "itemList: Baza już otwarta";
 
-    if (!verifyDatabaseSchema(db))
+    if (!ensureDatabaseSchema(db))
     {
-        createDatabaseSchema(db);
-        insertSampleData(db);
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zweryfikować lub przygotować schematu bazy danych."));
+        qApp->quit();
+        return;
     }
     qDebug() << "itemList: Konstruktor zakończony";
 
