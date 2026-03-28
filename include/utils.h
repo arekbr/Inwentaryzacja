@@ -32,6 +32,8 @@
 
 #include <QString>
 
+class QSqlDatabase;
+
 /**
  * @brief Inicjalizuje połączenie z bazą danych na podstawie podanych parametrów.
  *
@@ -55,5 +57,7 @@ bool setupDatabase(const QString &dbType,
                    const QString &user = QString(),
                    const QString &password = QString(),
                    int port = 0);
+
+bool ensureDatabaseSchema(QSqlDatabase &db);
 
 #endif // UTILS_H
