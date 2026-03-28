@@ -210,6 +210,8 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: Inwentaryzacja ${{ github.ref_name }}
+          generate_release_notes: true
           files: |
             release-assets/debian/*
             release-assets/windows/*
