@@ -221,6 +221,7 @@ void models::onEditClicked()
                                       tr("Błąd"),
                                       tr("Nie udało się zaktualizować modelu:\n%1")
                                           .arg(updateQuery.lastError().text()));
+                return;
             }
         }
     }
@@ -259,6 +260,7 @@ void models::onDeleteClicked()
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć modelu:\n%1")
                                       .arg(query.lastError().text()));
+            return;
         }
     }
 

@@ -185,6 +185,7 @@ void types::onEditClicked()
                                       tr("Błąd"),
                                       tr("Nie udało się zaktualizować:\n%1")
                                           .arg(q2.lastError().text()));
+                return;
             }
         }
     }
@@ -220,6 +221,7 @@ void types::onDeleteClicked()
             QMessageBox::critical(this,
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć:\n%1").arg(q.lastError().text()));
+            return;
         }
     }
     refreshList();

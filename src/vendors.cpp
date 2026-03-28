@@ -188,6 +188,7 @@ void vendors::onEditClicked()
                                       tr("Błąd"),
                                       tr("Nie udało się zaktualizować producenta:\n%1")
                                           .arg(updateQuery.lastError().text()));
+                return;
             }
         }
     }
@@ -227,6 +228,7 @@ void vendors::onDeleteClicked()
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć producenta:\n%1")
                                       .arg(query.lastError().text()));
+            return;
         }
     }
     refreshList();

@@ -189,6 +189,7 @@ void status::onEditClicked()
                                       tr("Błąd"),
                                       tr("Nie udało się zaktualizować statusu: %1")
                                           .arg(updateQuery.lastError().text()));
+                return;
             }
         }
     }
@@ -227,6 +228,7 @@ void status::onDeleteClicked()
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć statusu: %1")
                                       .arg(query.lastError().text()));
+            return;
         }
     }
 

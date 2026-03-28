@@ -196,6 +196,7 @@ void storage::onEditClicked()
                                       tr("Błąd"),
                                       tr("Nie udało się zaktualizować miejsca przechowywania: %1")
                                           .arg(updateQuery.lastError().text()));
+                return;
             }
         }
     }
@@ -237,6 +238,7 @@ void storage::onDeleteClicked()
                                   tr("Błąd"),
                                   tr("Nie udało się usunąć miejsca przechowywania: %1")
                                       .arg(query.lastError().text()));
+            return;
         }
     }
 
