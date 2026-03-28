@@ -17,6 +17,39 @@ permissions:
   contents: write
 
 jobs:
+  debian:
+    name: Debian Package
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build build-essential pkg-config dpkg-dev \
+            qt6-base-dev qt6-base-dev-tools qt6-tools-dev-tools \
+            libqt6sql6-sqlite libqt6sql6-mysql libmariadb-dev-compat
+
+      - name: Configure and build
+        shell: bash
+        run: |
+          cmake -S . -B build-debian -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-debian -j 4
+
+      - name: Package deb
+        shell: bash
+        run: bash ci/package-debian.sh build-debian dist/debian
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Inwentaryzacja-debian-package
+          path: dist/debian/*.deb
+
   windows:
     name: Windows Installer
     runs-on: windows-2022
@@ -141,6 +174,7 @@ jobs:
     name: Publish release assets
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
+      - debian
       - windows
       - macos-intel
       - macos-arm
@@ -152,6 +186,12 @@ jobs:
         with:
           name: Inwentaryzacja-windows-installer
           path: release-assets/windows
+
+      - name: Download Debian artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Inwentaryzacja-debian-package
+          path: release-assets/debian
 
       - name: Download macOS Intel artifact
         uses: actions/download-artifact@v4
@@ -169,6 +209,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
+            release-assets/debian/*
             release-assets/windows/*
             release-assets/macos-intel/*
             release-assets/macos-arm/*

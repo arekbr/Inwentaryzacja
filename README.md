@@ -41,6 +41,7 @@ W osobnych katalogach są skrypty dla systemów Windows/Linux/Macos. Testowałem
 
 ### GitHub Actions – zdalne buildy instalatorów
 Repo ma też workflow GitHub Actions w `.github/workflows/build-installers.yml`, który buduje zdalnie:
+- pakiet `Debian .deb`
 - instalator `Windows x64`
 - paczkę `macOS Intel`
 - paczkę `macOS ARM`
