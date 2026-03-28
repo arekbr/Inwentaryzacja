@@ -7,6 +7,15 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+namespace {
+
+QString formatDbError(const QString &context, const QString &details)
+{
+    return QObject::tr("%1\n%2").arg(context, details);
+}
+
+}
+
 PhotoService::PhotoService(QSqlDatabase database)
     : m_db(database)
 {
@@ -20,7 +29,8 @@ QList<StoredPhoto> PhotoService::loadStoredPhotos(const QString &itemId, QString
     query.bindValue(":id", itemId);
     if (!query.exec()) {
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się odczytać zdjęć eksponatu."),
+                                          query.lastError().text());
         return photos;
     }
 

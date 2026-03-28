@@ -4,6 +4,15 @@
 #include <QSqlQuery>
 #include <QUuid>
 
+namespace {
+
+QString formatDbError(const QString &context, const QString &details)
+{
+    return QObject::tr("%1\n%2").arg(context, details);
+}
+
+}
+
 ItemRepository::ItemRepository(QSqlDatabase database)
     : m_db(database)
 {
@@ -26,7 +35,8 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
 
     if (!m_db.transaction()) {
         if (errorMessage)
-            *errorMessage = m_db.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji zapisu."),
+                                          m_db.lastError().text());
         return false;
     }
 
@@ -80,7 +90,10 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
     if (!query.exec()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(item.editMode
+                                              ? QObject::tr("Nie udało się zaktualizować eksponatu.")
+                                              : QObject::tr("Nie udało się dodać eksponatu."),
+                                          query.lastError().text());
         return false;
     }
 
@@ -98,7 +111,8 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
             if (!photoQuery.exec()) {
                 m_db.rollback();
                 if (errorMessage)
-                    *errorMessage = photoQuery.lastError().text();
+                    *errorMessage = formatDbError(QObject::tr("Nie udało się zapisać zdjęcia eksponatu."),
+                                                  photoQuery.lastError().text());
                 return false;
             }
         }
@@ -107,7 +121,8 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
     if (!m_db.commit()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = m_db.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić zapisu w bazie danych."),
+                                          m_db.lastError().text());
         return false;
     }
 
@@ -128,7 +143,8 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
 
     if (!m_db.transaction()) {
         if (errorMessage)
-            *errorMessage = m_db.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji usuwania."),
+                                          m_db.lastError().text());
         return false;
     }
 
@@ -138,7 +154,8 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
     if (!query.exec()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć zdjęć eksponatu."),
+                                          query.lastError().text());
         return false;
     }
 
@@ -147,14 +164,16 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
     if (!query.exec()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć eksponatu."),
+                                          query.lastError().text());
         return false;
     }
 
     if (!m_db.commit()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = m_db.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić usuwania w bazie danych."),
+                                          m_db.lastError().text());
         return false;
     }
 

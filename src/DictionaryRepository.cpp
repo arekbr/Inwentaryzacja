@@ -4,6 +4,15 @@
 #include <QSqlQuery>
 #include <QUuid>
 
+namespace {
+
+QString formatDbError(const QString &context, const QString &details)
+{
+    return QObject::tr("%1\n%2").arg(context, details);
+}
+
+}
+
 DictionaryRepository::DictionaryRepository(QSqlDatabase database)
     : m_db(database)
 {
@@ -30,7 +39,8 @@ bool DictionaryRepository::addEntry(const QString &tableName,
 
     if (!query.exec()) {
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się dodać wpisu do słownika."),
+                                          query.lastError().text());
         return false;
     }
 
@@ -49,7 +59,8 @@ bool DictionaryRepository::renameEntry(const QString &tableName,
     query.bindValue(":name", currentName);
     if (!query.exec()) {
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się odczytać wpisu słownika do edycji."),
+                                          query.lastError().text());
         return false;
     }
 
@@ -66,7 +77,8 @@ bool DictionaryRepository::renameEntry(const QString &tableName,
     updateQuery.bindValue(":id", id);
     if (!updateQuery.exec()) {
         if (errorMessage)
-            *errorMessage = updateQuery.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się zmienić nazwy wpisu słownika."),
+                                          updateQuery.lastError().text());
         return false;
     }
 
@@ -85,7 +97,8 @@ bool DictionaryRepository::deleteEntry(const QString &tableName,
     query.bindValue(":name", name);
     if (!query.exec()) {
         if (errorMessage)
-            *errorMessage = query.lastError().text();
+            *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć wpisu ze słownika."),
+                                          query.lastError().text());
         return false;
     }
 
