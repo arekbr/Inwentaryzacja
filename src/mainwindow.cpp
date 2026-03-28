@@ -57,6 +57,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStandardPaths>
+#include <QTimer>
 #include <QCloseEvent>
 #include <QUuid>
 #include <QProgressDialog>
@@ -224,8 +225,7 @@ MainWindow::MainWindow(QWidget *parent)
                     auto overlay = new PacmanOverlay(this);
                     overlay->setTargetWidget(le);
                     
-                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                    connect(overlay, &PacmanOverlay::activated, this, []() {
                         pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                     });
                     
@@ -240,8 +240,7 @@ MainWindow::MainWindow(QWidget *parent)
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(le);
                         
-                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                        connect(overlay, &PacmanOverlay::activated, this, []() {
                             pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                         });
                         
@@ -268,8 +267,7 @@ MainWindow::MainWindow(QWidget *parent)
                     auto overlay = new PacmanOverlay(this);
                     overlay->setTargetWidget(te);
                     
-                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                    connect(overlay, &PacmanOverlay::activated, this, []() {
                         pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                     });
                     
@@ -283,8 +281,7 @@ MainWindow::MainWindow(QWidget *parent)
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(te);
                         
-                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                        connect(overlay, &PacmanOverlay::activated, this, []() {
                             pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                         });
                         
@@ -308,8 +305,7 @@ MainWindow::MainWindow(QWidget *parent)
                     auto overlay = new PacmanOverlay(this);
                     overlay->setTargetWidget(pe);
                     
-                    // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                    connect(overlay, &PacmanOverlay::finished, this, []() {
+                    connect(overlay, &PacmanOverlay::activated, this, []() {
                         pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                     });
                     
@@ -323,8 +319,7 @@ MainWindow::MainWindow(QWidget *parent)
                         auto overlay = new PacmanOverlay(this);
                         overlay->setTargetWidget(pe);
                         
-                        // Podłącz sygnał finished, aby wiedzieć, czy easter egg się faktycznie aktywował
-                        connect(overlay, &PacmanOverlay::finished, this, []() {
+                        connect(overlay, &PacmanOverlay::activated, this, []() {
                             pacmanShown = true; // Ustaw flagę tylko gdy easter egg się aktywował
                         });
                         

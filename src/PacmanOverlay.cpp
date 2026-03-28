@@ -1,39 +1,43 @@
 #include "PacmanOverlay.h"
-#include <QPainter>
-#include <QLineEdit>
-#include <QTextEdit>
-#include <QPlainTextEdit>
-#include <QTimerEvent>
-#include <QPainterPath>
-#include <QImage>
-#include <QDate>
-#include <QtGlobal>         // dla QT_VERSION
-#include <QRandomGenerator> // dla QRandomGenerator w Qt 6.x
 
+#include <QDate>
+#include <QImage>
+#include <QLineEdit>
+#include <QPainter>
+#include <QPlainTextEdit>
+#include <QRandomGenerator>
+#include <QTextEdit>
+#include <QTimerEvent>
+
+#include <algorithm>
 #include <cmath>
 
 namespace {
 
+constexpr int kAnimationTickMs = 16;
+constexpr int kAnimationFrameMs = 40;
+constexpr int kSpriteSizePx = 32;
+
 QString targetWidgetText(QWidget *widget)
 {
-    if (auto le = qobject_cast<QLineEdit *>(widget))
-        return le->text();
-    if (auto te = qobject_cast<QTextEdit *>(widget))
-        return te->toPlainText();
-    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
-        return pte->toPlainText();
+    if (auto lineEdit = qobject_cast<QLineEdit *>(widget))
+        return lineEdit->text();
+    if (auto textEdit = qobject_cast<QTextEdit *>(widget))
+        return textEdit->toPlainText();
+    if (auto plainTextEdit = qobject_cast<QPlainTextEdit *>(widget))
+        return plainTextEdit->toPlainText();
     return QString();
 }
 
 int targetWidgetTextWidth(QWidget *widget)
 {
     const QString text = targetWidgetText(widget);
-    if (auto le = qobject_cast<QLineEdit *>(widget))
-        return QFontMetrics(le->font()).horizontalAdvance(text);
-    if (auto te = qobject_cast<QTextEdit *>(widget))
-        return QFontMetrics(te->font()).horizontalAdvance(text);
-    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
-        return QFontMetrics(pte->font()).horizontalAdvance(text);
+    if (auto lineEdit = qobject_cast<QLineEdit *>(widget))
+        return QFontMetrics(lineEdit->font()).horizontalAdvance(text);
+    if (auto textEdit = qobject_cast<QTextEdit *>(widget))
+        return QFontMetrics(textEdit->font()).horizontalAdvance(text);
+    if (auto plainTextEdit = qobject_cast<QPlainTextEdit *>(widget))
+        return QFontMetrics(plainTextEdit->font()).horizontalAdvance(text);
     return 0;
 }
 
@@ -42,470 +46,285 @@ int targetWidgetApproxCharWidth(QWidget *widget)
     const QString text = targetWidgetText(widget);
     const QChar sampleChar = text.isEmpty() ? QLatin1Char(' ') : text.at(text.length() - 1);
 
-    if (auto le = qobject_cast<QLineEdit *>(widget))
-        return QFontMetrics(le->font()).horizontalAdvance(sampleChar);
-    if (auto te = qobject_cast<QTextEdit *>(widget))
-        return QFontMetrics(te->font()).horizontalAdvance(sampleChar);
-    if (auto pte = qobject_cast<QPlainTextEdit *>(widget))
-        return QFontMetrics(pte->font()).horizontalAdvance(sampleChar);
+    if (auto lineEdit = qobject_cast<QLineEdit *>(widget))
+        return QFontMetrics(lineEdit->font()).horizontalAdvance(sampleChar);
+    if (auto textEdit = qobject_cast<QTextEdit *>(widget))
+        return QFontMetrics(textEdit->font()).horizontalAdvance(sampleChar);
+    if (auto plainTextEdit = qobject_cast<QPlainTextEdit *>(widget))
+        return QFontMetrics(plainTextEdit->font()).horizontalAdvance(sampleChar);
     return 0;
 }
 
 bool removeLastCharacter(QWidget *widget)
 {
-    if (auto le = qobject_cast<QLineEdit *>(widget)) {
-        const QString text = le->text();
+    if (auto lineEdit = qobject_cast<QLineEdit *>(widget)) {
+        const QString text = lineEdit->text();
         if (text.isEmpty())
             return false;
-        le->setText(text.left(text.length() - 1));
+        lineEdit->setText(text.left(text.length() - 1));
         return true;
     }
-    if (auto te = qobject_cast<QTextEdit *>(widget)) {
-        const QString text = te->toPlainText();
+
+    if (auto textEdit = qobject_cast<QTextEdit *>(widget)) {
+        const QString text = textEdit->toPlainText();
         if (text.isEmpty())
             return false;
-        te->setPlainText(text.left(text.length() - 1));
+        textEdit->setPlainText(text.left(text.length() - 1));
         return true;
     }
-    if (auto pte = qobject_cast<QPlainTextEdit *>(widget)) {
-        const QString text = pte->toPlainText();
+
+    if (auto plainTextEdit = qobject_cast<QPlainTextEdit *>(widget)) {
+        const QString text = plainTextEdit->toPlainText();
         if (text.isEmpty())
             return false;
-        pte->setPlainText(text.left(text.length() - 1));
+        plainTextEdit->setPlainText(text.left(text.length() - 1));
         return true;
     }
+
     return false;
 }
 
 }
 
 PacmanOverlay::PacmanOverlay(QWidget *parent)
-    : QWidget(parent), m_targetWidget(nullptr), m_angle(0), m_timerId(0), m_eatCharTimerId(0), m_durationMs(5000), m_showGhost(false),
-      m_pacmanFrame(0), m_ghostFrame(0), m_vanishFrame(0), m_pacmanVanishing(false), m_collisionHideMs(3000)
+    : QWidget(parent),
+      m_targetWidget(nullptr),
+      m_timerId(0),
+      m_durationMs(5000),
+      m_pacmanFrame(0),
+      m_showGhost(false),
+      m_pacmanX(0.0),
+      m_ghostX(0.0),
+      m_pacmanCollided(false),
+      m_collisionFrame(0),
+      m_collisionHideMs(3000)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnTopHint);
-    setVisible(false); // Domyślnie overlay jest ukryty
+    setVisible(false);
 
-    // Ładuj nowy sprite sheet
-    m_spriteSheet = QPixmap(":/images/spritesheet.png");
+    m_spriteSheet = QPixmap(QStringLiteral(":/images/spritesheet.png"));
     if (m_spriteSheet.isNull())
-    {
         qWarning() << "[PACMAN] Sprite sheet (spritesheet.png) not loaded!";
-    }
-    // Usunięto connect do m_lifetimeTimer (nie będzie automatycznego znikania)
-
-    // --- Dodane zmienne do animacji położenia Pac-Mana i ducha ---
-    m_pacmanX = 0.0;
-    m_targetPacmanX = 0.0;
-    m_ghostX = 0.0;
-    m_ghostChasing = false;
-    m_pacmanCollided = false;
-    m_collisionFrame = 0;
-    m_holdingLastFrame = false;
-    m_lastFrameHoldTimeMs = 2000; // 2 sekundy na zatrzymanie ostatniej klatki
 }
 
-// --- Statyczne zmienne do regulacji prędkości ---
-double PacmanOverlay::s_pacmanSpeedPx = 0.75; // domyślnie 0.75 px na klatkę
-int PacmanOverlay::s_eatCharIntervalMs = 100; // domyślnie 100 ms na znak
-
-// --- Statyczne zmienne do obsługi specjalnych dat aktywacji ---
-bool PacmanOverlay::s_enableBirthdayActivation = true;      // Domyślnie włączone
-int PacmanOverlay::s_birthdayDay = 11;                      // 11 grudnia (urodziny)
-int PacmanOverlay::s_birthdayMonth = 12;                    // Grudzień (12)
-bool PacmanOverlay::s_enablePacManReleaseActivation = true; // Domyślnie włączone
-bool PacmanOverlay::s_enableRandomActivation = true;        // Domyślnie włączone
-int PacmanOverlay::s_randomActivationChance = 10;           // 10% szans na losową aktywację
-bool PacmanOverlay::s_enableCapacityActivation = true;      // Domyślnie włączone
-int PacmanOverlay::s_capacityCharCount = 22;                // Domyślnie 22 znaki (premiera Pac-Mana 22.05.1980)
+double PacmanOverlay::s_pacmanSpeedPx = 0.75;
+int PacmanOverlay::s_eatCharIntervalMs = 100;
+bool PacmanOverlay::s_enableBirthdayActivation = true;
+int PacmanOverlay::s_birthdayDay = 11;
+int PacmanOverlay::s_birthdayMonth = 12;
+bool PacmanOverlay::s_enablePacManReleaseActivation = true;
+bool PacmanOverlay::s_enableRandomActivation = true;
+int PacmanOverlay::s_randomActivationChance = 10;
+bool PacmanOverlay::s_enableCapacityActivation = true;
+int PacmanOverlay::s_capacityCharCount = 22;
 
 void PacmanOverlay::setTargetWidget(QWidget *target)
 {
-    qDebug() << "[PACMAN] setTargetWidget: target=" << target << ", parent before=" << parent();
     m_targetWidget = target;
-    if (target)
-    {
-        setParent(target);
-        resize(target->size());
-        move(0, 0);
-        // NIE pokazuj overlay'a automatycznie - zostanie pokazany tylko po wywołaniu start() i tylko gdy warunki aktywacji są spełnione
-        setVisible(false);
-        qDebug() << "[PACMAN] setTargetWidget: parent after=" << parent() << ", geometry=" << geometry();
-    }
+    if (!target)
+        return;
+
+    setParent(target);
+    resize(target->size());
+    move(0, 0);
+    setVisible(false);
 }
 
 void PacmanOverlay::start(int durationMs)
 {
-    qDebug() << "[PACMAN DEBUG] start() called, m_durationMs=" << durationMs << ", m_targetWidget=" << m_targetWidget;
     if (!m_targetWidget)
         return;
 
-    // Sprawdź czy nie została wywołana aktywacja z mainwindow.cpp dla tekstu o długości 22 znaków
     const QString currentText = targetWidgetText(m_targetWidget);
-    bool capacityActivation = hasCapacityActivation(currentText);
+    if (currentText.isEmpty())
+        return;
 
-    // Jeśli została wywołana bezpośrednio dla tekstu o długości 22 znaki (z mainwindow.cpp),
-    // wyświetl odpowiedni komunikat i przejdź do pełnej aktywacji
-    if (capacityActivation)
-    {
-        qDebug() << "[PACMAN] Aktywacja poprzez dokładną liczbę znaków (" << s_capacityCharCount << ")!";
-    }
-    else
-    {
-        // Standardowa aktywacja w oparciu o datę lub losową szansę
-        bool specialDateActive = isSpecialDate();
-
-        // Losowa szansa na aktywację (domyślnie 10%)
+    const bool capacityActivation = hasCapacityActivation(currentText);
+    if (!capacityActivation) {
+        const bool specialDateActive = isSpecialDate();
         bool randomChance = false;
-        if (s_enableRandomActivation)
-        {
-            // W Qt 6.x użyj QRandomGenerator, w starszych wersjach qrand()
+        if (s_enableRandomActivation) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-            randomChance = (QRandomGenerator::global()->bounded(100) < s_randomActivationChance);
+            randomChance = QRandomGenerator::global()->bounded(100) < s_randomActivationChance;
 #else
-            randomChance = (qrand() % 100 < s_randomActivationChance);
+            randomChance = (qrand() % 100) < s_randomActivationChance;
 #endif
         }
 
-        // Aktywuj Easter Egg tylko w specjalne daty lub losowo (bez wyzwalacza pojemnościowego)
-        if (!specialDateActive && !randomChance)
-        {
-            qDebug() << "[PACMAN] Easter egg nie aktywowany - nie jest specjalna data, nie wylosowano aktywacji";
-            // Upewnij się, że overlay jest ukryty
-            setVisible(false);
-            // Zatrzymaj animację jeśli była aktywna
-            if (m_timerId)
-            {
-                killTimer(m_timerId);
-                m_timerId = 0;
-            }
-            if (m_eatCharTimerId)
-            {
-                killTimer(m_eatCharTimerId);
-                m_eatCharTimerId = 0;
-            }
+        if (!specialDateActive && !randomChance) {
+            stopAnimation();
             return;
-        }
-
-        if (specialDateActive)
-        {
-            qDebug() << "[PACMAN] Aktywacja ze względu na specjalną datę!";
-        }
-        else if (randomChance)
-        {
-            qDebug() << "[PACMAN] Aktywacja losowa!";
         }
     }
 
-    // Emituj sygnał, że easter egg został aktywowany
-    emit finished();
+    stopAnimation();
 
     m_durationMs = durationMs;
-    m_showGhost = false;
-    // Opóźnij start animacji o 5 sekund
-    setVisible(false); // Ukryj overlay do czasu startu
-    QTimer::singleShot(5000, this, [this]()
-                       {
-        setVisible(true);
-        m_angle = 0;
-        m_mouthDelta = 0;
-        m_mouthClosing = false;
-        m_timerId = startTimer(40);                         // timer do animacji szczęki
-        m_eatCharTimerId = startTimer(s_eatCharIntervalMs); // timer do zjadania znaków (regulowany)
-        m_pacmanX = 0.0;
-        m_targetPacmanX = 0.0;
-        m_ghostChasing = false;
-        m_ghostX = 0.0;
-        m_initialText = targetWidgetText(m_targetWidget);
-        qDebug() << "[PACMAN DEBUG] initialText=" << m_initialText;
-        // Wyliczanie parametrów ruchu ducha
-        int numChars = m_initialText.length();
-        int eatCharInterval = s_eatCharIntervalMs; // ms na znak
-        int totalEatTimeMs = numChars * eatCharInterval;
-        int ghostDelayMs = 500; // opóźnienie startu ducha
-        int frameIntervalMs = 40; // timerId = 40 ms
-        int effectiveChaseTimeMs = totalEatTimeMs - ghostDelayMs;
-        int numFrames = (effectiveChaseTimeMs > 0) ? effectiveChaseTimeMs / frameIntervalMs : 1;
-        
-        // Obliczanie szerokości tekstu i pojedynczego znaku
-        const int textWidth = targetWidgetTextWidth(m_targetWidget);
-        const int charWidth = targetWidgetApproxCharWidth(m_targetWidget);
-        m_pacmanX = textWidth;
-        m_targetPacmanX = textWidth;
-        
-        // Pacman pojawia się zaraz za tekstem
-        int pacmanStartX = textWidth;
-        // Duch pojawia się w odległości równej długości tekstu od końca tekstu
-        int emptySpaceWidthInChars = numChars; // Odległość w znakach równa liczbie znaków w tekście
-        int ghostStartX = textWidth + (emptySpaceWidthInChars * charWidth);
-        
-        int pacmanEndX = 0;
-        int ghostEndX = pacmanEndX; // Duch ma dopaść Pac-Mana przy lewej krawędzi
-        int ghostDistance = ghostStartX - ghostEndX;
-        m_ghostSpeedPx = (numFrames > 0) ? (double)ghostDistance / numFrames : ghostDistance; // teleport jeśli za późno
-        m_ghostX = ghostStartX;
-        qDebug() << "[PACMAN DEBUG] ghostDelayMs=" << ghostDelayMs << ", totalEatTimeMs=" << totalEatTimeMs << ", m_ghostSpeedPx=" << m_ghostSpeedPx;
-        qDebug() << "[PACMAN DEBUG] numChars=" << numChars << ", textWidth=" << textWidth << ", charWidth=" << charWidth 
-                 << ", ghostStartX=" << ghostStartX << ", pacmanStartX=" << pacmanStartX;
-        // Duch pojawia się po 1.5 sekundy na prawej krawędzi pola tekstowego i zaczyna gonić Pac-Mana
-        QTimer::singleShot(ghostDelayMs, this, [this]() {
-            m_showGhost = true;
-            m_ghostChasing = true;
-            update();
-            qDebug() << "[PACMAN DEBUG] Ghost chase started!";
-        }); });
+
+    PacmanAnimationModel::Config config;
+    config.activationDelayMs = m_durationMs;
+    config.ghostDelayMs = 500;
+    config.eatCharIntervalMs = s_eatCharIntervalMs;
+    config.collisionFrameIntervalMs = kAnimationFrameMs;
+    config.collisionHoldMs = m_collisionHideMs;
+    config.pacmanSpeedPxPerSecond = s_pacmanSpeedPx * (1000.0 / kAnimationFrameMs);
+    config.spriteSizePx = kSpriteSizePx;
+    m_animationModel.configure(config);
+    m_animationModel.start(targetWidgetTextWidth(m_targetWidget),
+                           targetWidgetApproxCharWidth(m_targetWidget),
+                           currentText.length());
+
+    syncVisualState();
+    m_frameClock.start();
+    m_timerId = startTimer(kAnimationTickMs);
 }
 
 void PacmanOverlay::paintEvent(QPaintEvent *)
 {
-    if (!m_targetWidget)
-    {
-        qDebug() << "[PACMAN] paintEvent: m_targetWidget is nullptr, nothing to draw";
+    if (!m_targetWidget || !m_animationModel.showOverlay())
         return;
-    }
-    QPainter p(this);
-    p.setRenderHint(QPainter::Antialiasing);
-    int size = 32;
-    int y = (height() - size) / 2;
-    int pacmanX = std::max(static_cast<int>(std::round(m_pacmanX)), 0);
-    drawPacman(p, pacmanX, y, size);
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    const int y = (height() - kSpriteSizePx) / 2;
+    drawPacman(painter, std::max(static_cast<int>(std::round(m_pacmanX)), 0), y, kSpriteSizePx);
     if (m_showGhost)
-    {
-        drawGhost(p, (int)m_ghostX, y, size);
-    }
+        drawGhost(painter, std::max(static_cast<int>(std::round(m_ghostX)), 0), y, kSpriteSizePx);
+
     raise();
-}
-
-// Helper: Draw Pac-Man using sprite sheet
-void PacmanOverlay::drawPacman(QPainter &p, int x, int y, int size)
-{
-    if (m_spriteSheet.isNull())
-        return;
-    int frameW = 32, frameH = 32;
-    QRect src;
-    if (m_pacmanCollided)
-    {
-        // Najpierw klatki 0-6 z rzędu 6 (ostatni rząd), potem 0-10 z rzędu 6 (ostatni rząd)
-        if (m_collisionFrame < 7)
-        {
-            src = QRect(m_collisionFrame * frameW, 6 * frameH, frameW, frameH);
-        }
-        else
-        {
-            int frameInRow = (m_collisionFrame - 7) % 11;
-            src = QRect(frameInRow * frameW, 6 * frameH, frameW, frameH);
-        }
-    }
-    else
-    {
-        if (m_pacmanFrame % 3 == 0)
-        {
-            src = QRect(4 * frameW, 0, frameW, frameH); // kolumna 4, rząd 0
-        }
-        else if (m_pacmanFrame % 3 == 1)
-        {
-            src = QRect(0, 0, frameW, frameH); // kolumna 0, rząd 0
-        }
-        else
-        {
-            src = QRect(0, 1 * frameH, frameW, frameH); // kolumna 0, rząd 1
-        }
-    }
-    QImage frameImg = m_spriteSheet.copy(src).toImage().convertToFormat(QImage::Format_ARGB32);
-    // Zamień różowe tło (255,0,255) na przezroczystość
-    for (int yPix = 0; yPix < frameImg.height(); ++yPix)
-    {
-        QRgb *line = reinterpret_cast<QRgb *>(frameImg.scanLine(yPix));
-        for (int xPix = 0; xPix < frameImg.width(); ++xPix)
-        {
-            if (qRed(line[xPix]) == 255 && qGreen(line[xPix]) == 0 && qBlue(line[xPix]) == 255)
-            {
-                line[xPix] = qRgba(255, 0, 255, 0); // przezroczystość
-            }
-        }
-    }
-    p.drawImage(QRect(x, y, size, size), frameImg);
-}
-
-// Helper: Draw ghost using sprite sheet
-void PacmanOverlay::drawGhost(QPainter &p, int x, int y, int size)
-{
-    if (m_spriteSheet.isNull())
-        return;
-    int frameW = 32, frameH = 32;
-    // Piąty rząd (indeks 4), pierwszy sprite (indeks 0) – czerwony duch z oczami w lewo
-    QRect src(0, 4 * frameH, frameW, frameH);
-    QImage frameImg = m_spriteSheet.copy(src).toImage().convertToFormat(QImage::Format_ARGB32);
-    // Zamiana różowego tła (255,0,255) na przezroczystość
-    for (int yPix = 0; yPix < frameImg.height(); ++yPix)
-    {
-        QRgb *line = reinterpret_cast<QRgb *>(frameImg.scanLine(yPix));
-        for (int xPix = 0; xPix < frameImg.width(); ++xPix)
-        {
-            if (qRed(line[xPix]) == 255 && qGreen(line[xPix]) == 0 && qBlue(line[xPix]) == 255)
-            {
-                line[xPix] = qRgba(255, 0, 255, 0);
-            }
-        }
-    }
-    p.drawImage(QRect(x, y, size, size), frameImg);
-}
-
-// Helper: Draw Pac-Man vanishing animation
-void PacmanOverlay::drawPacmanVanish(QPainter &p, int x, int y, int size)
-{
-    if (m_spriteSheet.isNull())
-        return;
-    int frame = m_vanishFrame;
-    int frameY = 2; // row 2: vanishing
-    int frameW = 32, frameH = 32;
-    QRect src(frame * frameW, frameY * frameH, frameW, frameH);
-    p.drawPixmap(x, y, size, size, m_spriteSheet, src.x(), src.y(), src.width(), src.height());
 }
 
 void PacmanOverlay::timerEvent(QTimerEvent *event)
 {
-    if (event->timerId() == m_timerId)
-    {
-        if (!m_pacmanVanishing)
-        {
-            if (m_pacmanCollided)
-            {
-                // Jeśli trzymamy ostatnią klatkę, nie rób nic
-                if (!m_holdingLastFrame)
-                {
-                    // Animacja kolizji: 0-6 z rzędu 6, potem 0-10 z rzędu 6
-                    if (m_collisionFrame < 7 + 11 - 1)
-                    {
-                        m_collisionFrame++;
+    if (event->timerId() != m_timerId)
+        return;
 
-                        // Sprawdź, czy osiągnęliśmy ostatnią klatkę (7+10=17)
-                        if (m_collisionFrame == 7 + 11 - 1)
-                        {
-                            m_holdingLastFrame = true;
-                            qDebug() << "[PACMAN] Zatrzymuję ostatnią klatkę animacji na" << m_lastFrameHoldTimeMs << "ms";
+    const int deltaMs = std::clamp(static_cast<int>(m_frameClock.restart()), 1, 100);
+    m_animationModel.advance(deltaMs);
 
-                            // Ustaw timer, po którym ukryjemy overlay
-                            QTimer::singleShot(m_lastFrameHoldTimeMs, this, [this]()
-                                               {
-                                this->setVisible(false);
-                                // Resetuj stan animacji
-                                m_pacmanCollided = false;
-                                m_collisionFrame = 0;
-                                m_pacmanX = 0.0;
-                                m_targetPacmanX = 0.0;
-                                m_ghostX = 0.0;
-                                m_ghostChasing = false;
-                                m_showGhost = false;
-                                m_holdingLastFrame = false;
-                                
-                                // Emituj sygnał, że animacja się zakończyła (na wszelki wypadek, choć już emitowaliśmy)
-                                emit finished(); });
-                        }
-                    }
-                }
-            }
-            else
-            {
-                m_pacmanFrame = (m_pacmanFrame + 1) % 3;
-                if (m_pacmanX > m_targetPacmanX)
-                    m_pacmanX = std::max(m_targetPacmanX, m_pacmanX - s_pacmanSpeedPx);
-                else if (m_pacmanX < m_targetPacmanX)
-                    m_pacmanX = std::min(m_targetPacmanX, m_pacmanX + s_pacmanSpeedPx);
-            }
-            update();
-        }
-        // Duch goni Pac-Mana
-        if (m_ghostChasing)
-        {
-            // Oblicz aktualną pozycję Pac-Mana
-            int size = 32; // rozmiar Pac-Mana i ducha
-            const int pacmanX = std::max(static_cast<int>(std::round(m_pacmanX)), 0);
-            double nextGhostX = m_ghostX - m_ghostSpeedPx;
-
-            // Sprawdź czy nastąpi kolizja (duch dotyka Pac-Mana)
-            if (nextGhostX <= pacmanX + size)
-            {
-                // Zatrzymaj ducha tuż przed Pac-Manem, nie nachodzą na siebie
-                m_ghostX = pacmanX + size; // Pozycja ducha dokładnie przy prawej krawędzi Pac-Mana
-                m_ghostChasing = false;    // Zatrzymaj ruch ducha
-
-                // Zatrzymaj także timer zjadania znaków
-                if (m_eatCharTimerId)
-                {
-                    killTimer(m_eatCharTimerId);
-                    m_eatCharTimerId = 0;
-                }
-
-                // Aktywuj animację kolizji dla Pac-Mana (klatki z 7. rzędu)
-                m_pacmanCollided = true;
-                m_collisionFrame = 0;
-                m_holdingLastFrame = false;
-                qDebug() << "[PACMAN] Duch dogonił Pac-Mana! Rozpoczynam animację kolizji.";
-                update();
-            }
-            else
-            {
-                // Kontynuuj ruch ducha
-                m_ghostX = nextGhostX;
-                if (m_ghostX < 0)
-                    m_ghostX = 0;
-            }
-            update();
-        }
-        // Pac-Man vanishing animation (nieużywane w tej wersji)
-        if (m_pacmanVanishing)
-        {
-            m_vanishFrame++;
-            if (m_vanishFrame > 5)
-            {
-                m_pacmanVanishing = false;
-            }
-            update();
-        }
+    const int pendingEatCount = m_animationModel.takePendingEatCount();
+    for (int index = 0; index < pendingEatCount; ++index) {
+        if (!removeLastCharacter(m_targetWidget))
+            break;
     }
-    if (event->timerId() == m_eatCharTimerId)
-    {
-        if (m_targetWidget && !m_pacmanVanishing)
-        {
-            const bool any = removeLastCharacter(m_targetWidget);
-            m_targetPacmanX = targetWidgetTextWidth(m_targetWidget);
-            // Jeśli nie ma już znaków, Pac-Man się zatrzymuje, ale nie znika
-            if (!any)
-            {
-                killTimer(m_eatCharTimerId);
-                m_eatCharTimerId = 0;
-                // Nie zatrzymujemy ducha tutaj - duch będzie zatrzymany dopiero przy kolizji z Pac-Manem
-            }
-        }
+    m_animationModel.setCurrentTextWidth(targetWidgetTextWidth(m_targetWidget));
+
+    if (m_animationModel.consumeActivatedFlag()) {
+        setVisible(true);
+        emit activated();
+    }
+
+    syncVisualState();
+    update();
+
+    if (m_animationModel.consumeFinishedFlag()) {
+        stopAnimation();
+        emit finished();
+        deleteLater();
     }
 }
 
-// Helper: Sprawdza czy obecna data jest jedną ze specjalnych dat (urodziny lub premiera Pac-Mana)
+void PacmanOverlay::drawPacman(QPainter &painter, int x, int y, int size)
+{
+    if (m_spriteSheet.isNull())
+        return;
+
+    const int frameWidth = 32;
+    const int frameHeight = 32;
+    QRect sourceRect;
+
+    if (m_pacmanCollided) {
+        if (m_collisionFrame < 7)
+            sourceRect = QRect(m_collisionFrame * frameWidth, 6 * frameHeight, frameWidth, frameHeight);
+        else
+            sourceRect = QRect((m_collisionFrame - 7) % 11 * frameWidth, 6 * frameHeight, frameWidth, frameHeight);
+    } else {
+        if (m_pacmanFrame % 3 == 0)
+            sourceRect = QRect(4 * frameWidth, 0, frameWidth, frameHeight);
+        else if (m_pacmanFrame % 3 == 1)
+            sourceRect = QRect(0, 0, frameWidth, frameHeight);
+        else
+            sourceRect = QRect(0, frameHeight, frameWidth, frameHeight);
+    }
+
+    QImage frameImage = m_spriteSheet.copy(sourceRect).toImage().convertToFormat(QImage::Format_ARGB32);
+    for (int yPixel = 0; yPixel < frameImage.height(); ++yPixel) {
+        QRgb *line = reinterpret_cast<QRgb *>(frameImage.scanLine(yPixel));
+        for (int xPixel = 0; xPixel < frameImage.width(); ++xPixel) {
+            if (qRed(line[xPixel]) == 255 && qGreen(line[xPixel]) == 0 && qBlue(line[xPixel]) == 255)
+                line[xPixel] = qRgba(255, 0, 255, 0);
+        }
+    }
+
+    painter.drawImage(QRect(x, y, size, size), frameImage);
+}
+
+void PacmanOverlay::drawGhost(QPainter &painter, int x, int y, int size)
+{
+    if (m_spriteSheet.isNull())
+        return;
+
+    const int frameWidth = 32;
+    const int frameHeight = 32;
+    const QRect sourceRect(0, 4 * frameHeight, frameWidth, frameHeight);
+    QImage frameImage = m_spriteSheet.copy(sourceRect).toImage().convertToFormat(QImage::Format_ARGB32);
+
+    for (int yPixel = 0; yPixel < frameImage.height(); ++yPixel) {
+        QRgb *line = reinterpret_cast<QRgb *>(frameImage.scanLine(yPixel));
+        for (int xPixel = 0; xPixel < frameImage.width(); ++xPixel) {
+            if (qRed(line[xPixel]) == 255 && qGreen(line[xPixel]) == 0 && qBlue(line[xPixel]) == 255)
+                line[xPixel] = qRgba(255, 0, 255, 0);
+        }
+    }
+
+    painter.drawImage(QRect(x, y, size, size), frameImage);
+}
+
+void PacmanOverlay::stopAnimation()
+{
+    if (m_timerId != 0) {
+        killTimer(m_timerId);
+        m_timerId = 0;
+    }
+
+    m_animationModel.reset();
+    m_showGhost = false;
+    m_pacmanFrame = 0;
+    m_pacmanX = 0.0;
+    m_ghostX = 0.0;
+    m_pacmanCollided = false;
+    m_collisionFrame = 0;
+    setVisible(false);
+    update();
+}
+
+void PacmanOverlay::syncVisualState()
+{
+    m_pacmanFrame = m_animationModel.pacmanFrame();
+    m_pacmanX = m_animationModel.pacmanX();
+    m_ghostX = m_animationModel.ghostX();
+    m_showGhost = m_animationModel.showGhost();
+    m_pacmanCollided = m_animationModel.isCollided();
+    m_collisionFrame = m_animationModel.collisionFrame();
+}
+
 bool PacmanOverlay::isSpecialDate() const
 {
-    QDate currentDate = QDate::currentDate();
-    int currentDay = currentDate.day();
-    int currentMonth = currentDate.month();
-
-    // Sprawdź czy to dzień premiery Pac-Mana (22 maja 1980)
-    bool isPacManReleaseDate = (currentDay == 22 && currentMonth == 5 && s_enablePacManReleaseActivation);
-
-    // Sprawdź czy to urodziny użytkownika (11 grudnia)
-    bool isBirthday = (currentDay == s_birthdayDay && currentMonth == s_birthdayMonth && s_enableBirthdayActivation);
-
-    // Zwróć true, jeśli to którakolwiek ze specjalnych dat
+    const QDate currentDate = QDate::currentDate();
+    const bool isPacManReleaseDate = currentDate.day() == 22 && currentDate.month() == 5
+                                      && s_enablePacManReleaseActivation;
+    const bool isBirthday = currentDate.day() == s_birthdayDay && currentDate.month() == s_birthdayMonth
+                            && s_enableBirthdayActivation;
     return isPacManReleaseDate || isBirthday;
 }
 
-// Helper: Sprawdza czy tekst ma dokładnie wymaganą liczbę znaków (domyślnie 22)
 bool PacmanOverlay::hasCapacityActivation(const QString &text) const
 {
     if (!s_enableCapacityActivation)
         return false;
-
     return text.length() == s_capacityCharCount;
 }

@@ -1,7 +1,9 @@
 #pragma once
 #include <QWidget>
-#include <QTimer>
+#include <QElapsedTimer>
 #include <QPixmap>
+
+#include "PacmanAnimationModel.h"
 
 class PacmanOverlay : public QWidget
 {
@@ -41,6 +43,7 @@ public:
     static void setCapacityCharCount(int count) { s_capacityCharCount = qBound(1, count, 1000); }
 
 signals:
+    void activated();
     void finished();
 
 protected:
@@ -49,37 +52,23 @@ protected:
 
 private:
     QWidget *m_targetWidget;
-    int m_angle;
     int m_timerId;
-    int m_eatCharTimerId; // nowy timer do zjadania znaków
     int m_durationMs;
-    bool m_showGhost;
-    QTimer m_lifetimeTimer;
-    QString m_initialText; // Dodane: do przechowywania początkowego tekstu
-    int m_mouthDelta;      // Dodane: kąt otwarcia szczęki
-    bool m_mouthClosing;   // Dodane: kierunek animacji szczęki
+    QElapsedTimer m_frameClock;
+    PacmanAnimationModel m_animationModel;
 
     // --- Sprite-based animation ---
     QPixmap m_spriteSheet;
     int m_pacmanFrame;
-    int m_ghostFrame;
-    int m_vanishFrame;
-    bool m_pacmanVanishing;
     void drawPacman(QPainter &p, int x, int y, int size);
     void drawGhost(QPainter &p, int x, int y, int size);
-    void drawPacmanVanish(QPainter &p, int x, int y, int size);
 
-    // --- New variables for position animation ---
-    double m_pacmanX;          // Aktualna pozycja Pac-Mana
-    double m_targetPacmanX;    // Docelowa pozycja Pac-Mana zsynchronizowana z tekstem
-    double m_ghostX;           // Pozycja ducha (przesunięcie w lewo)
-    bool m_ghostChasing;       // Czy duch już goni Pac-Mana
-    double m_ghostSpeedPx;     // Prędkość ducha w px/klatkę
-    bool m_pacmanCollided;     // Stan kolizji z duchem
-    int m_collisionFrame;      // Numer klatki animacji kolizji (0-10)
-    int m_collisionHideMs;     // czas ukrycia po kolizji (ms)
-    bool m_holdingLastFrame;   // Stan zatrzymania na ostatniej klatce
-    int m_lastFrameHoldTimeMs; // Czas zatrzymania na ostatniej klatce (ms)
+    bool m_showGhost;
+    double m_pacmanX;
+    double m_ghostX;
+    bool m_pacmanCollided;
+    int m_collisionFrame;
+    int m_collisionHideMs;
 
     static double s_pacmanSpeedPx;
     static int s_eatCharIntervalMs;
@@ -95,6 +84,9 @@ private:
     static int s_capacityCharCount;              // Dokładna liczba znaków potrzebna do aktywacji (domyślnie 22)
 
 private:
+    void stopAnimation();
+    void syncVisualState();
+
     // Prywatna metoda sprawdzająca, czy dzisiejsza data jest specjalną datą
     bool isSpecialDate() const;
 

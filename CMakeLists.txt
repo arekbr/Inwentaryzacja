@@ -95,6 +95,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/photoitem.h
     include/fullscreenphotoviewer.h
     include/PacmanOverlay.h
+    include/PacmanAnimationModel.h
     include/types.h
     include/vendors.h
     include/models.h
@@ -110,6 +111,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/photoitem.cpp
     src/fullscreenphotoviewer.cpp
     src/PacmanOverlay.cpp
+    src/PacmanAnimationModel.cpp
     src/types.cpp
     src/vendors.cpp
     src/models.cpp

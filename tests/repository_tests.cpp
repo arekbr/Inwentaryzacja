@@ -4,6 +4,7 @@
 #include "DatabaseMigration.h"
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
+#include "PacmanAnimationModel.h"
 #include "mainwindow.h"
 #include "PhotoService.h"
 #include "utils.h"
@@ -47,6 +48,9 @@ private slots:
     void mainWindow_loadsComboBoxesOnConstruction();
     void mainWindow_setEditModeForNewRecordClearsFieldsAndDefaultsSelections();
     void mainWindow_setEditModeLoadsExistingRecord();
+    void pacmanAnimationModel_activatesAfterConfiguredDelay();
+    void pacmanAnimationModel_requestsEatingInTime();
+    void pacmanAnimationModel_reachesCollisionAndFinish();
 
 private:
     QString lookupId(const QString &tableName, const QString &name) const;
@@ -622,6 +626,91 @@ void RepositoryTests::mainWindow_setEditModeLoadsExistingRecord()
     formDb.close();
     formDb = QSqlDatabase();
     QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::pacmanAnimationModel_activatesAfterConfiguredDelay()
+{
+    PacmanAnimationModel model;
+    PacmanAnimationModel::Config config;
+    config.activationDelayMs = 100;
+    config.ghostDelayMs = 0;
+    config.eatCharIntervalMs = 50;
+    config.collisionFrameIntervalMs = 10;
+    config.collisionHoldMs = 20;
+    config.pacmanSpeedPxPerSecond = 100.0;
+    model.configure(config);
+    model.start(60, 10, 3);
+
+    QCOMPARE(model.state(), PacmanAnimationModel::State::Delay);
+    QVERIFY(!model.showOverlay());
+
+    model.advance(99);
+    QCOMPARE(model.state(), PacmanAnimationModel::State::Delay);
+    QVERIFY(!model.consumeActivatedFlag());
+
+    model.advance(1);
+    QCOMPARE(model.state(), PacmanAnimationModel::State::Eating);
+    QVERIFY(model.consumeActivatedFlag());
+    QVERIFY(model.showOverlay());
+}
+
+void RepositoryTests::pacmanAnimationModel_requestsEatingInTime()
+{
+    PacmanAnimationModel model;
+    PacmanAnimationModel::Config config;
+    config.activationDelayMs = 0;
+    config.ghostDelayMs = 1000;
+    config.eatCharIntervalMs = 50;
+    config.pacmanSpeedPxPerSecond = 100.0;
+    model.configure(config);
+    model.start(60, 10, 3);
+
+    model.advance(1);
+    QVERIFY(model.consumeActivatedFlag());
+
+    model.advance(50);
+    QCOMPARE(model.takePendingEatCount(), 1);
+
+    model.setCurrentTextWidth(40);
+    model.advance(50);
+    QCOMPARE(model.takePendingEatCount(), 1);
+    QVERIFY(model.pacmanX() < 60.0);
+}
+
+void RepositoryTests::pacmanAnimationModel_reachesCollisionAndFinish()
+{
+    PacmanAnimationModel model;
+    PacmanAnimationModel::Config config;
+    config.activationDelayMs = 0;
+    config.ghostDelayMs = 0;
+    config.eatCharIntervalMs = 50;
+    config.collisionFrameIntervalMs = 10;
+    config.collisionHoldMs = 20;
+    config.pacmanSpeedPxPerSecond = 100.0;
+    model.configure(config);
+    model.start(60, 10, 3);
+
+    model.advance(1);
+    QVERIFY(model.consumeActivatedFlag());
+
+    for (int iteration = 0; iteration < 100 && !model.isCollided(); ++iteration) {
+        model.advance(10);
+        const int pendingEatCount = model.takePendingEatCount();
+        if (pendingEatCount > 0) {
+            const int currentWidth = qMax(0, 60 - ((iteration + 1) * 10));
+            model.setCurrentTextWidth(currentWidth);
+        }
+    }
+
+    QVERIFY(model.isCollided());
+    QVERIFY(model.showGhost());
+
+    for (int iteration = 0; iteration < 100 && !model.consumeFinishedFlag(); ++iteration) {
+        model.advance(10);
+    }
+
+    QVERIFY(model.state() == PacmanAnimationModel::State::Finished);
+    QVERIFY(!model.showGhost());
 }
 
 QTEST_MAIN(RepositoryTests)
