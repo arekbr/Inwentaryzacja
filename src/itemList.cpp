@@ -963,8 +963,19 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
 {
     qDebug() << "itemList: Tworzenie schematu (MySQL)";
     QSqlQuery query(db);
+    bool schemaOk = true;
+    auto execOrLog = [&query, &schemaOk](const QString &sql, const QString &context)
+    {
+        if (!query.exec(sql))
+        {
+            qDebug() << context << query.lastError().text();
+            schemaOk = false;
+            return false;
+        }
+        return true;
+    };
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS eksponaty (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT NOT NULL,
@@ -981,56 +992,64 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
             value INT,
             has_original_packaging BOOLEAN DEFAULT 0
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli eksponaty");
 
     // Sprawdź czy kolumna has_original_packaging istnieje
-    query.exec("SELECT COUNT(*) FROM information_schema.columns "
-               "WHERE table_schema = DATABASE() "
-               "AND table_name = 'eksponaty' "
-               "AND column_name = 'has_original_packaging'");
-    if (query.next() && query.value(0).toInt() == 0)
+    if (execOrLog("SELECT COUNT(*) FROM information_schema.columns "
+                  "WHERE table_schema = DATABASE() "
+                  "AND table_name = 'eksponaty' "
+                  "AND column_name = 'has_original_packaging'",
+                  "itemList: Błąd sprawdzania kolumny has_original_packaging")
+        && query.next() && query.value(0).toInt() == 0)
     {
         // Kolumna nie istnieje, dodaj ją
-        query.exec("ALTER TABLE eksponaty ADD COLUMN has_original_packaging BOOLEAN DEFAULT 0");
+        execOrLog("ALTER TABLE eksponaty ADD COLUMN has_original_packaging BOOLEAN DEFAULT 0",
+                  "itemList: Błąd dodawania kolumny has_original_packaging");
     }
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS types (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli types");
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS vendors (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli vendors");
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS models (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL,
             vendor_id VARCHAR(36) NOT NULL
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli models");
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS statuses (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli statuses");
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS storage_places (
             id VARCHAR(36) PRIMARY KEY,
             name TEXT UNIQUE NOT NULL
         )
-    )");
+    )",
+              "itemList: Błąd tworzenia tabeli storage_places");
 
-    query.exec(R"(
+    execOrLog(R"(
         CREATE TABLE IF NOT EXISTS photos (
             id VARCHAR(36) PRIMARY KEY,
             eksponat_id VARCHAR(36) NOT NULL,
@@ -1039,17 +1058,20 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
                 FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id)
                 ON DELETE CASCADE
         )
-    )");
-    query.exec("SELECT COUNT(*) FROM information_schema.statistics "
-               "WHERE table_schema = DATABASE() "
-               "AND table_name = 'photos' "
-               "AND index_name = 'idx_photos_eksponat_id'");
-    if (query.next() && query.value(0).toInt() == 0)
-        query.exec("CREATE INDEX idx_photos_eksponat_id ON photos (eksponat_id)");
+    )",
+              "itemList: Błąd tworzenia tabeli photos");
+    if (execOrLog("SELECT COUNT(*) FROM information_schema.statistics "
+                  "WHERE table_schema = DATABASE() "
+                  "AND table_name = 'photos' "
+                  "AND index_name = 'idx_photos_eksponat_id'",
+                  "itemList: Błąd sprawdzania indeksu zdjęć")
+        && query.next() && query.value(0).toInt() == 0)
+        execOrLog("CREATE INDEX idx_photos_eksponat_id ON photos (eksponat_id)",
+                  "itemList: Błąd tworzenia indeksu zdjęć");
 
-    if (query.lastError().isValid())
+    if (!schemaOk)
     {
-        qDebug() << "itemList: Błąd tworzenia schematu:" << query.lastError().text();
+        qDebug() << "itemList: Tworzenie schematu zakończone z błędami.";
     }
     else
     {
@@ -1069,46 +1091,66 @@ void itemList::insertSampleData(QSqlDatabase &db)
 {
     qDebug() << "itemList: Wstawianie danych przykładowych (MySQL)";
     QSqlQuery query(db);
+    bool insertOk = true;
+    auto execOrLog = [&query, &insertOk](const QString &sql, const QString &context)
+    {
+        if (!query.exec(sql))
+        {
+            qDebug() << context << query.lastError().text();
+            insertOk = false;
+            return false;
+        }
+        return true;
+    };
 
     auto genId = []()
     { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
 
     // types
     QString t1 = genId(), t2 = genId(), t3 = genId();
-    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Komputer')").arg(t1));
-    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Monitor')").arg(t2));
-    query.exec(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Kabel')").arg(t3));
+    execOrLog(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Komputer')").arg(t1),
+              "itemList: Błąd dodawania typu Komputer");
+    execOrLog(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Monitor')").arg(t2),
+              "itemList: Błąd dodawania typu Monitor");
+    execOrLog(QString("INSERT IGNORE INTO types (id, name) VALUES ('%1','Kabel')").arg(t3),
+              "itemList: Błąd dodawania typu Kabel");
 
     // Producenci
     QString v1 = genId(), v2 = genId(), v3 = genId();
-    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Atari')").arg(v1));
-    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Commodore')").arg(v2));
-    query.exec(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Sinclair')").arg(v3));
+    execOrLog(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Atari')").arg(v1),
+              "itemList: Błąd dodawania producenta Atari");
+    execOrLog(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Commodore')").arg(v2),
+              "itemList: Błąd dodawania producenta Commodore");
+    execOrLog(QString("INSERT IGNORE INTO vendors (id, name) VALUES ('%1','Sinclair')").arg(v3),
+              "itemList: Błąd dodawania producenta Sinclair");
 
     // Modele
     QString m1 = genId(), m2 = genId(), m3 = genId();
-    query.exec(
-        QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Atari 800XL','%2')")
-            .arg(m1, v1));
-    query.exec(
-        QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Amiga 500','%2')")
-            .arg(m2, v2));
-    query.exec(
-        QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','ZX Spectrum','%2')")
-            .arg(m3, v3));
+    execOrLog(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Atari 800XL','%2')")
+                  .arg(m1, v1),
+              "itemList: Błąd dodawania modelu Atari 800XL");
+    execOrLog(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','Amiga 500','%2')")
+                  .arg(m2, v2),
+              "itemList: Błąd dodawania modelu Amiga 500");
+    execOrLog(QString("INSERT IGNORE INTO models (id, name, vendor_id) VALUES ('%1','ZX Spectrum','%2')")
+                  .arg(m3, v3),
+              "itemList: Błąd dodawania modelu ZX Spectrum");
 
     // Statusy
     QString s1 = genId(), s2 = genId(), s3 = genId();
-    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Sprawny')").arg(s1));
-    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Uszkodzony')").arg(s2));
-    query.exec(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','W naprawie')").arg(s3));
+    execOrLog(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Sprawny')").arg(s1),
+              "itemList: Błąd dodawania statusu Sprawny");
+    execOrLog(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','Uszkodzony')").arg(s2),
+              "itemList: Błąd dodawania statusu Uszkodzony");
+    execOrLog(QString("INSERT IGNORE INTO statuses (id, name) VALUES ('%1','W naprawie')").arg(s3),
+              "itemList: Błąd dodawania statusu W naprawie");
 
     // Miejsce przechowywania
     QString sp1 = genId(), sp2 = genId();
-    query.exec(
-        QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Magazyn 1')").arg(sp1));
-    query.exec(
-        QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Półka B3')").arg(sp2));
+    execOrLog(QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Magazyn 1')").arg(sp1),
+              "itemList: Błąd dodawania miejsca Magazyn 1");
+    execOrLog(QString("INSERT IGNORE INTO storage_places (id, name) VALUES ('%1','Półka B3')").arg(sp2),
+              "itemList: Błąd dodawania miejsca Półka B3");
 
     // Eksponaty
     QString e1 = genId();
@@ -1131,7 +1173,10 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":storage", sp1);
     query.bindValue(":desc", "Klasyczny komputer Atari");
     query.bindValue(":val", 1);
-    query.exec();
+    if (!query.exec()) {
+        qDebug() << "itemList: Błąd dodawania przykładowego eksponatu Atari 800XL" << query.lastError().text();
+        insertOk = false;
+    }
 
     QString e2 = genId();
     query.prepare(R"(
@@ -1153,7 +1198,10 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":storage", sp1);
     query.bindValue(":desc", "Klasyczny komputer Amiga");
     query.bindValue(":val", 2);
-    query.exec();
+    if (!query.exec()) {
+        qDebug() << "itemList: Błąd dodawania przykładowego eksponatu Amiga 500" << query.lastError().text();
+        insertOk = false;
+    }
 
     QString e3 = genId();
     query.prepare(R"(
@@ -1175,12 +1223,14 @@ void itemList::insertSampleData(QSqlDatabase &db)
     query.bindValue(":storage", sp2);
     query.bindValue(":desc", "Kultowy komputer Sinclair");
     query.bindValue(":val", 1);
-    query.exec();
+    if (!query.exec()) {
+        qDebug() << "itemList: Błąd dodawania przykładowego eksponatu ZX Spectrum" << query.lastError().text();
+        insertOk = false;
+    }
 
-    if (query.lastError().isValid())
+    if (!insertOk)
     {
-        qDebug() << "itemList: Błąd wstawiania danych przykładowych (MySQL)"
-                 << query.lastError().text();
+        qDebug() << "itemList: Wstawianie danych przykładowych (MySQL) zakończone z błędami";
     }
     else
     {
