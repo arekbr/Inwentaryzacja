@@ -33,6 +33,7 @@
 #include "itemList.h"
 #include "ItemFilterProxyModel.h"
 #include "ItemRepository.h"
+#include "PhotoService.h"
 #include "fullscreenphotoviewer.h"
 #include "mainwindow.h"
 #include "photoitem.h"
@@ -476,12 +477,12 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     QModelIndex srcIndex = m_proxyModel->mapToSource(proxyIndex);
     m_currentRecordId = m_sourceModel->data(m_sourceModel->index(srcIndex.row(), 0)).toString();
 
-    QSqlQuery query(QSqlDatabase::database("default_connection"));
-    query.prepare("SELECT photo FROM photos WHERE eksponat_id = :id");
-    query.bindValue(":id", m_currentRecordId);
-    if (!query.exec())
+    PhotoService photoService(QSqlDatabase::database("default_connection"));
+    QString errorMessage;
+    const QList<StoredPhoto> photos = photoService.loadStoredPhotos(m_currentRecordId, &errorMessage);
+    if (!errorMessage.isEmpty())
     {
-        qDebug() << "Błąd pobierania zdjęć (MySQL):" << query.lastError().text();
+        qDebug() << "Błąd pobierania zdjęć (MySQL):" << errorMessage;
         replaceScene(ui->itemList_graphicsView, nullptr);
         return;
     }
@@ -489,23 +490,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int viewWidth = ui->itemList_graphicsView->viewport()->width() - 10;
     int viewHeight = ui->itemList_graphicsView->viewport()->height() - 10;
 
-    QList<QPixmap> pixmaps;
-    while (query.next())
-    {
-        QByteArray imageData = query.value(0).toByteArray();
-        QPixmap pixmap;
-        if (pixmap.loadFromData(imageData))
-        {
-            pixmaps.append(pixmap);
-        }
-        else
-        {
-            qDebug() << "Nie można załadować BLOB (MySQL). Rozmiar danych:" << imageData.size();
-            qDebug() << "Spróbuj sprawdzić obecność bibliotek Qt image plugins (np. libqjpeg, libqpng) w katalogu plugins/imageformats lub LD_LIBRARY_PATH.";
-        }
-    }
-
-    if (pixmaps.isEmpty())
+    if (photos.isEmpty())
     {
         replaceScene(ui->itemList_graphicsView, nullptr);
         return;
@@ -513,7 +498,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int spacing = 5;
-    int photoCount = pixmaps.size();
+    int photoCount = photos.size();
 
     int cols = qMax(1, qMin(qCeil(qSqrt(photoCount)), viewWidth / 100));
     int rows = (photoCount + cols - 1) / cols;
@@ -523,7 +508,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int x = 5, y = 5;
     for (int i = 0; i < photoCount; i++)
     {
-        QPixmap original = pixmaps[i];
+        QPixmap original = photos[i].pixmap;
         QPixmap scaled = original.scaled(maxThumbnailWidth,
                                          maxThumbnailHeight,
                                          Qt::KeepAspectRatio,

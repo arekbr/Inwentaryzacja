@@ -662,12 +662,12 @@ void MainWindow::loadRecord(const QString &recordId)
  */
 void MainWindow::loadPhotos(const QString &recordId)
 {
-    QSqlQuery query(db);
-    query.prepare("SELECT id, photo FROM photos WHERE eksponat_id = :id");
-    query.bindValue(":id", recordId);
-    if (!query.exec())
+    PhotoService photoService(db);
+    QString errorMessage;
+    const QList<StoredPhoto> photos = photoService.loadStoredPhotos(recordId, &errorMessage);
+    if (!errorMessage.isEmpty())
     {
-        qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
+        qDebug() << "Błąd pobierania zdjęć:" << errorMessage;
         replaceScene(ui->graphicsView, nullptr);
         return;
     }
@@ -676,23 +676,16 @@ void MainWindow::loadPhotos(const QString &recordId)
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5, idx = 0;
 
-    while (query.next())
+    for (const StoredPhoto &photo : photos)
     {
-        QByteArray imgData = query.value("photo").toByteArray();
-        QPixmap pix;
-        if (!pix.loadFromData(imgData))
-        {
-            qDebug() << "Nie można załadować BLOB zdjęcia";
-            continue;
-        }
-        QPixmap scaled = pix.scaled(thumbSize,
+        QPixmap scaled = photo.pixmap.scaled(thumbSize,
                                     thumbSize,
                                     Qt::KeepAspectRatio,
                                     Qt::SmoothTransformation);
 
         PhotoItem *item = new PhotoItem();
         item->setPixmap(scaled);
-        item->setData(0, query.value("id").toString());
+        item->setData(0, photo.id);
         item->setData(1, idx);
 
         connect(item, &PhotoItem::clicked, this, [this, item]()
@@ -738,19 +731,15 @@ void MainWindow::loadPhotos(const QString &recordId)
  */
 void MainWindow::loadPhotosFromBuffer()
 {
+    PhotoService photoService(db);
+    const QList<QPixmap> pixmaps = photoService.loadPixmapsFromBuffer(m_photoBuffer);
     QGraphicsScene *scene = new QGraphicsScene(this);
     const int thumbSize = 80, spacing = 5;
     int x = 5, y = 5;
 
-    for (int i = 0; i < m_photoBuffer.size(); i++)
+    for (const QPixmap &pixmap : pixmaps)
     {
-        QPixmap pix;
-        if (!pix.loadFromData(m_photoBuffer[i]))
-        {
-            qDebug() << "Błąd loadFromData w buforze zdjęć";
-            continue;
-        }
-        QPixmap scaled = pix.scaled(thumbSize,
+        QPixmap scaled = pixmap.scaled(thumbSize,
                                     thumbSize,
                                     Qt::KeepAspectRatio,
                                     Qt::SmoothTransformation);
