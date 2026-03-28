@@ -1,17 +1,10 @@
-name: Build Installers
+name: Build Installers Legacy
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - main
-      - audit-safe-fixes
-    tags:
-      - 'v*'
 
 permissions:
   contents: write
