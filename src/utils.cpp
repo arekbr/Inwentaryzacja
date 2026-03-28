@@ -112,8 +112,10 @@ bool setupDatabase(const QString &dbType,
 
         // Sprawdź czy kolumna has_original_packaging istnieje
         QSqlQuery checkColumn(db);
-        checkColumn.exec("PRAGMA table_info(eksponaty)");
         bool hasPackagingExists = false;
+        if (!checkColumn.exec("PRAGMA table_info(eksponaty)")) {
+            qDebug() << "Błąd sprawdzania kolumn SQLite dla eksponaty:" << checkColumn.lastError().text();
+        }
         while (checkColumn.next()) {
             if (checkColumn.value("name").toString() == "has_original_packaging") {
                 hasPackagingExists = true;
@@ -124,13 +126,25 @@ bool setupDatabase(const QString &dbType,
         // Jeśli kolumna nie istnieje, dodaj ją
         if (!hasPackagingExists) {
             QSqlQuery addColumn(db);
-            addColumn.exec("ALTER TABLE eksponaty ADD COLUMN has_original_packaging INTEGER DEFAULT 0");
+            if (!addColumn.exec("ALTER TABLE eksponaty ADD COLUMN has_original_packaging INTEGER DEFAULT 0")) {
+                qDebug() << "Błąd dodawania kolumny has_original_packaging w SQLite:" << addColumn.lastError().text();
+            }
         }
 
         if (missing) {
             QSqlQuery q(db);
+            bool schemaOk = true;
+            auto execOrLog = [&q, &schemaOk](const QString &sql, const QString &context)
+            {
+                if (!q.exec(sql)) {
+                    qDebug() << context << q.lastError().text();
+                    schemaOk = false;
+                    return false;
+                }
+                return true;
+            };
             // Tabele
-            q.exec(R"(
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS eksponaty (
                   id TEXT PRIMARY KEY,
                   name TEXT NOT NULL,
@@ -147,89 +161,112 @@ bool setupDatabase(const QString &dbType,
                   value INTEGER,
                   has_original_packaging INTEGER DEFAULT 0
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli eksponaty (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS types (
                   id TEXT PRIMARY KEY,
                   name TEXT UNIQUE NOT NULL
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli types (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS vendors (
                   id TEXT PRIMARY KEY,
                   name TEXT UNIQUE NOT NULL
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli vendors (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS models (
                   id TEXT PRIMARY KEY,
                   name TEXT UNIQUE NOT NULL,
                   vendor_id TEXT NOT NULL
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli models (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS statuses (
                   id TEXT PRIMARY KEY,
                   name TEXT UNIQUE NOT NULL
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli statuses (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS storage_places (
                   id TEXT PRIMARY KEY,
                   name TEXT UNIQUE NOT NULL
                 )
-            )");
-            q.exec(R"(
+            )",
+                      "Błąd tworzenia tabeli storage_places (SQLite)");
+            execOrLog(R"(
                 CREATE TABLE IF NOT EXISTS photos (
                   id TEXT PRIMARY KEY,
                   eksponat_id TEXT NOT NULL,
                   photo BLOB NOT NULL,
                   FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id) ON DELETE CASCADE
                 )
-            )");
-            q.exec("CREATE INDEX IF NOT EXISTS idx_photos_eksponat_id ON photos(eksponat_id)");
+            )",
+                      "Błąd tworzenia tabeli photos (SQLite)");
+            execOrLog("CREATE INDEX IF NOT EXISTS idx_photos_eksponat_id ON photos(eksponat_id)",
+                      "Błąd tworzenia indeksu zdjęć (SQLite)");
 
             // Przykładowe dane słownikowe
             auto genId = []() { return QUuid::createUuid().toString(QUuid::WithoutBraces); };
             // types
             QString t1 = genId(), t2 = genId(), t3 = genId();
-            q.exec(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Komputer')").arg(t1));
-            q.exec(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Monitor')").arg(t2));
-            q.exec(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Kabel')").arg(t3));
+            execOrLog(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Komputer')").arg(t1),
+                      "Błąd dodawania typu Komputer (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Monitor')").arg(t2),
+                      "Błąd dodawania typu Monitor (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO types(id,name) VALUES('%1','Kabel')").arg(t3),
+                      "Błąd dodawania typu Kabel (SQLite)");
             // vendors
             QString v1 = genId(), v2 = genId(), v3 = genId();
-            q.exec(QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Atari')").arg(v1));
-            q.exec(
-                QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Commodore')").arg(v2));
-            q.exec(
-                QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Sinclair')").arg(v3));
+            execOrLog(QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Atari')").arg(v1),
+                      "Błąd dodawania producenta Atari (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Commodore')").arg(v2),
+                      "Błąd dodawania producenta Commodore (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO vendors(id,name) VALUES('%1','Sinclair')").arg(v3),
+                      "Błąd dodawania producenta Sinclair (SQLite)");
             // models
             QString m1 = genId(), m2 = genId(), m3 = genId();
-            q.exec(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
-                           "VALUES('%1','Atari 800XL','%2')")
-                       .arg(m1, v1));
-            q.exec(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
-                           "VALUES('%1','Amiga 500','%2')")
-                       .arg(m2, v2));
-            q.exec(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
-                           "VALUES('%1','ZX Spectrum','%2')")
-                       .arg(m3, v3));
+            execOrLog(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
+                              "VALUES('%1','Atari 800XL','%2')")
+                          .arg(m1, v1),
+                      "Błąd dodawania modelu Atari 800XL (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
+                              "VALUES('%1','Amiga 500','%2')")
+                          .arg(m2, v2),
+                      "Błąd dodawania modelu Amiga 500 (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO models(id,name,vendor_id) "
+                              "VALUES('%1','ZX Spectrum','%2')")
+                          .arg(m3, v3),
+                      "Błąd dodawania modelu ZX Spectrum (SQLite)");
             // statuses
             QString s1 = genId(), s2 = genId(), s3 = genId();
-            q.exec(
-                QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','Sprawny')").arg(s1));
-            q.exec(QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','Uszkodzony')")
-                       .arg(s2));
-            q.exec(QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','W naprawie')")
-                       .arg(s3));
+            execOrLog(QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','Sprawny')").arg(s1),
+                      "Błąd dodawania statusu Sprawny (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','Uszkodzony')")
+                          .arg(s2),
+                      "Błąd dodawania statusu Uszkodzony (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO statuses(id,name) VALUES('%1','W naprawie')")
+                          .arg(s3),
+                      "Błąd dodawania statusu W naprawie (SQLite)");
             // storage_places
             QString sp1 = genId(), sp2 = genId();
-            q.exec(QString("INSERT OR IGNORE INTO storage_places(id,name) "
-                           "VALUES('%1','Magazyn 1')")
-                       .arg(sp1));
-            q.exec(QString("INSERT OR IGNORE INTO storage_places(id,name) "
-                           "VALUES('%1','Półka B3')")
-                       .arg(sp2));
+            execOrLog(QString("INSERT OR IGNORE INTO storage_places(id,name) "
+                              "VALUES('%1','Magazyn 1')")
+                          .arg(sp1),
+                      "Błąd dodawania miejsca Magazyn 1 (SQLite)");
+            execOrLog(QString("INSERT OR IGNORE INTO storage_places(id,name) "
+                              "VALUES('%1','Półka B3')")
+                          .arg(sp2),
+                      "Błąd dodawania miejsca Półka B3 (SQLite)");
+
+            if (!schemaOk) {
+                qDebug() << "Tworzenie schematu SQLite zakończone z błędami.";
+            }
         }
     }
 
