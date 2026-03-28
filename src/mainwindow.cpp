@@ -34,6 +34,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ItemRepository.h"
+#include "ItemFormValidator.h"
 #include "PacmanOverlay.h"
 #include "PhotoService.h"
 
@@ -790,23 +791,24 @@ void MainWindow::setPhotoItemsEditMode(bool enabled)
 bool MainWindow::collectValidatedItemData(ItemRecordData *itemData)
 {
     const QString itemName = ui->New_item_name->text().trimmed();
-    if (itemName.isEmpty())
+    const ItemValidationResult nameValidation = ItemFormValidator::validateName(itemName);
+    if (!nameValidation.isValid)
     {
-        QMessageBox::warning(this, tr("Brak danych"), tr("Nazwa eksponatu jest wymagana."));
-        ui->New_item_name->setFocus();
+        showValidationError(nameValidation);
         return false;
     }
 
-    auto requireSelection = [this](QComboBox *comboBox, const QString &fieldLabel, QString *target)
+    auto requireSelection = [this](QComboBox *comboBox,
+                                   const QString &fieldLabel,
+                                   ItemValidationField field,
+                                   QString *target)
     {
         const QString selectedId = validateUuid(comboBox->currentData().toString(), QString());
-        if (selectedId.isEmpty())
+        const ItemValidationResult selectionValidation =
+            ItemFormValidator::validateSelection(selectedId, fieldLabel, field);
+        if (!selectionValidation.isValid)
         {
-            QMessageBox::warning(this,
-                                 tr("Brak danych"),
-                                 tr("Pole \"%1\" wymaga wyboru poprawnej wartości.")
-                                     .arg(fieldLabel));
-            comboBox->setFocus();
+            showValidationError(selectionValidation);
             return false;
         }
 
@@ -814,9 +816,13 @@ bool MainWindow::collectValidatedItemData(ItemRecordData *itemData)
         return true;
     };
 
-    int itemValue = 0;
-    if (!validateNumericValue(&itemValue))
+    const ItemValidationResult numericValueValidation =
+        ItemFormValidator::validateNumericValue(ui->New_item_value->text());
+    if (!numericValueValidation.isValid)
+    {
+        showValidationError(numericValueValidation);
         return false;
+    }
 
     itemData->id = m_recordId;
     itemData->name = itemName;
@@ -825,75 +831,65 @@ bool MainWindow::collectValidatedItemData(ItemRecordData *itemData)
     itemData->revision = ui->New_item_revision->text().trimmed();
     itemData->productionYear = ui->New_item_ProductionDate->date().year();
     itemData->description = ui->New_item_description->toPlainText().trimmed();
-    itemData->value = itemValue;
+    itemData->value = numericValueValidation.parsedValue;
     itemData->hasOriginalPackaging = ui->New_item_hasOriginalPackaging->isChecked();
     itemData->editMode = m_editMode;
 
-    if (!requireSelection(ui->New_item_status, tr("Status"), &itemData->statusId)
-        || !requireSelection(ui->New_item_type, tr("Typ"), &itemData->typeId)
-        || !requireSelection(ui->New_item_vendor, tr("Producent"), &itemData->vendorId)
-        || !requireSelection(ui->New_item_model, tr("Model"), &itemData->modelId)
+    if (!requireSelection(ui->New_item_status, tr("Status"), ItemValidationField::Status, &itemData->statusId)
+        || !requireSelection(ui->New_item_type, tr("Typ"), ItemValidationField::Type, &itemData->typeId)
+        || !requireSelection(ui->New_item_vendor, tr("Producent"), ItemValidationField::Vendor, &itemData->vendorId)
+        || !requireSelection(ui->New_item_model, tr("Model"), ItemValidationField::Model, &itemData->modelId)
         || !requireSelection(ui->New_item_storagePlace,
                              tr("Miejsce przechowywania"),
+                             ItemValidationField::StoragePlace,
                              &itemData->storagePlaceId))
     {
         return false;
     }
 
-    return validateModelVendorConsistency(itemData->vendorId, itemData->modelId);
-}
-
-bool MainWindow::validateNumericValue(int *value)
-{
-    const QString rawValue = ui->New_item_value->text().trimmed();
-    if (rawValue.isEmpty())
+    const ItemValidationResult modelVendorValidation =
+        ItemFormValidator::validateModelVendorConsistency(db, itemData->vendorId, itemData->modelId);
+    if (!modelVendorValidation.isValid)
     {
-        *value = 0;
-        return true;
-    }
-
-    bool ok = false;
-    const int parsedValue = rawValue.toInt(&ok);
-    if (!ok)
-    {
-        QMessageBox::warning(this,
-                             tr("Błędna wartość"),
-                             tr("Pole \"Wartość\" musi zawierać liczbę całkowitą."));
-        ui->New_item_value->setFocus();
-        ui->New_item_value->selectAll();
+        showValidationError(modelVendorValidation);
         return false;
     }
 
-    *value = parsedValue;
     return true;
 }
 
-bool MainWindow::validateModelVendorConsistency(const QString &vendorId, const QString &modelId)
+void MainWindow::showValidationError(const ItemValidationResult &result)
 {
-    QSqlQuery query(db);
-    query.prepare(QStringLiteral("SELECT 1 FROM models WHERE id = :model_id AND vendor_id = :vendor_id"));
-    query.bindValue(QStringLiteral(":model_id"), modelId);
-    query.bindValue(QStringLiteral(":vendor_id"), vendorId);
+    QMessageBox::warning(this, result.title, result.message);
 
-    if (!query.exec())
+    switch (result.field)
     {
-        QMessageBox::warning(this,
-                             tr("Błąd walidacji"),
-                             tr("Nie udało się sprawdzić zgodności modelu i producenta:\n%1")
-                                 .arg(query.lastError().text()));
+    case ItemValidationField::Name:
+        ui->New_item_name->setFocus();
+        break;
+    case ItemValidationField::Value:
+        ui->New_item_value->setFocus();
+        ui->New_item_value->selectAll();
+        break;
+    case ItemValidationField::Status:
+        ui->New_item_status->setFocus();
+        break;
+    case ItemValidationField::Type:
+        ui->New_item_type->setFocus();
+        break;
+    case ItemValidationField::Vendor:
+        ui->New_item_vendor->setFocus();
+        break;
+    case ItemValidationField::Model:
+    case ItemValidationField::Database:
         ui->New_item_model->setFocus();
-        return false;
+        break;
+    case ItemValidationField::StoragePlace:
+        ui->New_item_storagePlace->setFocus();
+        break;
+    case ItemValidationField::None:
+        break;
     }
-
-    if (query.next())
-        return true;
-
-    QMessageBox::warning(this,
-                         tr("Niespójne dane"),
-                         tr("Wybrany model nie należy do wskazanego producenta.\n"
-                            "Wybierz zgodny model albo zmień producenta."));
-    ui->New_item_model->setFocus();
-    return false;
 }
 
 /**

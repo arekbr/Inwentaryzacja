@@ -2,6 +2,7 @@
 
 #include "DictionaryRepository.h"
 #include "DatabaseMigration.h"
+#include "ItemFormValidator.h"
 #include "ItemRepository.h"
 #include "PhotoService.h"
 #include "utils.h"
@@ -35,6 +36,11 @@ private slots:
     void databaseMigration_removesBracesFromAllRelevantTables();
     void databaseMigration_fixesKnownBrokenUuids();
     void databaseMigration_isNoOpWithoutSchema();
+    void itemFormValidator_rejectsEmptyName();
+    void itemFormValidator_parsesNumericValue();
+    void itemFormValidator_rejectsInvalidNumericValue();
+    void itemFormValidator_requiresSelection();
+    void itemFormValidator_checksModelVendorConsistency();
 
 private:
     QString lookupId(const QString &tableName, const QString &name) const;
@@ -445,6 +451,58 @@ void RepositoryTests::databaseMigration_isNoOpWithoutSchema()
     emptyDb.close();
     emptyDb = QSqlDatabase();
     QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::itemFormValidator_rejectsEmptyName()
+{
+    const ItemValidationResult result = ItemFormValidator::validateName(QStringLiteral("   "));
+    QVERIFY(!result.isValid);
+    QCOMPARE(result.field, ItemValidationField::Name);
+}
+
+void RepositoryTests::itemFormValidator_parsesNumericValue()
+{
+    const ItemValidationResult emptyResult = ItemFormValidator::validateNumericValue(QString());
+    QVERIFY(emptyResult.isValid);
+    QCOMPARE(emptyResult.parsedValue, 0);
+
+    const ItemValidationResult parsedResult = ItemFormValidator::validateNumericValue(QStringLiteral(" 42 "));
+    QVERIFY(parsedResult.isValid);
+    QCOMPARE(parsedResult.parsedValue, 42);
+}
+
+void RepositoryTests::itemFormValidator_rejectsInvalidNumericValue()
+{
+    const ItemValidationResult result = ItemFormValidator::validateNumericValue(QStringLiteral("4a2"));
+    QVERIFY(!result.isValid);
+    QCOMPARE(result.field, ItemValidationField::Value);
+}
+
+void RepositoryTests::itemFormValidator_requiresSelection()
+{
+    const ItemValidationResult result =
+        ItemFormValidator::validateSelection(QString(), QStringLiteral("Status"), ItemValidationField::Status);
+    QVERIFY(!result.isValid);
+    QCOMPARE(result.field, ItemValidationField::Status);
+}
+
+void RepositoryTests::itemFormValidator_checksModelVendorConsistency()
+{
+    const QString atariVendorId = lookupId(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    const QString commodoreVendorId = lookupId(QStringLiteral("vendors"), QStringLiteral("Commodore"));
+    const QString atariModelId = lookupId(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    QVERIFY(!atariVendorId.isEmpty());
+    QVERIFY(!commodoreVendorId.isEmpty());
+    QVERIFY(!atariModelId.isEmpty());
+
+    const ItemValidationResult validResult =
+        ItemFormValidator::validateModelVendorConsistency(m_db, atariVendorId, atariModelId);
+    QVERIFY(validResult.isValid);
+
+    const ItemValidationResult invalidResult =
+        ItemFormValidator::validateModelVendorConsistency(m_db, commodoreVendorId, atariModelId);
+    QVERIFY(!invalidResult.isValid);
+    QCOMPARE(invalidResult.field, ItemValidationField::Model);
 }
 
 QTEST_MAIN(RepositoryTests)

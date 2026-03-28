@@ -50,6 +50,7 @@ namespace Ui
 class PhotoItem;
 class QPixmap;
 struct ItemRecordData;
+struct ItemValidationResult;
 struct StoredPhoto;
 
 /**
@@ -317,8 +318,7 @@ private:
     void loadPhotosFromBuffer();
 
     bool collectValidatedItemData(ItemRecordData *itemData);
-    bool validateNumericValue(int *value);
-    bool validateModelVendorConsistency(const QString &vendorId, const QString &modelId);
+    void showValidationError(const ItemValidationResult &result);
     void setPhotoItemsEditMode(bool enabled);
     void showStoredPhotos(const QList<StoredPhoto> &photos);
     void showBufferPhotos(const QList<QPixmap> &pixmaps);

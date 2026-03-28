@@ -90,8 +90,10 @@ enable_testing()
 qt6_add_executable(${PROJECT_NAME}Tests
     tests/repository_tests.cpp
     include/DatabaseMigration.h
+    include/ItemFormValidator.h
     src/ItemRepository.cpp
     src/DictionaryRepository.cpp
+    src/ItemFormValidator.cpp
     src/PhotoService.cpp
     src/DatabaseMigration.cpp
     src/DatabaseSchemaUtils.cpp
