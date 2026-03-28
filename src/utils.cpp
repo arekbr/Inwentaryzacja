@@ -183,7 +183,8 @@ bool setupDatabase(const QString &dbType,
                 CREATE TABLE IF NOT EXISTS photos (
                   id TEXT PRIMARY KEY,
                   eksponat_id TEXT NOT NULL,
-                  photo BLOB NOT NULL
+                  photo BLOB NOT NULL,
+                  FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id) ON DELETE CASCADE
                 )
             )");
             q.exec("CREATE INDEX IF NOT EXISTS idx_photos_eksponat_id ON photos(eksponat_id)");

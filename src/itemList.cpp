@@ -1031,9 +1031,18 @@ void itemList::createDatabaseSchema(QSqlDatabase &db)
         CREATE TABLE IF NOT EXISTS photos (
             id VARCHAR(36) PRIMARY KEY,
             eksponat_id VARCHAR(36) NOT NULL,
-            photo LONGBLOB NOT NULL
+            photo LONGBLOB NOT NULL,
+            CONSTRAINT fk_photos_eksponat
+                FOREIGN KEY (eksponat_id) REFERENCES eksponaty(id)
+                ON DELETE CASCADE
         )
     )");
+    query.exec("SELECT COUNT(*) FROM information_schema.statistics "
+               "WHERE table_schema = DATABASE() "
+               "AND table_name = 'photos' "
+               "AND index_name = 'idx_photos_eksponat_id'");
+    if (query.next() && query.value(0).toInt() == 0)
+        query.exec("CREATE INDEX idx_photos_eksponat_id ON photos (eksponat_id)");
 
     if (query.lastError().isValid())
     {
