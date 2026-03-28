@@ -28,14 +28,16 @@ bool DatabaseMigration::migrateUUIDs()
         success = false;
     }
 
+    const bool hasBracedUuids = checkForBracedUUIDs();
+
     // Sprawdź czy migracja jest potrzebna
-    if (!checkForBracedUUIDs()) {
+    if (!hasBracedUuids) {
         qDebug() << "Nie znaleziono UUID-ów z nawiasami klamrowymi, migracja nie jest potrzebna.";
         return success;
     }
 
     // Jeśli są UUID-y do migracji, wykonaj migrację
-    if (checkForBracedUUIDs()) {
+    if (hasBracedUuids) {
         // Rozpocznij proces migracji
         if (!disableForeignKeyChecks()) {
             qDebug() << "Nie udało się wyłączyć sprawdzania kluczy obcych";
@@ -117,8 +119,16 @@ bool DatabaseMigration::checkForBracedUUIDs()
     query.exec("SELECT id FROM storage_places WHERE id LIKE '{%}' LIMIT 1");
     if (query.next()) return true;
     
-    // Sprawdź referencje w tabeli eksponatów
-    query.exec("SELECT id FROM eksponaty WHERE status_id LIKE '{%}' OR storage_place_id LIKE '{%}' LIMIT 1");
+    // Sprawdź rekordy i referencje w tabeli eksponatów
+    query.exec("SELECT id FROM eksponaty "
+               "WHERE id LIKE '{%}' "
+               "OR status_id LIKE '{%}' "
+               "OR storage_place_id LIKE '{%}' "
+               "LIMIT 1");
+    if (query.next()) return true;
+
+    // Sprawdź rekordy i referencje w tabeli zdjęć
+    query.exec("SELECT id FROM photos WHERE id LIKE '{%}' OR eksponat_id LIKE '{%}' LIMIT 1");
     if (query.next()) return true;
     
     return false;

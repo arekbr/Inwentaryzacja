@@ -70,7 +70,6 @@ PhotoItem::PhotoItem(QGraphicsItem *parent)
  */
 PhotoItem::~PhotoItem()
 {
-    delete m_frame;
 }
 
 /**

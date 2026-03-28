@@ -70,6 +70,20 @@
 #include <QLibraryInfo>
 #include <QPluginLoader>
 
+namespace {
+
+void replaceScene(QGraphicsView *view, QGraphicsScene *newScene)
+{
+    QGraphicsScene *oldScene = view->scene();
+    if (oldScene == newScene)
+        return;
+
+    view->setScene(newScene);
+    delete oldScene;
+}
+
+}
+
 /**
  * @brief Konstruktor klasy itemList.
  * @param parent Wskaźnik na nadrzędny widget. Domyślnie nullptr.
@@ -112,46 +126,27 @@ itemList::itemList(QWidget *parent)
     qDebug() << "itemList: Przed połączeniem z bazą";
     if (!QSqlDatabase::contains("default_connection"))
     {
-        db = QSqlDatabase::addDatabase("QMYSQL", "default_connection");
-        db.setHostName("localhost");
-        db.setDatabaseName("retro_komputery");
-        db.setUserName("user");
-        db.setPassword("password");
-        if (!db.open())
-        {
-            qDebug() << "itemList: Błąd otwarcia bazy:" << db.lastError().text();
-            QMessageBox::critical(this,
-                                  tr("Błąd"),
-                                  tr("Nie można połączyć z bazą danych:\n%1")
-                                      .arg(db.lastError().text()));
-            qApp->quit();
-            return;
-        }
-        qDebug() << "itemList: Baza otwarta";
-        if (!verifyDatabaseSchema(db))
-        {
-            qDebug() << "itemList: Schemat niepoprawny, tworzę schemat";
-            createDatabaseSchema(db);
-            insertSampleData(db);
-        }
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Brak skonfigurowanego połączenia z bazą danych."));
+        qApp->quit();
+        return;
     }
-    else
-    {
-        db = QSqlDatabase::database("default_connection");
-        if (!db.isOpen())
-        {
-            qDebug() << "itemList: Połączenie zamknięte";
-            QMessageBox::critical(this, tr("Błąd"), tr("Połączenie z bazą danych zamknięte."));
-            qApp->quit();
-            return;
-        }
-        qDebug() << "itemList: Baza już otwarta";
 
-        if (!verifyDatabaseSchema(db))
-        {
-            createDatabaseSchema(db);
-            insertSampleData(db);
-        }
+    db = QSqlDatabase::database("default_connection");
+    if (!db.isOpen())
+    {
+        qDebug() << "itemList: Połączenie zamknięte";
+        QMessageBox::critical(this, tr("Błąd"), tr("Połączenie z bazą danych zamknięte."));
+        qApp->quit();
+        return;
+    }
+    qDebug() << "itemList: Baza już otwarta";
+
+    if (!verifyDatabaseSchema(db))
+    {
+        createDatabaseSchema(db);
+        insertSampleData(db);
     }
     qDebug() << "itemList: Konstruktor zakończony";
 
@@ -468,7 +463,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 {
     if (selected.indexes().isEmpty())
     {
-        ui->itemList_graphicsView->setScene(nullptr);
+        replaceScene(ui->itemList_graphicsView, nullptr);
         m_currentRecordId.clear();
         return;
     }
@@ -483,7 +478,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     if (!query.exec())
     {
         qDebug() << "Błąd pobierania zdjęć (MySQL):" << query.lastError().text();
-        ui->itemList_graphicsView->setScene(nullptr);
+        replaceScene(ui->itemList_graphicsView, nullptr);
         return;
     }
 
@@ -508,7 +503,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
 
     if (pixmaps.isEmpty())
     {
-        ui->itemList_graphicsView->setScene(nullptr);
+        replaceScene(ui->itemList_graphicsView, nullptr);
         return;
     }
 
@@ -549,7 +544,7 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
     int totalWidth = cols * maxThumbnailWidth + (cols - 1) * spacing + 10;
     int totalHeight = rows * maxThumbnailHeight + (rows - 1) * spacing + 10;
     scene->setSceneRect(0, 0, totalWidth, totalHeight);
-    ui->itemList_graphicsView->setScene(scene);
+    replaceScene(ui->itemList_graphicsView, scene);
     ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
@@ -643,14 +638,46 @@ void itemList::onDeleteButtonClicked()
                               tr("Czy na pewno chcesz usunąć rekord %1?").arg(id),
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
     {
-        QSqlQuery q(QSqlDatabase::database("default_connection"));
+        QSqlDatabase db = QSqlDatabase::database("default_connection");
+        if (!db.transaction())
+        {
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się rozpocząć transakcji:\n%1")
+                                      .arg(db.lastError().text()));
+            return;
+        }
+
+        QSqlQuery q(db);
+        q.prepare("DELETE FROM photos WHERE eksponat_id = :id");
+        q.bindValue(":id", id);
+        if (!q.exec())
+        {
+            db.rollback();
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się usunąć zdjęć:\n%1").arg(q.lastError().text()));
+            return;
+        }
+
         q.prepare("DELETE FROM eksponaty WHERE id = :id");
         q.bindValue(":id", id);
         if (!q.exec())
         {
+            db.rollback();
             QMessageBox::critical(this,
                                   tr("Błąd"),
-                                  tr("Nie udało się usunąć:\n%1").arg(q.lastError().text()));
+                                  tr("Nie udało się usunąć rekordu:\n%1").arg(q.lastError().text()));
+            return;
+        }
+
+        if (!db.commit())
+        {
+            db.rollback();
+            QMessageBox::critical(this,
+                                  tr("Błąd"),
+                                  tr("Nie udało się zatwierdzić usuwania:\n%1")
+                                      .arg(db.lastError().text()));
         }
         else
         {

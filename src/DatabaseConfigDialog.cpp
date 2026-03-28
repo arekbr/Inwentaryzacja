@@ -120,7 +120,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     ui->databaseLineEdit->setText(
         settings.value("Database/MySQL/Database", "nazwa_bazy").toString());
     ui->userLineEdit->setText(settings.value("Database/MySQL/User", "user").toString());
-    ui->passwordLineEdit->setText(settings.value("Database/MySQL/Password", "").toString());
+    ui->passwordLineEdit->clear();
     ui->portSpinBox->setValue(settings.value("Database/MySQL/Port", 3306).toInt());
 
     QString savedSkin = settings.value("skin", "Standard").toString();
@@ -209,7 +209,7 @@ void DatabaseConfigDialog::accept()
     settings.setValue("Database/MySQL/Host", ui->hostLineEdit->text());
     settings.setValue("Database/MySQL/Database", ui->databaseLineEdit->text());
     settings.setValue("Database/MySQL/User", ui->userLineEdit->text());
-    settings.setValue("Database/MySQL/Password", ui->passwordLineEdit->text());
+    settings.remove("Database/MySQL/Password");
     settings.setValue("Database/MySQL/Port", ui->portSpinBox->value());
     settings.setValue("skin", ui->filterSelectSkin->currentText());
 

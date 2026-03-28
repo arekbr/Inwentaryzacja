@@ -58,6 +58,20 @@
 #include <QProgressDialog>
 #include <QLineEdit>
 #include <QTextEdit>
+
+namespace {
+
+void replaceScene(QGraphicsView *view, QGraphicsScene *newScene)
+{
+    QGraphicsScene *oldScene = view->scene();
+    if (oldScene == newScene)
+        return;
+
+    view->setScene(newScene);
+    delete oldScene;
+}
+
+}
 #include <QPlainTextEdit>
 
 #include "models.h"
@@ -327,10 +341,6 @@ MainWindow::MainWindow(QWidget *parent)
  */
 MainWindow::~MainWindow()
 {
-    if (db.isOpen())
-    {
-        db.close();
-    }
     delete ui;
 }
 
@@ -484,7 +494,7 @@ void MainWindow::setEditMode(bool edit, const QString &recordId)
         }
 
         // Czyszczenie sceny zdjęć
-        ui->graphicsView->setScene(nullptr);
+        replaceScene(ui->graphicsView, nullptr);
         m_selectedPhotoIndex = -1;
         m_photoBuffer.clear();
     }
@@ -532,7 +542,7 @@ void MainWindow::setCloneMode(const QString &recordId)
     m_editMode = false;
     loadRecord(recordId);
     m_recordId.clear();
-    ui->graphicsView->setScene(nullptr);
+    replaceScene(ui->graphicsView, nullptr);
     m_selectedPhotoIndex = -1;
     m_photoBuffer.clear();
 }
@@ -648,7 +658,7 @@ void MainWindow::loadPhotos(const QString &recordId)
     if (!query.exec())
     {
         qDebug() << "Błąd pobierania zdjęć:" << query.lastError().text();
-        ui->graphicsView->setScene(nullptr);
+        replaceScene(ui->graphicsView, nullptr);
         return;
     }
 
@@ -693,7 +703,7 @@ void MainWindow::loadPhotos(const QString &recordId)
     if (!scene->items().isEmpty())
     {
         scene->setSceneRect(0, 0, ui->graphicsView->width() - 10, y + thumbSize + 5);
-        ui->graphicsView->setScene(scene);
+        replaceScene(ui->graphicsView, scene);
         ui->graphicsView->resetTransform();
 
         qreal scaleFactor = qMin((ui->graphicsView->width() - 10.0) / scene->width(),
@@ -704,8 +714,8 @@ void MainWindow::loadPhotos(const QString &recordId)
     }
     else
     {
-        ui->graphicsView->setScene(nullptr);
         delete scene;
+        replaceScene(ui->graphicsView, nullptr);
     }
 }
 
@@ -743,7 +753,7 @@ void MainWindow::loadPhotosFromBuffer()
             y += (scaled.height() + spacing);
         }
     }
-    ui->graphicsView->setScene(scene);
+    replaceScene(ui->graphicsView, scene);
 }
 
 /**
@@ -762,11 +772,19 @@ void MainWindow::onSaveClicked()
                        QSettings::IniFormat);
     bool m_shouldMovePhotos = settings.value("przenosic_gotowe", "tak").toString().toLower() != "nie";
 
+    if (!db.transaction())
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się rozpocząć transakcji:\n%1").arg(db.lastError().text()));
+        return;
+    }
+
     QSqlQuery q(db);
 
     if (!m_editMode)
     {
-        m_recordId = "{" + QUuid::createUuid().toString(QUuid::WithoutBraces) + "}";
+        m_recordId = QUuid::createUuid().toString(QUuid::WithoutBraces);
         q.prepare(R"(
             INSERT INTO eksponaty
             (id, name, serial_number, part_number, revision, production_year,
@@ -826,6 +844,7 @@ void MainWindow::onSaveClicked()
 
     if (!q.exec())
     {
+        db.rollback();
         QMessageBox::critical(this,
                               tr("Błąd"),
                               tr("Nie udało się zapisać:\n%1").arg(q.lastError().text()));
@@ -846,19 +865,43 @@ void MainWindow::onSaveClicked()
             q2.bindValue(":id", pid);
             q2.bindValue(":exid", m_recordId);
             q2.bindValue(":photo", ba);
-            if (q2.exec())
+            if (!q2.exec())
             {
-                const QString orig = m_photoPathsBuffer.at(i);
-                QFileInfo fi(orig);
-                QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
-                if (m_shouldMovePhotos)
-                {
-                    QDir().mkpath(doneDir);
-                    QString dst = doneDir + QDir::separator() + fi.fileName();
-                    QFile::rename(orig, dst);
-                }
+                db.rollback();
+                QMessageBox::critical(this,
+                                      tr("Błąd"),
+                                      tr("Nie udało się zapisać zdjęcia:\n%1").arg(q2.lastError().text()));
+                return;
             }
         }
+    }
+
+    if (!db.commit())
+    {
+        db.rollback();
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zatwierdzić zmian:\n%1").arg(db.lastError().text()));
+        return;
+    }
+
+    QStringList moveFailures;
+    if (!m_editMode)
+    {
+        for (int i = 0; i < m_photoPathsBuffer.size(); ++i)
+        {
+            const QString orig = m_photoPathsBuffer.at(i);
+            QFileInfo fi(orig);
+            QString doneDir = fi.absolutePath() + QDir::separator() + QStringLiteral("gotowe");
+            if (m_shouldMovePhotos)
+            {
+                QDir().mkpath(doneDir);
+                QString dst = doneDir + QDir::separator() + fi.fileName();
+                if (!QFile::rename(orig, dst))
+                    moveFailures.append(fi.fileName());
+            }
+        }
+
         m_photoBuffer.clear();
         m_photoPathsBuffer.clear();
     }
@@ -877,7 +920,17 @@ void MainWindow::onSaveClicked()
     }
 
     emit recordSaved(m_recordId);
-    QMessageBox::information(this, tr("Sukces"), tr("Rekord zapisany pomyślnie."));
+    if (moveFailures.isEmpty())
+    {
+        QMessageBox::information(this, tr("Sukces"), tr("Rekord zapisany pomyślnie."));
+    }
+    else
+    {
+        QMessageBox::warning(this,
+                             tr("Zapisano z ostrzeżeniem"),
+                             tr("Rekord zapisano, ale nie udało się przenieść plików: %1")
+                                 .arg(moveFailures.join(", ")));
+    }
     close();
 }
 
