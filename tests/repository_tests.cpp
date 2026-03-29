@@ -2,6 +2,7 @@
 
 #include "DictionaryRepository.h"
 #include "DatabaseMigration.h"
+#include "DatabaseBackupService.h"
 #include "ItemFilterProxyModel.h"
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
@@ -47,6 +48,8 @@ private slots:
     void databaseMigration_removesBracesFromAllRelevantTables();
     void databaseMigration_fixesKnownBrokenUuids();
     void databaseMigration_isNoOpWithoutSchema();
+    void databaseBackupService_buildsSafeDumpArguments();
+    void databaseBackupService_rejectsNonMySqlConnection();
     void itemFormValidator_rejectsEmptyName();
     void itemFormValidator_parsesNumericValue();
     void itemFormValidator_rejectsInvalidNumericValue();
@@ -514,6 +517,33 @@ void RepositoryTests::databaseMigration_isNoOpWithoutSchema()
     emptyDb.close();
     emptyDb = QSqlDatabase();
     QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::databaseBackupService_buildsSafeDumpArguments()
+{
+    MySqlConnectionInfo connectionInfo;
+    connectionInfo.host = QStringLiteral("db.example.com");
+    connectionInfo.database = QStringLiteral("retrodb");
+    connectionInfo.user = QStringLiteral("arek");
+    connectionInfo.port = 3307;
+
+    const QStringList arguments = DatabaseBackupService::buildDumpArguments(connectionInfo);
+    QVERIFY(arguments.contains(QStringLiteral("--single-transaction")));
+    QVERIFY(arguments.contains(QStringLiteral("--quick")));
+    QVERIFY(arguments.contains(QStringLiteral("--hex-blob")));
+    QVERIFY(arguments.contains(QStringLiteral("--host=db.example.com")));
+    QVERIFY(arguments.contains(QStringLiteral("--port=3307")));
+    QVERIFY(arguments.contains(QStringLiteral("--user=arek")));
+    QCOMPARE(arguments.last(), QStringLiteral("retrodb"));
+}
+
+void RepositoryTests::databaseBackupService_rejectsNonMySqlConnection()
+{
+    DatabaseBackupService backupService(m_db);
+    QString errorMessage;
+    QVERIFY(!backupService.backupToGzipFile(QStringLiteral("/tmp/should-not-exist.sql.gz"),
+                                           &errorMessage));
+    QVERIFY(errorMessage.contains(QStringLiteral("MySQL"), Qt::CaseInsensitive));
 }
 
 void RepositoryTests::itemFormValidator_rejectsEmptyName()

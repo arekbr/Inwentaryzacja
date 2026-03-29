@@ -30,6 +30,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 # Qt6 (bez Sql na razie)
 # ================================
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Test)
+find_package(ZLIB REQUIRED)
 
 # ================================
 # Specjalna obsługa Sql (przed ładowaniem aliasów pluginów)
@@ -89,6 +90,7 @@ enable_testing()
 
 qt6_add_executable(${PROJECT_NAME}Tests
     tests/repository_tests.cpp
+    include/DatabaseBackupService.h
     include/DatabaseMigration.h
     include/ItemFilterProxyModel.h
     include/ItemFormValidator.h
@@ -103,6 +105,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/models.h
     include/status.h
     include/storage.h
+    src/DatabaseBackupService.cpp
     src/ItemRepository.cpp
     src/DictionaryRepository.cpp
     src/ItemFormValidator.cpp
@@ -140,6 +143,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    ZLIB::ZLIB
 )
 
 target_include_directories(${PROJECT_NAME}Tests PRIVATE
@@ -153,6 +157,7 @@ target_link_libraries(${PROJECT_NAME}Tests PRIVATE
     Qt6::Widgets
     Qt6::Sql
     Qt6::Test
+    ZLIB::ZLIB
 )
 
 add_test(NAME repository_tests COMMAND ${PROJECT_NAME}Tests)

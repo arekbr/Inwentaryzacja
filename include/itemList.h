@@ -127,6 +127,7 @@ private slots:
      * z bazy danych i odświeża widok.
      */
     void onDeleteButtonClicked();
+    void onBackupButtonClicked();
 
     /**
      * @brief Wyświetla okno "O programie" z informacjami o aplikacji.

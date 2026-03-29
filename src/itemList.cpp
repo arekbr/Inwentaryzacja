@@ -31,6 +31,7 @@
  */
 
 #include "itemList.h"
+#include "DatabaseBackupService.h"
 #include "ItemFilterProxyModel.h"
 #include "ItemRepository.h"
 #include "PhotoService.h"
@@ -44,6 +45,7 @@
 #include <QComboBox>
 #include <QCompleter>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -226,6 +228,10 @@ itemList::itemList(QWidget *parent)
             this,
             &itemList::onBulkStorageButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
+    connect(ui->itemList_pushButton_backup,
+            &QPushButton::clicked,
+            this,
+            &itemList::onBackupButtonClicked);
     connect(ui->itemList_pushButton_about, &QPushButton::clicked, this, &itemList::onAboutClicked);
 
     connect(ui->itemList_tableView->selectionModel(),
@@ -847,6 +853,36 @@ void itemList::onAboutClicked()
                                   QCoreApplication::applicationVersion());
 
     QMessageBox::about(this, tr("O programie"), html);
+}
+
+void itemList::onBackupButtonClicked()
+{
+    DatabaseBackupService backupService(QSqlDatabase::database("default_connection"));
+
+    const QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    const QString defaultName =
+        QStringLiteral("inwentaryzacja-backup-%1.sql.gz")
+            .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd-hhmmss")));
+    const QString outputPath = QFileDialog::getSaveFileName(this,
+                                                            tr("Zapisz backup bazy danych"),
+                                                            QDir(defaultDir).filePath(defaultName),
+                                                            tr("Backup SQL gzip (*.sql.gz)"));
+    if (outputPath.isEmpty())
+        return;
+
+    QString errorMessage;
+    if (!backupService.backupToGzipFile(outputPath, &errorMessage))
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd backupu"),
+                              tr("Nie udało się utworzyć backupu bazy danych.\n%1")
+                                  .arg(errorMessage));
+        return;
+    }
+
+    QMessageBox::information(this,
+                             tr("Backup gotowy"),
+                             tr("Backup bazy został zapisany do pliku:\n%1").arg(outputPath));
 }
 
 /**

@@ -193,6 +193,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="itemList_pushButton_backup">
+         <property name="text">
+          <string>Backup SQL.gz</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="itemList_pushButton_about">
          <property name="text">
           <string>O...</string>
