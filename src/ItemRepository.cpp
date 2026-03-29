@@ -181,3 +181,87 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
         errorMessage->clear();
     return true;
 }
+
+bool ItemRepository::updateStatusForItems(const QStringList &itemIds,
+                                          const QString &statusId,
+                                          QString *errorMessage)
+{
+    return updateItemsColumn(itemIds,
+                             QStringLiteral("status_id"),
+                             statusId,
+                             QObject::tr("zmiany statusu"),
+                             errorMessage);
+}
+
+bool ItemRepository::updateStoragePlaceForItems(const QStringList &itemIds,
+                                                const QString &storagePlaceId,
+                                                QString *errorMessage)
+{
+    return updateItemsColumn(itemIds,
+                             QStringLiteral("storage_place_id"),
+                             storagePlaceId,
+                             QObject::tr("zmiany miejsca przechowywania"),
+                             errorMessage);
+}
+
+bool ItemRepository::updateItemsColumn(const QStringList &itemIds,
+                                       const QString &columnName,
+                                       const QString &valueId,
+                                       const QString &operationLabel,
+                                       QString *errorMessage)
+{
+    if (!m_db.isOpen()) {
+        if (errorMessage)
+            *errorMessage = QObject::tr("Połączenie z bazą danych jest zamknięte.");
+        return false;
+    }
+
+    if (itemIds.isEmpty()) {
+        if (errorMessage)
+            *errorMessage = QObject::tr("Nie wybrano żadnych rekordów do aktualizacji.");
+        return false;
+    }
+
+    if (valueId.isEmpty()) {
+        if (errorMessage)
+            *errorMessage = QObject::tr("Nie wybrano docelowej wartości dla operacji.");
+        return false;
+    }
+
+    if (!m_db.transaction()) {
+        if (errorMessage)
+            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji %1.")
+                                              .arg(operationLabel),
+                                          m_db.lastError().text());
+        return false;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(QStringLiteral("UPDATE eksponaty SET %1 = :value WHERE id = :id").arg(columnName));
+
+    for (const QString &itemId : itemIds) {
+        query.bindValue(QStringLiteral(":value"), valueId);
+        query.bindValue(QStringLiteral(":id"), itemId);
+        if (!query.exec()) {
+            m_db.rollback();
+            if (errorMessage)
+                *errorMessage = formatDbError(QObject::tr("Nie udało się wykonać %1.")
+                                                  .arg(operationLabel),
+                                              query.lastError().text());
+            return false;
+        }
+    }
+
+    if (!m_db.commit()) {
+        m_db.rollback();
+        if (errorMessage)
+            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić %1 w bazie danych.")
+                                              .arg(operationLabel),
+                                          m_db.lastError().text());
+        return false;
+    }
+
+    if (errorMessage)
+        errorMessage->clear();
+    return true;
+}

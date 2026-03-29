@@ -52,6 +52,7 @@
 #include <QGraphicsScene>
 #include <QGuiApplication>
 #include <QItemSelectionModel>
+#include <QInputDialog>
 #include <QStandardPaths>
 #include <QCloseEvent>
 #include <QMessageBox>
@@ -197,7 +198,7 @@ itemList::itemList(QWidget *parent)
     ui->itemList_tableView->setModel(m_proxyModel);
     ui->itemList_tableView->setItemDelegate(new QSqlRelationalDelegate(ui->itemList_tableView));
     ui->itemList_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->itemList_tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->itemList_tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->itemList_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->itemList_tableView->hideColumn(0); // Ukryj kolumnę UUID
     ui->itemList_tableView->resizeColumnsToContents();
@@ -216,6 +217,14 @@ itemList::itemList(QWidget *parent)
             &QPushButton::clicked,
             this,
             &itemList::onDeleteButtonClicked);
+    connect(ui->itemList_pushButton_bulkStatus,
+            &QPushButton::clicked,
+            this,
+            &itemList::onBulkStatusButtonClicked);
+    connect(ui->itemList_pushButton_bulkStorage,
+            &QPushButton::clicked,
+            this,
+            &itemList::onBulkStorageButtonClicked);
     connect(ui->itemList_pushButton_end, &QPushButton::clicked, this, &itemList::onEndButtonClicked);
     connect(ui->itemList_pushButton_about, &QPushButton::clicked, this, &itemList::onAboutClicked);
 
@@ -480,6 +489,14 @@ void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const
         return;
     }
 
+    if (ui->itemList_tableView->selectionModel()
+        && ui->itemList_tableView->selectionModel()->selectedRows().size() != 1)
+    {
+        replaceScene(ui->itemList_graphicsView, nullptr);
+        m_currentRecordId.clear();
+        return;
+    }
+
     QModelIndex proxyIndex = selected.indexes().first();
     QModelIndex srcIndex = m_proxyModel->mapToSource(proxyIndex);
     m_currentRecordId = m_sourceModel->data(m_sourceModel->index(srcIndex.row(), 0)).toString();
@@ -566,6 +583,43 @@ QString itemList::selectedRecordIdOrWarn(const QString &message) const
     return m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
 }
 
+QString itemList::selectedSingleRecordIdOrWarn(const QString &emptyMessage,
+                                               const QString &manyMessage) const
+{
+    auto *sel = ui->itemList_tableView->selectionModel();
+    if (!sel || !sel->hasSelection())
+    {
+        QMessageBox::information(const_cast<itemList *>(this), tr("Informacja"), emptyMessage);
+        return QString();
+    }
+
+    const QModelIndexList rows = sel->selectedRows();
+    if (rows.size() != 1)
+    {
+        QMessageBox::information(const_cast<itemList *>(this), tr("Informacja"), manyMessage);
+        return QString();
+    }
+
+    const QModelIndex srcIdx = m_proxyModel->mapToSource(rows.first());
+    return m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
+}
+
+QStringList itemList::selectedRecordIds() const
+{
+    QStringList ids;
+    auto *sel = ui->itemList_tableView->selectionModel();
+    if (!sel)
+        return ids;
+
+    const QModelIndexList rows = sel->selectedRows();
+    for (const QModelIndex &proxyIdx : rows)
+    {
+        const QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
+        ids << m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
+    }
+    return ids;
+}
+
 QString itemList::selectedRecordName() const
 {
     auto *sel = ui->itemList_tableView->selectionModel();
@@ -624,7 +678,8 @@ void itemList::onNewButtonClicked()
  */
 void itemList::onEditButtonClicked()
 {
-    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do edycji."));
+    const QString id = selectedSingleRecordIdOrWarn(tr("Proszę wybrać rekord do edycji."),
+                                                    tr("Do edycji można wybrać tylko jeden rekord."));
     if (id.isEmpty())
         return;
 
@@ -639,11 +694,86 @@ void itemList::onEditButtonClicked()
  */
 void itemList::onCloneButtonClicked()
 {
-    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do klonowania."));
+    const QString id = selectedSingleRecordIdOrWarn(tr("Proszę wybrać rekord do klonowania."),
+                                                    tr("Do klonowania można wybrać tylko jeden rekord."));
     if (id.isEmpty())
         return;
 
     openRecordWindowForClone(id);
+}
+
+void itemList::onBulkStatusButtonClicked()
+{
+    const QStringList recordIds = selectedRecordIds();
+    if (recordIds.isEmpty())
+    {
+        QMessageBox::information(this,
+                                 tr("Informacja"),
+                                 tr("Proszę wybrać co najmniej jeden rekord do zmiany statusu."));
+        return;
+    }
+
+    const QStringList options = []()
+    {
+        QStringList values;
+        QSqlQuery query(QSqlDatabase::database("default_connection"));
+        if (query.exec(QStringLiteral("SELECT name FROM statuses ORDER BY name"))) {
+            while (query.next())
+                values << query.value(0).toString();
+        }
+        return values;
+    }();
+
+    bool accepted = false;
+    const QString statusName =
+        QInputDialog::getItem(this,
+                              tr("Zmień status"),
+                              tr("Nowy status dla %1 rekordów:").arg(recordIds.size()),
+                              options,
+                              0,
+                              false,
+                              &accepted);
+    if (!accepted || statusName.isEmpty())
+        return;
+
+    applyBulkStatusChange(recordIds, statusName);
+}
+
+void itemList::onBulkStorageButtonClicked()
+{
+    const QStringList recordIds = selectedRecordIds();
+    if (recordIds.isEmpty())
+    {
+        QMessageBox::information(this,
+                                 tr("Informacja"),
+                                 tr("Proszę wybrać co najmniej jeden rekord do zmiany miejsca."));
+        return;
+    }
+
+    const QStringList options = []()
+    {
+        QStringList values;
+        QSqlQuery query(QSqlDatabase::database("default_connection"));
+        if (query.exec(QStringLiteral("SELECT name FROM storage_places ORDER BY name"))) {
+            while (query.next())
+                values << query.value(0).toString();
+        }
+        return values;
+    }();
+
+    bool accepted = false;
+    const QString storageName =
+        QInputDialog::getItem(this,
+                              tr("Zmień miejsce"),
+                              tr("Nowe miejsce dla %1 rekordów:").arg(recordIds.size()),
+                              options,
+                              0,
+                              false,
+                              &accepted);
+    if (!accepted || storageName.isEmpty())
+        return;
+
+    applyBulkStorageChange(recordIds, storageName);
 }
 
 /**
@@ -1153,6 +1283,68 @@ void itemList::onClearFiltersClicked()
     filterNameLineEdit->clear();
     ui->filterOriginalPackaging->setChecked(false);
     onFilterChanged();
+}
+
+bool itemList::applyBulkStatusChange(const QStringList &recordIds, const QString &statusName)
+{
+    QSqlQuery query(QSqlDatabase::database("default_connection"));
+    query.prepare(QStringLiteral("SELECT id FROM statuses WHERE name = :name"));
+    query.bindValue(QStringLiteral(":name"), statusName);
+    if (!query.exec() || !query.next())
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się odczytać wybranego statusu."));
+        return false;
+    }
+
+    ItemRepository repository(QSqlDatabase::database("default_connection"));
+    QString errorMessage;
+    if (!repository.updateStatusForItems(recordIds, query.value(0).toString(), &errorMessage))
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zmienić statusu rekordów:\n%1").arg(errorMessage));
+        return false;
+    }
+
+    refreshList();
+    QMessageBox::information(this,
+                             tr("Sukces"),
+                             tr("Zmieniono status dla %1 rekordów.").arg(recordIds.size()));
+    return true;
+}
+
+bool itemList::applyBulkStorageChange(const QStringList &recordIds, const QString &storageName)
+{
+    QSqlQuery query(QSqlDatabase::database("default_connection"));
+    query.prepare(QStringLiteral("SELECT id FROM storage_places WHERE name = :name"));
+    query.bindValue(QStringLiteral(":name"), storageName);
+    if (!query.exec() || !query.next())
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się odczytać wybranego miejsca przechowywania."));
+        return false;
+    }
+
+    ItemRepository repository(QSqlDatabase::database("default_connection"));
+    QString errorMessage;
+    if (!repository.updateStoragePlaceForItems(recordIds, query.value(0).toString(), &errorMessage))
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd"),
+                              tr("Nie udało się zmienić miejsca przechowywania rekordów:\n%1")
+                                  .arg(errorMessage));
+        return false;
+    }
+
+    refreshList();
+    QMessageBox::information(this,
+                             tr("Sukces"),
+                             tr("Zmieniono miejsce przechowywania dla %1 rekordów.")
+                                 .arg(recordIds.size()));
+    return true;
 }
 
 void itemList::updateHeaderSummary()

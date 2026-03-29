@@ -38,6 +38,7 @@ private slots:
     void itemRepository_savesRecordAndPhotos();
     void itemRepository_deletesRecordAndPhotos();
     void itemRepository_updatesExistingRecordWithoutDuplicatingPhotos();
+    void itemRepository_bulkUpdatesStatusAndStorage();
     void dictionaryRepository_supportsCrud();
     void dictionaryRepository_addsModelWithParentVendor();
     void photoService_loadsStoredPhotos();
@@ -220,6 +221,45 @@ void RepositoryTests::itemRepository_updatesExistingRecordWithoutDuplicatingPhot
     QVERIFY(photoQuery.exec());
     QVERIFY(photoQuery.next());
     QCOMPARE(photoQuery.value(0).toInt(), 1);
+}
+
+void RepositoryTests::itemRepository_bulkUpdatesStatusAndStorage()
+{
+    ItemRepository repository(m_db);
+    QString firstItemId;
+    QString secondItemId;
+    QString errorMessage;
+
+    ItemRecordData firstItem = createSampleItem();
+    firstItem.name = QStringLiteral("Eksponat status 1");
+    QVERIFY2(repository.saveItem(firstItem, {}, &firstItemId, &errorMessage), qPrintable(errorMessage));
+
+    ItemRecordData secondItem = createSampleItem();
+    secondItem.name = QStringLiteral("Eksponat status 2");
+    secondItem.serialNumber = QStringLiteral("SER-002");
+    QVERIFY2(repository.saveItem(secondItem, {}, &secondItemId, &errorMessage), qPrintable(errorMessage));
+
+    const QString missingStatusId = lookupId(QStringLiteral("statuses"), QStringLiteral("brak"));
+    const QString missingStorageId = lookupId(QStringLiteral("storage_places"), QStringLiteral("brak"));
+    QVERIFY(!missingStatusId.isEmpty());
+    QVERIFY(!missingStorageId.isEmpty());
+
+    const QStringList ids = {firstItemId, secondItemId};
+    QVERIFY2(repository.updateStatusForItems(ids, missingStatusId, &errorMessage),
+             qPrintable(errorMessage));
+    QVERIFY2(repository.updateStoragePlaceForItems(ids, missingStorageId, &errorMessage),
+             qPrintable(errorMessage));
+
+    QSqlQuery query(m_db);
+    query.prepare(QStringLiteral(
+        "SELECT COUNT(*) FROM eksponaty WHERE id IN (:id1, :id2) AND status_id = :statusId AND storage_place_id = :storageId"));
+    query.bindValue(QStringLiteral(":id1"), firstItemId);
+    query.bindValue(QStringLiteral(":id2"), secondItemId);
+    query.bindValue(QStringLiteral(":statusId"), missingStatusId);
+    query.bindValue(QStringLiteral(":storageId"), missingStorageId);
+    QVERIFY(query.exec());
+    QVERIFY(query.next());
+    QCOMPARE(query.value(0).toInt(), 2);
 }
 
 void RepositoryTests::dictionaryRepository_supportsCrud()

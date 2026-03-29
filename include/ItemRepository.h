@@ -5,6 +5,7 @@
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
+#include <QStringList>
 
 struct ItemRecordData
 {
@@ -36,8 +37,20 @@ public:
                   QString *errorMessage);
 
     bool deleteItem(const QString &itemId, QString *errorMessage);
+    bool updateStatusForItems(const QStringList &itemIds,
+                              const QString &statusId,
+                              QString *errorMessage);
+    bool updateStoragePlaceForItems(const QStringList &itemIds,
+                                    const QString &storagePlaceId,
+                                    QString *errorMessage);
 
 private:
+    bool updateItemsColumn(const QStringList &itemIds,
+                           const QString &columnName,
+                           const QString &valueId,
+                           const QString &operationLabel,
+                           QString *errorMessage);
+
     QSqlDatabase m_db;
 };
 

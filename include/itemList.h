@@ -203,6 +203,8 @@ private slots:
      * dla wybranego ID rekordu.
      */
     void onCloneButtonClicked();
+    void onBulkStatusButtonClicked();
+    void onBulkStorageButtonClicked();
 
     /**
      * @brief Aktualizuje filtry po zmianie wartości w combo boxach.
@@ -251,7 +253,14 @@ private:
     void updateFilterComboBoxes();
 
     QString selectedRecordIdOrWarn(const QString &message) const;
+    QString selectedSingleRecordIdOrWarn(const QString &emptyMessage,
+                                         const QString &manyMessage) const;
+    QStringList selectedRecordIds() const;
     QString selectedRecordName() const;
+    bool applyBulkStatusChange(const QStringList &recordIds,
+                               const QString &statusName);
+    bool applyBulkStorageChange(const QStringList &recordIds,
+                                const QString &storageName);
     void openRecordWindowForNew();
     void openRecordWindowForEdit(const QString &recordId);
     void openRecordWindowForClone(const QString &recordId);
