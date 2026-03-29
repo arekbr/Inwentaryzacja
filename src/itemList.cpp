@@ -58,6 +58,7 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QScreen>
+#include <QSignalBlocker>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -73,6 +74,13 @@
 #include <QPluginLoader>
 
 namespace {
+
+QSettings createItemListSettings()
+{
+    return QSettings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                         + "/inwentaryzacja.ini",
+                     QSettings::IniFormat);
+}
 
 void replaceScene(QGraphicsView *view, QGraphicsScene *newScene)
 {
@@ -103,9 +111,7 @@ itemList::itemList(QWidget *parent)
     ui->setupUi(this);
     qDebug() << "itemList: ui->setupUi wykonany";
 
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                           + "/inwentaryzacja.ini",
-                       QSettings::IniFormat);
+    QSettings settings = createItemListSettings();
     restoreGeometry(settings.value("itemList/geometry").toByteArray());
 
     // Inicjalizacja pól QComboBox i QLineEdit
@@ -255,9 +261,6 @@ itemList::itemList(QWidget *parent)
     // Inicjalizacja filtrów
     initFilters(db);
 
-    // Podłączenie slotów dla kaskadowego filtrowania
-    onFilterChanged();
-
     // Podłączenie sygnałów filtrowania
     connect(ui->filterTypeComboBox,
             &QComboBox::currentTextChanged,
@@ -287,6 +290,19 @@ itemList::itemList(QWidget *parent)
             &QCheckBox::toggled,
             this,
             &itemList::onFilterOriginalPackagingChanged);
+    connect(ui->clearFiltersButton,
+            &QPushButton::clicked,
+            this,
+            &itemList::onClearFiltersClicked);
+
+    restoreSavedFilters();
+    onFilterChanged();
+    m_proxyModel->setNameFilter(filterNameLineEdit->text());
+    m_proxyModel->setOriginalPackagingFilter(ui->filterOriginalPackaging->isChecked());
+    updateFilterComboBoxes();
+    m_filtersInitialized = true;
+    saveCurrentFilters();
+    updateHeaderSummary();
 }
 
 /**
@@ -304,10 +320,9 @@ itemList::~itemList()
 
 void itemList::closeEvent(QCloseEvent *event)
 {
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                       + "/inwentaryzacja.ini",
-                       QSettings::IniFormat);
+    QSettings settings = createItemListSettings();
     settings.setValue("itemList/geometry", saveGeometry());
+    saveCurrentFilters();
     QWidget::closeEvent(event);
 }
 
@@ -356,8 +371,6 @@ void itemList::initFilters(QSqlDatabase &db)
             cb->addItem(q.value(0).toString());
         }
         cb->blockSignals(false);
-        connect(cb, &QComboBox::currentTextChanged, this, [setter](const QString &txt)
-                { setter(txt == tr("Wszystkie") ? QString() : txt); });
         qDebug() << "itemList: Filtr dla" << table << "zainicjalizowany";
     };
 
@@ -949,6 +962,7 @@ void itemList::onFilterChanged()
     m_proxyModel->setStorageFilter(sel(filterStorageComboBox));
     updateFilterComboBoxes();
     updateHeaderSummary();
+    saveCurrentFilters();
 }
 
 /**
@@ -962,6 +976,7 @@ void itemList::onFilterNameChanged(const QString &text)
 {
     qDebug() << "itemList: onFilterNameChanged wywołane, tekst:" << text;
     m_nameFilterTimer->start(300); // 300 ms opóźnienia
+    saveCurrentFilters();
 }
 
 /**
@@ -1070,6 +1085,12 @@ void itemList::updateFilterComboBoxes()
         }
 
         int idx = f.cb->findText(prev);
+        if (idx == -1 && !prev.isEmpty() && prev != tr("Wszystkie"))
+        {
+            f.cb->addItem(prev);
+            idx = f.cb->findText(prev);
+        }
+
         f.cb->setCurrentIndex(idx != -1 ? idx : 0);
         f.cb->blockSignals(false);
         qDebug() << "itemList: Combo box dla" << f.field
@@ -1084,36 +1105,54 @@ void itemList::onFilterOriginalPackagingChanged(bool checked)
 {
     m_proxyModel->setOriginalPackagingFilter(checked);
     updateFilterComboBoxes();
+    saveCurrentFilters();
 }
 
 void itemList::onFilterTypeChanged(const QString &text)
 {
     m_proxyModel->setTypeFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+    saveCurrentFilters();
 }
 
 void itemList::onFilterVendorChanged(const QString &text)
 {
     m_proxyModel->setVendorFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+    saveCurrentFilters();
 }
 
 void itemList::onFilterModelChanged(const QString &text)
 {
     m_proxyModel->setModelFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+    saveCurrentFilters();
 }
 
 void itemList::onFilterStatusChanged(const QString &text)
 {
     m_proxyModel->setStatusFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+    saveCurrentFilters();
 }
 
 void itemList::onFilterStoragePlaceChanged(const QString &text)
 {
     m_proxyModel->setStorageFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+    saveCurrentFilters();
+}
+
+void itemList::onClearFiltersClicked()
+{
+    filterTypeComboBox->setCurrentIndex(0);
+    filterVendorComboBox->setCurrentIndex(0);
+    filterModelComboBox->setCurrentIndex(0);
+    filterStatusComboBox->setCurrentIndex(0);
+    filterStorageComboBox->setCurrentIndex(0);
+    filterNameLineEdit->clear();
+    ui->filterOriginalPackaging->setChecked(false);
+    onFilterChanged();
 }
 
 void itemList::updateHeaderSummary()
@@ -1121,4 +1160,51 @@ void itemList::updateHeaderSummary()
     const int visibleCount = m_proxyModel ? m_proxyModel->rowCount() : 0;
     const int totalCount = m_sourceModel ? m_sourceModel->rowCount() : 0;
     ui->headerLabel->setText(tr("Lista przedmiotów (%1 / %2)").arg(visibleCount).arg(totalCount));
+}
+
+void itemList::restoreSavedFilters()
+{
+    QSettings settings = createItemListSettings();
+
+    const QSignalBlocker blockType(filterTypeComboBox);
+    const QSignalBlocker blockVendor(filterVendorComboBox);
+    const QSignalBlocker blockModel(filterModelComboBox);
+    const QSignalBlocker blockStatus(filterStatusComboBox);
+    const QSignalBlocker blockStorage(filterStorageComboBox);
+    const QSignalBlocker blockSearch(filterNameLineEdit);
+    const QSignalBlocker blockPackaging(ui->filterOriginalPackaging);
+
+    auto restoreCombo = [](QComboBox *comboBox, const QString &value)
+    {
+        if (!comboBox || value.isEmpty())
+            return;
+
+        const int index = comboBox->findText(value);
+        if (index >= 0)
+            comboBox->setCurrentIndex(index);
+    };
+
+    restoreCombo(filterTypeComboBox, settings.value("itemList/filterType").toString());
+    restoreCombo(filterVendorComboBox, settings.value("itemList/filterVendor").toString());
+    restoreCombo(filterModelComboBox, settings.value("itemList/filterModel").toString());
+    restoreCombo(filterStatusComboBox, settings.value("itemList/filterStatus").toString());
+    restoreCombo(filterStorageComboBox, settings.value("itemList/filterStorage").toString());
+    filterNameLineEdit->setText(settings.value("itemList/filterSearch").toString());
+    ui->filterOriginalPackaging->setChecked(
+        settings.value("itemList/filterOriginalPackaging", false).toBool());
+}
+
+void itemList::saveCurrentFilters() const
+{
+    if (!m_filtersInitialized)
+        return;
+
+    QSettings settings = createItemListSettings();
+    settings.setValue("itemList/filterType", filterTypeComboBox->currentText());
+    settings.setValue("itemList/filterVendor", filterVendorComboBox->currentText());
+    settings.setValue("itemList/filterModel", filterModelComboBox->currentText());
+    settings.setValue("itemList/filterStatus", filterStatusComboBox->currentText());
+    settings.setValue("itemList/filterStorage", filterStorageComboBox->currentText());
+    settings.setValue("itemList/filterSearch", filterNameLineEdit->text());
+    settings.setValue("itemList/filterOriginalPackaging", ui->filterOriginalPackaging->isChecked());
 }

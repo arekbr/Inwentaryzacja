@@ -220,6 +220,7 @@ private slots:
     void onFilterStoragePlaceChanged(const QString &text);
     void onFilterNameChanged(const QString &text);
     void onFilterOriginalPackagingChanged(bool checked);
+    void onClearFiltersClicked();
 
 private:
     /**
@@ -256,6 +257,8 @@ private:
     void openRecordWindowForClone(const QString &recordId);
     void showStoredPhotos(const QList<StoredPhoto> &photos);
     void updateHeaderSummary();
+    void restoreSavedFilters();
+    void saveCurrentFilters() const;
 
     /**
      * @brief Obsługuje zdarzenia filtrowania (np. opuszczenie okna podglądu).
@@ -315,6 +318,9 @@ private:
 
     /// Timer do filtrowania.
     QTimer *m_nameFilterTimer; // Nowy timer dla opóźnienia filtrowania
+
+    /// Flaga chroniąca przed zapisem filtrów podczas inicjalizacji widoku.
+    bool m_filtersInitialized = false;
 };
 
 #endif // ITEMLIST_H

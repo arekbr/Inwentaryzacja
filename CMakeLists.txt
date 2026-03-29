@@ -92,6 +92,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/DatabaseMigration.h
     include/ItemFilterProxyModel.h
     include/ItemFormValidator.h
+    include/itemList.h
     include/mainwindow.h
     include/photoitem.h
     include/fullscreenphotoviewer.h
@@ -109,6 +110,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/DatabaseMigration.cpp
     src/ItemFilterProxyModel.cpp
     src/DatabaseSchemaUtils.cpp
+    src/itemList.cpp
     src/mainwindow.cpp
     src/photoitem.cpp
     src/fullscreenphotoviewer.cpp

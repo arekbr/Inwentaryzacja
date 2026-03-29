@@ -6,6 +6,7 @@
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
 #include "PacmanAnimationModel.h"
+#include "itemList.h"
 #include "mainwindow.h"
 #include "PhotoService.h"
 #include "utils.h"
@@ -14,7 +15,9 @@
 #include <QComboBox>
 #include <QImage>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QStandardItemModel>
+#include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -28,6 +31,7 @@ class RepositoryTests : public QObject
     Q_OBJECT
 
 private slots:
+    void initTestCase();
     void init();
     void cleanup();
 
@@ -51,6 +55,7 @@ private slots:
     void mainWindow_setEditModeForNewRecordClearsFieldsAndDefaultsSelections();
     void mainWindow_setEditModeLoadsExistingRecord();
     void itemFilterProxyModel_searchesAcrossMultipleFields();
+    void itemList_restoresSavedFilters();
     void pacmanAnimationModel_activatesAfterConfiguredDelay();
     void pacmanAnimationModel_requestsEatingInTime();
     void pacmanAnimationModel_reachesCollisionAndFinish();
@@ -72,6 +77,11 @@ void RepositoryTests::init()
     m_db.setDatabaseName(QStringLiteral(":memory:"));
     QVERIFY2(m_db.open(), qPrintable(m_db.lastError().text()));
     QVERIFY(ensureDatabaseSchema(m_db));
+}
+
+void RepositoryTests::initTestCase()
+{
+    QStandardPaths::setTestModeEnabled(true);
 }
 
 void RepositoryTests::cleanup()
@@ -666,6 +676,90 @@ void RepositoryTests::itemFilterProxyModel_searchesAcrossMultipleFields()
 
     proxy.setNameFilter(QStringLiteral("nie-istnieje"));
     QCOMPARE(proxy.rowCount(), 0);
+}
+
+void RepositoryTests::itemList_restoresSavedFilters()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + QStringLiteral("/inwentaryzacja.ini"),
+                       QSettings::IniFormat);
+    settings.clear();
+    settings.sync();
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    const QString dbPath = tempDir.filePath(QStringLiteral("itemlist-filters.sqlite"));
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), dbPath));
+
+    QSqlDatabase listDb = QSqlDatabase::database(QStringLiteral("default_connection"));
+    QVERIFY(listDb.isOpen());
+
+    ItemRepository repository(listDb);
+    QString savedItemId;
+    QString errorMessage;
+    auto lookupIdInDb = [&listDb](const QString &tableName, const QString &name)
+    {
+        QSqlQuery query(listDb);
+        query.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+        query.bindValue(QStringLiteral(":name"), name);
+        if (!query.exec() || !query.next())
+            return QString();
+        return query.value(0).toString();
+    };
+
+    ItemRecordData item;
+    item.name = QStringLiteral("Eksponat filtrów");
+    item.statusId = lookupIdInDb(QStringLiteral("statuses"), QStringLiteral("Sprawny"));
+    item.typeId = lookupIdInDb(QStringLiteral("types"), QStringLiteral("Komputer"));
+    item.vendorId = lookupIdInDb(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    item.modelId = lookupIdInDb(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    item.storagePlaceId = lookupIdInDb(QStringLiteral("storage_places"), QStringLiteral("Magazyn 1"));
+    item.description = QStringLiteral("Test filtrowania");
+
+    QVERIFY2(repository.saveItem(item, {}, &savedItemId, &errorMessage),
+             qPrintable(errorMessage));
+
+    {
+        itemList window;
+
+        auto *searchEdit = window.findChild<QLineEdit *>(QStringLiteral("filterNameLineEdit"));
+        auto *vendorCombo = window.findChild<QComboBox *>(QStringLiteral("filterVendorComboBox"));
+        auto *clearButton = window.findChild<QPushButton *>(QStringLiteral("clearFiltersButton"));
+        QVERIFY(searchEdit);
+        QVERIFY(vendorCombo);
+        QVERIFY(clearButton);
+
+        searchEdit->setText(QStringLiteral("Atari"));
+        const int atariIndex = vendorCombo->findText(QStringLiteral("Atari"));
+        QVERIFY(atariIndex >= 0);
+        vendorCombo->setCurrentIndex(atariIndex);
+        QCOMPARE(vendorCombo->currentText(), QStringLiteral("Atari"));
+        window.close();
+    }
+
+    {
+        itemList window;
+
+        auto *searchEdit = window.findChild<QLineEdit *>(QStringLiteral("filterNameLineEdit"));
+        auto *vendorCombo = window.findChild<QComboBox *>(QStringLiteral("filterVendorComboBox"));
+        auto *clearButton = window.findChild<QPushButton *>(QStringLiteral("clearFiltersButton"));
+        QVERIFY(searchEdit);
+        QVERIFY(vendorCombo);
+        QVERIFY(clearButton);
+
+        QCOMPARE(searchEdit->text(), QStringLiteral("Atari"));
+        QCOMPARE(vendorCombo->currentText(), QStringLiteral("Atari"));
+
+        clearButton->click();
+        QCOMPARE(searchEdit->text(), QString());
+        QCOMPARE(vendorCombo->currentText(), QStringLiteral("Wszystkie"));
+    }
+
+    listDb.close();
+    listDb = QSqlDatabase();
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
 }
 
 void RepositoryTests::pacmanAnimationModel_activatesAfterConfiguredDelay()
