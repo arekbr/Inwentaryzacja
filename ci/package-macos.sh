@@ -29,6 +29,7 @@ APP_MACOS="$APP_CONTENTS/MacOS"
 APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_PLUGINS="$APP_CONTENTS/PlugIns"
 APP_SQL_DRIVERS="$APP_PLUGINS/sqldrivers"
+DMG_STAGE_DIR="$STAGE_DIR/dmg"
 
 rm -rf "$STAGE_DIR"
 mkdir -p "$APP_MACOS" "$APP_RESOURCES" "$APP_SQL_DRIVERS" "$ROOT_DIR/$OUTPUT_DIR"
@@ -67,12 +68,21 @@ EOF
 
 "$MACDEPLOYQT" "$APP_BUNDLE" -verbose=1
 
+codesign --force --deep --sign - --timestamp=none "$APP_BUNDLE"
+codesign --verify --deep --strict "$APP_BUNDLE"
+
 ZIP_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.zip"
 DMG_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
 
 rm -f "$ZIP_NAME" "$DMG_NAME"
 ditto -c -k --sequesterRsrc --keepParent "$APP_BUNDLE" "$ZIP_NAME"
-hdiutil create -volname "$APP_NAME" -srcfolder "$APP_BUNDLE" -ov -format UDZO "$DMG_NAME"
+rm -rf "$DMG_STAGE_DIR"
+mkdir -p "$DMG_STAGE_DIR"
+cp -R "$APP_BUNDLE" "$DMG_STAGE_DIR/"
+ln -s /Applications "$DMG_STAGE_DIR/Applications"
+
+hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGE_DIR" -ov -format UDZO "$DMG_NAME"
+hdiutil verify "$DMG_NAME"
 
 echo "✅ Gotowe pakiety:"
 echo "   $ZIP_NAME"
