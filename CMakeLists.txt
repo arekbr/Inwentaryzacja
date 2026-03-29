@@ -90,6 +90,7 @@ enable_testing()
 qt6_add_executable(${PROJECT_NAME}Tests
     tests/repository_tests.cpp
     include/DatabaseMigration.h
+    include/ItemFilterProxyModel.h
     include/ItemFormValidator.h
     include/mainwindow.h
     include/photoitem.h
@@ -106,6 +107,7 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/ItemFormValidator.cpp
     src/PhotoService.cpp
     src/DatabaseMigration.cpp
+    src/ItemFilterProxyModel.cpp
     src/DatabaseSchemaUtils.cpp
     src/mainwindow.cpp
     src/photoitem.cpp

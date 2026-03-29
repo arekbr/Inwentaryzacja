@@ -255,6 +255,7 @@ private:
     void openRecordWindowForEdit(const QString &recordId);
     void openRecordWindowForClone(const QString &recordId);
     void showStoredPhotos(const QList<StoredPhoto> &photos);
+    void updateHeaderSummary();
 
     /**
      * @brief Obsługuje zdarzenia filtrowania (np. opuszczenie okna podglądu).

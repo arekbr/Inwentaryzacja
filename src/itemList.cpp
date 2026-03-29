@@ -116,6 +116,7 @@ itemList::itemList(QWidget *parent)
     filterStorageComboBox = ui->filterStorageComboBox;
     filterNameLineEdit = ui->filterNameLineEdit;
     qDebug() << "itemList: Pola UI zainicjalizowane";
+    ui->labelFilterName->setText(tr("Szukaj:"));
 
     // Sprawdzenie, czy pola UI nie są nullptr
     if (!filterNameLineEdit)
@@ -255,16 +256,6 @@ itemList::itemList(QWidget *parent)
     initFilters(db);
 
     // Podłączenie slotów dla kaskadowego filtrowania
-    connect(filterTypeComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterVendorComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterModelComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStatusComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterStorageComboBox, &QComboBox::currentTextChanged, this, &itemList::onFilterChanged);
-    connect(filterNameLineEdit, &QLineEdit::textChanged, this, [this](const QString &text)
-            {
-                qDebug() << "itemList: Zmiana tekstu w filterNameLineEdit:" << text;
-                m_nameFilterTimer->start(300); // 300 ms opóźnienia
-            });
     onFilterChanged();
 
     // Podłączenie sygnałów filtrowania
@@ -384,7 +375,9 @@ void itemList::initFilters(QSqlDatabase &db)
     // Inicjalizacja pola tekstowego dla nazwy
     if (filterNameLineEdit)
     {
-        filterNameLineEdit->setPlaceholderText(tr("Wpisz nazwę eksponatu..."));
+        filterNameLineEdit->setClearButtonEnabled(true);
+        filterNameLineEdit->setPlaceholderText(
+            tr("Szukaj po nazwie, modelu, producencie, numerze seryjnym..."));
         qDebug() << "itemList: Placeholder dla filterNameLineEdit ustawiony";
 
         // Autouzupełnianie
@@ -453,6 +446,7 @@ void itemList::refreshFilters()
     restoreFilter(filterModelComboBox, currentModel);
     restoreFilter(filterStatusComboBox, currentStatus);
     restoreFilter(filterStorageComboBox, currentStorage);
+    updateHeaderSummary();
 }
 
 /**
@@ -921,6 +915,7 @@ void itemList::refreshList(const QString &recordId)
             }
         }
     }
+    updateHeaderSummary();
     qDebug() << "itemList: refreshList zakończony";
 }
 
@@ -953,6 +948,7 @@ void itemList::onFilterChanged()
     m_proxyModel->setStatusFilter(sel(filterStatusComboBox));
     m_proxyModel->setStorageFilter(sel(filterStorageComboBox));
     updateFilterComboBoxes();
+    updateHeaderSummary();
 }
 
 /**
@@ -1040,7 +1036,12 @@ void itemList::updateFilterComboBoxes()
                               "AND (:selModel IS NULL OR models.name = :selModel) "
                               "AND (:selStatus IS NULL OR statuses.name = :selStatus) "
                               "AND (:selStorage IS NULL OR storage_places.name = :selStorage) "
-                              "AND (:selName IS NULL OR eksponaty.name LIKE :selName) "
+                              "AND (:selName IS NULL OR eksponaty.name LIKE :selName "
+                              "OR vendors.name LIKE :selName "
+                              "OR models.name LIKE :selName "
+                              "OR eksponaty.serial_number LIKE :selName "
+                              "OR eksponaty.part_number LIKE :selName "
+                              "OR eksponaty.description LIKE :selName) "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1076,6 +1077,7 @@ void itemList::updateFilterComboBoxes()
     }
     qDebug() << "itemList: updateFilterComboBoxes zakończony";
     m_proxyModel->invalidate(); // Wymuszenie odświeżenia tabeli
+    updateHeaderSummary();
 }
 
 void itemList::onFilterOriginalPackagingChanged(bool checked)
@@ -1112,4 +1114,11 @@ void itemList::onFilterStoragePlaceChanged(const QString &text)
 {
     m_proxyModel->setStorageFilter(text == tr("Wszystkie") ? QString() : text);
     updateFilterComboBoxes();
+}
+
+void itemList::updateHeaderSummary()
+{
+    const int visibleCount = m_proxyModel ? m_proxyModel->rowCount() : 0;
+    const int totalCount = m_sourceModel ? m_sourceModel->rowCount() : 0;
+    ui->headerLabel->setText(tr("Lista przedmiotów (%1 / %2)").arg(visibleCount).arg(totalCount));
 }

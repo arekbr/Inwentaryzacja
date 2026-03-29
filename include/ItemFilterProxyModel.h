@@ -153,6 +153,8 @@ protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
 private:
+    bool matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const;
+
     /// Filtr dla typu eksponatu (pusty oznacza brak filtru).
     QString m_type;
     /// Filtr dla producenta eksponatu (pusty oznacza brak filtru).

@@ -33,6 +33,21 @@
 #include "ItemFilterProxyModel.h"
 #include <QModelIndex>
 
+namespace {
+
+constexpr int kNameColumn = 1;
+constexpr int kTypeColumn = 2;
+constexpr int kVendorColumn = 3;
+constexpr int kModelColumn = 4;
+constexpr int kSerialNumberColumn = 5;
+constexpr int kPartNumberColumn = 6;
+constexpr int kStatusColumn = 9;
+constexpr int kStorageColumn = 10;
+constexpr int kDescriptionColumn = 11;
+constexpr int kPackagingColumn = 13;
+
+}
+
 /**
  * @brief Konstruktor klasy ItemFilterProxyModel.
  * @param parent Wskaźnik na obiekt nadrzędny. Domyślnie nullptr.
@@ -162,21 +177,19 @@ void ItemFilterProxyModel::setOriginalPackagingFilter(bool show)
  */
 bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndex typeIndex = sourceModel()->index(sourceRow, 2, sourceParent);
-    QModelIndex vendorIndex = sourceModel()->index(sourceRow, 3, sourceParent);
-    QModelIndex modelIndex = sourceModel()->index(sourceRow, 4, sourceParent);
-    QModelIndex statusIndex = sourceModel()->index(sourceRow, 9, sourceParent);
-    QModelIndex storageIndex = sourceModel()->index(sourceRow, 10, sourceParent);
-    QModelIndex nameIndex = sourceModel()->index(sourceRow, 1, sourceParent);
-    QModelIndex packagingIndex = sourceModel()->index(sourceRow, 13, sourceParent);
+    QModelIndex typeIndex = sourceModel()->index(sourceRow, kTypeColumn, sourceParent);
+    QModelIndex vendorIndex = sourceModel()->index(sourceRow, kVendorColumn, sourceParent);
+    QModelIndex modelIndex = sourceModel()->index(sourceRow, kModelColumn, sourceParent);
+    QModelIndex statusIndex = sourceModel()->index(sourceRow, kStatusColumn, sourceParent);
+    QModelIndex storageIndex = sourceModel()->index(sourceRow, kStorageColumn, sourceParent);
+    QModelIndex packagingIndex = sourceModel()->index(sourceRow, kPackagingColumn, sourceParent);
 
     bool typeMatch = m_type.isEmpty() || sourceModel()->data(typeIndex).toString() == m_type;
     bool vendorMatch = m_vendor.isEmpty() || sourceModel()->data(vendorIndex).toString() == m_vendor;
     bool modelMatch = m_model.isEmpty() || sourceModel()->data(modelIndex).toString() == m_model;
     bool statusMatch = m_status.isEmpty() || sourceModel()->data(statusIndex).toString() == m_status;
     bool storageMatch = m_storage.isEmpty() || sourceModel()->data(storageIndex).toString() == m_storage;
-    bool nameMatch = m_nameFilter.isEmpty() || 
-                    sourceModel()->data(nameIndex).toString().contains(m_nameFilter, Qt::CaseInsensitive);
+    bool nameMatch = matchesSearchText(sourceRow, sourceParent);
     
     // Zmiana logiki - filtrujemy tylko gdy checkbox jest zaznaczony
     bool packagingMatch = !m_originalPackagingFilterEnabled || 
@@ -184,4 +197,28 @@ bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
 
     return typeMatch && vendorMatch && modelMatch && statusMatch && 
            storageMatch && nameMatch && packagingMatch;
+}
+
+bool ItemFilterProxyModel::matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const
+{
+    if (m_nameFilter.isEmpty())
+        return true;
+
+    const int searchColumns[] = {
+        kNameColumn,
+        kVendorColumn,
+        kModelColumn,
+        kSerialNumberColumn,
+        kPartNumberColumn,
+        kDescriptionColumn
+    };
+
+    for (int column : searchColumns)
+    {
+        const QModelIndex index = sourceModel()->index(sourceRow, column, sourceParent);
+        if (sourceModel()->data(index).toString().contains(m_nameFilter, Qt::CaseInsensitive))
+            return true;
+    }
+
+    return false;
 }

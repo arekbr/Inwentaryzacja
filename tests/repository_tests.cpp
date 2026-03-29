@@ -2,6 +2,7 @@
 
 #include "DictionaryRepository.h"
 #include "DatabaseMigration.h"
+#include "ItemFilterProxyModel.h"
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
 #include "PacmanAnimationModel.h"
@@ -13,6 +14,7 @@
 #include <QComboBox>
 #include <QImage>
 #include <QLineEdit>
+#include <QStandardItemModel>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -48,6 +50,7 @@ private slots:
     void mainWindow_loadsComboBoxesOnConstruction();
     void mainWindow_setEditModeForNewRecordClearsFieldsAndDefaultsSelections();
     void mainWindow_setEditModeLoadsExistingRecord();
+    void itemFilterProxyModel_searchesAcrossMultipleFields();
     void pacmanAnimationModel_activatesAfterConfiguredDelay();
     void pacmanAnimationModel_requestsEatingInTime();
     void pacmanAnimationModel_reachesCollisionAndFinish();
@@ -626,6 +629,43 @@ void RepositoryTests::mainWindow_setEditModeLoadsExistingRecord()
     formDb.close();
     formDb = QSqlDatabase();
     QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+}
+
+void RepositoryTests::itemFilterProxyModel_searchesAcrossMultipleFields()
+{
+    QStandardItemModel model(2, 14);
+
+    model.setData(model.index(0, 1), QStringLiteral("Atari komputer"));
+    model.setData(model.index(0, 3), QStringLiteral("Atari"));
+    model.setData(model.index(0, 4), QStringLiteral("800XL"));
+    model.setData(model.index(0, 5), QStringLiteral("SER-800"));
+    model.setData(model.index(0, 6), QStringLiteral("PART-ATARI"));
+    model.setData(model.index(0, 11), QStringLiteral("Opis pierwszego rekordu"));
+
+    model.setData(model.index(1, 1), QStringLiteral("Commodore komputer"));
+    model.setData(model.index(1, 3), QStringLiteral("Commodore"));
+    model.setData(model.index(1, 4), QStringLiteral("C64"));
+    model.setData(model.index(1, 5), QStringLiteral("SER-C64"));
+    model.setData(model.index(1, 6), QStringLiteral("PART-C64"));
+    model.setData(model.index(1, 11), QStringLiteral("Opis drugiego rekordu"));
+
+    ItemFilterProxyModel proxy;
+    proxy.setSourceModel(&model);
+
+    proxy.setNameFilter(QStringLiteral("800XL"));
+    QCOMPARE(proxy.rowCount(), 1);
+
+    proxy.setNameFilter(QStringLiteral("SER-C64"));
+    QCOMPARE(proxy.rowCount(), 1);
+
+    proxy.setNameFilter(QStringLiteral("Commodore"));
+    QCOMPARE(proxy.rowCount(), 1);
+
+    proxy.setNameFilter(QStringLiteral("drugiego"));
+    QCOMPARE(proxy.rowCount(), 1);
+
+    proxy.setNameFilter(QStringLiteral("nie-istnieje"));
+    QCOMPARE(proxy.rowCount(), 0);
 }
 
 void RepositoryTests::pacmanAnimationModel_activatesAfterConfiguredDelay()
