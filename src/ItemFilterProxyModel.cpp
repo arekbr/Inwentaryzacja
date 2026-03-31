@@ -67,6 +67,7 @@ ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
     , m_originalPackagingFilterEnabled(false)
     , m_withoutDescriptionOnly(false)
     , m_withoutSerialNumberOnly(false)
+    , m_withoutModelOnly(false)
 {
     // Filtrowanie bez uwzględnienia wielkości liter
     setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -176,6 +177,12 @@ void ItemFilterProxyModel::setWithoutSerialNumberFilter(bool show)
     invalidateFilter();
 }
 
+void ItemFilterProxyModel::setWithoutModelFilter(bool show)
+{
+    m_withoutModelOnly = show;
+    invalidateFilter();
+}
+
 /**
  * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
  * @param sourceRow Numer wiersza w modelu źródłowym.
@@ -209,13 +216,19 @@ bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
                             || sourceModel()->data(descriptionIndex).toString().trimmed().isEmpty();
     bool serialNumberMatch = !m_withoutSerialNumberOnly
                              || sourceModel()->data(serialNumberIndex).toString().trimmed().isEmpty();
+    const QString modelName = sourceModel()->data(modelIndex).toString().trimmed().toLower();
+    bool modelPresentMatch = !m_withoutModelOnly
+                             || modelName.isEmpty()
+                             || modelName == QStringLiteral("unknown")
+                             || modelName == QStringLiteral("brak")
+                             || modelName == QStringLiteral("nieznany");
     
     // Zmiana logiki - filtrujemy tylko gdy checkbox jest zaznaczony
     bool packagingMatch = !m_originalPackagingFilterEnabled || 
                          (m_originalPackagingFilterEnabled && sourceModel()->data(packagingIndex).toBool());
 
     return typeMatch && vendorMatch && modelMatch && statusMatch && storageMatch && nameMatch
-           && packagingMatch && descriptionMatch && serialNumberMatch;
+           && packagingMatch && descriptionMatch && serialNumberMatch && modelPresentMatch;
 }
 
 bool ItemFilterProxyModel::matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const

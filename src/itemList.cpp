@@ -313,6 +313,10 @@ itemList::itemList(QWidget *parent)
             &QCheckBox::toggled,
             this,
             &itemList::onFilterWithoutSerialNumberChanged);
+    connect(ui->filterWithoutModel,
+            &QCheckBox::toggled,
+            this,
+            &itemList::onFilterWithoutModelChanged);
     connect(ui->clearFiltersButton,
             &QPushButton::clicked,
             this,
@@ -324,6 +328,7 @@ itemList::itemList(QWidget *parent)
     m_proxyModel->setOriginalPackagingFilter(ui->filterOriginalPackaging->isChecked());
     m_proxyModel->setWithoutDescriptionFilter(ui->filterWithoutDescription->isChecked());
     m_proxyModel->setWithoutSerialNumberFilter(ui->filterWithoutSerialNumber->isChecked());
+    m_proxyModel->setWithoutModelFilter(ui->filterWithoutModel->isChecked());
     updateFilterComboBoxes();
     m_filtersInitialized = true;
     saveCurrentFilters();
@@ -1192,11 +1197,13 @@ void itemList::updateFilterComboBoxes()
     QString selName = filterNameLineEdit->text().isEmpty() ? QString() : filterNameLineEdit->text();
     const bool withoutDescriptionOnly = ui->filterWithoutDescription->isChecked();
     const bool withoutSerialNumberOnly = ui->filterWithoutSerialNumber->isChecked();
+    const bool withoutModelOnly = ui->filterWithoutModel->isChecked();
 
     qDebug() << "itemList: Filtry: type=" << selType << ", vendor=" << selVendor
              << ", model=" << selModel << ", status=" << selStatus << ", storage=" << selStorage
              << ", name=" << selName << ", withoutDescription=" << withoutDescriptionOnly
-             << ", withoutSerialNumber=" << withoutSerialNumberOnly;
+             << ", withoutSerialNumber=" << withoutSerialNumberOnly
+             << ", withoutModel=" << withoutModelOnly;
 
     struct Filter
     {
@@ -1242,6 +1249,9 @@ void itemList::updateFilterComboBoxes()
                               "OR TRIM(eksponaty.description) = '') "
                               "AND (:withoutSerialNumber = 0 OR eksponaty.serial_number IS NULL "
                               "OR TRIM(eksponaty.serial_number) = '') "
+                              "AND (:withoutModel = 0 OR models.name IS NULL "
+                              "OR TRIM(models.name) = '' "
+                              "OR LOWER(TRIM(models.name)) IN ('unknown','brak','nieznany')) "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1255,6 +1265,7 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":selName", selName.isEmpty() ? QVariant() : QString("%%%1%%").arg(selName));
         q.bindValue(":withoutDescription", withoutDescriptionOnly ? 1 : 0);
         q.bindValue(":withoutSerialNumber", withoutSerialNumberOnly ? 1 : 0);
+        q.bindValue(":withoutModel", withoutModelOnly ? 1 : 0);
         if (!q.exec())
         {
             qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"
@@ -1309,6 +1320,13 @@ void itemList::onFilterWithoutSerialNumberChanged(bool checked)
     saveCurrentFilters();
 }
 
+void itemList::onFilterWithoutModelChanged(bool checked)
+{
+    m_proxyModel->setWithoutModelFilter(checked);
+    updateFilterComboBoxes();
+    saveCurrentFilters();
+}
+
 void itemList::onFilterTypeChanged(const QString &text)
 {
     m_proxyModel->setTypeFilter(text == tr("Wszystkie") ? QString() : text);
@@ -1355,6 +1373,7 @@ void itemList::onClearFiltersClicked()
     ui->filterOriginalPackaging->setChecked(false);
     ui->filterWithoutDescription->setChecked(false);
     ui->filterWithoutSerialNumber->setChecked(false);
+    ui->filterWithoutModel->setChecked(false);
     onFilterChanged();
 }
 
@@ -1440,6 +1459,7 @@ void itemList::restoreSavedFilters()
     const QSignalBlocker blockPackaging(ui->filterOriginalPackaging);
     const QSignalBlocker blockWithoutDescription(ui->filterWithoutDescription);
     const QSignalBlocker blockWithoutSerialNumber(ui->filterWithoutSerialNumber);
+    const QSignalBlocker blockWithoutModel(ui->filterWithoutModel);
 
     auto restoreCombo = [](QComboBox *comboBox, const QString &value)
     {
@@ -1463,6 +1483,8 @@ void itemList::restoreSavedFilters()
         settings.value("itemList/filterWithoutDescription", false).toBool());
     ui->filterWithoutSerialNumber->setChecked(
         settings.value("itemList/filterWithoutSerialNumber", false).toBool());
+    ui->filterWithoutModel->setChecked(
+        settings.value("itemList/filterWithoutModel", false).toBool());
 }
 
 void itemList::saveCurrentFilters() const
@@ -1482,4 +1504,5 @@ void itemList::saveCurrentFilters() const
                       ui->filterWithoutDescription->isChecked());
     settings.setValue("itemList/filterWithoutSerialNumber",
                       ui->filterWithoutSerialNumber->isChecked());
+    settings.setValue("itemList/filterWithoutModel", ui->filterWithoutModel->isChecked());
 }

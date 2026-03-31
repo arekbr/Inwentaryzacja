@@ -225,6 +225,7 @@ private slots:
     void onFilterOriginalPackagingChanged(bool checked);
     void onFilterWithoutDescriptionChanged(bool checked);
     void onFilterWithoutSerialNumberChanged(bool checked);
+    void onFilterWithoutModelChanged(bool checked);
     void onClearFiltersClicked();
 
 private:
