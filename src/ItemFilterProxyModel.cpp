@@ -68,6 +68,7 @@ ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
     , m_withoutDescriptionOnly(false)
     , m_withoutSerialNumberOnly(false)
     , m_withoutModelOnly(false)
+    , m_withoutVendorOnly(false)
 {
     // Filtrowanie bez uwzględnienia wielkości liter
     setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -183,6 +184,12 @@ void ItemFilterProxyModel::setWithoutModelFilter(bool show)
     invalidateFilter();
 }
 
+void ItemFilterProxyModel::setWithoutVendorFilter(bool show)
+{
+    m_withoutVendorOnly = show;
+    invalidateFilter();
+}
+
 /**
  * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
  * @param sourceRow Numer wiersza w modelu źródłowym.
@@ -217,18 +224,25 @@ bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     bool serialNumberMatch = !m_withoutSerialNumberOnly
                              || sourceModel()->data(serialNumberIndex).toString().trimmed().isEmpty();
     const QString modelName = sourceModel()->data(modelIndex).toString().trimmed().toLower();
+    const QString vendorName = sourceModel()->data(vendorIndex).toString().trimmed().toLower();
     bool modelPresentMatch = !m_withoutModelOnly
                              || modelName.isEmpty()
                              || modelName == QStringLiteral("unknown")
                              || modelName == QStringLiteral("brak")
                              || modelName == QStringLiteral("nieznany");
+    bool vendorPresentMatch = !m_withoutVendorOnly
+                              || vendorName.isEmpty()
+                              || vendorName == QStringLiteral("unknown")
+                              || vendorName == QStringLiteral("brak")
+                              || vendorName == QStringLiteral("nieznany");
     
     // Zmiana logiki - filtrujemy tylko gdy checkbox jest zaznaczony
     bool packagingMatch = !m_originalPackagingFilterEnabled || 
                          (m_originalPackagingFilterEnabled && sourceModel()->data(packagingIndex).toBool());
 
     return typeMatch && vendorMatch && modelMatch && statusMatch && storageMatch && nameMatch
-           && packagingMatch && descriptionMatch && serialNumberMatch && modelPresentMatch;
+           && packagingMatch && descriptionMatch && serialNumberMatch && modelPresentMatch
+           && vendorPresentMatch;
 }
 
 bool ItemFilterProxyModel::matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const

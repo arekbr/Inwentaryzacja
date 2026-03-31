@@ -317,6 +317,10 @@ itemList::itemList(QWidget *parent)
             &QCheckBox::toggled,
             this,
             &itemList::onFilterWithoutModelChanged);
+    connect(ui->filterWithoutVendor,
+            &QCheckBox::toggled,
+            this,
+            &itemList::onFilterWithoutVendorChanged);
     connect(ui->clearFiltersButton,
             &QPushButton::clicked,
             this,
@@ -329,6 +333,7 @@ itemList::itemList(QWidget *parent)
     m_proxyModel->setWithoutDescriptionFilter(ui->filterWithoutDescription->isChecked());
     m_proxyModel->setWithoutSerialNumberFilter(ui->filterWithoutSerialNumber->isChecked());
     m_proxyModel->setWithoutModelFilter(ui->filterWithoutModel->isChecked());
+    m_proxyModel->setWithoutVendorFilter(ui->filterWithoutVendor->isChecked());
     updateFilterComboBoxes();
     m_filtersInitialized = true;
     saveCurrentFilters();
@@ -1198,12 +1203,14 @@ void itemList::updateFilterComboBoxes()
     const bool withoutDescriptionOnly = ui->filterWithoutDescription->isChecked();
     const bool withoutSerialNumberOnly = ui->filterWithoutSerialNumber->isChecked();
     const bool withoutModelOnly = ui->filterWithoutModel->isChecked();
+    const bool withoutVendorOnly = ui->filterWithoutVendor->isChecked();
 
     qDebug() << "itemList: Filtry: type=" << selType << ", vendor=" << selVendor
              << ", model=" << selModel << ", status=" << selStatus << ", storage=" << selStorage
              << ", name=" << selName << ", withoutDescription=" << withoutDescriptionOnly
              << ", withoutSerialNumber=" << withoutSerialNumberOnly
-             << ", withoutModel=" << withoutModelOnly;
+             << ", withoutModel=" << withoutModelOnly
+             << ", withoutVendor=" << withoutVendorOnly;
 
     struct Filter
     {
@@ -1252,6 +1259,9 @@ void itemList::updateFilterComboBoxes()
                               "AND (:withoutModel = 0 OR models.name IS NULL "
                               "OR TRIM(models.name) = '' "
                               "OR LOWER(TRIM(models.name)) IN ('unknown','brak','nieznany')) "
+                              "AND (:withoutVendor = 0 OR vendors.name IS NULL "
+                              "OR TRIM(vendors.name) = '' "
+                              "OR LOWER(TRIM(vendors.name)) IN ('unknown','brak','nieznany')) "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1266,6 +1276,7 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":withoutDescription", withoutDescriptionOnly ? 1 : 0);
         q.bindValue(":withoutSerialNumber", withoutSerialNumberOnly ? 1 : 0);
         q.bindValue(":withoutModel", withoutModelOnly ? 1 : 0);
+        q.bindValue(":withoutVendor", withoutVendorOnly ? 1 : 0);
         if (!q.exec())
         {
             qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"
@@ -1327,6 +1338,13 @@ void itemList::onFilterWithoutModelChanged(bool checked)
     saveCurrentFilters();
 }
 
+void itemList::onFilterWithoutVendorChanged(bool checked)
+{
+    m_proxyModel->setWithoutVendorFilter(checked);
+    updateFilterComboBoxes();
+    saveCurrentFilters();
+}
+
 void itemList::onFilterTypeChanged(const QString &text)
 {
     m_proxyModel->setTypeFilter(text == tr("Wszystkie") ? QString() : text);
@@ -1374,6 +1392,7 @@ void itemList::onClearFiltersClicked()
     ui->filterWithoutDescription->setChecked(false);
     ui->filterWithoutSerialNumber->setChecked(false);
     ui->filterWithoutModel->setChecked(false);
+    ui->filterWithoutVendor->setChecked(false);
     onFilterChanged();
 }
 
@@ -1460,6 +1479,7 @@ void itemList::restoreSavedFilters()
     const QSignalBlocker blockWithoutDescription(ui->filterWithoutDescription);
     const QSignalBlocker blockWithoutSerialNumber(ui->filterWithoutSerialNumber);
     const QSignalBlocker blockWithoutModel(ui->filterWithoutModel);
+    const QSignalBlocker blockWithoutVendor(ui->filterWithoutVendor);
 
     auto restoreCombo = [](QComboBox *comboBox, const QString &value)
     {
@@ -1485,6 +1505,8 @@ void itemList::restoreSavedFilters()
         settings.value("itemList/filterWithoutSerialNumber", false).toBool());
     ui->filterWithoutModel->setChecked(
         settings.value("itemList/filterWithoutModel", false).toBool());
+    ui->filterWithoutVendor->setChecked(
+        settings.value("itemList/filterWithoutVendor", false).toBool());
 }
 
 void itemList::saveCurrentFilters() const
@@ -1505,4 +1527,5 @@ void itemList::saveCurrentFilters() const
     settings.setValue("itemList/filterWithoutSerialNumber",
                       ui->filterWithoutSerialNumber->isChecked());
     settings.setValue("itemList/filterWithoutModel", ui->filterWithoutModel->isChecked());
+    settings.setValue("itemList/filterWithoutVendor", ui->filterWithoutVendor->isChecked());
 }

@@ -139,6 +139,7 @@ public:
     void setWithoutDescriptionFilter(bool show);
     void setWithoutSerialNumberFilter(bool show);
     void setWithoutModelFilter(bool show);
+    void setWithoutVendorFilter(bool show);
 
 protected:
     /**
@@ -179,6 +180,8 @@ private:
     bool m_withoutSerialNumberOnly;
     /// Flaga czy pokazywać tylko rekordy bez przypisanego sensownego modelu.
     bool m_withoutModelOnly;
+    /// Flaga czy pokazywać tylko rekordy bez przypisanego sensownego producenta.
+    bool m_withoutVendorOnly;
 };
 
 #endif // ITEMFILTERPROXYMODEL_H
