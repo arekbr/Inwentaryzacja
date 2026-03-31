@@ -172,16 +172,22 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="itemList_pushButton_bulkStatus">
+       <widget class="QPushButton" name="itemList_pushButton_bulkStatus">
          <property name="text">
-          <string>Zmień status</string>
+          <string>Status zazn.</string>
+         </property>
+         <property name="toolTip">
+          <string>Zmień status wszystkich zaznaczonych rekordów</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="itemList_pushButton_bulkStorage">
          <property name="text">
-          <string>Zmień miejsce</string>
+          <string>Miejsce zazn.</string>
+         </property>
+         <property name="toolTip">
+          <string>Zmień miejsce przechowywania wszystkich zaznaczonych rekordów</string>
          </property>
         </widget>
        </item>

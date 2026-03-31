@@ -104,7 +104,8 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     // Sekcja: Inicjalizacja combo boxa dla skórki graficznej
     // Wypełnia combo box dostępnymi skórkami graficznymi.
     ui->filterSelectSkin->clear();
-    ui->filterSelectSkin->addItems({"Amiga", "Atari 8bit", "ZX Spectrum", "GEOS", "Standard"});
+    ui->filterSelectSkin->addItems(
+        {"Amiga", "Amiga 1.3", "Atari 8bit", "ZX Spectrum", "GEOS", "Standard"});
 
     // Sekcja: Ładowanie zapisanych ustawień
     // Wczytuje ustawienia z pliku inwentaryzacja.ini, ustawia wartości pól interfejsu.
@@ -120,7 +121,8 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     ui->databaseLineEdit->setText(
         settings.value("Database/MySQL/Database", "nazwa_bazy").toString());
     ui->userLineEdit->setText(settings.value("Database/MySQL/User", "user").toString());
-    ui->passwordLineEdit->clear();
+    ui->passwordLineEdit->setText(
+        settings.value("Database/MySQL/Password", "").toString());
     ui->portSpinBox->setValue(settings.value("Database/MySQL/Port", 3306).toInt());
 
     QString savedSkin = settings.value("skin", "Standard").toString();
@@ -209,7 +211,7 @@ void DatabaseConfigDialog::accept()
     settings.setValue("Database/MySQL/Host", ui->hostLineEdit->text());
     settings.setValue("Database/MySQL/Database", ui->databaseLineEdit->text());
     settings.setValue("Database/MySQL/User", ui->userLineEdit->text());
-    settings.remove("Database/MySQL/Password");
+    settings.setValue("Database/MySQL/Password", ui->passwordLineEdit->text());
     settings.setValue("Database/MySQL/Port", ui->portSpinBox->value());
     settings.setValue("skin", ui->filterSelectSkin->currentText());
 
@@ -348,6 +350,10 @@ void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
     {
         qssPath = ":/styles/amiga.qss";
     }
+    else if (skin == "Amiga 1.3")
+    {
+        qssPath = ":/styles/amiga13.qss";
+    }
     else if (skin == "ZX Spectrum")
     {
         qssPath = ":/styles/zxspectrum.qss";
@@ -389,7 +395,7 @@ void DatabaseConfigDialog::loadStyleSheet(const QString &skin)
 void DatabaseConfigDialog::loadFont(const QString &skin)
 {
     QFont font;
-    if (skin == "Amiga")
+    if (skin == "Amiga" || skin == "Amiga 1.3")
     {
         if (m_topazFontId == -1)
         {
@@ -415,7 +421,7 @@ void DatabaseConfigDialog::loadFont(const QString &skin)
             {
                 font.setFamily(families.first());
                 font.setPointSize(12);
-                qDebug() << "Załadowano czcionkę Topaz dla skórki Amiga, rodzina:"
+                qDebug() << "Załadowano czcionkę Topaz dla skórki" << skin << ", rodzina:"
                          << families.first();
             }
             else

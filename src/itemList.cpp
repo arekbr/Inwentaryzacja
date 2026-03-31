@@ -733,8 +733,9 @@ void itemList::onBulkStatusButtonClicked()
     bool accepted = false;
     const QString statusName =
         QInputDialog::getItem(this,
-                              tr("Zmień status"),
-                              tr("Nowy status dla %1 rekordów:").arg(recordIds.size()),
+                              tr("Zmień status zaznaczonych"),
+                              tr("Nowy status dla %1 zaznaczonych rekordów:")
+                                  .arg(recordIds.size()),
                               options,
                               0,
                               false,
@@ -770,8 +771,9 @@ void itemList::onBulkStorageButtonClicked()
     bool accepted = false;
     const QString storageName =
         QInputDialog::getItem(this,
-                              tr("Zmień miejsce"),
-                              tr("Nowe miejsce dla %1 rekordów:").arg(recordIds.size()),
+                              tr("Zmień miejsce zaznaczonych"),
+                              tr("Nowe miejsce dla %1 zaznaczonych rekordów:")
+                                  .arg(recordIds.size()),
                               options,
                               0,
                               false,

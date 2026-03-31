@@ -169,6 +169,8 @@ DISTFILES += \
     images/amiga_end.png \
     images/amiga_new.png \
     images/background.png \
+    images/combobox_arrow_dark.svg \
+    images/combobox_arrow_light.svg \
     images/icon.icns \
     images/icon.ico \
     images/icon.png \
@@ -183,6 +185,7 @@ DISTFILES += \
 # Style (QSS)
 DISTFILES += \
     styles/amiga.qss \
+    styles/amiga13.qss \
     styles/atari8bit.qss \
     styles/default.qss \
     styles/geos.qss \

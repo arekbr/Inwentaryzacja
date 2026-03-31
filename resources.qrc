@@ -7,11 +7,14 @@
         <file>images/ikona_mac.icns</file>
         <file>images/256ikona.png</file>
         <file>images/background.png</file>
+        <file>images/combobox_arrow_dark.svg</file>
+        <file>images/combobox_arrow_light.svg</file>
         <file>images/installericon.ico</file>
         <file>images/logo.png</file>
         <file>images/watermark.png</file>
         <file>styles/default.qss</file>
         <file>styles/amiga.qss</file>
+        <file>styles/amiga13.qss</file>
         <file>images/amiga_new.png</file>
         <file>images/amiga_edit.png</file>
         <file>images/amiga_delete.png</file>
