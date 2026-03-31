@@ -117,6 +117,13 @@
        </property>
       </widget>
      </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="filterWithoutDescription">
+       <property name="text">
+        <string>Tylko bez opisu</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

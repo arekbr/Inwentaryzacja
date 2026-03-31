@@ -136,6 +136,7 @@ public:
      * aby odświeżyć widok.
      */
     void setOriginalPackagingFilter(bool show);
+    void setWithoutDescriptionFilter(bool show);
 
 protected:
     /**
@@ -154,7 +155,6 @@ protected:
 
 private:
     bool matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const;
-
     /// Filtr dla typu eksponatu (pusty oznacza brak filtru).
     QString m_type;
     /// Filtr dla producenta eksponatu (pusty oznacza brak filtru).
@@ -171,6 +171,8 @@ private:
     bool m_showOriginalPackaging;
     /// Flaga czy filtr oryginalnego pakowania jest aktywny.
     bool m_originalPackagingFilterEnabled;
+    /// Flaga czy pokazywać tylko rekordy bez opisu.
+    bool m_withoutDescriptionOnly;
 };
 
 #endif // ITEMFILTERPROXYMODEL_H

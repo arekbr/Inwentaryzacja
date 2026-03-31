@@ -223,6 +223,7 @@ private slots:
     void onFilterStoragePlaceChanged(const QString &text);
     void onFilterNameChanged(const QString &text);
     void onFilterOriginalPackagingChanged(bool checked);
+    void onFilterWithoutDescriptionChanged(bool checked);
     void onClearFiltersClicked();
 
 private:

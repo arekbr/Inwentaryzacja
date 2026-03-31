@@ -32,7 +32,6 @@
 
 #include "ItemFilterProxyModel.h"
 #include <QModelIndex>
-
 namespace {
 
 constexpr int kNameColumn = 1;
@@ -66,6 +65,7 @@ ItemFilterProxyModel::ItemFilterProxyModel(QObject *parent)
     , m_nameFilter()
     , m_showOriginalPackaging(false)
     , m_originalPackagingFilterEnabled(false)
+    , m_withoutDescriptionOnly(false)
 {
     // Filtrowanie bez uwzględnienia wielkości liter
     setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -163,6 +163,12 @@ void ItemFilterProxyModel::setOriginalPackagingFilter(bool show)
     invalidateFilter();
 }
 
+void ItemFilterProxyModel::setWithoutDescriptionFilter(bool show)
+{
+    m_withoutDescriptionOnly = show;
+    invalidateFilter();
+}
+
 /**
  * @brief Decyduje, czy dany wiersz modelu źródłowego powinien być widoczny.
  * @param sourceRow Numer wiersza w modelu źródłowym.
@@ -183,6 +189,7 @@ bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     QModelIndex statusIndex = sourceModel()->index(sourceRow, kStatusColumn, sourceParent);
     QModelIndex storageIndex = sourceModel()->index(sourceRow, kStorageColumn, sourceParent);
     QModelIndex packagingIndex = sourceModel()->index(sourceRow, kPackagingColumn, sourceParent);
+    QModelIndex descriptionIndex = sourceModel()->index(sourceRow, kDescriptionColumn, sourceParent);
 
     bool typeMatch = m_type.isEmpty() || sourceModel()->data(typeIndex).toString() == m_type;
     bool vendorMatch = m_vendor.isEmpty() || sourceModel()->data(vendorIndex).toString() == m_vendor;
@@ -190,13 +197,15 @@ bool ItemFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &so
     bool statusMatch = m_status.isEmpty() || sourceModel()->data(statusIndex).toString() == m_status;
     bool storageMatch = m_storage.isEmpty() || sourceModel()->data(storageIndex).toString() == m_storage;
     bool nameMatch = matchesSearchText(sourceRow, sourceParent);
+    bool descriptionMatch = !m_withoutDescriptionOnly
+                            || sourceModel()->data(descriptionIndex).toString().trimmed().isEmpty();
     
     // Zmiana logiki - filtrujemy tylko gdy checkbox jest zaznaczony
     bool packagingMatch = !m_originalPackagingFilterEnabled || 
                          (m_originalPackagingFilterEnabled && sourceModel()->data(packagingIndex).toBool());
 
-    return typeMatch && vendorMatch && modelMatch && statusMatch && 
-           storageMatch && nameMatch && packagingMatch;
+    return typeMatch && vendorMatch && modelMatch && statusMatch && storageMatch && nameMatch
+           && packagingMatch && descriptionMatch;
 }
 
 bool ItemFilterProxyModel::matchesSearchText(int sourceRow, const QModelIndex &sourceParent) const

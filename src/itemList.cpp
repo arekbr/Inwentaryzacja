@@ -305,6 +305,10 @@ itemList::itemList(QWidget *parent)
             &QCheckBox::toggled,
             this,
             &itemList::onFilterOriginalPackagingChanged);
+    connect(ui->filterWithoutDescription,
+            &QCheckBox::toggled,
+            this,
+            &itemList::onFilterWithoutDescriptionChanged);
     connect(ui->clearFiltersButton,
             &QPushButton::clicked,
             this,
@@ -314,6 +318,7 @@ itemList::itemList(QWidget *parent)
     onFilterChanged();
     m_proxyModel->setNameFilter(filterNameLineEdit->text());
     m_proxyModel->setOriginalPackagingFilter(ui->filterOriginalPackaging->isChecked());
+    m_proxyModel->setWithoutDescriptionFilter(ui->filterWithoutDescription->isChecked());
     updateFilterComboBoxes();
     m_filtersInitialized = true;
     saveCurrentFilters();
@@ -1180,10 +1185,11 @@ void itemList::updateFilterComboBoxes()
                              ? QString()
                              : filterStorageComboBox->currentText();
     QString selName = filterNameLineEdit->text().isEmpty() ? QString() : filterNameLineEdit->text();
+    const bool withoutDescriptionOnly = ui->filterWithoutDescription->isChecked();
 
     qDebug() << "itemList: Filtry: type=" << selType << ", vendor=" << selVendor
              << ", model=" << selModel << ", status=" << selStatus << ", storage=" << selStorage
-             << ", name=" << selName;
+             << ", name=" << selName << ", withoutDescription=" << withoutDescriptionOnly;
 
     struct Filter
     {
@@ -1225,6 +1231,8 @@ void itemList::updateFilterComboBoxes()
                               "OR eksponaty.serial_number LIKE :selName "
                               "OR eksponaty.part_number LIKE :selName "
                               "OR eksponaty.description LIKE :selName) "
+                              "AND (:withoutDescription = 0 OR eksponaty.description IS NULL "
+                              "OR TRIM(eksponaty.description) = '') "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1236,6 +1244,7 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":selStatus", selStatus.isEmpty() ? QVariant() : selStatus);
         q.bindValue(":selStorage", selStorage.isEmpty() ? QVariant() : selStorage);
         q.bindValue(":selName", selName.isEmpty() ? QVariant() : QString("%%%1%%").arg(selName));
+        q.bindValue(":withoutDescription", withoutDescriptionOnly ? 1 : 0);
         if (!q.exec())
         {
             qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"
@@ -1272,6 +1281,13 @@ void itemList::updateFilterComboBoxes()
 void itemList::onFilterOriginalPackagingChanged(bool checked)
 {
     m_proxyModel->setOriginalPackagingFilter(checked);
+    updateFilterComboBoxes();
+    saveCurrentFilters();
+}
+
+void itemList::onFilterWithoutDescriptionChanged(bool checked)
+{
+    m_proxyModel->setWithoutDescriptionFilter(checked);
     updateFilterComboBoxes();
     saveCurrentFilters();
 }
@@ -1320,6 +1336,7 @@ void itemList::onClearFiltersClicked()
     filterStorageComboBox->setCurrentIndex(0);
     filterNameLineEdit->clear();
     ui->filterOriginalPackaging->setChecked(false);
+    ui->filterWithoutDescription->setChecked(false);
     onFilterChanged();
 }
 
@@ -1403,6 +1420,7 @@ void itemList::restoreSavedFilters()
     const QSignalBlocker blockStorage(filterStorageComboBox);
     const QSignalBlocker blockSearch(filterNameLineEdit);
     const QSignalBlocker blockPackaging(ui->filterOriginalPackaging);
+    const QSignalBlocker blockWithoutDescription(ui->filterWithoutDescription);
 
     auto restoreCombo = [](QComboBox *comboBox, const QString &value)
     {
@@ -1422,6 +1440,8 @@ void itemList::restoreSavedFilters()
     filterNameLineEdit->setText(settings.value("itemList/filterSearch").toString());
     ui->filterOriginalPackaging->setChecked(
         settings.value("itemList/filterOriginalPackaging", false).toBool());
+    ui->filterWithoutDescription->setChecked(
+        settings.value("itemList/filterWithoutDescription", false).toBool());
 }
 
 void itemList::saveCurrentFilters() const
@@ -1437,4 +1457,6 @@ void itemList::saveCurrentFilters() const
     settings.setValue("itemList/filterStorage", filterStorageComboBox->currentText());
     settings.setValue("itemList/filterSearch", filterNameLineEdit->text());
     settings.setValue("itemList/filterOriginalPackaging", ui->filterOriginalPackaging->isChecked());
+    settings.setValue("itemList/filterWithoutDescription",
+                      ui->filterWithoutDescription->isChecked());
 }
