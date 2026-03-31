@@ -224,6 +224,7 @@ private slots:
     void onFilterNameChanged(const QString &text);
     void onFilterOriginalPackagingChanged(bool checked);
     void onFilterWithoutDescriptionChanged(bool checked);
+    void onFilterWithoutSerialNumberChanged(bool checked);
     void onClearFiltersClicked();
 
 private:

@@ -137,6 +137,7 @@ public:
      */
     void setOriginalPackagingFilter(bool show);
     void setWithoutDescriptionFilter(bool show);
+    void setWithoutSerialNumberFilter(bool show);
 
 protected:
     /**
@@ -173,6 +174,8 @@ private:
     bool m_originalPackagingFilterEnabled;
     /// Flaga czy pokazywać tylko rekordy bez opisu.
     bool m_withoutDescriptionOnly;
+    /// Flaga czy pokazywać tylko rekordy bez numeru seryjnego.
+    bool m_withoutSerialNumberOnly;
 };
 
 #endif // ITEMFILTERPROXYMODEL_H
