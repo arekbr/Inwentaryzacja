@@ -71,6 +71,19 @@ jobs:
       - name: Enable MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Install zlib with vcpkg
+        shell: pwsh
+        run: |
+          $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
+          if ([string]::IsNullOrWhiteSpace($vcpkgRoot)) {
+            $vcpkgRoot = 'C:\vcpkg'
+          }
+          if (-not (Test-Path (Join-Path $vcpkgRoot 'vcpkg.exe'))) {
+            throw "Nie znaleziono vcpkg.exe w: $vcpkgRoot"
+          }
+          & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows
+          "VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
+
       - name: Install Inno Setup
         shell: pwsh
         run: choco install innosetup --no-progress -y
@@ -79,7 +92,7 @@ jobs:
         shell: pwsh
         run: |
           $qtPath = & qmake -query QT_INSTALL_PREFIX
-          cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$qtPath"
+          cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$qtPath" -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT\scripts\buildsystems\vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
           cmake --build build-windows --config Release -j 4
 
       - name: Package installer
