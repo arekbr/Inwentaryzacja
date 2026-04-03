@@ -48,6 +48,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QFileDialog>
 #include <QGraphicsPixmapItem>
@@ -59,6 +60,8 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QPixmap>
+#include <QProgressDialog>
+#include <QPointer>
 #include <QPushButton>
 #include <QScreen>
 #include <QSignalBlocker>
@@ -71,8 +74,10 @@
 #include <QSqlRelationalTableModel>
 #include <QStringListModel>
 #include <QTimer>
+#include <QThread>
 #include <QtMath>
 #include <functional>
+#include <memory>
 #include <QLibraryInfo>
 #include <QPluginLoader>
 
@@ -94,6 +99,52 @@ void replaceScene(QGraphicsView *view, QGraphicsScene *newScene)
     view->setScene(newScene);
     delete oldScene;
 }
+
+class BackupWorker : public QObject
+{
+    Q_OBJECT
+
+public:
+    BackupWorker(const MySqlConnectionInfo &connectionInfo, const QString &outputPath)
+        : m_connectionInfo(connectionInfo), m_outputPath(outputPath)
+    {
+    }
+
+signals:
+    void progressBytes(qint64 writtenBytes);
+    void statusChanged(const QString &statusText);
+    void finished(bool success,
+                  const QString &errorMessage,
+                  qint64 compressedBytes,
+                  qint64 uncompressedBytes,
+                  bool gzipVerified);
+
+public slots:
+    void run()
+    {
+        QString errorMessage;
+        DatabaseBackupService::BackupResult result;
+        const bool success =
+            DatabaseBackupService::backupToGzipFile(m_connectionInfo,
+                                                   m_outputPath,
+                                                   &errorMessage,
+                                                   &result,
+                                                   [this](qint64 writtenBytes)
+                                                   { emit progressBytes(writtenBytes); },
+                                                   [this](const QString &statusText)
+                                                   { emit statusChanged(statusText); });
+
+        emit finished(success,
+                      errorMessage,
+                      result.compressedBytes,
+                      result.uncompressedBytes,
+                      result.gzipVerified);
+    }
+
+private:
+    MySqlConnectionInfo m_connectionInfo;
+    QString m_outputPath;
+};
 
 }
 
@@ -880,6 +931,16 @@ void itemList::onAboutClicked()
 void itemList::onBackupButtonClicked()
 {
     DatabaseBackupService backupService(QSqlDatabase::database("default_connection"));
+    MySqlConnectionInfo connectionInfo;
+    QString errorMessage;
+    if (!backupService.connectionInfo(&connectionInfo, &errorMessage))
+    {
+        QMessageBox::critical(this,
+                              tr("Błąd backupu"),
+                              tr("Nie udało się przygotować backupu bazy danych.\n%1")
+                                  .arg(errorMessage));
+        return;
+    }
 
     const QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     const QString defaultName =
@@ -892,19 +953,99 @@ void itemList::onBackupButtonClicked()
     if (outputPath.isEmpty())
         return;
 
-    QString errorMessage;
-    if (!backupService.backupToGzipFile(outputPath, &errorMessage))
-    {
-        QMessageBox::critical(this,
-                              tr("Błąd backupu"),
-                              tr("Nie udało się utworzyć backupu bazy danych.\n%1")
-                                  .arg(errorMessage));
-        return;
-    }
+    ui->itemList_pushButton_backup->setEnabled(false);
 
-    QMessageBox::information(this,
-                             tr("Backup gotowy"),
-                             tr("Backup bazy został zapisany do pliku:\n%1").arg(outputPath));
+    auto *progressDialog =
+        new QProgressDialog(tr("Trwa tworzenie backupu SQL.gz...\nZapisano 0 MB"),
+                            QString(),
+                            0,
+                            0,
+                            this);
+    progressDialog->setWindowTitle(tr("Backup w toku"));
+    progressDialog->setCancelButton(nullptr);
+    progressDialog->setMinimumDuration(0);
+    progressDialog->setWindowModality(Qt::ApplicationModal);
+    progressDialog->setValue(0);
+    progressDialog->show();
+
+    auto elapsedTimer = std::make_shared<QElapsedTimer>();
+    elapsedTimer->start();
+    auto lastReportedMb = std::make_shared<qint64>(-1);
+    auto lastStatusText = std::make_shared<QString>(tr("Trwa tworzenie backupu SQL.gz..."));
+
+    auto *thread = new QThread(this);
+    auto *worker = new BackupWorker(connectionInfo, outputPath);
+    worker->moveToThread(thread);
+
+    connect(thread, &QThread::started, worker, &BackupWorker::run);
+    connect(worker, &BackupWorker::progressBytes, this, [progressDialog, lastReportedMb, lastStatusText](qint64 writtenBytes)
+            {
+        if (!progressDialog)
+            return;
+
+        const qint64 writtenMb = writtenBytes / (1024 * 1024);
+        if (writtenMb == *lastReportedMb)
+            return;
+
+        *lastReportedMb = writtenMb;
+        progressDialog->setLabelText(
+            QStringLiteral("%1\n%2")
+                .arg(*lastStatusText, QObject::tr("Zapisano %1 MB").arg(writtenMb)));
+        progressDialog->repaint(); });
+    connect(worker, &BackupWorker::statusChanged, this, [progressDialog, lastReportedMb, lastStatusText](const QString &statusText)
+            {
+        if (!progressDialog)
+            return;
+
+        *lastStatusText = statusText;
+        const qint64 writtenMb = qMax<qint64>(0, *lastReportedMb);
+        progressDialog->setLabelText(
+            QStringLiteral("%1\n%2")
+                .arg(statusText, QObject::tr("Zapisano %1 MB").arg(writtenMb)));
+        progressDialog->repaint(); });
+    connect(worker,
+            &BackupWorker::finished,
+            this,
+            [this, progressDialog, elapsedTimer, outputPath, thread](bool success,
+                                                                     const QString &workerError,
+                                                                     qint64 compressedBytes,
+                                                                     qint64,
+                                                                     bool gzipVerified)
+            {
+        ui->itemList_pushButton_backup->setEnabled(true);
+        if (progressDialog)
+            progressDialog->hide();
+
+        const qint64 elapsedSeconds = elapsedTimer->elapsed() / 1000;
+        const double compressedMb = static_cast<double>(compressedBytes) / (1024.0 * 1024.0);
+
+        if (!success)
+        {
+            QMessageBox::critical(this,
+                                  tr("Błąd backupu"),
+                                  tr("Nie udało się utworzyć backupu bazy danych.\n%1")
+                                      .arg(workerError));
+        }
+        else
+        {
+            QMessageBox::information(this,
+                                     tr("Backup gotowy"),
+                                     tr("Backup bazy został zapisany do pliku:\n%1\n\n"
+                                        "Rozmiar pliku: %2 MB\n"
+                                        "Czas wykonania: %3 s\n"
+                                        "Weryfikacja gzip: %4")
+                                         .arg(outputPath)
+                                         .arg(QString::number(compressedMb, 'f', 1))
+                                         .arg(elapsedSeconds)
+                                         .arg(gzipVerified ? tr("OK") : tr("nie wykonano")));
+        }
+
+        if (progressDialog)
+            progressDialog->deleteLater();
+        thread->quit(); });
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    thread->start();
 }
 
 /**
@@ -1529,3 +1670,5 @@ void itemList::saveCurrentFilters() const
     settings.setValue("itemList/filterWithoutModel", ui->filterWithoutModel->isChecked());
     settings.setValue("itemList/filterWithoutVendor", ui->filterWithoutVendor->isChecked());
 }
+
+#include "itemList.moc"

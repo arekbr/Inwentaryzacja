@@ -15,24 +15,35 @@ QString trBackup(const char *text)
     return QObject::tr(text);
 }
 
-bool writeProcessOutputToGzip(QProcess &process, gzFile gzipFile, QString *errorMessage)
+bool verifyGzipFile(const QString &path, QString *errorMessage)
 {
-    const QByteArray stdoutData = process.readAllStandardOutput();
-    if (stdoutData.isEmpty())
-        return true;
-
-    const int written = gzwrite(gzipFile, stdoutData.constData(), static_cast<unsigned int>(stdoutData.size()));
-    if (written == 0)
+    gzFile gzipFile = gzopen(QFile::encodeName(path).constData(), "rb");
+    if (!gzipFile)
     {
-        int errNo = Z_OK;
-        const char *gzipError = gzerror(gzipFile, &errNo);
         if (errorMessage)
-            *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
-                            + QStringLiteral("\n")
-                            + QString::fromUtf8(gzipError ? gzipError : "");
+            *errorMessage = trBackup("Nie udało się ponownie otworzyć backupu do weryfikacji.");
         return false;
     }
 
+    char buffer[64 * 1024];
+    int readBytes = 0;
+    do
+    {
+        readBytes = gzread(gzipFile, buffer, sizeof(buffer));
+        if (readBytes < 0)
+        {
+            int errNo = Z_OK;
+            const char *gzipError = gzerror(gzipFile, &errNo);
+            gzclose(gzipFile);
+            if (errorMessage)
+                *errorMessage = trBackup("Plik backupu gzip nie przeszedł weryfikacji integralności.")
+                                + QStringLiteral("\n")
+                                + QString::fromUtf8(gzipError ? gzipError : "");
+            return false;
+        }
+    } while (readBytes > 0);
+
+    gzclose(gzipFile);
     return true;
 }
 
@@ -43,12 +54,40 @@ DatabaseBackupService::DatabaseBackupService(QSqlDatabase database)
 {
 }
 
-bool DatabaseBackupService::backupToGzipFile(const QString &outputPath, QString *errorMessage) const
+bool DatabaseBackupService::connectionInfo(MySqlConnectionInfo *connectionInfo,
+                                           QString *errorMessage) const
 {
+    return extractConnectionInfo(connectionInfo, errorMessage);
+}
+
+bool DatabaseBackupService::backupToGzipFile(const QString &outputPath,
+                                             QString *errorMessage,
+                                             BackupResult *result,
+                                             const std::function<void(qint64)> &progressCallback,
+                                             const std::function<void(const QString &)> &statusCallback) const
+{
+    if (result)
+        *result = BackupResult{};
+
     MySqlConnectionInfo connectionInfo;
     if (!extractConnectionInfo(&connectionInfo, errorMessage))
         return false;
 
+    return backupToGzipFile(connectionInfo,
+                            outputPath,
+                            errorMessage,
+                            result,
+                            progressCallback,
+                            statusCallback);
+}
+
+bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connectionInfo,
+                                             const QString &outputPath,
+                                             QString *errorMessage,
+                                             BackupResult *result,
+                                             const std::function<void(qint64)> &progressCallback,
+                                             const std::function<void(const QString &)> &statusCallback)
+{
     const QString dumpExecutable = findDumpExecutable();
     if (dumpExecutable.isEmpty())
     {
@@ -83,6 +122,8 @@ bool DatabaseBackupService::backupToGzipFile(const QString &outputPath, QString 
     process.setProgram(dumpExecutable);
     process.setArguments(buildDumpArguments(connectionInfo));
     process.setProcessChannelMode(QProcess::SeparateChannels);
+    if (statusCallback)
+        statusCallback(trBackup("Trwa tworzenie backupu SQL.gz..."));
     process.start();
 
     if (!process.waitForStarted())
@@ -97,26 +138,61 @@ bool DatabaseBackupService::backupToGzipFile(const QString &outputPath, QString 
     }
 
     QByteArray stderrBuffer;
+    qint64 totalWrittenBytes = 0;
     while (process.state() != QProcess::NotRunning)
     {
         process.waitForFinished(100);
         stderrBuffer += process.readAllStandardError();
-        if (!writeProcessOutputToGzip(process, gzipFile, errorMessage))
+        const QByteArray stdoutData = process.readAllStandardOutput();
+        if (!stdoutData.isEmpty())
         {
-            process.kill();
-            process.waitForFinished();
-            gzclose(gzipFile);
-            QFile::remove(tempOutputPath);
-            return false;
+            const int written = gzwrite(gzipFile,
+                                        stdoutData.constData(),
+                                        static_cast<unsigned int>(stdoutData.size()));
+            if (written == 0)
+            {
+                int errNo = Z_OK;
+                const char *gzipError = gzerror(gzipFile, &errNo);
+                if (errorMessage)
+                    *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
+                                    + QStringLiteral("\n")
+                                    + QString::fromUtf8(gzipError ? gzipError : "");
+                process.kill();
+                process.waitForFinished();
+                gzclose(gzipFile);
+                QFile::remove(tempOutputPath);
+                return false;
+            }
+
+            totalWrittenBytes += stdoutData.size();
+            if (progressCallback)
+                progressCallback(totalWrittenBytes);
         }
     }
 
     stderrBuffer += process.readAllStandardError();
-    if (!writeProcessOutputToGzip(process, gzipFile, errorMessage))
+    const QByteArray remainingStdout = process.readAllStandardOutput();
+    if (!remainingStdout.isEmpty())
     {
-        gzclose(gzipFile);
-        QFile::remove(tempOutputPath);
-        return false;
+        const int written = gzwrite(gzipFile,
+                                    remainingStdout.constData(),
+                                    static_cast<unsigned int>(remainingStdout.size()));
+        if (written == 0)
+        {
+            int errNo = Z_OK;
+            const char *gzipError = gzerror(gzipFile, &errNo);
+            gzclose(gzipFile);
+            QFile::remove(tempOutputPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
+                                + QStringLiteral("\n")
+                                + QString::fromUtf8(gzipError ? gzipError : "");
+            return false;
+        }
+
+        totalWrittenBytes += remainingStdout.size();
+        if (progressCallback)
+            progressCallback(totalWrittenBytes);
     }
 
     if (gzclose(gzipFile) != Z_OK)
@@ -144,6 +220,25 @@ bool DatabaseBackupService::backupToGzipFile(const QString &outputPath, QString 
         if (errorMessage)
             *errorMessage = trBackup("Nie udało się zapisać końcowego pliku backupu.");
         return false;
+    }
+
+    if (statusCallback)
+        statusCallback(trBackup("Trwa weryfikacja backupu SQL.gz..."));
+    QString verificationError;
+    if (!verifyGzipFile(outputPath, &verificationError))
+    {
+        QFile::remove(outputPath);
+        if (errorMessage)
+            *errorMessage = verificationError;
+        return false;
+    }
+
+    if (result)
+    {
+        const QFileInfo outputFileInfo(outputPath);
+        result->compressedBytes = outputFileInfo.size();
+        result->uncompressedBytes = totalWrittenBytes;
+        result->gzipVerified = true;
     }
 
     if (errorMessage)
