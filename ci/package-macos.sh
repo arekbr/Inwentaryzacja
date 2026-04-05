@@ -73,15 +73,20 @@ codesign --verify --deep --strict "$APP_BUNDLE"
 
 ZIP_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.zip"
 DMG_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
+DMG_VOLUME_NAME="${APP_NAME}-${ARCH_LABEL}"
+TEMP_DMG_NAME="/tmp/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
 
-rm -f "$ZIP_NAME" "$DMG_NAME"
+rm -f "$ZIP_NAME" "$DMG_NAME" "$TEMP_DMG_NAME"
 ditto -c -k --sequesterRsrc --keepParent "$APP_BUNDLE" "$ZIP_NAME"
 rm -rf "$DMG_STAGE_DIR"
 mkdir -p "$DMG_STAGE_DIR"
 cp -R "$APP_BUNDLE" "$DMG_STAGE_DIR/"
 ln -s /Applications "$DMG_STAGE_DIR/Applications"
 
-hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_STAGE_DIR" -ov -format UDZO "$DMG_NAME"
+hdiutil detach "/Volumes/$DMG_VOLUME_NAME" -force >/dev/null 2>&1 || true
+hdiutil create -volname "$DMG_VOLUME_NAME" -srcfolder "$DMG_STAGE_DIR" -ov -format UDZO "$TEMP_DMG_NAME"
+hdiutil verify "$TEMP_DMG_NAME"
+mv "$TEMP_DMG_NAME" "$DMG_NAME"
 hdiutil verify "$DMG_NAME"
 
 echo "✅ Gotowe pakiety:"
