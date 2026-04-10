@@ -30,6 +30,11 @@ APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_PLUGINS="$APP_CONTENTS/PlugIns"
 APP_SQL_DRIVERS="$APP_PLUGINS/sqldrivers"
 DMG_STAGE_DIR="$STAGE_DIR/dmg"
+TEMP_ROOT="$(mktemp -d "/tmp/${APP_NAME}_${ARCH_LABEL}_XXXXXX")"
+cleanup() {
+    rm -rf "$TEMP_ROOT"
+}
+trap cleanup EXIT
 
 rm -rf "$STAGE_DIR"
 mkdir -p "$APP_MACOS" "$APP_RESOURCES" "$APP_SQL_DRIVERS" "$ROOT_DIR/$OUTPUT_DIR"
@@ -73,8 +78,8 @@ codesign --verify --deep --strict "$APP_BUNDLE"
 
 ZIP_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.zip"
 DMG_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
-DMG_VOLUME_NAME="${APP_NAME}-${ARCH_LABEL}"
-TEMP_DMG_NAME="/tmp/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
+DMG_VOLUME_NAME="${APP_NAME}-${ARCH_LABEL}${GITHUB_RUN_ID:+-${GITHUB_RUN_ID}}"
+TEMP_DMG_NAME="$TEMP_ROOT/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
 
 rm -f "$ZIP_NAME" "$DMG_NAME" "$TEMP_DMG_NAME"
 ditto -c -k --sequesterRsrc --keepParent "$APP_BUNDLE" "$ZIP_NAME"
