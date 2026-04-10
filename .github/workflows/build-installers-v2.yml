@@ -88,6 +88,7 @@ jobs:
             throw "Nie znaleziono vcpkg.exe w: $vcpkgRoot"
           }
           & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows
+          "APP_VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
           "VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
 
       - name: Install Inno Setup
@@ -99,6 +100,7 @@ jobs:
         run: |
           for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
           call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64
+          set VCPKG_ROOT=%APP_VCPKG_ROOT%
           for /f "usebackq delims=" %%i in (`qmake -query QT_INSTALL_PREFIX`) do set QT_PATH=%%i
           cmake -S . -B build-windows -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%QT_PATH%" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
           cmake --build build-windows --config Release -j 4
