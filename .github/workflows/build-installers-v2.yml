@@ -12,6 +12,10 @@ on:
       - audit-safe-fixes
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - dev
+      - main
 
 permissions:
   contents: write
@@ -25,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install build dependencies
         shell: bash
@@ -47,7 +51,7 @@ jobs:
         run: bash ci/package-debian.sh build-debian dist/debian
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-debian-package
           path: dist/debian/*.deb
@@ -58,7 +62,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -100,7 +104,7 @@ jobs:
         run: .\ci\package-windows.ps1 -BuildDir build-windows -OutputDir dist\windows
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-windows-installer
           path: |
@@ -113,10 +117,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -139,7 +143,7 @@ jobs:
         run: bash ci/package-macos.sh build-macos-intel dist/macos-intel intel
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-macos-intel-installer
           path: |
@@ -152,10 +156,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -178,7 +182,7 @@ jobs:
         run: bash ci/package-macos.sh build-macos-arm dist/macos-arm arm64
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-macos-arm-installer
           path: |
@@ -197,25 +201,25 @@ jobs:
 
     steps:
       - name: Download Windows artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-windows-installer
           path: release-assets/windows
 
       - name: Download Debian artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-debian-package
           path: release-assets/debian
 
       - name: Download macOS Intel artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-macos-intel-installer
           path: release-assets/macos-intel
 
       - name: Download macOS ARM artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-macos-arm-installer
           path: release-assets/macos-arm
