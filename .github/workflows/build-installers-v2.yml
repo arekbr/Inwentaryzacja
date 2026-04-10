@@ -197,25 +197,25 @@ jobs:
 
     steps:
       - name: Download Windows artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-windows-installer
           path: release-assets/windows
 
       - name: Download Debian artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-debian-package
           path: release-assets/debian
 
       - name: Download macOS Intel artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-macos-intel-installer
           path: release-assets/macos-intel
 
       - name: Download macOS ARM artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Inwentaryzacja-macos-arm-installer
           path: release-assets/macos-arm
