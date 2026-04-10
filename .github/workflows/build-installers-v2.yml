@@ -47,7 +47,7 @@ jobs:
         run: bash ci/package-debian.sh build-debian dist/debian
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-debian-package
           path: dist/debian/*.deb
@@ -100,7 +100,7 @@ jobs:
         run: .\ci\package-windows.ps1 -BuildDir build-windows -OutputDir dist\windows
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-windows-installer
           path: |
@@ -139,7 +139,7 @@ jobs:
         run: bash ci/package-macos.sh build-macos-intel dist/macos-intel intel
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-macos-intel-installer
           path: |
@@ -178,7 +178,7 @@ jobs:
         run: bash ci/package-macos.sh build-macos-arm dist/macos-arm arm64
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Inwentaryzacja-macos-arm-installer
           path: |
