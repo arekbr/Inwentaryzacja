@@ -721,6 +721,7 @@ void RepositoryTests::itemFilterProxyModel_searchesAcrossMultipleFields()
     model.setData(model.index(0, 5), QStringLiteral("SER-800"));
     model.setData(model.index(0, 6), QStringLiteral("PART-ATARI"));
     model.setData(model.index(0, 11), QStringLiteral("Opis pierwszego rekordu"));
+    model.setData(model.index(0, 13), true);
 
     model.setData(model.index(1, 1), QStringLiteral("Commodore komputer"));
     model.setData(model.index(1, 3), QStringLiteral("Commodore"));
@@ -728,6 +729,7 @@ void RepositoryTests::itemFilterProxyModel_searchesAcrossMultipleFields()
     model.setData(model.index(1, 5), QStringLiteral("SER-C64"));
     model.setData(model.index(1, 6), QStringLiteral("PART-C64"));
     model.setData(model.index(1, 11), QStringLiteral("Opis drugiego rekordu"));
+    model.setData(model.index(1, 13), false);
 
     ItemFilterProxyModel proxy;
     proxy.setSourceModel(&model);
@@ -746,6 +748,10 @@ void RepositoryTests::itemFilterProxyModel_searchesAcrossMultipleFields()
 
     proxy.setNameFilter(QStringLiteral("nie-istnieje"));
     QCOMPARE(proxy.rowCount(), 0);
+
+    proxy.setNameFilter(QString());
+    proxy.setOriginalPackagingFilter(true);
+    QCOMPARE(proxy.rowCount(), 1);
 }
 
 void RepositoryTests::itemList_restoresSavedFilters()

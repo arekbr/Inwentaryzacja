@@ -223,7 +223,7 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
     }
 
     if (statusCallback)
-        statusCallback(trBackup("Trwa weryfikacja backupu SQL.gz..."));
+        statusCallback(trBackup("Trwa sprawdzanie integralności archiwum SQL.gz..."));
     QString verificationError;
     if (!verifyGzipFile(outputPath, &verificationError))
     {
