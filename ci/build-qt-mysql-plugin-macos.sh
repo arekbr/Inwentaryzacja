@@ -114,6 +114,14 @@ set_target_properties(MySQL::MySQL PROPERTIES
 )
 
 add_subdirectory("$SQLDRIVERS_SRC" sqldrivers)
+
+# Qt CMake helpers potrafią zignorować CMAKE_OSX_ARCHITECTURES — wymuś na target
+foreach(_target QMYSQLDriverPlugin QSQLiteDriverPlugin)
+    if(TARGET \${_target})
+        set_property(TARGET \${_target} PROPERTY OSX_ARCHITECTURES "$TARGET_ARCH")
+        message(STATUS "Wymuszam OSX_ARCHITECTURES=$TARGET_ARCH na \${_target}")
+    endif()
+endforeach()
 EOF
 
 echo "▶ cmake configure…"
