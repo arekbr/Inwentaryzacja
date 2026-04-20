@@ -881,7 +881,9 @@ void itemList::onBulkStorageButtonClicked()
  */
 void itemList::onDeleteButtonClicked()
 {
-    const QString id = selectedRecordIdOrWarn(tr("Proszę wybrać rekord do usunięcia."));
+    const QString id = selectedSingleRecordIdOrWarn(
+        tr("Proszę wybrać rekord do usunięcia."),
+        tr("Do usunięcia można wybrać tylko jeden rekord."));
     if (id.isEmpty())
         return;
 
@@ -1050,7 +1052,7 @@ void itemList::onBackupButtonClicked()
                                      tr("Backup bazy został zapisany do pliku:\n%1\n\n"
                                         "Rozmiar pliku: %2 MB\n"
                                         "Czas wykonania: %3 s\n"
-                                        "Weryfikacja gzip: %4")
+                                        "Integralność archiwum gzip: %4")
                                          .arg(outputPath)
                                          .arg(QString::number(compressedMb, 'f', 1))
                                          .arg(elapsedSeconds)
@@ -1362,13 +1364,15 @@ void itemList::updateFilterComboBoxes()
     const bool withoutSerialNumberOnly = ui->filterWithoutSerialNumber->isChecked();
     const bool withoutModelOnly = ui->filterWithoutModel->isChecked();
     const bool withoutVendorOnly = ui->filterWithoutVendor->isChecked();
+    const bool originalPackagingOnly = ui->filterOriginalPackaging->isChecked();
 
     qDebug() << "itemList: Filtry: type=" << selType << ", vendor=" << selVendor
              << ", model=" << selModel << ", status=" << selStatus << ", storage=" << selStorage
              << ", name=" << selName << ", withoutDescription=" << withoutDescriptionOnly
              << ", withoutSerialNumber=" << withoutSerialNumberOnly
              << ", withoutModel=" << withoutModelOnly
-             << ", withoutVendor=" << withoutVendorOnly;
+             << ", withoutVendor=" << withoutVendorOnly
+             << ", originalPackaging=" << originalPackagingOnly;
 
     struct Filter
     {
@@ -1420,6 +1424,7 @@ void itemList::updateFilterComboBoxes()
                               "AND (:withoutVendor = 0 OR vendors.name IS NULL "
                               "OR TRIM(vendors.name) = '' "
                               "OR LOWER(TRIM(vendors.name)) IN ('unknown','brak','nieznany')) "
+                              "AND (:originalPackaging = 0 OR COALESCE(eksponaty.has_original_packaging, 0) = 1) "
                               "ORDER BY %1")
                           .arg(f.field, baseJoins);
 
@@ -1435,6 +1440,7 @@ void itemList::updateFilterComboBoxes()
         q.bindValue(":withoutSerialNumber", withoutSerialNumberOnly ? 1 : 0);
         q.bindValue(":withoutModel", withoutModelOnly ? 1 : 0);
         q.bindValue(":withoutVendor", withoutVendorOnly ? 1 : 0);
+        q.bindValue(":originalPackaging", originalPackagingOnly ? 1 : 0);
         if (!q.exec())
         {
             qDebug() << "itemList: Błąd zapytania w updateFilterComboBoxes dla" << f.field << ":"

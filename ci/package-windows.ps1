@@ -59,6 +59,14 @@ if ($MariadbLibrary) {
     Copy-Item $MariadbLibrary.FullName $DeployDir -Force
 }
 
+$VcpkgRoot = $env:VCPKG_ROOT
+if (-not [string]::IsNullOrWhiteSpace($VcpkgRoot)) {
+    $ZlibDll = Join-Path $VcpkgRoot 'installed\x64-windows\bin\zlib1.dll'
+    if (Test-Path $ZlibDll) {
+        Copy-Item $ZlibDll $DeployDir -Force
+    }
+}
+
 New-Item -ItemType Directory -Path $AbsoluteOutputDir -Force | Out-Null
 
 $ZipPath = Join-Path $AbsoluteOutputDir ("{0}_{1}_Windows_x64.zip" -f $AppName, $Version)
