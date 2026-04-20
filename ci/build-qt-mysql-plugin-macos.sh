@@ -31,17 +31,43 @@ else
 fi
 
 BREW_PREFIX="$(brew --prefix)"
-MARIADB_LIB="$BREW_PREFIX/lib"
-MARIADB_INCLUDE="$BREW_PREFIX/include/mariadb"
 
-if [[ ! -f "$MARIADB_LIB/libmariadb.dylib" ]]; then
-    echo "❌ Brak $MARIADB_LIB/libmariadb.dylib — sprawdź instalację brew"
+MARIADB_LIB=""
+for candidate in \
+    "$BREW_PREFIX/opt/mariadb/lib/mariadb" \
+    "$BREW_PREFIX/opt/mariadb/lib" \
+    "$BREW_PREFIX/lib/mariadb" \
+    "$BREW_PREFIX/lib"; do
+    if [[ -f "$candidate/libmariadb.dylib" ]]; then
+        MARIADB_LIB="$candidate"
+        break
+    fi
+done
+if [[ -z "$MARIADB_LIB" ]]; then
+    echo "❌ Nie znaleziono libmariadb.dylib w żadnej z:"
+    echo "   $BREW_PREFIX/{opt/mariadb/,}lib{/mariadb,}/libmariadb.dylib"
+    find "$BREW_PREFIX" -name "libmariadb.dylib" -type f 2>/dev/null | head -5
     exit 1
 fi
-if [[ ! -f "$MARIADB_INCLUDE/mysql.h" ]]; then
-    echo "❌ Brak nagłówka $MARIADB_INCLUDE/mysql.h"
+
+MARIADB_INCLUDE=""
+for candidate in \
+    "$BREW_PREFIX/opt/mariadb/include/mariadb" \
+    "$BREW_PREFIX/opt/mariadb/include/mysql" \
+    "$BREW_PREFIX/include/mariadb" \
+    "$BREW_PREFIX/include/mysql"; do
+    if [[ -f "$candidate/mysql.h" ]]; then
+        MARIADB_INCLUDE="$candidate"
+        break
+    fi
+done
+if [[ -z "$MARIADB_INCLUDE" ]]; then
+    echo "❌ Nie znaleziono nagłówka mysql.h w żadnej z:"
+    echo "   $BREW_PREFIX/{opt/mariadb/,}include/{mariadb,mysql}/mysql.h"
+    find "$BREW_PREFIX" -name "mysql.h" -type f 2>/dev/null | head -5
     exit 1
 fi
+
 echo "✓ MariaDB lib: $MARIADB_LIB/libmariadb.dylib"
 echo "✓ MariaDB include: $MARIADB_INCLUDE"
 
