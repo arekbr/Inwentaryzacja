@@ -35,6 +35,7 @@
 #include "ItemFilterProxyModel.h"
 #include "ItemRepository.h"
 #include "PhotoService.h"
+#include "PreviewDialog.h"
 #include "fullscreenphotoviewer.h"
 #include "mainwindow.h"
 #include "photoitem.h"
@@ -289,6 +290,22 @@ itemList::itemList(QWidget *parent)
             &QItemSelectionModel::selectionChanged,
             this,
             &itemList::onTableViewSelectionChanged);
+
+    // Podgląd eksponatu pod dwukrotnym kliknięciem
+    connect(ui->itemList_tableView, &QAbstractItemView::doubleClicked, this,
+            [this](const QModelIndex &proxyIdx)
+            {
+                if (!proxyIdx.isValid())
+                    return;
+                const QModelIndex srcIdx = m_proxyModel->mapToSource(proxyIdx);
+                const QString recordId = m_sourceModel->data(m_sourceModel->index(srcIdx.row(), 0)).toString();
+                if (recordId.isEmpty())
+                    return;
+                auto *preview = new PreviewDialog(QSqlDatabase::database("default_connection"), recordId, this);
+                preview->setAttribute(Qt::WA_DeleteOnClose);
+                connect(preview, &PreviewDialog::editRequested, this, &itemList::openRecordWindowForEdit);
+                preview->show();
+            });
 
     // Inicjalizacja timera utrzymującego połączenie
     m_keepAliveTimer = new QTimer(this);

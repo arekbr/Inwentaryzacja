@@ -137,6 +137,10 @@ jobs:
           python -m aqt install-qt mac desktop 6.8.2 clang_64 --outputdir "$RUNNER_TEMP/Qt"
           echo "$RUNNER_TEMP/Qt/6.8.2/macos/bin" >> "$GITHUB_PATH"
 
+      - name: Build QMYSQL Qt plugin
+        shell: bash
+        run: bash ci/build-qt-mysql-plugin-macos.sh
+
       - name: Configure and build
         shell: bash
         run: |
@@ -175,6 +179,10 @@ jobs:
           python -m pip install --upgrade pip aqtinstall
           python -m aqt install-qt mac desktop 6.8.2 clang_64 --outputdir "$RUNNER_TEMP/Qt"
           echo "$RUNNER_TEMP/Qt/6.8.2/macos/bin" >> "$GITHUB_PATH"
+
+      - name: Build QMYSQL Qt plugin
+        shell: bash
+        run: bash ci/build-qt-mysql-plugin-macos.sh
 
       - name: Configure and build
         shell: bash
