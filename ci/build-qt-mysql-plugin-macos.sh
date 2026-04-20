@@ -19,8 +19,15 @@ QT_PATH="$(qmake -query QT_INSTALL_PREFIX)"
 SRC_OUT="${SRC_OUT:-$RUNNER_TEMP/QtSrc}"
 BUILD_DIR="${BUILD_DIR:-$RUNNER_TEMP/build_qmysql}"
 
+HOST_ARCH="$(uname -m)"
+case "$HOST_ARCH" in
+    arm64|x86_64) TARGET_ARCH="$HOST_ARCH" ;;
+    *) echo "❌ Nieznana architektura runner'a: $HOST_ARCH"; exit 1 ;;
+esac
+
 echo "▶ Qt install prefix: $QT_PATH"
 echo "▶ Qt version: $QT_VERSION"
+echo "▶ Target arch: $TARGET_ARCH"
 
 # 1. Install MariaDB (headers + libmariadb.dylib)
 if ! brew list mariadb >/dev/null 2>&1; then
@@ -91,6 +98,7 @@ mkdir -p "$BUILD_DIR"
 cat > "$BUILD_DIR/CMakeLists.txt" <<EOF
 cmake_minimum_required(VERSION 3.20)
 project(BuildQMYSQL LANGUAGES CXX)
+set(CMAKE_OSX_ARCHITECTURES "$TARGET_ARCH")
 set(CMAKE_PREFIX_PATH "$QT_PATH")
 set(QT_FEATURE_sql_mysql ON)
 
@@ -107,6 +115,7 @@ echo "▶ cmake configure…"
 cd "$BUILD_DIR"
 cmake -G Ninja . \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_OSX_ARCHITECTURES="$TARGET_ARCH" \
     -DMySQL_INCLUDE_DIRS="$MARIADB_INCLUDE" \
     -DMySQL_LIBRARIES="$MARIADB_LIB/libmariadb.dylib"
 
