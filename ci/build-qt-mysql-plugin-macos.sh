@@ -95,10 +95,15 @@ echo "✓ SQL drivers sources: $SQLDRIVERS_SRC"
 # 3. Wygeneruj CMakeLists dla pluginu i buduj
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
+echo "▶ Qt QtCore framework arch:"
+lipo -info "$QT_PATH/lib/QtCore.framework/Versions/A/QtCore" 2>&1 || true
+echo "▶ MariaDB dylib arch:"
+lipo -info "$MARIADB_LIB/libmariadb.dylib" 2>&1 || true
+
 cat > "$BUILD_DIR/CMakeLists.txt" <<EOF
 cmake_minimum_required(VERSION 3.20)
+set(CMAKE_OSX_ARCHITECTURES "$TARGET_ARCH" CACHE STRING "" FORCE)
 project(BuildQMYSQL LANGUAGES CXX)
-set(CMAKE_OSX_ARCHITECTURES "$TARGET_ARCH")
 set(CMAKE_PREFIX_PATH "$QT_PATH")
 set(QT_FEATURE_sql_mysql ON)
 
