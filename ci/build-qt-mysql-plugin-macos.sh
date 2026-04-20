@@ -118,11 +118,17 @@ EOF
 
 echo "▶ cmake configure…"
 cd "$BUILD_DIR"
+export CMAKE_OSX_ARCHITECTURES="$TARGET_ARCH"
 cmake -G Ninja . \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_OSX_ARCHITECTURES="$TARGET_ARCH" \
+    -DCMAKE_HOST_SYSTEM_PROCESSOR="$TARGET_ARCH" \
+    -DCMAKE_SYSTEM_PROCESSOR="$TARGET_ARCH" \
     -DMySQL_INCLUDE_DIRS="$MARIADB_INCLUDE" \
     -DMySQL_LIBRARIES="$MARIADB_LIB/libmariadb.dylib"
+
+echo "▶ Effective OSX_ARCHITECTURES after configure:"
+grep -E "^CMAKE_OSX_ARCHITECTURES" "$BUILD_DIR/CMakeCache.txt" || true
 
 echo "▶ cmake build…"
 cmake --build . -j "$(sysctl -n hw.logicalcpu 2>/dev/null || echo 4)"
