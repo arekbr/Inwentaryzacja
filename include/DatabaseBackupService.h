@@ -1,6 +1,7 @@
 #ifndef DATABASEBACKUPSERVICE_H
 #define DATABASEBACKUPSERVICE_H
 
+#include <QCoreApplication>
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
@@ -15,8 +16,15 @@ struct MySqlConnectionInfo
     int port = 3306;
 };
 
+/// O-5 (audit 2026-04-26): identyczny lifetime contract jak ItemRepository —
+/// `m_database` jest QSqlDatabase HANDLE, nie owner. NIE wywołuj
+/// `QSqlDatabase::removeDatabase(name)` dopóki ten obiekt żyje.
+/// Dla SQLite backup używa się wewnętrznie OSOBNEGO connection
+/// ("backup-sqlite-vacuum-<tid>") żeby nie kolidować z aktywnym m_database.
 class DatabaseBackupService
 {
+    Q_DECLARE_TR_FUNCTIONS(DatabaseBackupService)  // O-6: clean translation context
+
 public:
     struct BackupResult
     {
@@ -41,6 +49,18 @@ public:
                                  BackupResult *result = nullptr,
                                  const std::function<void(qint64)> &progressCallback = {},
                                  const std::function<void(const QString &)> &statusCallback = {});
+
+    /// E-5 (audit 2026-04-26): SQLite native backup przez VACUUM INTO + gzip.
+    /// VACUUM INTO jest atomic — bezpieczny nawet podczas zapisu (write lock
+    /// na czas backupu). Output: standardowy SQLite .db spakowany gzip.
+    /// @param sourceDatabasePath ścieżka do źródłowej bazy SQLite (z `m_database.databaseName()`)
+    /// @param outputPath docelowa ścieżka `.sql.gz` (lub `.db.gz` — uniwersalne)
+    static bool backupSqliteToGzipFile(const QString &sourceDatabasePath,
+                                       const QString &outputPath,
+                                       QString *errorMessage,
+                                       BackupResult *result = nullptr,
+                                       const std::function<void(qint64)> &progressCallback = {},
+                                       const std::function<void(const QString &)> &statusCallback = {});
 
     /// E-3 (audit 2026-04-26): jesli defaultsExtraFile niepusta, zostanie dodana
     /// jako pierwszy argument `--defaults-extra-file=<path>` i `--user=` zostanie

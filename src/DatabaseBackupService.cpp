@@ -6,9 +6,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QStandardPaths>
 #include <QTemporaryFile>
 #include <QTextStream>
+#include <QThread>
 
 #include <chrono>
 #include <zlib.h>
@@ -17,7 +20,46 @@ namespace {
 
 QString trBackup(const char *text)
 {
-    return QObject::tr(text);
+    return DatabaseBackupService::tr(text);
+}
+
+// E-4 (audit 2026-04-26): atomowe rename z zachowaniem starego backupu jako .old.
+// Jeśli rename tmp → target padnie cross-FS lub przy permissions, stary backup
+// nie znika (rollback z .old). Po sukcesie .old jest usuwany.
+// Stara wersja: QFile::remove(target) + rename(tmp, target) — jeśli rename padnie,
+// user traci OBA pliki (stary i nowy).
+bool atomicReplaceWithBackup(const QString &tempPath, const QString &targetPath, QString *errorMessage)
+{
+    const QString oldPath = targetPath + QStringLiteral(".old");
+    QFile::remove(oldPath);  // czysty start dla .old (z poprzednich runów)
+
+    bool hadOldBackup = false;
+    if (QFile::exists(targetPath))
+    {
+        if (!QFile::rename(targetPath, oldPath))
+        {
+            if (errorMessage)
+                *errorMessage = DatabaseBackupService::tr("Nie udało się zarchiwizować starego backupu jako .old.");
+            return false;
+        }
+        hadOldBackup = true;
+    }
+
+    if (!QFile::rename(tempPath, targetPath))
+    {
+        // Rollback: przywróć .old jako target
+        if (hadOldBackup)
+            QFile::rename(oldPath, targetPath);
+        QFile::remove(tempPath);
+        if (errorMessage)
+            *errorMessage = DatabaseBackupService::tr("Nie udało się zapisać finalnego pliku backupu pod docelową nazwą.");
+        return false;
+    }
+
+    // Sukces — usuwamy .old (już niepotrzebny)
+    if (hadOldBackup)
+        QFile::remove(oldPath);
+    return true;
 }
 
 bool verifyGzipFile(const QString &path, QString *errorMessage)
@@ -73,6 +115,20 @@ bool DatabaseBackupService::backupToGzipFile(const QString &outputPath,
 {
     if (result)
         *result = BackupResult{};
+
+    // E-5 (audit 2026-04-26): dispatch po driver name. SQLite (default backend)
+    // dostal teraz natywny backup przez VACUUM INTO + gzip — wczesniej dawal
+    // blad "tylko MySQL". MySQL/MariaDB nadal przez mysqldump.
+    const QString driverName = m_database.driverName();
+    if (driverName == QStringLiteral("QSQLITE"))
+    {
+        return backupSqliteToGzipFile(m_database.databaseName(),
+                                      outputPath,
+                                      errorMessage,
+                                      result,
+                                      progressCallback,
+                                      statusCallback);
+    }
 
     MySqlConnectionInfo connectionInfo;
     if (!extractConnectionInfo(&connectionInfo, errorMessage))
@@ -303,14 +359,9 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         return false;
     }
 
-    QFile::remove(outputPath);
-    if (!QFile::rename(tempOutputPath, outputPath))
-    {
-        QFile::remove(tempOutputPath);
-        if (errorMessage)
-            *errorMessage = trBackup("Nie udało się zapisać końcowego pliku backupu.");
+    // E-4: atomic replace + .old rotation (zachowuje stary backup gdy nowy padnie)
+    if (!atomicReplaceWithBackup(tempOutputPath, outputPath, errorMessage))
         return false;
-    }
 
     if (statusCallback)
         statusCallback(trBackup("Trwa sprawdzanie integralności archiwum SQL.gz..."));
@@ -330,6 +381,197 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         result->uncompressedBytes = totalWrittenBytes;
         result->gzipVerified = true;
     }
+
+    if (errorMessage)
+        errorMessage->clear();
+    return true;
+}
+
+bool DatabaseBackupService::backupSqliteToGzipFile(const QString &sourceDatabasePath,
+                                                    const QString &outputPath,
+                                                    QString *errorMessage,
+                                                    BackupResult *result,
+                                                    const std::function<void(qint64)> &progressCallback,
+                                                    const std::function<void(const QString &)> &statusCallback)
+{
+    if (result)
+        *result = BackupResult{};
+
+    if (sourceDatabasePath.isEmpty())
+    {
+        if (errorMessage)
+            *errorMessage = trBackup("Backup SQLite niemożliwy — brak ścieżki do pliku bazy.");
+        return false;
+    }
+    // E-5: ':memory:' i specjalne nazwy — nie da się zrobić backup tego co nie jest plikiem
+    if (sourceDatabasePath == QStringLiteral(":memory:")
+        || sourceDatabasePath.startsWith(QStringLiteral("file::memory:"))
+        || sourceDatabasePath.startsWith(QStringLiteral("file:")))
+    {
+        if (errorMessage)
+            *errorMessage = trBackup("Backup bazy SQLite in-memory nie jest możliwy.");
+        return false;
+    }
+    if (!QFile::exists(sourceDatabasePath))
+    {
+        if (errorMessage)
+            *errorMessage = trBackup("Plik bazy SQLite nie istnieje: ") + sourceDatabasePath;
+        return false;
+    }
+
+    const QFileInfo outputInfo(outputPath);
+    if (!QDir().mkpath(outputInfo.absolutePath()))
+    {
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się przygotować katalogu docelowego dla backupu.");
+        return false;
+    }
+
+    if (statusCallback)
+        statusCallback(trBackup("Trwa tworzenie backupu SQLite (VACUUM INTO)..."));
+
+    // E-5 krok 1: VACUUM INTO do tymczasowego pliku .db (uncompressed).
+    // VACUUM INTO jest atomic, bezpieczny podczas zapisu, plik wynikowy
+    // to standardowy SQLite .db (compact — bez fragmentacji). Wymaga SQLite >= 3.27 (2019).
+    QTemporaryFile vacuumTarget(QDir::tempPath() + QStringLiteral("/inwentaryzacja-vacuum-XXXXXX.db"));
+    vacuumTarget.setAutoRemove(true);
+    if (!vacuumTarget.open())
+    {
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się utworzyć pliku tymczasowego dla VACUUM INTO.")
+                            + QStringLiteral("\n") + vacuumTarget.errorString();
+        return false;
+    }
+    const QString vacuumPath = vacuumTarget.fileName();
+    vacuumTarget.close();
+    // VACUUM INTO wymaga że plik docelowy NIE istnieje. QTemporaryFile::open
+    // tworzy plik — kasujemy zanim VACUUM go zapisze.
+    QFile::remove(vacuumPath);
+
+    {
+        // Otwieramy osobne connection do source (read-only by default for VACUUM source)
+        // żeby nie kolidowac z aktywnym m_database (który moze być w transakcji).
+        const QString connName = QStringLiteral("backup-sqlite-vacuum-")
+                                 + QString::number(reinterpret_cast<quintptr>(QThread::currentThreadId()));
+        {
+            QSqlDatabase backupDb = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), connName);
+            backupDb.setDatabaseName(sourceDatabasePath);
+            if (!backupDb.open())
+            {
+                const QString err = backupDb.lastError().text();
+                QSqlDatabase::removeDatabase(connName);
+                if (errorMessage)
+                    *errorMessage = trBackup("Nie udało się otworzyć bazy SQLite do backupu.")
+                                    + QStringLiteral("\n") + err;
+                return false;
+            }
+
+            QSqlQuery vacuumQuery(backupDb);
+            // Single quote escape (basic) — path raczej nie zawiera ', ale dla bezpieczenstwa.
+            QString escapedPath = vacuumPath;
+            escapedPath.replace(QStringLiteral("'"), QStringLiteral("''"));
+            const QString sql = QStringLiteral("VACUUM INTO '%1'").arg(escapedPath);
+            if (!vacuumQuery.exec(sql))
+            {
+                const QString err = vacuumQuery.lastError().text();
+                backupDb.close();
+                QSqlDatabase::removeDatabase(connName);
+                if (errorMessage)
+                    *errorMessage = trBackup("Polecenie VACUUM INTO nie powiodło się.")
+                                    + QStringLiteral("\n") + err;
+                return false;
+            }
+            backupDb.close();
+        }
+        QSqlDatabase::removeDatabase(connName);
+    }
+
+    // E-5 krok 2: gzip plik VACUUM target → outputPath
+    if (statusCallback)
+        statusCallback(trBackup("Trwa kompresja gzip..."));
+
+    const QString tempOutputPath = outputPath + QStringLiteral(".tmp");
+    QFile::remove(tempOutputPath);
+
+    gzFile gzipFile = gzopen(QFile::encodeName(tempOutputPath).constData(), "wb9");
+    if (!gzipFile)
+    {
+        QFile::remove(vacuumPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się otworzyć pliku docelowego backupu.");
+        return false;
+    }
+
+    QFile vacuumFile(vacuumPath);
+    if (!vacuumFile.open(QIODevice::ReadOnly))
+    {
+        gzclose(gzipFile);
+        QFile::remove(tempOutputPath);
+        QFile::remove(vacuumPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się odczytać tymczasowego pliku VACUUM.");
+        return false;
+    }
+
+    qint64 totalWrittenBytes = 0;
+    constexpr int chunkSize = 64 * 1024;
+    QByteArray chunk;
+    chunk.resize(chunkSize);
+    while (!vacuumFile.atEnd())
+    {
+        const qint64 readBytes = vacuumFile.read(chunk.data(), chunkSize);
+        if (readBytes <= 0)
+            break;
+        const int written = gzwrite(gzipFile, chunk.constData(), static_cast<unsigned int>(readBytes));
+        if (written != static_cast<int>(readBytes))
+        {
+            int errNo = Z_OK;
+            const char *gzipError = gzerror(gzipFile, &errNo);
+            gzclose(gzipFile);
+            vacuumFile.close();
+            QFile::remove(tempOutputPath);
+            QFile::remove(vacuumPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Nie udało się zapisać backupu SQLite do pliku gzip.")
+                                + QStringLiteral("\n")
+                                + QString::fromUtf8(gzipError ? gzipError : "");
+            return false;
+        }
+        totalWrittenBytes += readBytes;
+        if (progressCallback)
+            progressCallback(totalWrittenBytes);
+    }
+    vacuumFile.close();
+    QFile::remove(vacuumPath);  // QTemporaryFile autoRemove + manual cleanup defensive
+
+    if (gzclose(gzipFile) != Z_OK)
+    {
+        QFile::remove(tempOutputPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się zamknąć pliku gzip backupu (możliwa korupcja).");
+        return false;
+    }
+
+    if (!verifyGzipFile(tempOutputPath, errorMessage))
+    {
+        QFile::remove(tempOutputPath);
+        return false;
+    }
+
+    // E-4: atomic replace + .old rotation
+    if (!atomicReplaceWithBackup(tempOutputPath, outputPath, errorMessage))
+        return false;
+
+    if (result)
+    {
+        const QFileInfo outputFileInfo(outputPath);
+        result->compressedBytes = outputFileInfo.size();
+        result->uncompressedBytes = totalWrittenBytes;
+        result->gzipVerified = true;
+    }
+
+    if (statusCallback)
+        statusCallback(trBackup("Backup SQLite zakończony pomyślnie."));
 
     if (errorMessage)
         errorMessage->clear();
