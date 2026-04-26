@@ -26,6 +26,19 @@ struct ItemRecordData
     bool editMode = false;
 };
 
+/// O-5 (audit 2026-04-26): m_db jest QSqlDatabase HANDLE — refcounted reference
+/// do globalnego connection pool Qt. Repository NIE OWNS connection.
+///
+/// **Lifetime contract:**
+/// - Connection ("default_connection" lub custom name z konstruktora) MUSI istnieć
+///   przez całe życie ItemRepository.
+/// - NIE wywołuj `QSqlDatabase::removeDatabase(name)` dopóki repository żyje —
+///   handle stanie się dangling, kolejne metody dadzą "connection is not open".
+/// - Jeśli aplikacja switchuje bazę w runtime (np. user zmienia Settings →
+///   Inna baza), zniszcz wszystkie repository PRZED removeDatabase.
+///
+/// Sygnatury metod używają `m_db.isOpen()` jako runtime check, ale `isValid()`
+/// (handle wskazuje na żywy connection) NIE jest sprawdzany. Trust caller contract.
 class ItemRepository
 {
 public:

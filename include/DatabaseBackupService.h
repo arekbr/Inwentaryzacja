@@ -15,6 +15,11 @@ struct MySqlConnectionInfo
     int port = 3306;
 };
 
+/// O-5 (audit 2026-04-26): identyczny lifetime contract jak ItemRepository —
+/// `m_database` jest QSqlDatabase HANDLE, nie owner. NIE wywołuj
+/// `QSqlDatabase::removeDatabase(name)` dopóki ten obiekt żyje.
+/// Dla SQLite backup używa się wewnętrznie OSOBNEGO connection
+/// ("backup-sqlite-vacuum-<tid>") żeby nie kolidować z aktywnym m_database.
 class DatabaseBackupService
 {
 public:
