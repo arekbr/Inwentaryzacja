@@ -23,6 +23,45 @@ QString trBackup(const char *text)
     return QObject::tr(text);
 }
 
+// E-4 (audit 2026-04-26): atomowe rename z zachowaniem starego backupu jako .old.
+// Jeśli rename tmp → target padnie cross-FS lub przy permissions, stary backup
+// nie znika (rollback z .old). Po sukcesie .old jest usuwany.
+// Stara wersja: QFile::remove(target) + rename(tmp, target) — jeśli rename padnie,
+// user traci OBA pliki (stary i nowy).
+bool atomicReplaceWithBackup(const QString &tempPath, const QString &targetPath, QString *errorMessage)
+{
+    const QString oldPath = targetPath + QStringLiteral(".old");
+    QFile::remove(oldPath);  // czysty start dla .old (z poprzednich runów)
+
+    bool hadOldBackup = false;
+    if (QFile::exists(targetPath))
+    {
+        if (!QFile::rename(targetPath, oldPath))
+        {
+            if (errorMessage)
+                *errorMessage = QObject::tr("Nie udało się zarchiwizować starego backupu jako .old.");
+            return false;
+        }
+        hadOldBackup = true;
+    }
+
+    if (!QFile::rename(tempPath, targetPath))
+    {
+        // Rollback: przywróć .old jako target
+        if (hadOldBackup)
+            QFile::rename(oldPath, targetPath);
+        QFile::remove(tempPath);
+        if (errorMessage)
+            *errorMessage = QObject::tr("Nie udało się zapisać finalnego pliku backupu pod docelową nazwą.");
+        return false;
+    }
+
+    // Sukces — usuwamy .old (już niepotrzebny)
+    if (hadOldBackup)
+        QFile::remove(oldPath);
+    return true;
+}
+
 bool verifyGzipFile(const QString &path, QString *errorMessage)
 {
     gzFile gzipFile = gzopen(QFile::encodeName(path).constData(), "rb");
@@ -320,14 +359,9 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         return false;
     }
 
-    QFile::remove(outputPath);
-    if (!QFile::rename(tempOutputPath, outputPath))
-    {
-        QFile::remove(tempOutputPath);
-        if (errorMessage)
-            *errorMessage = trBackup("Nie udało się zapisać końcowego pliku backupu.");
+    // E-4: atomic replace + .old rotation (zachowuje stary backup gdy nowy padnie)
+    if (!atomicReplaceWithBackup(tempOutputPath, outputPath, errorMessage))
         return false;
-    }
 
     if (statusCallback)
         statusCallback(trBackup("Trwa sprawdzanie integralności archiwum SQL.gz..."));
@@ -524,14 +558,9 @@ bool DatabaseBackupService::backupSqliteToGzipFile(const QString &sourceDatabase
         return false;
     }
 
-    QFile::remove(outputPath);
-    if (!QFile::rename(tempOutputPath, outputPath))
-    {
-        QFile::remove(tempOutputPath);
-        if (errorMessage)
-            *errorMessage = trBackup("Nie udało się zapisać finalnego pliku backupu pod docelową nazwą.");
+    // E-4: atomic replace + .old rotation
+    if (!atomicReplaceWithBackup(tempOutputPath, outputPath, errorMessage))
         return false;
-    }
 
     if (result)
     {
