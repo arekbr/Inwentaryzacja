@@ -149,14 +149,23 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
             const int written = gzwrite(gzipFile,
                                         stdoutData.constData(),
                                         static_cast<unsigned int>(stdoutData.size()));
-            if (written == 0)
+            // E-1 (audit 2026-04-26): partial-write też jest błędem, nie tylko 0.
+            // gzwrite zwraca liczbe bajtów zapisanych — jeśli < requested,
+            // bufor zlib padl miedzy callami. Stary `== 0` przepuszczalby.
+            if (written != static_cast<int>(stdoutData.size()))
             {
                 int errNo = Z_OK;
                 const char *gzipError = gzerror(gzipFile, &errNo);
                 if (errorMessage)
                     *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
                                     + QStringLiteral("\n")
-                                    + QString::fromUtf8(gzipError ? gzipError : "");
+                                    + QString::fromUtf8(gzipError ? gzipError : "")
+                                    // E-1: stderr z mysqldump zawiera prawdziwą przyczynę
+                                    // (np. 'access denied for user X'). Bez tego operator
+                                    // dostawal generic 'nie udalo sie zapisac'.
+                                    + (stderrBuffer.isEmpty() ? QString()
+                                       : QStringLiteral("\nmysqldump stderr:\n")
+                                         + QString::fromUtf8(stderrBuffer.left(2000)));
                 process.kill();
                 process.waitForFinished();
                 gzclose(gzipFile);
@@ -177,7 +186,8 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         const int written = gzwrite(gzipFile,
                                     remainingStdout.constData(),
                                     static_cast<unsigned int>(remainingStdout.size()));
-        if (written == 0)
+        // E-1: jak wyżej — partial write = błąd
+        if (written != static_cast<int>(remainingStdout.size()))
         {
             int errNo = Z_OK;
             const char *gzipError = gzerror(gzipFile, &errNo);
@@ -186,7 +196,10 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
             if (errorMessage)
                 *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
                                 + QStringLiteral("\n")
-                                + QString::fromUtf8(gzipError ? gzipError : "");
+                                + QString::fromUtf8(gzipError ? gzipError : "")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
             return false;
         }
 
