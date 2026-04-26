@@ -4,7 +4,7 @@
 - **Plik**: types.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `types.h` definiuje klasę `types`, która reprezentuje okno dialogowe do zarządzania typami eksponatów (np. Komputer, Monitor, Drukarka) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie typów w tabeli `types` w bazie danych oraz synchronizację z głównym oknem (`MainWindow`) w celu odświeżenia combo boxów typów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy `models`, `status`, `storage` czy `vendors`.

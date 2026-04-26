@@ -4,7 +4,7 @@
 - **Plik**: models.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `models.h` definiuje klasę `models`, która reprezentuje okno dialogowe do zarządzania modelami eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie modeli w tabeli `models` w bazie danych, a także odświeżanie listy modeli w combo boxie głównego okna (`MainWindow`). Obsługuje identyfikator producenta (`vendorId`) jako `QString`, co pozwala powiązać modele z konkretnymi producentami.

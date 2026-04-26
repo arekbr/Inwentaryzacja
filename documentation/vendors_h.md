@@ -4,7 +4,7 @@
 - **Plik**: vendors.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `vendors.h` definiuje klasę `vendors`, która reprezentuje okno dialogowe do zarządzania producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli `vendors` w bazie danych oraz synchronizację z głównym oknem (`MainWindow`) w celu odświeżenia combo boxów producentów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy `models`, `status`, `storage` czy `types`.

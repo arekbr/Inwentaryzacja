@@ -4,7 +4,7 @@
 - **Plik**: fullscreenphotoviewer.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `fullscreenphotoviewer.cpp` jest pusty, ponieważ cała implementacja klas `ZoomableGraphicsView` i `FullScreenPhotoViewer` znajduje się w pliku nagłówkowym `fullscreenphotoviewer.h`, gdzie metody są zdefiniowane inline. Plik istnieje dla kompletności struktury projektu i zgodności z konwencją oddzielania deklaracji od implementacji w projektach Qt.

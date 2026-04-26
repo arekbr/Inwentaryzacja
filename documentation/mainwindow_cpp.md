@@ -4,7 +4,7 @@
 - **Plik**: mainwindow.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `mainwindow.cpp` zawiera implementację metod klasy `MainWindow`, odpowiedzialnej za formularz do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), zapisywanie rekordów w bazie danych MySQL oraz otwieranie dialogów słownikowych. Implementacja obejmuje również automatyczne dodawanie nowych wartości do słowników po ich wpisaniu w combo boxach.

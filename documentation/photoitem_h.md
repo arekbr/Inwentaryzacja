@@ -4,7 +4,7 @@
 - **Plik**: photoitem.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `photoitem.h` definiuje klasę `PhotoItem`, która reprezentuje interaktywny element graficzny (miniaturę zdjęcia) w scenie graficznej Qt (używany w `QGraphicsView`). Klasa rozszerza `QGraphicsPixmapItem` o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie kursora), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po `QObject`, umożliwia emisję sygnałów (`clicked`, `doubleClicked`, `hovered`, `unhovered`), co pozwala na integrację z logiką aplikacji, np. z klasą `MainWindow` w aplikacji inwentaryzacyjnej.

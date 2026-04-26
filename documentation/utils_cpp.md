@@ -4,7 +4,7 @@
 - **Plik**: utils.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `utils.cpp` zawiera implementację funkcji `setupDatabase`, która konfiguruje i otwiera połączenie z bazą danych SQLite lub MySQL w aplikacji inwentaryzacyjnej. Funkcja rejestruje połączenie pod nazwą "default_connection", używaną przez inne komponenty aplikacji (np. `MainWindow`, `types`, `status`). Dla SQLite automatycznie tworzy schemat bazy danych (tabele i dane początkowe), co zapewnia gotowość bazy do pracy po pierwszym uruchomieniu.
