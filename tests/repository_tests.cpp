@@ -566,11 +566,44 @@ void RepositoryTests::databaseBackupService_buildsArgumentsWithDefaultsExtraFile
 
 void RepositoryTests::databaseBackupService_rejectsNonMySqlConnection()
 {
-    DatabaseBackupService backupService(m_db);
-    QString errorMessage;
-    QVERIFY(!backupService.backupToGzipFile(QStringLiteral("/tmp/should-not-exist.sql.gz"),
-                                           &errorMessage));
-    QVERIFY(errorMessage.contains(QStringLiteral("MySQL"), Qt::CaseInsensitive));
+    // E-5 (audit 2026-04-26): SQLite teraz MA backup (VACUUM INTO + gzip) —
+    // ten test zmienil sens. Stary main test setup uzywa ':memory:' (nie da
+    // sie backup'owac), wiec tworzymy osobny SQLite na pliku.
+    const QString sqlitePath = QDir::tempPath() + QStringLiteral("/inwentaryzacja-test-source.db");
+    QFile::remove(sqlitePath);
+    const QString outputPath = QDir::tempPath() + QStringLiteral("/inwentaryzacja-test-sqlite-backup.sql.gz");
+    QFile::remove(outputPath);
+
+    const QString connName = QStringLiteral("test-sqlite-backup-source");
+    {
+        QSqlDatabase fileDb = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), connName);
+        fileDb.setDatabaseName(sqlitePath);
+        QVERIFY2(fileDb.open(), qPrintable(fileDb.lastError().text()));
+        QVERIFY(ensureDatabaseSchema(fileDb));
+
+        DatabaseBackupService backupService(fileDb);
+        QString errorMessage;
+        DatabaseBackupService::BackupResult result;
+
+        QVERIFY2(backupService.backupToGzipFile(outputPath, &errorMessage, &result),
+                 qPrintable(errorMessage));
+        QVERIFY(QFile::exists(outputPath));
+        QVERIFY(result.compressedBytes > 0);
+        QVERIFY(result.uncompressedBytes > 0);
+        QVERIFY(result.gzipVerified);
+
+        fileDb.close();
+    }
+    QSqlDatabase::removeDatabase(connName);
+
+    QFile::remove(sqlitePath);
+    QFile::remove(outputPath);
+
+    // Plus: in-memory SQLite NIE da się backup'ować — test rejection
+    DatabaseBackupService memoryBackup(m_db);
+    QString memErr;
+    QVERIFY(!memoryBackup.backupToGzipFile(outputPath, &memErr));
+    QVERIFY(memErr.contains(QStringLiteral("memory"), Qt::CaseInsensitive));
 }
 
 void RepositoryTests::itemFormValidator_rejectsEmptyName()
