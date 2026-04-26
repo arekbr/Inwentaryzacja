@@ -97,6 +97,11 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
         return false;
     }
 
+    // I-E-1 (audit 2026-04-26): editMode CELOWO pomija newPhotos — nie bug.
+    // Dla istniejacego eksponatu zdjęcia są dodawane przez MainWindow::onAddPhotoClicked
+    // BEZPOSREDNIO INSERT do photos w momencie dodania w UI (mainwindow.cpp:973-1015).
+    // saveItem w editMode zapisuje tylko meta-fields. newPhotos zawsze pusty
+    // gdy editMode=true (m_photoBuffer w MainWindow nie jest wtedy uzywany).
     if (!item.editMode) {
         for (const QByteArray &photoData : newPhotos) {
             QSqlQuery photoQuery(m_db);
