@@ -4,7 +4,7 @@
 - **Plik**: DatabaseConfigDialog.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `DatabaseConfigDialog.h` definiuje klasę `DatabaseConfigDialog`, która reprezentuje okno dialogowe do konfiguracji parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wyboru skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Klasa dostarcza metody dostępowe do parametrów bazy danych, obsługuje dynamiczną zmianę stylów i czcionek oraz zapisuje ustawienia w `QSettings` dla trwałości między sesjami aplikacji.

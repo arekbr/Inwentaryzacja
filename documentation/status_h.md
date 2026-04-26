@@ -4,7 +4,7 @@
 - **Plik**: status.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `status.h` definiuje klasę `status`, która reprezentuje okno dialogowe do zarządzania statusami eksponatów (np. "Nowy", "Używany", "Uszkodzony") w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie statusów w tabeli `statuses` w bazie danych oraz synchronizację z głównym oknem (`MainWindow`) w celu odświeżenia combo boxów statusów po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy `models` czy `vendors`.

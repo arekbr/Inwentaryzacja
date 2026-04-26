@@ -4,7 +4,7 @@
 - **Plik**: vendors.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `vendors.cpp` zawiera implementację metod klasy `vendors`, odpowiedzialnej za zarządzanie producentami sprzętu (np. Commodore, IBM, Apple) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie producentów w tabeli `vendors` w bazie danych MySQL, współpracując z interfejsem użytkownika (`QListView`, `QLineEdit`) oraz klasą `MainWindow` w celu odświeżania combo boxów producentów po zapisaniu zmian.

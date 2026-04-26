@@ -94,7 +94,7 @@ Format opiera się na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/), 
   - `database_example_record.sql`: Przykładowe rekordy do testowania bazy.
 - **Dokumentacja**: Plik `README.md` opisujący:
   - Cel projektu (inwentaryzacja retro komputerów).
-  - Proces tworzenia z użyciem AI (ChatGPT, GROK, DeepSeek).
+  - Proces tworzenia z użyciem AI (Claude, ChatGPT, GROK, DeepSeek).
   - Wymagania (Qt 6.8.1, SQLite3) i instrukcje instalacji.
 - **Gitignore**: Plik `.gitignore` ignorujący pliki tymczasowe (`build/`, `*.db`, `*.DS_Store` itp.).
 

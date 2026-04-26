@@ -4,7 +4,7 @@
 - **Plik**: types.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `types.cpp` zawiera implementację metod klasy `types`, odpowiedzialnej za zarządzanie typami eksponatów (np. Komputer, Monitor, Drukarka) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie typów w tabeli `types` w bazie danych MySQL, współpracując z interfejsem użytkownika (`QListView`, `QLineEdit`) oraz klasą `MainWindow` w celu odświeżania combo boxów typów po zapisaniu zmian.

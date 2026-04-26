@@ -4,7 +4,7 @@
 - **Plik**: DatabaseConfigDialog.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `DatabaseConfigDialog.cpp` zawiera implementację metod klasy `DatabaseConfigDialog`, odpowiedzialnej za konfigurację parametrów połączenia z bazą danych (SQLite lub MySQL) oraz wybór skórki graficznej aplikacji (Amiga, Atari 8bit, ZX Spectrum, Standard). Implementacja obejmuje ładowanie stylów QSS, czcionek, zapis ustawień w `QSettings` oraz obsługę dynamicznego wyboru pliku SQLite z możliwością tworzenia nowego pliku `.db`.

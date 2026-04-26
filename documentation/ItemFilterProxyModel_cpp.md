@@ -4,7 +4,7 @@
 - **Plik**: ItemFilterProxyModel.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `ItemFilterProxyModel.cpp` zawiera implementację metod klasy `ItemFilterProxyModel`, która umożliwia dynamiczne filtrowanie listy eksponatów w aplikacji inwentaryzacyjnej na podstawie atrybutów takich jak typ, producent, model, status i miejsce przechowywania. Klasa korzysta z mechanizmu `QSortFilterProxyModel`, zapewniając filtrowanie wierszy modelu źródłowego (np. `QSqlRelationalTableModel`) z ignorowaniem wielkości liter.

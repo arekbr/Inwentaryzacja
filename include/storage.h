@@ -3,7 +3,7 @@
  * @brief Deklaracja klasy storage służącej do zarządzania miejscami przechowywania eksponatów w aplikacji inwentaryzacyjnej.
  * @version \projectnumber
  * @date 2025-05-03
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  *
  * @section Overview
  * Plik zawiera deklarację klasy storage, która reprezentuje okno dialogowe do zarządzania

@@ -4,7 +4,7 @@
 - **Plik**: mainwindow.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `mainwindow.h` definiuje klasę `MainWindow`, która reprezentuje główne okno formularza do dodawania, edycji i klonowania eksponatów w aplikacji inwentaryzacyjnej. Klasa obsługuje ładowanie danych do combo boxów, zarządzanie zdjęciami (w bazie i buforze), tryby edycji/klonowania oraz komunikację z bazą danych MySQL. Emituje sygnał `recordSaved` po zapisaniu rekordu i zawiera sloty do obsługi akcji użytkownika, takich jak zapis, anulowanie czy dodawanie zdjęć.

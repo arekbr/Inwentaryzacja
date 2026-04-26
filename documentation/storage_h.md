@@ -4,7 +4,7 @@
 - **Plik**: storage.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `storage.h` definiuje klasę `storage`, która reprezentuje okno dialogowe do zarządzania miejscami przechowywania eksponatów (np. magazyny, półki, pokoje) w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie lokalizacji w tabeli `storage_places` w bazie danych oraz synchronizację z głównym oknem (`MainWindow`) w celu odświeżenia combo boxów lokalizacji po zapisaniu zmian. Jest częścią systemu słownikowego aplikacji, podobnie jak klasy `models`, `status` czy `vendors`.

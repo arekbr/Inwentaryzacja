@@ -1,7 +1,7 @@
 /**
  * @file photoitem.h
  * @brief Deklaracja klasy PhotoItem reprezentującej interaktywny element graficzny zdjęcia.
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  * @version \projectnumber
  * @date 2025-05-03
  *

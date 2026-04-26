@@ -4,7 +4,7 @@
 - **Plik**: ItemFilterProxyModel.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `ItemFilterProxyModel.h` definiuje klasę `ItemFilterProxyModel`, która dziedziczy po `QSortFilterProxyModel` i służy do dynamicznego filtrowania listy eksponatów w aplikacji inwentaryzacyjnej. Klasa umożliwia ustawienie filtrów dla atrybutów eksponatu, takich jak typ, producent, model, status i miejsce przechowywania, oraz kontroluje, które wiersze modelu źródłowego są wyświetlane w widoku na podstawie zadanych kryteriów.

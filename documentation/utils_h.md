@@ -4,7 +4,7 @@
 - **Plik**: utils.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `utils.h` definiuje funkcję `setupDatabase`, która jest odpowiedzialna za inicjalizację połączenia z bazą danych w aplikacji inwentaryzacyjnej. Funkcja umożliwia konfigurację połączenia dla baz SQLite (lokalny plik) lub MySQL (zdalne połączenie), rejestrując je pod nazwą "default_connection". Jest to kluczowy komponent aplikacji, wykorzystywany na etapie uruchamiania, np. przez `DatabaseConfigDialog`, do przygotowania bazy danych dla innych komponentów, takich jak `MainWindow`, `types`, `status`, `storage` czy `models`.

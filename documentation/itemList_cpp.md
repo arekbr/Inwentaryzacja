@@ -4,7 +4,7 @@
 - **Plik**: itemList.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `itemList.cpp` zawiera implementację metod klasy `itemList`, która zarządza listą eksponatów w aplikacji inwentaryzacyjnej. Obsługuje połączenie z bazą danych MySQL, filtrowanie kaskadowe, wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz operacje CRUD (dodawanie, edycja, usuwanie, klonowanie rekordów). Skórka graficzna i czcionki są zarządzane przez klasę `DatabaseConfigDialog`.
