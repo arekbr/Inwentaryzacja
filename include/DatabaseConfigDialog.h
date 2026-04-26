@@ -152,7 +152,7 @@ public:
      * @section MethodOverview
      * Zwraca aktualną wartość statycznej zmiennej opóźnienia Pac-Mana.
      */
-    static int getPacmanDelayMs();
+    static int pacmanDelayMs();  // API-5
 
 public slots:
     /**

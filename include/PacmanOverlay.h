@@ -3,6 +3,8 @@
 #include <QElapsedTimer>
 #include <QPixmap>
 
+#include <algorithm>  // std::clamp
+
 #include "PacmanAnimationModel.h"
 
 class PacmanOverlay : public QWidget
@@ -14,12 +16,12 @@ public:
     void start(int durationMs = 5000);
 
     static void setPacmanSpeedPx(double px) { s_pacmanSpeedPx = px; }
-    static double getPacmanSpeedPx() { return s_pacmanSpeedPx; }
+    static double pacmanSpeedPx() { return s_pacmanSpeedPx; }  // API-5
     static void setEatCharIntervalMs(int ms) { s_eatCharIntervalMs = ms; }
-    static int getEatCharIntervalMs() { return s_eatCharIntervalMs; }
+    static int eatCharIntervalMs() { return s_eatCharIntervalMs; }  // API-5
 
     void setCollisionHideMs(int ms) { m_collisionHideMs = ms; }
-    int getCollisionHideMs() const { return m_collisionHideMs; }
+    int collisionHideMs() const { return m_collisionHideMs; }  // API-5
 
     // Metody do obsługi specjalnych dat aktywacji
     static void setBirthdayActivation(int day, int month)
@@ -33,14 +35,14 @@ public:
     static void enablePacManReleaseActivation(bool enable) { s_enablePacManReleaseActivation = enable; }
     static bool isRandomActivationEnabled() { return s_enableRandomActivation; }
     static void enableRandomActivation(bool enable) { s_enableRandomActivation = enable; }
-    static int getRandomActivationChance() { return s_randomActivationChance; }
-    static void setRandomActivationChance(int chance) { s_randomActivationChance = qBound(0, chance, 100); }
+    static int randomActivationChance() { return s_randomActivationChance; }  // API-5
+    static void setRandomActivationChance(int chance) { s_randomActivationChance = std::clamp(chance, 0, 100); }  // DEP-7
 
     // Metody do obsługi aktywacji opartej na dokładnej długości tekstu
     static bool isCapacityActivationEnabled() { return s_enableCapacityActivation; }
     static void enableCapacityActivation(bool enable) { s_enableCapacityActivation = enable; }
-    static int getCapacityCharCount() { return s_capacityCharCount; }
-    static void setCapacityCharCount(int count) { s_capacityCharCount = qBound(1, count, 1000); }
+    static int capacityCharCount() { return s_capacityCharCount; }  // API-5
+    static void setCapacityCharCount(int count) { s_capacityCharCount = std::clamp(count, 1, 1000); }  // DEP-7
 
 signals:
     void activated();

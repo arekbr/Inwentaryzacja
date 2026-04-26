@@ -13,16 +13,16 @@ void PacmanAnimationModel::start(int textWidth, int approximateCharWidth, int ch
 
     m_state = State::Delay;
     m_currentTextWidth = textWidth;
-    m_remainingChars = std::max(0, charCount);
+    m_remainingChars = (std::max)(0, charCount);
     m_pacmanX = static_cast<double>(textWidth);
     m_targetPacmanX = static_cast<double>(textWidth);
 
-    const int emptySpaceWidth = std::max(approximateCharWidth, 1) * std::max(charCount, 1);
+    const int emptySpaceWidth = (std::max)(approximateCharWidth, 1) * (std::max)(charCount, 1);
     const double ghostStartX = static_cast<double>(textWidth + emptySpaceWidth);
     m_ghostX = ghostStartX;
 
-    const int effectiveChaseTimeMs = std::max(1, m_remainingChars * m_config.eatCharIntervalMs - m_config.ghostDelayMs);
-    const double ghostDistance = std::max(0.0, ghostStartX);
+    const int effectiveChaseTimeMs = (std::max)(1, m_remainingChars * m_config.eatCharIntervalMs - m_config.ghostDelayMs);
+    const double ghostDistance = (std::max)(0.0, ghostStartX);
     m_config.ghostSpeedPxPerSecond = (ghostDistance * 1000.0) / effectiveChaseTimeMs;
 }
 
@@ -75,7 +75,7 @@ void PacmanAnimationModel::advance(int deltaMs)
 
 void PacmanAnimationModel::setCurrentTextWidth(int textWidth)
 {
-    m_currentTextWidth = std::max(0, textWidth);
+    m_currentTextWidth = (std::max)(0, textWidth);
     m_targetPacmanX = static_cast<double>(m_currentTextWidth);
 }
 
@@ -209,9 +209,9 @@ void PacmanAnimationModel::updatePacmanPosition(int deltaMs)
 {
     const double step = m_config.pacmanSpeedPxPerSecond * (static_cast<double>(deltaMs) / 1000.0);
     if (m_pacmanX > m_targetPacmanX)
-        m_pacmanX = std::max(m_targetPacmanX, m_pacmanX - step);
+        m_pacmanX = (std::max)(m_targetPacmanX, m_pacmanX - step);
     else if (m_pacmanX < m_targetPacmanX)
-        m_pacmanX = std::min(m_targetPacmanX, m_pacmanX + step);
+        m_pacmanX = (std::min)(m_targetPacmanX, m_pacmanX + step);
 }
 
 void PacmanAnimationModel::updateGhostPosition(int deltaMs)
@@ -230,7 +230,7 @@ void PacmanAnimationModel::updateGhostPosition(int deltaMs)
         return;
     }
 
-    m_ghostX = std::max(0.0, nextGhostX);
+    m_ghostX = (std::max)(0.0, nextGhostX);
 }
 
 void PacmanAnimationModel::enterFinished()

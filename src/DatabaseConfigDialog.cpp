@@ -163,7 +163,7 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     // Pacman easter egg (usuń lub ogranicz do pól tekstowych)
     QTimer *pacmanTimer = new QTimer(this);
     pacmanTimer->setSingleShot(true);
-    pacmanTimer->setInterval(getPacmanDelayMs());
+    pacmanTimer->setInterval(pacmanDelayMs());
     connect(pacmanTimer, &QTimer::timeout, this, [this]() {
         QWidget *focus = QApplication::focusWidget();
         // Ogranicz do QLineEdit/QTextEdit/QPlainTextEdit
@@ -305,7 +305,7 @@ int DatabaseConfigDialog::mysqlPort() const
 // --- Pacman easter egg timer param ---
 int DatabaseConfigDialog::g_pacmanDelayMs = 4000; // domyślnie 15*60*1000
 void DatabaseConfigDialog::setPacmanDelayMs(int ms) { g_pacmanDelayMs = ms; }
-int DatabaseConfigDialog::getPacmanDelayMs() { return g_pacmanDelayMs; }
+int DatabaseConfigDialog::pacmanDelayMs() { return g_pacmanDelayMs; }
 // ---
 
 /**
