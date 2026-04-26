@@ -42,6 +42,18 @@ public:
                                  const std::function<void(qint64)> &progressCallback = {},
                                  const std::function<void(const QString &)> &statusCallback = {});
 
+    /// E-5 (audit 2026-04-26): SQLite native backup przez VACUUM INTO + gzip.
+    /// VACUUM INTO jest atomic — bezpieczny nawet podczas zapisu (write lock
+    /// na czas backupu). Output: standardowy SQLite .db spakowany gzip.
+    /// @param sourceDatabasePath ścieżka do źródłowej bazy SQLite (z `m_database.databaseName()`)
+    /// @param outputPath docelowa ścieżka `.sql.gz` (lub `.db.gz` — uniwersalne)
+    static bool backupSqliteToGzipFile(const QString &sourceDatabasePath,
+                                       const QString &outputPath,
+                                       QString *errorMessage,
+                                       BackupResult *result = nullptr,
+                                       const std::function<void(qint64)> &progressCallback = {},
+                                       const std::function<void(const QString &)> &statusCallback = {});
+
     /// E-3 (audit 2026-04-26): jesli defaultsExtraFile niepusta, zostanie dodana
     /// jako pierwszy argument `--defaults-extra-file=<path>` i `--user=` zostanie
     /// pominiete (user/password sa w defaults file). Bez tego mysqldump dziala
