@@ -98,6 +98,8 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/mainwindow.h
     include/photoitem.h
     include/PreviewDialog.h
+    include/AiEnrichmentService.h
+    include/EnrichPreviewDialog.h
     include/fullscreenphotoviewer.h
     include/PacmanOverlay.h
     include/PacmanAnimationModel.h
@@ -118,6 +120,8 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/mainwindow.cpp
     src/photoitem.cpp
     src/PreviewDialog.cpp
+    src/AiEnrichmentService.cpp
+    src/EnrichPreviewDialog.cpp
     src/fullscreenphotoviewer.cpp
     src/PacmanOverlay.cpp
     src/PacmanAnimationModel.cpp
