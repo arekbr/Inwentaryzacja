@@ -1,11 +1,14 @@
 #include "DatabaseBackupService.h"
 
+#include <QDeadlineTimer>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
 
+#include <chrono>
 #include <zlib.h>
 
 namespace {
@@ -139,13 +142,52 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
 
     QByteArray stderrBuffer;
     qint64 totalWrittenBytes = 0;
+    // E-2 (audit 2026-04-26): timeouts żeby mysqldump hang nie blokowal apki:
+    // - hardDeadline: globalny limit (default 30 min) — backup gigantycznej bazy
+    //   moze trwac dlugo, ale 30 min to absolutny rozsadny gorny prog
+    // - idleTimeoutMs: jeśli przez X sekund mysqldump nie wyemituje ani bajtu
+    //   na stdout — uznajemy za hang (zablokowana tabela, network stall, etc.)
+    QDeadlineTimer hardDeadline(std::chrono::minutes(30));
+    constexpr int idleTimeoutMs = 30 * 1000;
+    QElapsedTimer sinceLastBytes;
+    sinceLastBytes.start();
+
     while (process.state() != QProcess::NotRunning)
     {
+        if (hardDeadline.hasExpired())
+        {
+            process.kill();
+            process.waitForFinished(5000);
+            gzclose(gzipFile);
+            QFile::remove(tempOutputPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Backup przerwany — przekroczono globalny limit czasu (30 min).")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
+            return false;
+        }
+        if (sinceLastBytes.elapsed() > idleTimeoutMs)
+        {
+            process.kill();
+            process.waitForFinished(5000);
+            gzclose(gzipFile);
+            QFile::remove(tempOutputPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Backup przerwany — mysqldump nie wysłał danych przez 30 s "
+                                         "(zablokowana tabela lub network stall?).")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
+            return false;
+        }
+
         process.waitForFinished(100);
         stderrBuffer += process.readAllStandardError();
         const QByteArray stdoutData = process.readAllStandardOutput();
         if (!stdoutData.isEmpty())
         {
+            sinceLastBytes.restart();  // E-2: reset idle timer na nowych bytes
             const int written = gzwrite(gzipFile,
                                         stdoutData.constData(),
                                         static_cast<unsigned int>(stdoutData.size()));
