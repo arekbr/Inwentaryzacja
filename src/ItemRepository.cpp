@@ -8,7 +8,7 @@ namespace {
 
 QString formatDbError(const QString &context, const QString &details)
 {
-    return QObject::tr("%1\n%2").arg(context, details);
+    return ItemRepository::tr("%1\n%2").arg(context, details);
 }
 
 }
@@ -25,7 +25,7 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
 {
     if (!m_db.isOpen()) {
         if (errorMessage)
-            *errorMessage = QObject::tr("Połączenie z bazą danych jest zamknięte.");
+            *errorMessage = ItemRepository::tr("Połączenie z bazą danych jest zamknięte.");
         return false;
     }
 
@@ -35,7 +35,7 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
 
     if (!m_db.transaction()) {
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji zapisu."),
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się rozpocząć transakcji zapisu."),
                                           m_db.lastError().text());
         return false;
     }
@@ -91,8 +91,8 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
         m_db.rollback();
         if (errorMessage)
             *errorMessage = formatDbError(item.editMode
-                                              ? QObject::tr("Nie udało się zaktualizować eksponatu.")
-                                              : QObject::tr("Nie udało się dodać eksponatu."),
+                                              ? ItemRepository::tr("Nie udało się zaktualizować eksponatu.")
+                                              : ItemRepository::tr("Nie udało się dodać eksponatu."),
                                           query.lastError().text());
         return false;
     }
@@ -116,7 +116,7 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
             if (!photoQuery.exec()) {
                 m_db.rollback();
                 if (errorMessage)
-                    *errorMessage = formatDbError(QObject::tr("Nie udało się zapisać zdjęcia eksponatu."),
+                    *errorMessage = formatDbError(ItemRepository::tr("Nie udało się zapisać zdjęcia eksponatu."),
                                                   photoQuery.lastError().text());
                 return false;
             }
@@ -126,7 +126,7 @@ bool ItemRepository::saveItem(const ItemRecordData &item,
     if (!m_db.commit()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić zapisu w bazie danych."),
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się zatwierdzić zapisu w bazie danych."),
                                           m_db.lastError().text());
         return false;
     }
@@ -142,13 +142,13 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
 {
     if (!m_db.isOpen()) {
         if (errorMessage)
-            *errorMessage = QObject::tr("Połączenie z bazą danych jest zamknięte.");
+            *errorMessage = ItemRepository::tr("Połączenie z bazą danych jest zamknięte.");
         return false;
     }
 
     if (!m_db.transaction()) {
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji usuwania."),
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się rozpocząć transakcji usuwania."),
                                           m_db.lastError().text());
         return false;
     }
@@ -165,7 +165,7 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
         if (!photoDelete.exec()) {
             m_db.rollback();
             if (errorMessage)
-                *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć zdjęć eksponatu."),
+                *errorMessage = formatDbError(ItemRepository::tr("Nie udało się usunąć zdjęć eksponatu."),
                                               photoDelete.lastError().text());
             return false;
         }
@@ -178,7 +178,7 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
         if (!itemDelete.exec()) {
             m_db.rollback();
             if (errorMessage)
-                *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć eksponatu."),
+                *errorMessage = formatDbError(ItemRepository::tr("Nie udało się usunąć eksponatu."),
                                               itemDelete.lastError().text());
             return false;
         }
@@ -187,7 +187,7 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
     if (!m_db.commit()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić usuwania w bazie danych."),
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się zatwierdzić usuwania w bazie danych."),
                                           m_db.lastError().text());
         return false;
     }
@@ -204,7 +204,7 @@ bool ItemRepository::updateStatusForItems(const QStringList &itemIds,
     return updateItemsColumn(itemIds,
                              QStringLiteral("status_id"),
                              statusId,
-                             QObject::tr("zmiany statusu"),
+                             ItemRepository::tr("zmiany statusu"),
                              errorMessage);
 }
 
@@ -215,7 +215,7 @@ bool ItemRepository::updateStoragePlaceForItems(const QStringList &itemIds,
     return updateItemsColumn(itemIds,
                              QStringLiteral("storage_place_id"),
                              storagePlaceId,
-                             QObject::tr("zmiany miejsca przechowywania"),
+                             ItemRepository::tr("zmiany miejsca przechowywania"),
                              errorMessage);
 }
 
@@ -227,25 +227,25 @@ bool ItemRepository::updateItemsColumn(const QStringList &itemIds,
 {
     if (!m_db.isOpen()) {
         if (errorMessage)
-            *errorMessage = QObject::tr("Połączenie z bazą danych jest zamknięte.");
+            *errorMessage = ItemRepository::tr("Połączenie z bazą danych jest zamknięte.");
         return false;
     }
 
     if (itemIds.isEmpty()) {
         if (errorMessage)
-            *errorMessage = QObject::tr("Nie wybrano żadnych rekordów do aktualizacji.");
+            *errorMessage = ItemRepository::tr("Nie wybrano żadnych rekordów do aktualizacji.");
         return false;
     }
 
     if (valueId.isEmpty()) {
         if (errorMessage)
-            *errorMessage = QObject::tr("Nie wybrano docelowej wartości dla operacji.");
+            *errorMessage = ItemRepository::tr("Nie wybrano docelowej wartości dla operacji.");
         return false;
     }
 
     if (!m_db.transaction()) {
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się rozpocząć transakcji %1.")
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się rozpocząć transakcji %1.")
                                               .arg(operationLabel),
                                           m_db.lastError().text());
         return false;
@@ -260,7 +260,7 @@ bool ItemRepository::updateItemsColumn(const QStringList &itemIds,
         if (!query.exec()) {
             m_db.rollback();
             if (errorMessage)
-                *errorMessage = formatDbError(QObject::tr("Nie udało się wykonać %1.")
+                *errorMessage = formatDbError(ItemRepository::tr("Nie udało się wykonać %1.")
                                                   .arg(operationLabel),
                                               query.lastError().text());
             return false;
@@ -270,7 +270,7 @@ bool ItemRepository::updateItemsColumn(const QStringList &itemIds,
     if (!m_db.commit()) {
         m_db.rollback();
         if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się zatwierdzić %1 w bazie danych.")
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się zatwierdzić %1 w bazie danych.")
                                               .arg(operationLabel),
                                           m_db.lastError().text());
         return false;

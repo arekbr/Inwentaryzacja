@@ -1,6 +1,7 @@
 #ifndef DATABASEBACKUPSERVICE_H
 #define DATABASEBACKUPSERVICE_H
 
+#include <QCoreApplication>
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
@@ -22,6 +23,8 @@ struct MySqlConnectionInfo
 /// ("backup-sqlite-vacuum-<tid>") żeby nie kolidować z aktywnym m_database.
 class DatabaseBackupService
 {
+    Q_DECLARE_TR_FUNCTIONS(DatabaseBackupService)  // O-6: clean translation context
+
 public:
     struct BackupResult
     {

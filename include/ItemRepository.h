@@ -2,6 +2,7 @@
 #define ITEMREPOSITORY_H
 
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
@@ -41,6 +42,11 @@ struct ItemRecordData
 /// (handle wskazuje na żywy connection) NIE jest sprawdzany. Trust caller contract.
 class ItemRepository
 {
+    // O-6 (audit 2026-04-26): translation context = "ItemRepository" zamiast
+    // "QObject" (do ktorego trafialy wszystkie tr() z free functions).
+    // Czyszczy konteksty translacyjne — translator widzi grupowane stringi.
+    Q_DECLARE_TR_FUNCTIONS(ItemRepository)
+
 public:
     explicit ItemRepository(QSqlDatabase database = QSqlDatabase::database("default_connection"));
 

@@ -20,7 +20,7 @@ namespace {
 
 QString trBackup(const char *text)
 {
-    return QObject::tr(text);
+    return DatabaseBackupService::tr(text);
 }
 
 // E-4 (audit 2026-04-26): atomowe rename z zachowaniem starego backupu jako .old.
@@ -39,7 +39,7 @@ bool atomicReplaceWithBackup(const QString &tempPath, const QString &targetPath,
         if (!QFile::rename(targetPath, oldPath))
         {
             if (errorMessage)
-                *errorMessage = QObject::tr("Nie udało się zarchiwizować starego backupu jako .old.");
+                *errorMessage = DatabaseBackupService::tr("Nie udało się zarchiwizować starego backupu jako .old.");
             return false;
         }
         hadOldBackup = true;
@@ -52,7 +52,7 @@ bool atomicReplaceWithBackup(const QString &tempPath, const QString &targetPath,
             QFile::rename(oldPath, targetPath);
         QFile::remove(tempPath);
         if (errorMessage)
-            *errorMessage = QObject::tr("Nie udało się zapisać finalnego pliku backupu pod docelową nazwą.");
+            *errorMessage = DatabaseBackupService::tr("Nie udało się zapisać finalnego pliku backupu pod docelową nazwą.");
         return false;
     }
 
