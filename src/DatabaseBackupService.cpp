@@ -7,6 +7,8 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTemporaryFile>
+#include <QTextStream>
 
 #include <chrono>
 #include <zlib.h>
@@ -118,12 +120,45 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         return false;
     }
 
+    // E-3 (audit 2026-04-26): zamiast MYSQL_PWD env (leak przez /proc/<pid>/environ
+    // + memory dump parent procesu) — uzyj --defaults-extra-file ze zwyklym tmp
+    // plikiem chmod 600. Plik zniknie automatycznie po wyjsciu z funkcji
+    // (QTemporaryFile setAutoRemove default true).
+    QTemporaryFile defaultsFile(QDir::tempPath() + QStringLiteral("/mysqldump-XXXXXX.cnf"));
+    defaultsFile.setAutoRemove(true);
+    if (!defaultsFile.open())
+    {
+        gzclose(gzipFile);
+        QFile::remove(tempOutputPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się utworzyć tymczasowego pliku konfiguracji "
+                                     "dla mysqldump.")
+                            + QStringLiteral("\n") + defaultsFile.errorString();
+        return false;
+    }
+    // chmod 600 — tylko owner read/write, plik z haslem nie ma byc world-readable
+    if (!defaultsFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner))
+    {
+        gzclose(gzipFile);
+        QFile::remove(tempOutputPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się ustawić uprawnień 0600 na pliku konfiguracji.");
+        return false;
+    }
+    {
+        QTextStream cnf(&defaultsFile);
+        cnf << "[client]\n";
+        if (!connectionInfo.user.isEmpty())
+            cnf << "user=" << connectionInfo.user << "\n";
+        if (!connectionInfo.password.isEmpty())
+            cnf << "password=" << connectionInfo.password << "\n";
+        cnf.flush();
+    }
+    defaultsFile.close();  // flush handle — proces dziecko bedzie czytac przez path
+
     QProcess process;
-    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
-    environment.insert(QStringLiteral("MYSQL_PWD"), connectionInfo.password);
-    process.setProcessEnvironment(environment);
     process.setProgram(dumpExecutable);
-    process.setArguments(buildDumpArguments(connectionInfo));
+    process.setArguments(buildDumpArguments(connectionInfo, defaultsFile.fileName()));
     process.setProcessChannelMode(QProcess::SeparateChannels);
     if (statusCallback)
         statusCallback(trBackup("Trwa tworzenie backupu SQL.gz..."));
@@ -301,9 +336,14 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
     return true;
 }
 
-QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo &connectionInfo)
+QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo &connectionInfo,
+                                                       const QString &defaultsExtraFile)
 {
     QStringList arguments;
+    // E-3: --defaults-extra-file MUSI byc PIERWSZYM argumentem (mysql convention)
+    if (!defaultsExtraFile.isEmpty())
+        arguments << QStringLiteral("--defaults-extra-file=%1").arg(defaultsExtraFile);
+
     arguments << QStringLiteral("--single-transaction")
               << QStringLiteral("--quick")
               << QStringLiteral("--hex-blob")
@@ -316,7 +356,8 @@ QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo 
         arguments << QStringLiteral("--host=%1").arg(connectionInfo.host);
     if (connectionInfo.port > 0)
         arguments << QStringLiteral("--port=%1").arg(connectionInfo.port);
-    if (!connectionInfo.user.isEmpty())
+    // E-3: --user= tylko gdy nie ma defaults-extra-file (tam user juz jest)
+    if (!connectionInfo.user.isEmpty() && defaultsExtraFile.isEmpty())
         arguments << QStringLiteral("--user=%1").arg(connectionInfo.user);
 
     arguments << connectionInfo.database;

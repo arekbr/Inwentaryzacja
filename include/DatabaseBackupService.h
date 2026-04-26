@@ -42,7 +42,12 @@ public:
                                  const std::function<void(qint64)> &progressCallback = {},
                                  const std::function<void(const QString &)> &statusCallback = {});
 
-    static QStringList buildDumpArguments(const MySqlConnectionInfo &connectionInfo);
+    /// E-3 (audit 2026-04-26): jesli defaultsExtraFile niepusta, zostanie dodana
+    /// jako pierwszy argument `--defaults-extra-file=<path>` i `--user=` zostanie
+    /// pominiete (user/password sa w defaults file). Bez tego mysqldump dziala
+    /// po staremu (--user= w args, hasla wymaga z env MYSQL_PWD).
+    static QStringList buildDumpArguments(const MySqlConnectionInfo &connectionInfo,
+                                          const QString &defaultsExtraFile = QString());
     static QString findDumpExecutable();
 
 private:
