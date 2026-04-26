@@ -5,12 +5,15 @@
 #include "EnrichPreviewDialog.h"
 #include "ItemRepository.h"
 
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QStandardPaths>
 #include <QDebug>
 
 PreviewDialog::PreviewDialog(QSqlDatabase db, const QString &recordId, QWidget *parent)
@@ -155,15 +158,28 @@ void PreviewDialog::onEnrichClicked()
         return;
     }
 
-    // 2) Cost estimate confirm
-    const double cost = AiEnrichmentService::estimateCostUsd(photos.size());
-    const QString costStr = QString::number(cost, 'f', 4);
-    const auto reply = QMessageBox::question(this, tr("Wzbogać opis AI"),
-        tr("Wyślę %1 zdjęć do Claude Opus 4.7. Szacunkowy koszt: ~$%2.\n\nKontynuować?")
-            .arg(photos.size()).arg(costStr),
-        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-    if (reply != QMessageBox::Yes)
-        return;
+    // 2) Potwierdzenie kosztu — z opcją "nie pytaj ponownie" w QSettings
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + QStringLiteral("/inwentaryzacja.ini"),
+                       QSettings::IniFormat);
+    if (!settings.value(QStringLiteral("ai/skip_cost_confirm"), false).toBool())
+    {
+        const double cost = AiEnrichmentService::estimateCostUsd(photos.size());
+        const QString costStr = QString::number(cost, 'f', 4);
+
+        // Własny dialog (QMessageBox::question nie ma natywnie checkbox "nie pytaj ponownie")
+        QMessageBox box(QMessageBox::Question, tr("Wzbogać opis AI"),
+                        tr("Wyślę %1 zdjęć do Claude. Szacunkowy koszt: ~$%2.\n\nKontynuować?")
+                            .arg(photos.size()).arg(costStr),
+                        QMessageBox::Yes | QMessageBox::No, this);
+        box.setDefaultButton(QMessageBox::Yes);
+        QCheckBox dontAsk(tr("Nie pytaj ponownie (można włączyć z powrotem w Ustawieniach)"), &box);
+        box.setCheckBox(&dontAsk);
+        if (box.exec() != QMessageBox::Yes)
+            return;
+        if (dontAsk.isChecked())
+            settings.setValue(QStringLiteral("ai/skip_cost_confirm"), true);
+    }
 
     // 3) Busy dialog (modal, nieanullowalny — abort wymaga reply abort)
     if (m_busyDialog)

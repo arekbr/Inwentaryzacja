@@ -1,8 +1,10 @@
 #include "AiEnrichmentService.h"
 
+#include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QLocale>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -27,13 +29,15 @@ QSettings appSettings()
                      QSettings::IniFormat);
 }
 
-QString systemPrompt(const QString &existingDescription,
-                     const QString &itemName,
-                     const QString &itemVendor,
-                     const QString &itemModel)
+/// v1.5 #4: Polecenie AI generowane wg języka apki (QLocale).
+/// Polski/angielski na start. Każdy nowy język = dodanie case w switch.
+/// Output AI też w danym języku — Claude rozumie polecenie polskie i odpowiada po polsku.
+QString systemPromptPolish(const QString &existingDescription,
+                            const QString &itemName,
+                            const QString &itemVendor,
+                            const QString &itemModel)
 {
-    // Polski prompt — User-facing app, polskie opisy, mamy konsystencję.
-    QString prompt = AiEnrichmentService::tr(
+    QString prompt = QStringLiteral(
         "Jesteś ekspertem od retro-komputerów (Amiga, Atari, Commodore, ZX Spectrum, "
         "early IBM PC, konsole 8/16 bit). Twoim zadaniem jest wzbogacić opis eksponatu "
         "muzealnego na podstawie zdjęć i istniejącego kontekstu.\n\n"
@@ -42,7 +46,7 @@ QString systemPrompt(const QString &existingDescription,
         "metadanych ani komentarzy o procesie — tylko gotowy opis.\n\n"
         "**Jeśli istnieje opis** — zachowaj jego sens, dodaj kontekst historyczny, "
         "specyfikację techniczną, charakterystyczne cechy widoczne na zdjęciach.\n"
-        "**Jeśli brak opisu** — wygeneruj pełny opis from scratch z meta + zdjęć.\n\n"
+        "**Jeśli brak opisu** — wygeneruj pełny opis od zera z danych + zdjęć.\n\n"
         "## Kontekst eksponatu\n");
 
     if (!itemName.isEmpty())
@@ -54,15 +58,64 @@ QString systemPrompt(const QString &existingDescription,
 
     if (!existingDescription.trimmed().isEmpty())
     {
-        prompt += AiEnrichmentService::tr("\n## Istniejący opis (do wzbogacenia)\n\n");
+        prompt += QStringLiteral("\n## Istniejący opis (do wzbogacenia)\n\n");
         prompt += existingDescription;
     }
     else
     {
-        prompt += AiEnrichmentService::tr("\n## Istniejący opis\n\n_(brak — wygeneruj from scratch)_\n");
+        prompt += QStringLiteral("\n## Istniejący opis\n\n_(brak — wygeneruj od zera)_\n");
     }
-
     return prompt;
+}
+
+QString systemPromptEnglish(const QString &existingDescription,
+                             const QString &itemName,
+                             const QString &itemVendor,
+                             const QString &itemModel)
+{
+    QString prompt = QStringLiteral(
+        "You are a retro-computer expert (Amiga, Atari, Commodore, ZX Spectrum, "
+        "early IBM PC, 8/16-bit consoles). Your task is to enrich a museum exhibit "
+        "description based on photos and existing context.\n\n"
+        "**Response format:** clean markdown, 3-5 paragraphs, English. No header "
+        "(title is separate). You can use **bold**, *italic*, lists. Do not add "
+        "metadata or process comments — only the finished description.\n\n"
+        "**If a description exists** — preserve its meaning, add historical context, "
+        "technical specifications, characteristic features visible in photos.\n"
+        "**If no description** — generate full description from scratch using meta + photos.\n\n"
+        "## Exhibit context\n");
+
+    if (!itemName.isEmpty())
+        prompt += QStringLiteral("- **Name:** %1\n").arg(itemName);
+    if (!itemVendor.isEmpty())
+        prompt += QStringLiteral("- **Vendor:** %1\n").arg(itemVendor);
+    if (!itemModel.isEmpty())
+        prompt += QStringLiteral("- **Model:** %1\n").arg(itemModel);
+
+    if (!existingDescription.trimmed().isEmpty())
+    {
+        prompt += QStringLiteral("\n## Existing description (to enrich)\n\n");
+        prompt += existingDescription;
+    }
+    else
+    {
+        prompt += QStringLiteral("\n## Existing description\n\n_(none — generate from scratch)_\n");
+    }
+    return prompt;
+}
+
+QString systemPrompt(const QString &existingDescription,
+                     const QString &itemName,
+                     const QString &itemVendor,
+                     const QString &itemModel)
+{
+    // Język wg QLocale aplikacji. Domyślnie polski.
+    // Dodawanie nowych: switch case na QLocale::Language.
+    const QLocale::Language lang = QLocale().language();
+    if (lang == QLocale::English)
+        return systemPromptEnglish(existingDescription, itemName, itemVendor, itemModel);
+    // TODO: niemiecki, hiszpański, etc. wg planu wielu języków
+    return systemPromptPolish(existingDescription, itemName, itemVendor, itemModel);
 }
 
 QString detectImageMediaType(const QByteArray &blob)
