@@ -29,7 +29,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 # ================================
 # Qt6 (bez Sql na razie)
 # ================================
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Network Test)
 find_package(ZLIB REQUIRED)
 
 # ================================
@@ -145,6 +145,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    Qt6::Network  # v1.5: AiEnrichmentService → Anthropic API
     ZLIB::ZLIB
 )
 
@@ -158,6 +159,7 @@ target_link_libraries(${PROJECT_NAME}Tests PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    Qt6::Network  # v1.5: AiEnrichmentService glob-included w testy
     Qt6::Test
     ZLIB::ZLIB
 )
