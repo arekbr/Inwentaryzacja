@@ -29,7 +29,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 # ================================
 # Qt6 (bez Sql na razie)
 # ================================
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets LinguistTools Network Test)
 find_package(ZLIB REQUIRED)
 
 # ================================
@@ -98,6 +98,8 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/mainwindow.h
     include/photoitem.h
     include/PreviewDialog.h
+    include/AiEnrichmentService.h
+    include/EnrichPreviewDialog.h
     include/fullscreenphotoviewer.h
     include/PacmanOverlay.h
     include/PacmanAnimationModel.h
@@ -118,6 +120,8 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/mainwindow.cpp
     src/photoitem.cpp
     src/PreviewDialog.cpp
+    src/AiEnrichmentService.cpp
+    src/EnrichPreviewDialog.cpp
     src/fullscreenphotoviewer.cpp
     src/PacmanOverlay.cpp
     src/PacmanAnimationModel.cpp
@@ -145,6 +149,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    Qt6::Network  # v1.5: AiEnrichmentService → Anthropic API
     ZLIB::ZLIB
 )
 
@@ -158,6 +163,7 @@ target_link_libraries(${PROJECT_NAME}Tests PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    Qt6::Network  # v1.5: AiEnrichmentService glob-included w testy
     Qt6::Test
     ZLIB::ZLIB
 )

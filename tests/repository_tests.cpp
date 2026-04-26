@@ -39,6 +39,8 @@ private slots:
     void itemRepository_savesRecordAndPhotos();
     void itemRepository_deletesRecordAndPhotos();
     void itemRepository_updatesExistingRecordWithoutDuplicatingPhotos();
+    void itemRepository_updatesDescription();
+    void itemRepository_updateDescriptionFailsForUnknownId();
     void itemRepository_bulkUpdatesStatusAndStorage();
     void dictionaryRepository_supportsCrud();
     void dictionaryRepository_addsModelWithParentVendor();
@@ -225,6 +227,39 @@ void RepositoryTests::itemRepository_updatesExistingRecordWithoutDuplicatingPhot
     QVERIFY(photoQuery.exec());
     QVERIFY(photoQuery.next());
     QCOMPARE(photoQuery.value(0).toInt(), 1);
+}
+
+void RepositoryTests::itemRepository_updatesDescription()
+{
+    // v1.5: AI enrichment update description path.
+    ItemRepository repository(m_db);
+    QString savedItemId;
+    QString errorMessage;
+
+    QVERIFY2(repository.saveItem(createSampleItem(), {createPhotoBytes()}, &savedItemId, &errorMessage),
+             qPrintable(errorMessage));
+
+    const QString newDescription = QStringLiteral("# Amiga 1200\n\nKomputer firmy Commodore z 1992 roku, "
+                                                  "kontynuator linii 1000/2000/500/600. **AGA chipset** "
+                                                  "(8-bit color palette, 256 kolorów na ekranie).");
+    QVERIFY2(repository.updateDescription(savedItemId, newDescription, &errorMessage),
+             qPrintable(errorMessage));
+
+    QSqlQuery q(m_db);
+    QVERIFY(q.exec(QStringLiteral("SELECT description FROM eksponaty WHERE id = '%1'").arg(savedItemId)));
+    QVERIFY(q.next());
+    QCOMPARE(q.value(0).toString(), newDescription);
+}
+
+void RepositoryTests::itemRepository_updateDescriptionFailsForUnknownId()
+{
+    ItemRepository repository(m_db);
+    QString errorMessage;
+
+    QVERIFY(!repository.updateDescription(QStringLiteral("non-existent-uuid"),
+                                          QStringLiteral("test"),
+                                          &errorMessage));
+    QVERIFY(errorMessage.contains(QStringLiteral("nie istnieje"), Qt::CaseInsensitive));
 }
 
 void RepositoryTests::itemRepository_bulkUpdatesStatusAndStorage()

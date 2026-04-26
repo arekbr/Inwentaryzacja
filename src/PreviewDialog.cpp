@@ -1,9 +1,19 @@
 #include "PreviewDialog.h"
 #include "ui_PreviewDialog.h"
 
+#include "AiEnrichmentService.h"
+#include "EnrichPreviewDialog.h"
+#include "ItemRepository.h"
+
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QMessageBox>
+#include <QProgressDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QStandardPaths>
 #include <QDebug>
 
 PreviewDialog::PreviewDialog(QSqlDatabase db, const QString &recordId, QWidget *parent)
@@ -17,6 +27,20 @@ PreviewDialog::PreviewDialog(QSqlDatabase db, const QString &recordId, QWidget *
                 emit editRequested(m_recordId);
                 accept();
             });
+
+    // v1.5: dynamicznie dodany guzik "Wzbogać opis AI" (nie ruszamy .ui).
+    // Pojawia się tylko gdy klucz API dostępny (env var lub QSettings).
+    if (AiEnrichmentService::hasApiKey())
+    {
+        auto *enrichBtn = new QPushButton(tr("🪄 Wzbogać opis AI"), this);
+        enrichBtn->setStyleSheet(QStringLiteral(
+            "background-color: #1976d2; color: white; padding: 6px 12px; "
+            "border-radius: 4px; font-weight: bold;"));
+        // Insert na początku button row (przed Edit)
+        if (auto *row = qobject_cast<QHBoxLayout *>(ui->editButton->parentWidget()->layout()))
+            row->insertWidget(0, enrichBtn);
+        connect(enrichBtn, &QPushButton::clicked, this, &PreviewDialog::onEnrichClicked);
+    }
 
     loadRecord();
 }
@@ -95,4 +119,127 @@ void PreviewDialog::loadRecord()
     ui->detailsLabel->setText(detailParts.join(QStringLiteral("  |  ")));
 
     ui->descriptionView->setMarkdown(description);
+
+    // v1.5: cache dla AI call
+    m_currentName = name;
+    m_currentVendor = vendor;
+    m_currentModel = model;
+    m_currentDescription = description;
+}
+
+QList<QByteArray> PreviewDialog::fetchPhotos(int limit) const
+{
+    QList<QByteArray> photos;
+    QSqlQuery q(m_db);
+    q.prepare(QStringLiteral("SELECT photo FROM photos WHERE eksponat_id = :id LIMIT %1").arg(limit));
+    q.bindValue(QStringLiteral(":id"), m_recordId);
+    if (!q.exec())
+    {
+        qWarning() << "PreviewDialog::fetchPhotos: SQL error" << q.lastError().text();
+        return photos;
+    }
+    while (q.next())
+    {
+        const QByteArray blob = q.value(0).toByteArray();
+        if (!blob.isEmpty())
+            photos.append(blob);
+    }
+    return photos;
+}
+
+void PreviewDialog::onEnrichClicked()
+{
+    // 1) Pobierz zdjęcia (max 5 — Anthropic limit)
+    const QList<QByteArray> photos = fetchPhotos(/*limit*/ 5);
+    if (photos.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Brak zdjęć"),
+                             tr("Eksponat nie ma zdjęć w bazie. AI potrzebuje obrazu do analizy."));
+        return;
+    }
+
+    // 2) Potwierdzenie kosztu — z opcją "nie pytaj ponownie" w QSettings
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + QStringLiteral("/inwentaryzacja.ini"),
+                       QSettings::IniFormat);
+    if (!settings.value(QStringLiteral("ai/skip_cost_confirm"), false).toBool())
+    {
+        const double cost = AiEnrichmentService::estimateCostUsd(photos.size());
+        const QString costStr = QString::number(cost, 'f', 4);
+
+        // Własny dialog (QMessageBox::question nie ma natywnie checkbox "nie pytaj ponownie")
+        QMessageBox box(QMessageBox::Question, tr("Wzbogać opis AI"),
+                        tr("Wyślę %1 zdjęć do Claude. Szacunkowy koszt: ~$%2.\n\nKontynuować?")
+                            .arg(photos.size()).arg(costStr),
+                        QMessageBox::Yes | QMessageBox::No, this);
+        box.setDefaultButton(QMessageBox::Yes);
+        QCheckBox dontAsk(tr("Nie pytaj ponownie (można włączyć z powrotem w Ustawieniach)"), &box);
+        box.setCheckBox(&dontAsk);
+        if (box.exec() != QMessageBox::Yes)
+            return;
+        if (dontAsk.isChecked())
+            settings.setValue(QStringLiteral("ai/skip_cost_confirm"), true);
+    }
+
+    // 3) Busy dialog (modal, nieanullowalny — abort wymaga reply abort)
+    if (m_busyDialog)
+        m_busyDialog->deleteLater();
+    m_busyDialog = new QProgressDialog(tr("Pytam AI...\n\n(Claude Opus z vision: 15-30 s)"),
+                                        QString(), 0, 0, this);
+    m_busyDialog->setWindowModality(Qt::WindowModal);
+    m_busyDialog->setMinimumDuration(0);
+    m_busyDialog->setCancelButton(nullptr);
+    m_busyDialog->show();
+
+    // 4) Service — instance-per-call
+    if (m_enrichService)
+        m_enrichService->deleteLater();
+    m_enrichService = new AiEnrichmentService(this);
+    connect(m_enrichService, &AiEnrichmentService::enrichmentReady,
+            this, &PreviewDialog::onEnrichmentReady);
+    connect(m_enrichService, &AiEnrichmentService::enrichmentError,
+            this, &PreviewDialog::onEnrichmentError);
+
+    m_enrichService->enrichDescription(m_currentDescription, photos,
+                                        m_currentName, m_currentVendor, m_currentModel);
+}
+
+void PreviewDialog::onEnrichmentReady(const QString &newDescription, qint64 inTokens, qint64 outTokens)
+{
+    if (m_busyDialog)
+    {
+        m_busyDialog->close();
+        m_busyDialog->deleteLater();
+        m_busyDialog = nullptr;
+    }
+
+    EnrichPreviewDialog preview(m_currentDescription, newDescription, inTokens, outTokens, this);
+    if (preview.exec() != QDialog::Accepted)
+        return;
+
+    // User accepted — UPDATE description w bazie
+    ItemRepository repo(m_db);
+    QString errorMessage;
+    if (!repo.updateDescription(m_recordId, preview.newDescription(), &errorMessage))
+    {
+        QMessageBox::critical(this, tr("Błąd zapisu"),
+                              tr("Nie udało się zapisać nowego opisu:\n\n%1").arg(errorMessage));
+        return;
+    }
+
+    // Reload preview — descriptionView pokaże nowy markdown
+    loadRecord();
+    QMessageBox::information(this, tr("Zapisano"),
+                             tr("Nowy opis został zapisany w bazie."));
+}
+
+void PreviewDialog::onEnrichmentError(const QString &message)
+{
+    if (m_busyDialog)
+    {
+        m_busyDialog->close();
+        m_busyDialog->deleteLater();
+        m_busyDialog = nullptr;
+    }
+    QMessageBox::critical(this, tr("Błąd AI"), message);
 }
