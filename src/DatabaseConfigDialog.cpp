@@ -31,14 +31,20 @@
 #include "DatabaseConfigDialog.h"
 #include "PacmanOverlay.h"
 #include <QApplication>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
 #include <QFontDatabase>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QLabel>
 #include <QPushButton>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QVBoxLayout>
 #include "ui_DatabaseConfigDialog.h"
 #include <QLibraryInfo>
 #include <QCoreApplication>
@@ -160,6 +166,58 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             }
         } });
 
+    // ============================================================
+    // v1.5: Sekcja AI (Anthropic Claude) — klucz API + model + opcje
+    // ============================================================
+    // Dodajemy dynamicznie do głównego layoutu zamiast modyfikować .ui.
+    // Widgety oznaczone setObjectName — w accept() pobierane przez findChild.
+    {
+        auto *aiGroup = new QGroupBox(tr("AI — wzbogacanie opisów (Anthropic Claude)"), this);
+        auto *aiLayout = new QFormLayout(aiGroup);
+
+        auto *apiKeyEdit = new QLineEdit(aiGroup);
+        apiKeyEdit->setObjectName(QStringLiteral("aiApiKeyEdit"));
+        apiKeyEdit->setEchoMode(QLineEdit::Password);
+        apiKeyEdit->setPlaceholderText(tr("sk-ant-api03-... (zostaw puste = wyłączone)"));
+        apiKeyEdit->setText(settings.value(QStringLiteral("ai/anthropic_api_key")).toString());
+        aiLayout->addRow(tr("Klucz API:"), apiKeyEdit);
+
+        auto *modelCombo = new QComboBox(aiGroup);
+        modelCombo->setObjectName(QStringLiteral("aiModelCombo"));
+        modelCombo->addItem(tr("Claude Opus 4.7 (najlepszy, ~$0.04/wywołanie)"),
+                            QStringLiteral("claude-opus-4-7"));
+        modelCombo->addItem(tr("Claude Sonnet 4.6 (3× tańszy, prawie tak dobry)"),
+                            QStringLiteral("claude-sonnet-4-6"));
+        const QString savedModel = settings.value(QStringLiteral("ai/model"),
+                                                  QStringLiteral("claude-opus-4-7")).toString();
+        const int modelIdx = modelCombo->findData(savedModel);
+        modelCombo->setCurrentIndex(modelIdx >= 0 ? modelIdx : 0);
+        aiLayout->addRow(tr("Model:"), modelCombo);
+
+        auto *skipCostCheckbox = new QCheckBox(tr("Nie pytaj o potwierdzenie kosztu przed wywołaniem"),
+                                                aiGroup);
+        skipCostCheckbox->setObjectName(QStringLiteral("aiSkipCostCheckbox"));
+        skipCostCheckbox->setChecked(settings.value(QStringLiteral("ai/skip_cost_confirm"), false).toBool());
+        aiLayout->addRow(QString(), skipCostCheckbox);
+
+        auto *warningLabel = new QLabel(
+            tr("⚠ Klucz przechowywany lokalnie w %1 (plaintext). "
+               "Zalecane: zmienna środowiskowa ANTHROPIC_API_KEY (priorytet, nie zapisuje się tutaj).")
+                .arg(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                     + QStringLiteral("/inwentaryzacja.ini")),
+            aiGroup);
+        warningLabel->setStyleSheet(QStringLiteral("color: #888; font-size: 11px; padding: 4px;"));
+        warningLabel->setWordWrap(true);
+        aiLayout->addRow(QString(), warningLabel);
+
+        // Wstaw przed buttonBox (na końcu głównego layoutu)
+        if (auto *mainLayout = qobject_cast<QVBoxLayout *>(this->layout()))
+        {
+            const int insertIdx = mainLayout->count() - 1;  // przed ostatnim (buttonBox)
+            mainLayout->insertWidget(insertIdx, aiGroup);
+        }
+    }
+
     // Pacman easter egg (usuń lub ogranicz do pól tekstowych)
     QTimer *pacmanTimer = new QTimer(this);
     pacmanTimer->setSingleShot(true);
@@ -214,6 +272,14 @@ void DatabaseConfigDialog::accept()
     settings.setValue("Database/MySQL/Password", ui->passwordLineEdit->text());
     settings.setValue("Database/MySQL/Port", ui->portSpinBox->value());
     settings.setValue("skin", ui->filterSelectSkin->currentText());
+
+    // v1.5: zapis ustawień AI (widgety dodane dynamicznie, lookup przez findChild)
+    if (auto *apiKey = findChild<QLineEdit *>(QStringLiteral("aiApiKeyEdit")))
+        settings.setValue(QStringLiteral("ai/anthropic_api_key"), apiKey->text());
+    if (auto *modelCombo = findChild<QComboBox *>(QStringLiteral("aiModelCombo")))
+        settings.setValue(QStringLiteral("ai/model"), modelCombo->currentData().toString());
+    if (auto *skipCost = findChild<QCheckBox *>(QStringLiteral("aiSkipCostCheckbox")))
+        settings.setValue(QStringLiteral("ai/skip_cost_confirm"), skipCost->isChecked());
 
     QDialog::accept();
 }

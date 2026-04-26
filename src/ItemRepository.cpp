@@ -219,6 +219,47 @@ bool ItemRepository::updateStoragePlaceForItems(const QStringList &itemIds,
                              errorMessage);
 }
 
+bool ItemRepository::updateDescription(const QString &itemId,
+                                       const QString &newDescription,
+                                       QString *errorMessage)
+{
+    // v1.5: dedykowana metoda dla "Wzbogać opis AI" w PreviewDialog.
+    // Nie reuze updateItemsColumn bo tamto wymaga valueId z whitelist'owanej
+    // tabeli (status_id, storage_place_id) — description jest free text TEXT.
+    if (!m_db.isOpen()) {
+        if (errorMessage)
+            *errorMessage = ItemRepository::tr("Połączenie z bazą danych jest zamknięte.");
+        return false;
+    }
+    if (itemId.isEmpty()) {
+        if (errorMessage)
+            *errorMessage = ItemRepository::tr("Nie wybrano eksponatu do aktualizacji opisu.");
+        return false;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(QStringLiteral("UPDATE eksponaty SET description = :desc WHERE id = :id"));
+    query.bindValue(QStringLiteral(":desc"), newDescription);
+    query.bindValue(QStringLiteral(":id"), itemId);
+
+    if (!query.exec()) {
+        if (errorMessage)
+            *errorMessage = formatDbError(ItemRepository::tr("Nie udało się zaktualizować opisu eksponatu."),
+                                          query.lastError().text());
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        if (errorMessage)
+            *errorMessage = ItemRepository::tr("Eksponat o podanym ID nie istnieje (description NIE zmieniono).");
+        return false;
+    }
+
+    if (errorMessage)
+        errorMessage->clear();
+    return true;
+}
+
 bool ItemRepository::updateItemsColumn(const QStringList &itemIds,
                                        const QString &columnName,
                                        const QString &valueId,

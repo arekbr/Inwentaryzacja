@@ -63,6 +63,12 @@ public:
                                     const QString &storagePlaceId,
                                     QString *errorMessage);
 
+    /// v1.5 (AI enrichment): UPDATE eksponaty SET description = :desc WHERE id = :id.
+    /// Używane przez "Wzbogać opis AI" w PreviewDialog po accept.
+    bool updateDescription(const QString &itemId,
+                           const QString &newDescription,
+                           QString *errorMessage);
+
 private:
     bool updateItemsColumn(const QStringList &itemIds,
                            const QString &columnName,
