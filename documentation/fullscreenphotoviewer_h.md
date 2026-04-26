@@ -4,7 +4,7 @@
 - **Plik**: fullscreenphotoviewer.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `fullscreenphotoviewer.h` definiuje dwie klasy: `ZoomableGraphicsView` oraz `FullScreenPhotoViewer`, używane w aplikacji inwentaryzacyjnej do pełnoekranowego podglądu zdjęć eksponatów. `ZoomableGraphicsView` umożliwia powiększanie i przesuwanie obrazu za pomocą kółka myszy i przeciągania, natomiast `FullScreenPhotoViewer` tworzy bezramkowe, modalne okno pełnoekranowe z możliwością zamknięcia klawiszem Escape.

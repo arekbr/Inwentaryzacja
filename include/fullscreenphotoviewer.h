@@ -1,7 +1,7 @@
 /**
  * @file fullscreenphotoviewer.h
  * @brief Deklaracja klas ZoomableGraphicsView i FullScreenPhotoViewer do pełnoekranowego podglądu zdjęć.
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  * @version \projectnumber
  * @date 2025-05-03
  *

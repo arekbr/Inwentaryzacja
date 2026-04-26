@@ -1,7 +1,7 @@
 /**
  * @file DatabaseConfigDialog.h
  * @brief Deklaracja klasy DatabaseConfigDialog do konfiguracji połączenia z bazą danych oraz wyboru skórki graficznej.
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  * @version \projectnumber
  * @date 2025- istituti-03
  *

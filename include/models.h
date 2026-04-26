@@ -1,7 +1,7 @@
 /**
  * @file models.h
  * @brief Deklaracja klasy models do zarządzania modelami eksponatów.
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  * @version \projectnumber
  * @date 2025-05-03
  *

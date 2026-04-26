@@ -1,7 +1,7 @@
 /**
  * @file itemList.cpp
  * @brief Implementacja klasy itemList do zarządzania listą eksponatów.
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  * @version \projectnumber
  * @date 2025-05-03
  *
@@ -941,7 +941,7 @@ void itemList::onAboutClicked()
                              .arg(QCoreApplication::applicationName(),
                                   QStringLiteral("Program do inwentaryzacji retro komputerów"),
                                   QStringLiteral(
-                                      "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK"),
+                                      "Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK"),
                                   QCoreApplication::applicationVersion());
 
     QMessageBox::about(this, tr("O programie"), html);

@@ -4,7 +4,7 @@
 - **Plik**: itemList.h
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `itemList.h` definiuje klasę `itemList`, która jest głównym widgetem aplikacji inwentaryzacyjnej, odpowiedzialnym za wyświetlanie i zarządzanie listą eksponatów. Klasa obsługuje filtrowanie kaskadowe, operacje CRUD (Create, Read, Update, Delete), wyświetlanie miniatur zdjęć, podgląd pełnoekranowy oraz interakcje użytkownika. Skórka graficzna i czcionki są zarządzane przez klasę `DatabaseConfigDialog`.

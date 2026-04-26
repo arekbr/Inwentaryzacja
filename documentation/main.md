@@ -4,7 +4,7 @@
 - **Plik**: main.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `main.cpp` jest głównym punktem wejścia aplikacji inwentaryzacyjnej opartej na bibliotece Qt. Odpowiada za inicjalizację aplikacji, ustawienie jej podstawowych właściwości (nazwa, wersja, ikona), ładowanie tłumaczeń językowych, wyświetlanie okna konfiguracji bazy danych oraz nawiązywanie połączenia z wybraną bazą danych (SQLite lub MySQL). Po poprawnym skonfigurowaniu środowiska uruchamia główne okno aplikacji reprezentowane przez klasę `itemList`.

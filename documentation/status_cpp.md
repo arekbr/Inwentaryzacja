@@ -4,7 +4,7 @@
 - **Plik**: status.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `status.cpp` zawiera implementację metod klasy `status`, odpowiedzialnej za zarządzanie statusami eksponatów (np. "Nowy", "Używany", "Uszkodzony") w aplikacji inwentaryzacyjnej. Klasa umożliwia dodawanie, edytowanie i usuwanie statusów w tabeli `statuses` w bazie danych MySQL, współpracując z interfejsem użytkownika (`QListView`, `QLineEdit`) oraz klasą `MainWindow` w celu odświeżania combo boxów statusów po zapisaniu zmian.

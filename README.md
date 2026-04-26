@@ -4,7 +4,7 @@ Witaj w projekcie **Inwentaryzacja**! To narzędzie stworzone z myślą o maniak
 
 ## Po co to wszystko?
 
-Chciałem mieć soft skrojony pod moje potrzeby – prosty, ale funkcjonalny, do zarządzania kolekcją retro komputerów. Sam jestem „marnym programistą” (doba ma tylko 24 godziny!), więc pisanie tego od zera zajęłoby mi pewnie z 5 lat. Zamiast tego postawiłem na eksperyment: tworzę ten program z pomocą AI – **ChatGPT** i **GROK**. 
+Chciałem mieć soft skrojony pod moje potrzeby – prosty, ale funkcjonalny, do zarządzania kolekcją retro komputerów. Sam jestem „marnym programistą” (doba ma tylko 24 godziny!), więc pisanie tego od zera zajęłoby mi pewnie z 5 lat. Zamiast tego postawiłem na eksperyment: tworzę ten program z pomocą AI – **Claude**, **ChatGPT** i **GROK**. 
 
 Jedyna rzecz, którą zrobiłem sam, to początkowe GUI, ale i tak AI zrobiło poprawioną wersję. 
 
@@ -84,7 +84,7 @@ Pisz na do mnie, albo dołącz do repozytorium. Razem stworzymy soft, który usz
 
 ## Dlaczego AI?
 
-Bo to przyszłość, a ja lubię testować granice. ChatGPT i GROK piszą kod szybciej, niż ja nadążam sprawdzać. To jak mieć zespół programistów w kieszeni – tylko czasem trzeba ich poprawić. 😄 Eksperyment trwa, a efekty? Sami oceńcie – Inwentaryzacja działa i ma się dobrze!
+Bo to przyszłość, a ja lubię testować granice. Claude, ChatGPT i GROK piszą kod szybciej, niż ja nadążam sprawdzać. To jak mieć zespół programistów w kieszeni – tylko czasem trzeba ich poprawić. 😄 Eksperyment trwa, a efekty? Sami oceńcie – Inwentaryzacja działa i ma się dobrze!
 
 ## Plany na przyszłość
 
@@ -95,7 +95,7 @@ Bo to przyszłość, a ja lubię testować granice. ChatGPT i GROK piszą kod sz
 
 ## Podziękowania
 
-Specjalne wirtualne ukłony dla **ChatGPT** i **GROK** – bez nich ten kod by nie powstał!
+Specjalne wirtualne ukłony dla **Claude**, **ChatGPT** i **GROK** – bez nich ten kod by nie powstał!
 
 ---
 
@@ -117,4 +117,4 @@ Fonty TTF: C64 - Copyright Filip Blazek 2008, ZX Spectrum: Copyright (c) 2016, J
 
 Aby być w zgodzie z licencjami, upewnij się, że przy dystrybucji aplikacji zapewniasz dostęp do kodu źródłowego bibliotek LGPL/GPL.
 Podziękowania
-Wielkie dzięki dla ChatGPT i Grok za napisanie kodu, oraz dla Qt, SQLite, MySQL i MinGW za napędzanie tego projektu! 😎
+Wielkie dzięki dla Claude, ChatGPT i Grok za napisanie kodu, oraz dla Qt, SQLite, MySQL i MinGW za napędzanie tego projektu! 😎

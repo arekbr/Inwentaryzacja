@@ -3,7 +3,7 @@
  * @brief Implementacja klasy vendors do zarządzania producentami sprzętu w aplikacji inwentaryzacyjnej.
  * @version \projectnumber
  * @date 2025-05-03
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  *
  * @section Overview
  * Plik zawiera implementację metod klasy vendors, odpowiedzialnej za zarządzanie

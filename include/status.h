@@ -3,7 +3,7 @@
  * @brief Deklaracja klasy status służącej do zarządzania statusami eksponatów w aplikacji inwentaryzacyjnej.
  * @version \projectnumber
  * @date 2025-05-03
- * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+ * @author Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
  *
  * @section Overview
  * Plik zawiera deklarację klasy status, która reprezentuje okno dialogowe do zarządzania

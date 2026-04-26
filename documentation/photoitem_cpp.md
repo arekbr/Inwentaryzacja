@@ -4,7 +4,7 @@
 - **Plik**: photoitem.cpp
 - **Wersja**: 1.2.2
 - **Data**: 2025-05-03
-- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & ChatGPT & GROK
+- **Autorzy**: Stowarzyszenie Miłośników Oldschoolowych Komputerów SMOK & Claude & ChatGPT & GROK
 
 ## Przegląd
 Plik `photoitem.cpp` zawiera implementację metod klasy `PhotoItem`, która reprezentuje interaktywną miniaturę zdjęcia w scenie graficznej Qt (`QGraphicsView`) w aplikacji inwentaryzacyjnej. Klasa rozszerza `QGraphicsPixmapItem` o obsługę zdarzeń myszy (kliknięcia, podwójne kliknięcia) i hover (najechanie, opuszczenie), a także wizualne zaznaczanie za pomocą czerwonej ramki. Dzięki dziedziczeniu po `QObject`, umożliwia emisję sygnałów (`clicked`, `doubleClicked`, `hovered`, `unhovered`) do integracji z logiką aplikacji, np. z klasą `MainWindow` dla wyboru lub podglądu zdjęć eksponatów.
