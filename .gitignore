@@ -1,4 +1,6 @@
 .continue/
+.claude/
+build/
 build_inwentaryzacja/
 build_qt_sql_drivers/
 deploy/
