@@ -1,11 +1,16 @@
 #include "DatabaseBackupService.h"
 
+#include <QDeadlineTimer>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QTemporaryFile>
+#include <QTextStream>
 
+#include <chrono>
 #include <zlib.h>
 
 namespace {
@@ -115,12 +120,45 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         return false;
     }
 
+    // E-3 (audit 2026-04-26): zamiast MYSQL_PWD env (leak przez /proc/<pid>/environ
+    // + memory dump parent procesu) — uzyj --defaults-extra-file ze zwyklym tmp
+    // plikiem chmod 600. Plik zniknie automatycznie po wyjsciu z funkcji
+    // (QTemporaryFile setAutoRemove default true).
+    QTemporaryFile defaultsFile(QDir::tempPath() + QStringLiteral("/mysqldump-XXXXXX.cnf"));
+    defaultsFile.setAutoRemove(true);
+    if (!defaultsFile.open())
+    {
+        gzclose(gzipFile);
+        QFile::remove(tempOutputPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się utworzyć tymczasowego pliku konfiguracji "
+                                     "dla mysqldump.")
+                            + QStringLiteral("\n") + defaultsFile.errorString();
+        return false;
+    }
+    // chmod 600 — tylko owner read/write, plik z haslem nie ma byc world-readable
+    if (!defaultsFile.setPermissions(QFile::ReadOwner | QFile::WriteOwner))
+    {
+        gzclose(gzipFile);
+        QFile::remove(tempOutputPath);
+        if (errorMessage)
+            *errorMessage = trBackup("Nie udało się ustawić uprawnień 0600 na pliku konfiguracji.");
+        return false;
+    }
+    {
+        QTextStream cnf(&defaultsFile);
+        cnf << "[client]\n";
+        if (!connectionInfo.user.isEmpty())
+            cnf << "user=" << connectionInfo.user << "\n";
+        if (!connectionInfo.password.isEmpty())
+            cnf << "password=" << connectionInfo.password << "\n";
+        cnf.flush();
+    }
+    defaultsFile.close();  // flush handle — proces dziecko bedzie czytac przez path
+
     QProcess process;
-    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
-    environment.insert(QStringLiteral("MYSQL_PWD"), connectionInfo.password);
-    process.setProcessEnvironment(environment);
     process.setProgram(dumpExecutable);
-    process.setArguments(buildDumpArguments(connectionInfo));
+    process.setArguments(buildDumpArguments(connectionInfo, defaultsFile.fileName()));
     process.setProcessChannelMode(QProcess::SeparateChannels);
     if (statusCallback)
         statusCallback(trBackup("Trwa tworzenie backupu SQL.gz..."));
@@ -139,24 +177,72 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
 
     QByteArray stderrBuffer;
     qint64 totalWrittenBytes = 0;
+    // E-2 (audit 2026-04-26): timeouts żeby mysqldump hang nie blokowal apki:
+    // - hardDeadline: globalny limit (default 30 min) — backup gigantycznej bazy
+    //   moze trwac dlugo, ale 30 min to absolutny rozsadny gorny prog
+    // - idleTimeoutMs: jeśli przez X sekund mysqldump nie wyemituje ani bajtu
+    //   na stdout — uznajemy za hang (zablokowana tabela, network stall, etc.)
+    QDeadlineTimer hardDeadline(std::chrono::minutes(30));
+    constexpr int idleTimeoutMs = 30 * 1000;
+    QElapsedTimer sinceLastBytes;
+    sinceLastBytes.start();
+
     while (process.state() != QProcess::NotRunning)
     {
+        if (hardDeadline.hasExpired())
+        {
+            process.kill();
+            process.waitForFinished(5000);
+            gzclose(gzipFile);
+            QFile::remove(tempOutputPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Backup przerwany — przekroczono globalny limit czasu (30 min).")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
+            return false;
+        }
+        if (sinceLastBytes.elapsed() > idleTimeoutMs)
+        {
+            process.kill();
+            process.waitForFinished(5000);
+            gzclose(gzipFile);
+            QFile::remove(tempOutputPath);
+            if (errorMessage)
+                *errorMessage = trBackup("Backup przerwany — mysqldump nie wysłał danych przez 30 s "
+                                         "(zablokowana tabela lub network stall?).")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
+            return false;
+        }
+
         process.waitForFinished(100);
         stderrBuffer += process.readAllStandardError();
         const QByteArray stdoutData = process.readAllStandardOutput();
         if (!stdoutData.isEmpty())
         {
+            sinceLastBytes.restart();  // E-2: reset idle timer na nowych bytes
             const int written = gzwrite(gzipFile,
                                         stdoutData.constData(),
                                         static_cast<unsigned int>(stdoutData.size()));
-            if (written == 0)
+            // E-1 (audit 2026-04-26): partial-write też jest błędem, nie tylko 0.
+            // gzwrite zwraca liczbe bajtów zapisanych — jeśli < requested,
+            // bufor zlib padl miedzy callami. Stary `== 0` przepuszczalby.
+            if (written != static_cast<int>(stdoutData.size()))
             {
                 int errNo = Z_OK;
                 const char *gzipError = gzerror(gzipFile, &errNo);
                 if (errorMessage)
                     *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
                                     + QStringLiteral("\n")
-                                    + QString::fromUtf8(gzipError ? gzipError : "");
+                                    + QString::fromUtf8(gzipError ? gzipError : "")
+                                    // E-1: stderr z mysqldump zawiera prawdziwą przyczynę
+                                    // (np. 'access denied for user X'). Bez tego operator
+                                    // dostawal generic 'nie udalo sie zapisac'.
+                                    + (stderrBuffer.isEmpty() ? QString()
+                                       : QStringLiteral("\nmysqldump stderr:\n")
+                                         + QString::fromUtf8(stderrBuffer.left(2000)));
                 process.kill();
                 process.waitForFinished();
                 gzclose(gzipFile);
@@ -177,7 +263,8 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
         const int written = gzwrite(gzipFile,
                                     remainingStdout.constData(),
                                     static_cast<unsigned int>(remainingStdout.size()));
-        if (written == 0)
+        // E-1: jak wyżej — partial write = błąd
+        if (written != static_cast<int>(remainingStdout.size()))
         {
             int errNo = Z_OK;
             const char *gzipError = gzerror(gzipFile, &errNo);
@@ -186,7 +273,10 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
             if (errorMessage)
                 *errorMessage = trBackup("Nie udało się zapisać backupu do pliku gzip.")
                                 + QStringLiteral("\n")
-                                + QString::fromUtf8(gzipError ? gzipError : "");
+                                + QString::fromUtf8(gzipError ? gzipError : "")
+                                + (stderrBuffer.isEmpty() ? QString()
+                                   : QStringLiteral("\nmysqldump stderr:\n")
+                                     + QString::fromUtf8(stderrBuffer.left(2000)));
             return false;
         }
 
@@ -246,9 +336,14 @@ bool DatabaseBackupService::backupToGzipFile(const MySqlConnectionInfo &connecti
     return true;
 }
 
-QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo &connectionInfo)
+QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo &connectionInfo,
+                                                       const QString &defaultsExtraFile)
 {
     QStringList arguments;
+    // E-3: --defaults-extra-file MUSI byc PIERWSZYM argumentem (mysql convention)
+    if (!defaultsExtraFile.isEmpty())
+        arguments << QStringLiteral("--defaults-extra-file=%1").arg(defaultsExtraFile);
+
     arguments << QStringLiteral("--single-transaction")
               << QStringLiteral("--quick")
               << QStringLiteral("--hex-blob")
@@ -261,7 +356,8 @@ QStringList DatabaseBackupService::buildDumpArguments(const MySqlConnectionInfo 
         arguments << QStringLiteral("--host=%1").arg(connectionInfo.host);
     if (connectionInfo.port > 0)
         arguments << QStringLiteral("--port=%1").arg(connectionInfo.port);
-    if (!connectionInfo.user.isEmpty())
+    // E-3: --user= tylko gdy nie ma defaults-extra-file (tam user juz jest)
+    if (!connectionInfo.user.isEmpty() && defaultsExtraFile.isEmpty())
         arguments << QStringLiteral("--user=%1").arg(connectionInfo.user);
 
     arguments << connectionInfo.database;

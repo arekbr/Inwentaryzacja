@@ -49,6 +49,7 @@ private slots:
     void databaseMigration_fixesKnownBrokenUuids();
     void databaseMigration_isNoOpWithoutSchema();
     void databaseBackupService_buildsSafeDumpArguments();
+    void databaseBackupService_buildsArgumentsWithDefaultsExtraFile();
     void databaseBackupService_rejectsNonMySqlConnection();
     void itemFormValidator_rejectsEmptyName();
     void itemFormValidator_parsesNumericValue();
@@ -534,6 +535,32 @@ void RepositoryTests::databaseBackupService_buildsSafeDumpArguments()
     QVERIFY(arguments.contains(QStringLiteral("--host=db.example.com")));
     QVERIFY(arguments.contains(QStringLiteral("--port=3307")));
     QVERIFY(arguments.contains(QStringLiteral("--user=arek")));
+    QCOMPARE(arguments.last(), QStringLiteral("retrodb"));
+}
+
+void RepositoryTests::databaseBackupService_buildsArgumentsWithDefaultsExtraFile()
+{
+    // E-3 (audit 2026-04-26): defaults-extra-file scenariusz — user/password
+    // sa w pliku, NIE w args. Bezpieczny security-wise.
+    MySqlConnectionInfo connectionInfo;
+    connectionInfo.host = QStringLiteral("db.example.com");
+    connectionInfo.database = QStringLiteral("retrodb");
+    connectionInfo.user = QStringLiteral("arek");
+    connectionInfo.port = 3307;
+
+    const QString defaultsPath = QStringLiteral("/tmp/test-mysqldump.cnf");
+    const QStringList arguments =
+        DatabaseBackupService::buildDumpArguments(connectionInfo, defaultsPath);
+
+    // --defaults-extra-file MUSI byc PIERWSZYM argumentem (mysql convention)
+    QCOMPARE(arguments.first(),
+             QStringLiteral("--defaults-extra-file=/tmp/test-mysqldump.cnf"));
+    // Standardowe args nadal obecne
+    QVERIFY(arguments.contains(QStringLiteral("--single-transaction")));
+    QVERIFY(arguments.contains(QStringLiteral("--host=db.example.com")));
+    QVERIFY(arguments.contains(QStringLiteral("--port=3307")));
+    // --user= NIE w args (jest w defaults file, byloby duplicate)
+    QVERIFY(!arguments.contains(QStringLiteral("--user=arek")));
     QCOMPARE(arguments.last(), QStringLiteral("retrodb"));
 }
 
