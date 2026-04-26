@@ -123,7 +123,7 @@ MainWindow::MainWindow(QWidget *parent)
     loadComboBoxData("models", ui->New_item_model);
     loadComboBoxData("statuses", ui->New_item_status);
     loadComboBoxData("storage_places", ui->New_item_storagePlace);
-    ui->New_item_value->setValidator(new QIntValidator(0, std::numeric_limits<int>::max(), this));
+    ui->New_item_value->setValidator(new QIntValidator(0, (std::numeric_limits<int>::max)(), this));  // HDR-3 Windows macro safety
     ui->New_item_ProductionDate->setDisplayFormat(QStringLiteral("yyyy"));
 
     // Podpinanie sygnałów i slotów przycisków
