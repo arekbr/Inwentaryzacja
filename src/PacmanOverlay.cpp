@@ -191,9 +191,9 @@ void PacmanOverlay::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing);
 
     const int y = (height() - kSpriteSizePx) / 2;
-    drawPacman(painter, std::max(static_cast<int>(std::round(m_pacmanX)), 0), y, kSpriteSizePx);
+    drawPacman(painter, (std::max)(static_cast<int>(std::round(m_pacmanX)), 0), y, kSpriteSizePx);
     if (m_showGhost)
-        drawGhost(painter, std::max(static_cast<int>(std::round(m_ghostX)), 0), y, kSpriteSizePx);
+        drawGhost(painter, (std::max)(static_cast<int>(std::round(m_ghostX)), 0), y, kSpriteSizePx);
 
     raise();
 }
