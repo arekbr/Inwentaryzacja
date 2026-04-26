@@ -148,25 +148,35 @@ bool ItemRepository::deleteItem(const QString &itemId, QString *errorMessage)
         return false;
     }
 
-    QSqlQuery query(m_db);
-    query.prepare("DELETE FROM photos WHERE eksponat_id = :id");
-    query.bindValue(":id", itemId);
-    if (!query.exec()) {
-        m_db.rollback();
-        if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć zdjęć eksponatu."),
-                                          query.lastError().text());
-        return false;
+    // O-4 (audit 2026-04-26): osobne QSqlQuery per statement.
+    // Re-use jednego obiektu na MySQL/MariaDB driver cachuje server-side prepared
+    // stmt handles do końca życia QSqlQuery — w long-running procesie bije
+    // w max_prepared_stmt_count (default 16382, error 1461). Każdy w własnym
+    // scope = handle finalizowany od razu.
+    {
+        QSqlQuery photoDelete(m_db);
+        photoDelete.prepare("DELETE FROM photos WHERE eksponat_id = :id");
+        photoDelete.bindValue(":id", itemId);
+        if (!photoDelete.exec()) {
+            m_db.rollback();
+            if (errorMessage)
+                *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć zdjęć eksponatu."),
+                                              photoDelete.lastError().text());
+            return false;
+        }
     }
 
-    query.prepare("DELETE FROM eksponaty WHERE id = :id");
-    query.bindValue(":id", itemId);
-    if (!query.exec()) {
-        m_db.rollback();
-        if (errorMessage)
-            *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć eksponatu."),
-                                          query.lastError().text());
-        return false;
+    {
+        QSqlQuery itemDelete(m_db);
+        itemDelete.prepare("DELETE FROM eksponaty WHERE id = :id");
+        itemDelete.bindValue(":id", itemId);
+        if (!itemDelete.exec()) {
+            m_db.rollback();
+            if (errorMessage)
+                *errorMessage = formatDbError(QObject::tr("Nie udało się usunąć eksponatu."),
+                                              itemDelete.lastError().text());
+            return false;
+        }
     }
 
     if (!m_db.commit()) {
