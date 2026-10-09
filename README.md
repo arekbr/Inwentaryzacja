@@ -118,3 +118,4 @@ Fonty TTF: C64 - Copyright Filip Blazek 2008, ZX Spectrum: Copyright (c) 2016, J
 Aby być w zgodzie z licencjami, upewnij się, że przy dystrybucji aplikacji zapewniasz dostęp do kodu źródłowego bibliotek LGPL/GPL.
 Podziękowania
 Wielkie dzięki dla Claude, ChatGPT i Grok za napisanie kodu, oraz dla Qt, SQLite, MySQL i MinGW za napędzanie tego projektu! 😎
+<!-- hm-15c72be4611ee321 -->
