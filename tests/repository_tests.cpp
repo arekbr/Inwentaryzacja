@@ -1529,15 +1529,33 @@ void RepositoryTests::sqlDriver_mysqlPluginLoads()
 {
     // Paczki Windows do 1.6.1 nie miały pluginu QMYSQL. CI uruchamia ten test z katalogu paczki
     // (INW_WYMAGAJ_QMYSQL=1) — brak pluginu albo libmariadb.dll obok exe ma być czerwony.
+    // Z INW_MYSQL_HOST/USER/PASSWORD/DATABASE dodatkowo łączy się z serwerem (CI: MariaDB 11.8).
     if (qEnvironmentVariableIsEmpty("INW_WYMAGAJ_QMYSQL"))
         QSKIP("Sprawdzenie paczki — uruchom z INW_WYMAGAJ_QMYSQL=1.");
     QVERIFY2(QSqlDatabase::isDriverAvailable(QStringLiteral("QMYSQL")),
              qPrintable(QStringLiteral("Dostępne sterowniki: ") + QSqlDatabase::drivers().join(QStringLiteral(", "))));
+    const auto removeConnection = qScopeGuard([] { QSqlDatabase::removeDatabase(QStringLiteral("sonda_qmysql")); });
     {
-        const QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QMYSQL"), QStringLiteral("sonda_qmysql"));
+        QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QMYSQL"), QStringLiteral("sonda_qmysql"));
         QVERIFY2(db.isValid(), "Plugin QMYSQL się nie załadował (brak biblioteki libmariadb obok programu?)");
+
+        const QString host = qEnvironmentVariable("INW_MYSQL_HOST");
+        if (host.isEmpty())
+            return;
+        db.setHostName(host);
+        db.setUserName(qEnvironmentVariable("INW_MYSQL_USER"));
+        db.setPassword(qEnvironmentVariable("INW_MYSQL_PASSWORD"));
+        db.setDatabaseName(qEnvironmentVariable("INW_MYSQL_DATABASE"));
+        QVERIFY2(db.open(), qPrintable(db.lastError().text()));
+        QSqlQuery query(db);
+        QVERIFY2(query.exec(QStringLiteral("SELECT VERSION()")) && query.next(), qPrintable(query.lastError().text()));
+        const QString version = query.value(0).toString();
+        QString tls;
+        if (query.exec(QStringLiteral("SHOW STATUS LIKE 'Ssl_version'")) && query.next())
+            tls = query.value(1).toString();
+        qInfo().noquote() << "Połączono z serwerem" << version << "— TLS:" << (tls.isEmpty() ? QStringLiteral("brak") : tls);
+        db.close();
     }
-    QSqlDatabase::removeDatabase(QStringLiteral("sonda_qmysql"));
 }
 
 QTEST_MAIN(RepositoryTests)

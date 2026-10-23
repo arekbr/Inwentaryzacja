@@ -113,6 +113,7 @@ jobs:
           for /r %%f in (qsqlmysql.dll) do if exist "%%f" copy /y "%%f" "%QT_PATH%\plugins\sqldrivers\" || exit /b 1
           if not exist "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll" (echo Brak qsqlmysql.dll po budowie & exit /b 1)
           dumpbin /dependents "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll"
+          dumpbin /dependents "%MARIADB%\bin\libmariadb.dll"
 
       - name: Install Inno Setup
         shell: pwsh
@@ -132,8 +133,34 @@ jobs:
         shell: pwsh
         run: .\ci\package-windows.ps1 -BuildDir build-windows -OutputDir dist\windows
 
-      # Test uruchomiony z KOPII katalogu paczki, z PATH bez Qt i vcpkg — jak u usera. Brak pluginu
-      # QMYSQL albo libmariadb.dll obok exe = czerwony (paczki do 1.6.1 tego nie miały).
+      # Serwer tej samej wersji co produkcja (MariaDB 11.8, konta mysql_native_password) — sonda
+      # paczki łączy się z nim naprawdę, nie tylko ładuje plugin.
+      - name: Start MariaDB 11.8 test server
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'mariadb.zip'
+          Invoke-WebRequest 'https://archive.mariadb.org/mariadb-11.8.6/winx64-packages/mariadb-11.8.6-winx64.zip' -OutFile $zip
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne '98cb8429841fc558fbc48e8c979c3b66c88ac506d7505a589e8ac74a039b0b21') { throw "SHA256 MariaDB niezgodny: $hash" }
+          Expand-Archive $zip -DestinationPath $env:RUNNER_TEMP
+          $bin = Join-Path $env:RUNNER_TEMP 'mariadb-11.8.6-winx64\bin'
+          $data = Join-Path $env:RUNNER_TEMP 'mariadb-data'
+          & (Join-Path $bin 'mariadb-install-db.exe') "--datadir=$data" '--password=root-test'
+          if ($LASTEXITCODE -ne 0) { throw "mariadb-install-db: kod $LASTEXITCODE" }
+          Start-Process (Join-Path $bin 'mariadbd.exe') -ArgumentList "--datadir=$data", '--port=3306' -WindowStyle Hidden
+          $up = $false
+          for ($i = 0; $i -lt 60 -and -not $up; $i++) {
+            Start-Sleep -Seconds 1
+            $up = (Test-NetConnection 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue).TcpTestSucceeded
+          }
+          if (-not $up) { throw 'MariaDB nie słucha na 3306 po 60 s' }
+          & (Join-Path $bin 'mariadb.exe') -uroot -proot-test -h127.0.0.1 -e "CREATE DATABASE inw_test; CREATE USER 'inw'@'%' IDENTIFIED VIA mysql_native_password USING PASSWORD('inw-test'); GRANT ALL ON inw_test.* TO 'inw'@'%'; SELECT VERSION();"
+          if ($LASTEXITCODE -ne 0) { throw "Zakładanie konta testowego: kod $LASTEXITCODE" }
+
+      # Test z KOPII katalogu paczki, z PATH bez Qt i vcpkg — jak u usera: plugin się ładuje i łączy
+      # z MariaDB. Wynik z pliku (-o) i z konkretnej linii PASS, nie z samego kodu wyjścia — pierwszy
+      # przebieg z `&` wrócił z kodem 0 bez żadnego wyjścia. Kontrola negatywna: bez libmariadb.dll
+      # sonda MUSI być czerwona, inaczej jest ślepa.
       - name: Check QMYSQL driver in package
         shell: pwsh
         run: |
@@ -141,10 +168,28 @@ jobs:
           Copy-Item 'dist\windows\stage\Inwentaryzacja' $probe -Recurse
           Copy-Item 'build-windows\InwentaryzacjaTests.exe' $probe
           Copy-Item (Join-Path $env:QT_ROOT 'bin\Qt6Test.dll') $probe
+          Get-ChildItem $probe, (Join-Path $probe 'sqldrivers') -Filter '*.dll' | Where-Object Name -match 'mariadb|mysql|zlib' | Format-Table FullName, Length
+          function Invoke-Sonda([string]$dir, [string]$name) {
+            $out = Join-Path $env:RUNNER_TEMP "$name.txt"
+            $proc = Start-Process (Join-Path $dir 'InwentaryzacjaTests.exe') -ArgumentList 'sqlDriver_mysqlPluginLoads', '-o', "$out,txt" -WorkingDirectory $dir -Wait -PassThru -NoNewWindow
+            $text = if (Test-Path $out) { Get-Content $out -Raw } else { '(brak pliku wyniku)' }
+            Write-Host "== $name — kod wyjścia $($proc.ExitCode)"
+            Write-Host $text
+            return $text
+          }
           $env:PATH = "$env:SystemRoot\system32;$env:SystemRoot"
           $env:INW_WYMAGAJ_QMYSQL = '1'
-          & (Join-Path $probe 'InwentaryzacjaTests.exe') sqlDriver_mysqlPluginLoads
-          if ($LASTEXITCODE -ne 0) { throw "Paczka bez działającego sterownika QMYSQL (kod $LASTEXITCODE)" }
+          $env:INW_MYSQL_HOST = '127.0.0.1'
+          $env:INW_MYSQL_USER = 'inw'
+          $env:INW_MYSQL_PASSWORD = 'inw-test'
+          $env:INW_MYSQL_DATABASE = 'inw_test'
+          $result = Invoke-Sonda $probe 'sonda'
+          if ($result -notmatch 'PASS   : RepositoryTests::sqlDriver_mysqlPluginLoads\(\)') { throw 'Paczka bez działającego sterownika QMYSQL' }
+          $blind = Join-Path $env:RUNNER_TEMP 'sonda-bez-libmariadb'
+          Copy-Item $probe $blind -Recurse
+          Remove-Item (Join-Path $blind 'libmariadb.dll')
+          $negative = Invoke-Sonda $blind 'sonda-bez-libmariadb'
+          if ($negative -notmatch 'FAIL!  : RepositoryTests::sqlDriver_mysqlPluginLoads\(\)') { throw 'Sonda ślepa: bez libmariadb.dll nie jest czerwona' }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
