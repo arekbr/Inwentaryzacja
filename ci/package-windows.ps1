@@ -57,8 +57,10 @@ if (-not (Test-Path $QtMysql)) {
 }
 Copy-Item $QtMysql $SqlDriversDir -Force
 
-# Biblioteki z vcpkg obok exe: zlib1.dll oraz libmariadb.dll z zależnościami — bez libmariadb.dll
-# plugin QMYSQL się nie załaduje (dokumentacja Qt, „SQL Database Drivers”, QMYSQL na Windows).
+# Biblioteki z vcpkg obok exe: zlib (dziś z.dll) i libmariadb.dll — bez libmariadb.dll plugin QMYSQL
+# się nie załaduje (dokumentacja Qt, „SQL Database Drivers”, QMYSQL na Windows). Cały katalog bin,
+# nie lista nazw: stara lista szukała zlib1.dll, vcpkg przemianował go na z.dll i paczki 1.6.0–1.6.1
+# wyszły bez zlib (exe nie startował). Kompletność sprawdza krok „Check QMYSQL driver in package”.
 if ([string]::IsNullOrWhiteSpace($env:VCPKG_ROOT)) {
     throw 'Brak VCPKG_ROOT — skąd wziąć libmariadb.dll i zlib1.dll (vcpkg x64-windows)?'
 }
