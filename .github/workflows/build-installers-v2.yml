@@ -78,7 +78,7 @@ jobs:
           "QT_ROOT=$env:RUNNER_TEMP\Qt\6.8.2\msvc2022_64" >> $env:GITHUB_ENV
           "$env:RUNNER_TEMP\Qt\6.8.2\msvc2022_64\bin" >> $env:GITHUB_PATH
 
-      - name: Install zlib with vcpkg
+      - name: Install zlib and MariaDB Connector/C with vcpkg
         shell: pwsh
         run: |
           $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
@@ -88,9 +88,32 @@ jobs:
           if (-not (Test-Path (Join-Path $vcpkgRoot 'vcpkg.exe'))) {
             throw "Nie znaleziono vcpkg.exe w: $vcpkgRoot"
           }
-          & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows
+          & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows libmariadb:x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install: kod $LASTEXITCODE" }
           "APP_VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
           "VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
+
+      - name: Install Qt sources (qtbase)
+        shell: pwsh
+        run: python -m aqt install-src windows 6.8.2 --archives qtbase --outputdir "$env:RUNNER_TEMP\QtSrc"
+
+      # Binarki Qt nie mają pluginu QMYSQL (dokumentacja Qt „SQL Database Drivers”: z binarkami idzie
+      # SQLite, na Windows także ODBC i PostgreSQL). Budowa wg „How to Build the QMYSQL Plugin on Windows”.
+      - name: Build QMYSQL Qt plugin
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
+          call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64
+          for /f "usebackq delims=" %%i in (`qmake -query QT_INSTALL_PREFIX`) do set QT_PATH=%%i
+          set MARIADB=%APP_VCPKG_ROOT%\installed\x64-windows
+          mkdir "%RUNNER_TEMP%\build_qmysql"
+          cd /d "%RUNNER_TEMP%\build_qmysql"
+          call "%QT_PATH%\bin\qt-cmake.bat" -G Ninja "%RUNNER_TEMP%\QtSrc\6.8.2\Src\qtbase\src\plugins\sqldrivers" -DCMAKE_BUILD_TYPE=Release -DMySQL_INCLUDE_DIR="%MARIADB%\include\mysql" -DMySQL_LIBRARY="%MARIADB%\lib\libmariadb.lib" || exit /b 1
+          cmake --build . --target QMYSQLDriverPlugin || exit /b 1
+          for /r %%f in (qsqlmysql.dll) do if exist "%%f" copy /y "%%f" "%QT_PATH%\plugins\sqldrivers\" || exit /b 1
+          if not exist "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll" (echo Brak qsqlmysql.dll po budowie & exit /b 1)
+          dumpbin /dependents "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll"
+          dumpbin /dependents "%MARIADB%\bin\libmariadb.dll"
 
       - name: Install Inno Setup
         shell: pwsh
@@ -109,6 +132,92 @@ jobs:
       - name: Package installer
         shell: pwsh
         run: .\ci\package-windows.ps1 -BuildDir build-windows -OutputDir dist\windows
+
+      # Serwer tej samej wersji co produkcja (MariaDB 11.8, konta mysql_native_password) — sonda
+      # paczki łączy się z nim naprawdę, nie tylko ładuje plugin.
+      - name: Start MariaDB 11.8 test server
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:RUNNER_TEMP 'mariadb.zip'
+          Invoke-WebRequest 'https://archive.mariadb.org/mariadb-11.8.6/winx64-packages/mariadb-11.8.6-winx64.zip' -OutFile $zip
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne '98cb8429841fc558fbc48e8c979c3b66c88ac506d7505a589e8ac74a039b0b21') { throw "SHA256 MariaDB niezgodny: $hash" }
+          Expand-Archive $zip -DestinationPath $env:RUNNER_TEMP
+          $bin = Join-Path $env:RUNNER_TEMP 'mariadb-11.8.6-winx64\bin'
+          $data = Join-Path $env:RUNNER_TEMP 'mariadb-data'
+          # Hasła losowane w każdym przebiegu (literały w repo zgłaszał GitGuardian), maskowane w logu.
+          $rootPassword = [guid]::NewGuid().ToString('N')
+          $userPassword = [guid]::NewGuid().ToString('N')
+          Write-Output "::add-mask::$rootPassword"
+          Write-Output "::add-mask::$userPassword"
+          "INW_MYSQL_PASSWORD=$userPassword" >> $env:GITHUB_ENV
+          & (Join-Path $bin 'mariadb-install-db.exe') "--datadir=$data" "--password=$rootPassword"
+          if ($LASTEXITCODE -ne 0) { throw "mariadb-install-db: kod $LASTEXITCODE" }
+          Start-Process (Join-Path $bin 'mariadbd.exe') -ArgumentList "--datadir=$data", '--port=3306' -WindowStyle Hidden
+          $up = $false
+          for ($i = 0; $i -lt 60 -and -not $up; $i++) {
+            Start-Sleep -Seconds 1
+            $up = (Test-NetConnection 127.0.0.1 -Port 3306 -WarningAction SilentlyContinue).TcpTestSucceeded
+          }
+          if (-not $up) { throw 'MariaDB nie słucha na 3306 po 60 s' }
+          # Argumenty w apostrofach: bez nich PowerShell rozbił -h127.0.0.1 na kropce (pomiar CI: host „127”).
+          $env:MYSQL_PWD = $rootPassword
+          & (Join-Path $bin 'mariadb.exe') '--user=root' '--host=127.0.0.1' -e "CREATE DATABASE inw_test; CREATE USER 'inw'@'%' IDENTIFIED VIA mysql_native_password USING PASSWORD('$userPassword'); GRANT ALL ON inw_test.* TO 'inw'@'%'; SELECT VERSION();"
+          if ($LASTEXITCODE -ne 0) { throw "Zakładanie konta testowego: kod $LASTEXITCODE" }
+
+      # Test z KOPII katalogu paczki, z PATH bez Qt i vcpkg — jak u usera: plugin się ładuje i łączy
+      # z MariaDB. Wynik z pliku (-o) i z konkretnej linii PASS, nie z samego kodu wyjścia — pierwszy
+      # przebieg z `&` wrócił z kodem 0 bez żadnego wyjścia. Kontrola negatywna: bez libmariadb.dll
+      # sonda MUSI być czerwona, inaczej jest ślepa.
+      - name: Check QMYSQL driver in package
+        shell: pwsh
+        run: |
+          $probe = Join-Path $env:RUNNER_TEMP 'sonda-paczki'
+          Copy-Item 'dist\windows\stage\Inwentaryzacja' $probe -Recurse
+          Copy-Item 'build-windows\InwentaryzacjaTests.exe' $probe
+          Copy-Item (Join-Path $env:QT_ROOT 'bin\Qt6Test.dll') $probe
+          Get-ChildItem $probe, (Join-Path $probe 'sqldrivers') -Filter '*.dll' | Where-Object Name -match 'mariadb|mysql|zlib|^z\.dll' | Format-Table FullName, Length
+          # Każda biblioteka importowana przez exe i plugin musi leżeć w paczce albo w systemie: paczki
+          # 1.6.0–1.6.1 nie miały z.dll (vcpkg zmienił nazwę z zlib1.dll) i na czystym Windows nie startowały.
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $dumpbin = & $vswhere -latest -products * -find 'VC\Tools\MSVC\**\bin\Hostx64\x64\dumpbin.exe' | Select-Object -First 1
+          function Get-MissingImports([string]$dir) {
+            foreach ($binary in 'Inwentaryzacja.exe', 'sqldrivers\qsqlmysql.dll') {
+              & $dumpbin /dependents (Join-Path $dir $binary) | ForEach-Object {
+                if ($_ -match '^\s+(\S+\.dll)\s*$') {
+                  $name = $Matches[1]
+                  if ($name -notmatch '^(api|ext)-ms-' -and -not (Test-Path (Join-Path $dir $name)) -and -not (Test-Path (Join-Path "$env:SystemRoot\System32" $name))) { "$binary -> $name" }
+                }
+              }
+            }
+          }
+          $missing = @(Get-MissingImports $probe)
+          if ($missing.Count -gt 0) { throw "Brak bibliotek w paczce: $($missing -join ', ')" }
+          Write-Host 'Importy Inwentaryzacja.exe i qsqlmysql.dll: komplet'
+          $noZlib = Join-Path $env:RUNNER_TEMP 'sonda-bez-z'
+          Copy-Item $probe $noZlib -Recurse
+          Remove-Item (Join-Path $noZlib 'z.dll')
+          if (@(Get-MissingImports $noZlib).Count -eq 0) { throw 'Kontrola importów ślepa: brak z.dll niewykryty' }
+          function Invoke-Sonda([string]$dir, [string]$name) {
+            $out = Join-Path $env:RUNNER_TEMP "$name.txt"
+            $proc = Start-Process (Join-Path $dir 'InwentaryzacjaTests.exe') -ArgumentList 'sqlDriver_mysqlPluginLoads', '-o', "$out,txt" -WorkingDirectory $dir -Wait -PassThru -NoNewWindow
+            $text = if (Test-Path $out) { Get-Content $out -Raw } else { '(brak pliku wyniku)' }
+            Write-Host "== $name — kod wyjścia $($proc.ExitCode)"
+            Write-Host $text
+            return $text
+          }
+          $env:PATH = "$env:SystemRoot\system32;$env:SystemRoot"
+          $env:INW_WYMAGAJ_QMYSQL = '1'
+          $env:INW_MYSQL_HOST = '127.0.0.1'
+          $env:INW_MYSQL_USER = 'inw'
+          $env:INW_MYSQL_DATABASE = 'inw_test'  # INW_MYSQL_PASSWORD z kroku serwera (GITHUB_ENV)
+          $result = Invoke-Sonda $probe 'sonda'
+          if ($result -notmatch 'PASS   : RepositoryTests::sqlDriver_mysqlPluginLoads\(\)') { throw 'Paczka bez działającego sterownika QMYSQL' }
+          $blind = Join-Path $env:RUNNER_TEMP 'sonda-bez-libmariadb'
+          Copy-Item $probe $blind -Recurse
+          Remove-Item (Join-Path $blind 'libmariadb.dll')
+          $negative = Invoke-Sonda $blind 'sonda-bez-libmariadb'
+          if ($negative -notmatch 'FAIL!  : RepositoryTests::sqlDriver_mysqlPluginLoads\(\)') { throw 'Sonda ślepa: bez libmariadb.dll nie jest czerwona' }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -149,8 +258,23 @@ jobs:
           cmake -S . -B build-macos-intel -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_PATH"
           cmake --build build-macos-intel -j 4
 
+      - name: Check QMYSQL plugin in Qt install
+        shell: bash
+        run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-intel/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
+
+      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      - name: Import code signing identity
+        shell: bash
+        env:
+          MACOS_CODESIGN_P12_BASE64: ${{ secrets.MACOS_CODESIGN_P12_BASE64 }}
+          MACOS_CODESIGN_P12_PASSWORD: ${{ secrets.MACOS_CODESIGN_P12_PASSWORD }}
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+        run: bash ci/import-macos-codesign.sh
+
       - name: Package installer
         shell: bash
+        env:
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
         run: bash ci/package-macos.sh build-macos-intel dist/macos-intel intel
 
       - name: Upload artifact
@@ -192,8 +316,23 @@ jobs:
           cmake -S . -B build-macos-arm -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_PATH"
           cmake --build build-macos-arm -j 4
 
+      - name: Check QMYSQL plugin in Qt install
+        shell: bash
+        run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-arm/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
+
+      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      - name: Import code signing identity
+        shell: bash
+        env:
+          MACOS_CODESIGN_P12_BASE64: ${{ secrets.MACOS_CODESIGN_P12_BASE64 }}
+          MACOS_CODESIGN_P12_PASSWORD: ${{ secrets.MACOS_CODESIGN_P12_PASSWORD }}
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+        run: bash ci/import-macos-codesign.sh
+
       - name: Package installer
         shell: bash
+        env:
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
         run: bash ci/package-macos.sh build-macos-arm dist/macos-arm arm64
 
       - name: Upload artifact

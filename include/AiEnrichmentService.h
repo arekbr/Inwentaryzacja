@@ -24,8 +24,8 @@ class QNetworkReply;
 /// trzymały klucz jawnym tekstem w ini (`ai/anthropic_api_key`) — przenoszony
 /// do sejfu przy pierwszym odczycie.
 ///
-/// **Model:** Claude Opus 4.7 (`claude-opus-4-7`). Można zmienić w QSettings
-/// `ai/model` (np. `claude-sonnet-4-6` dla 3× tańszej alternatywy).
+/// **Model:** lista w `models()`, domyślnie Claude Opus 5.5 (`claude-opus-5-5`); wybór
+/// w QSettings `ai/model` (okno ustawień).
 ///
 /// **Lifetime:** instance-per-call OK (m_nam wewnętrzny). Sygnały async —
 /// caller łączy do jednego call'u, po `enrichmentReady`/`enrichmentError`
@@ -35,6 +35,25 @@ class AiEnrichmentService : public QObject
     Q_OBJECT  // sam daje tr() — Q_DECLARE_TR_FUNCTIONS jest dla NON-QObject classes
 
 public:
+    struct Model
+    {
+        const char *id;
+        const char *name;  ///< do listy w ustawieniach (QT_TRANSLATE_NOOP, kontekst AiEnrichmentService)
+        double inputUsdPerMTok;
+        double outputUsdPerMTok;
+        bool serverFallback;  ///< `fallbacks: "default"` po odmowie — Haiku 5.5 go nie obsługuje
+    };
+
+    /// Wynik odpowiedzi Messages API: opis albo komunikat błędu dla usera.
+    struct ParsedResponse
+    {
+        QString description;
+        QString model;  ///< model, który odpowiedział (po odmowie może to być model zastępczy)
+        qint64 inputTokens = 0;
+        qint64 outputTokens = 0;
+        QString error;
+    };
+
     explicit AiEnrichmentService(QObject *parent = nullptr);
     ~AiEnrichmentService() override;
 
@@ -63,13 +82,27 @@ public:
     /// klucza do ini. false + errorMessage, gdy sejf odmówił.
     static bool storeApiKey(const QString &apiKey, QString *errorMessage = nullptr);
 
-    /// Estymata kosztu w USD przed call'em (do confirm dialog).
-    /// Bardzo zgrubna: Opus 4.7 input ~$5/1M tok, output ~$25/1M tok.
-    /// Photo ~1500 tokens każde, prompt ~500, output ~800 tokens.
-    static double estimateCostUsd(int photoCount);
+    /// Modele do wyboru w ustawieniach z cennikiem; pierwszy jest domyślny.
+    static const QList<Model> &models();
+
+    /// Model z ustawień `ai/model`; spoza listy (np. z 1.6.x) = domyślny.
+    static const Model &configuredModel();
+
+    /// Wpis z models() o danym ID albo nullptr (np. model zastępczy spoza listy).
+    static const Model *findModel(const QString &id);
+
+    static double costUsd(const Model &model, qint64 inputTokens, qint64 outputTokens);
+
+    /// Zgrubna estymata kosztu w USD przed wywołaniem (okno potwierdzenia, lista modeli).
+    static double estimateCostUsd(const Model &model, int photoCount);
+
+    /// Opis z odpowiedzi Messages API: czyta bloki po typie (thinking/fallback/text),
+    /// obsługuje odmowę i ucięcie na limicie tokenów. Czysta funkcja — bez sieci.
+    static ParsedResponse parseResponse(int httpStatus, const QByteArray &body);
 
 signals:
-    void enrichmentReady(const QString &newDescription, qint64 inputTokens, qint64 outputTokens);
+    void enrichmentReady(const QString &newDescription, qint64 inputTokens, qint64 outputTokens,
+                         const QString &model);
     void enrichmentError(const QString &message);
 
 private slots:
@@ -77,7 +110,8 @@ private slots:
 
 private:
     QString readApiKey(QString *errorMessage) const;
-    QByteArray buildRequestBody(const QString &existingDescription,
+    QByteArray buildRequestBody(const Model &model,
+                                const QString &existingDescription,
                                 const QList<QByteArray> &photoBlobs,
                                 const QString &itemName,
                                 const QString &itemVendor,

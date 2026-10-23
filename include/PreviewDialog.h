@@ -29,13 +29,14 @@ signals:
 private slots:
     /// v1.5: handler "🪄 Wzbogać opis AI"
     void onEnrichClicked();
-    void onEnrichmentReady(const QString &newDescription, qint64 inTokens, qint64 outTokens);
+    void onEnrichmentReady(const QString &newDescription, qint64 inTokens, qint64 outTokens,
+                           const QString &model);
     void onEnrichmentError(const QString &message);
 
 private:
     void loadRecord();
     void loadPhotos();
-    QList<QByteArray> fetchPhotos(int limit = 0) const;  // limit <= 0 = wszystkie
+    QList<QByteArray> fetchPhotos() const;
 
     Ui::PreviewDialog *ui;
     QSqlDatabase m_db;
@@ -46,6 +47,7 @@ private:
     QString m_currentVendor;
     QString m_currentModel;
     QString m_currentDescription;
+    QList<QByteArray> m_photoBlobs;  // wszystkie zdjęcia z bazy — także te bez miniatury (dla AI)
 
     AiEnrichmentService *m_enrichService = nullptr;
     class QProgressDialog *m_busyDialog = nullptr;

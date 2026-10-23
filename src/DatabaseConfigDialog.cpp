@@ -31,6 +31,7 @@
 #include "DatabaseConfigDialog.h"
 #include "AiEnrichmentService.h"
 #include "PacmanOverlay.h"
+#include "SecretStore.h"
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
@@ -70,6 +71,10 @@ static QSettings getSettings()
     qDebug() << "Używam pliku ustawień:" << settingsPath;
     return QSettings(settingsPath, QSettings::IniFormat);
 }
+
+// Hasło MySQL w systemowym sejfie; wersje ≤ 1.6.1 trzymały je jawnym tekstem w ini pod tym kluczem.
+static QString mysqlPasswordAccount() { return QStringLiteral("mysql_password"); }
+static QString mysqlPasswordIniKey() { return QStringLiteral("Database/MySQL/Password"); }
 
 /**
  * @brief Konstruktor klasy DatabaseConfigDialog.
@@ -129,8 +134,9 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
     ui->databaseLineEdit->setText(
         settings.value("Database/MySQL/Database", "nazwa_bazy").toString());
     ui->userLineEdit->setText(settings.value("Database/MySQL/User", "user").toString());
-    ui->passwordLineEdit->setText(
-        settings.value("Database/MySQL/Password", "").toString());
+    const SecretStore::ReadResult storedPassword =
+        SecretStore::read(mysqlPasswordAccount(), mysqlPasswordIniKey());
+    ui->passwordLineEdit->setText(storedPassword.value);
     ui->portSpinBox->setValue(settings.value("Database/MySQL/Port", 3306).toInt());
 
     QString savedSkin = settings.value("skin", "Standard").toString();
@@ -168,6 +174,27 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             }
         } });
 
+    // Ostrzeżenie o haśle tylko przy problemie z sejfem — w głównym układzie, nie na stronie
+    // MySQL (zawijana etykieta w QStackedWidget ściskała pola, patrz adjustSize() niżej).
+    if (storedPassword.stillInIni || !storedPassword.keychainError.isEmpty())
+    {
+        const QString reason = storedPassword.keychainError.isEmpty() ? tr("odczyt zwrotny niezgodny")
+                                                                      : storedPassword.keychainError;
+        auto *passwordWarning = new QLabel(
+            QStringLiteral("⚠ ")
+                + (storedPassword.stillInIni
+                       ? tr("Hasło MySQL nadal leży jawnym tekstem w pliku ustawień — systemowy sejf "
+                            "odmówił zapisu: %1")
+                       : tr("Nie udało się odczytać hasła MySQL z systemowego sejfu: %1"))
+                      .arg(reason),
+            this);
+        passwordWarning->setObjectName(QStringLiteral("mysqlPasswordWarning"));
+        passwordWarning->setStyleSheet(QStringLiteral("color: #b00020; font-size: 11px; padding: 4px;"));
+        passwordWarning->setWordWrap(true);
+        if (auto *mainLayout = qobject_cast<QVBoxLayout *>(this->layout()))
+            mainLayout->insertWidget(mainLayout->count() - 1, passwordWarning);  // przed buttonBox
+    }
+
     // ============================================================
     // v1.5: Sekcja AI (Anthropic Claude) — klucz API + model + opcje
     // ============================================================
@@ -187,12 +214,15 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
 
         auto *modelCombo = new QComboBox(aiGroup);
         modelCombo->setObjectName(QStringLiteral("aiModelCombo"));
-        modelCombo->addItem(tr("Claude Opus 4.7 (najlepszy, ~$0.04/wywołanie)"),
-                            QStringLiteral("claude-opus-4-7"));
-        modelCombo->addItem(tr("Claude Sonnet 4.6 (3× tańszy, prawie tak dobry)"),
-                            QStringLiteral("claude-sonnet-4-6"));
-        const QString savedModel = settings.value(QStringLiteral("ai/model"),
-                                                  QStringLiteral("claude-opus-4-7")).toString();
+        // Koszt dla 2 zdjęć — eksponat w bazie ma ich średnio 1,5 (pomiar 23.10.2026).
+        for (const AiEnrichmentService::Model &model : AiEnrichmentService::models())
+            modelCombo->addItem(tr("%1 (~$%2/wywołanie)")
+                                    .arg(QCoreApplication::translate("AiEnrichmentService", model.name),
+                                         QString::number(AiEnrichmentService::estimateCostUsd(model, 2),
+                                                         'f', 3)),
+                                QString::fromLatin1(model.id));
+        // Model spoza listy (np. claude-opus-4-7 z 1.6.x) → domyślny, zapisany przy OK.
+        const QString savedModel = settings.value(QStringLiteral("ai/model")).toString();
         const int modelIdx = modelCombo->findData(savedModel);
         modelCombo->setCurrentIndex(modelIdx >= 0 ? modelIdx : 0);
         aiLayout->addRow(tr("Model:"), modelCombo);
@@ -280,9 +310,25 @@ void DatabaseConfigDialog::accept()
     settings.setValue("Database/MySQL/Host", ui->hostLineEdit->text());
     settings.setValue("Database/MySQL/Database", ui->databaseLineEdit->text());
     settings.setValue("Database/MySQL/User", ui->userLineEdit->text());
-    settings.setValue("Database/MySQL/Password", ui->passwordLineEdit->text());
     settings.setValue("Database/MySQL/Port", ui->portSpinBox->value());
     settings.setValue("skin", ui->filterSelectSkin->currentText());
+
+    // Hasło do sejfu i tylko po zmianie pola — ta sama zasada co klucz API niżej. Gdy sejf
+    // odmówi, hasło działa w tej sesji (main.cpp bierze je z pola), ale nie trafia jawnie do ini.
+    if (ui->passwordLineEdit->isModified())
+    {
+        setEnabled(false);
+        QString keychainError;
+        const bool stored = SecretStore::write(mysqlPasswordAccount(), mysqlPasswordIniKey(),
+                                               ui->passwordLineEdit->text(), &keychainError);
+        setEnabled(true);
+        if (!stored)
+            QMessageBox::warning(this, tr("Hasło MySQL"),
+                                 tr("Nie udało się zapisać hasła w systemowym sejfie: %1. "
+                                    "Hasło działa do zamknięcia aplikacji — przy następnym starcie "
+                                    "trzeba będzie wpisać je ponownie.")
+                                     .arg(keychainError));
+    }
 
     // v1.5: zapis ustawień AI (widgety dodane dynamicznie, lookup przez findChild)
     // Klucz idzie do systemowego sejfu i tylko po zmianie pola — puste pole po nieudanym
