@@ -4,9 +4,11 @@
 #include "AiEnrichmentService.h"
 #include "EnrichPreviewDialog.h"
 #include "ItemRepository.h"
+#include "fullscreenphotoviewer.h"
 
 #include <QCheckBox>
 #include <QHBoxLayout>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QPushButton>
@@ -36,13 +38,24 @@ PreviewDialog::PreviewDialog(QSqlDatabase db, const QString &recordId, QWidget *
         enrichBtn->setStyleSheet(QStringLiteral(
             "background-color: #1976d2; color: white; padding: 6px 12px; "
             "border-radius: 4px; font-weight: bold;"));
-        // Insert na początku button row (przed Edit)
-        if (auto *row = qobject_cast<QHBoxLayout *>(ui->editButton->parentWidget()->layout()))
-            row->insertWidget(0, enrichBtn);
+        // Insert na początku button row (przed Edit). Układ wprost z .ui — rodzic przycisku Edytuj
+        // to okno z układem PIONOWYM, więc rzutowanie jego layout() na QHBoxLayout dawało nullptr
+        // i przycisk wisiał bez układu, ucięty w lewym górnym rogu (1.5.0–1.6.0).
+        ui->buttonLayout->insertWidget(0, enrichBtn);
         connect(enrichBtn, &QPushButton::clicked, this, &PreviewDialog::onEnrichClicked);
     }
 
+    connect(ui->photosList, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem *item)
+            {
+                // Pełne zdjęcie dekodowane dopiero teraz — w pozycji trzymamy bajty JPEG/PNG,
+                // nie zdekodowany obraz (zdjęcie z aparatu to kilkadziesiąt MB w pamięci).
+                QPixmap original;
+                if (original.loadFromData(item->data(Qt::UserRole).toByteArray()))
+                    (new FullScreenPhotoViewer(original, this))->show();  // WA_DeleteOnClose
+            });
+
     loadRecord();
+    loadPhotos();
 }
 
 PreviewDialog::~PreviewDialog()
@@ -52,6 +65,12 @@ PreviewDialog::~PreviewDialog()
 
 void PreviewDialog::loadRecord()
 {
+    // Do wczytania (i przy błędzie odczytu) pola pokazują „—”, nie puste miejsca.
+    for (QLabel *label : {ui->valueType, ui->valueVendor, ui->valueModel, ui->valueSerial,
+                          ui->valuePartNumber, ui->valueRevision, ui->valueYear, ui->valueStatus,
+                          ui->valueStorage, ui->valuePackaging})
+        label->setText(QStringLiteral("—"));
+
     QSqlQuery q(m_db);
     q.prepare(
         "SELECT eksponaty.name, eksponaty.serial_number, eksponaty.part_number, "
@@ -103,20 +122,21 @@ void PreviewDialog::loadRecord()
         metaParts << QString::number(year);
     ui->metaLabel->setText(metaParts.join(QStringLiteral(" · ")));
 
-    QStringList detailParts;
-    if (!serial.isEmpty())
-        detailParts << tr("S/N: %1").arg(serial);
-    if (!partNum.isEmpty())
-        detailParts << tr("P/N: %1").arg(partNum);
-    if (!revision.isEmpty())
-        detailParts << tr("Rev: %1").arg(revision);
-    if (!status.isEmpty())
-        detailParts << tr("Status: %1").arg(status);
-    if (!storage.isEmpty())
-        detailParts << tr("Miejsce: %1").arg(storage);
-    if (origPack)
-        detailParts << tr("Oryginalne opakowanie");
-    ui->detailsLabel->setText(detailParts.join(QStringLiteral("  |  ")));
+    // Wszystkie pola tylko do odczytu; puste jako „—”, żeby było widać, że pole istnieje.
+    const auto showField = [](QLabel *label, const QString &value)
+    {
+        label->setText(value.isEmpty() ? QStringLiteral("—") : value);
+    };
+    showField(ui->valueType, type);
+    showField(ui->valueVendor, vendor);
+    showField(ui->valueModel, model);
+    showField(ui->valueSerial, serial);
+    showField(ui->valuePartNumber, partNum);
+    showField(ui->valueRevision, revision);
+    showField(ui->valueYear, year > 0 ? QString::number(year) : QString());
+    showField(ui->valueStatus, status);
+    showField(ui->valueStorage, storage);
+    ui->valuePackaging->setText(origPack ? tr("Tak") : tr("Nie"));
 
     ui->descriptionView->setMarkdown(description);
 
@@ -127,11 +147,33 @@ void PreviewDialog::loadRecord()
     m_currentDescription = description;
 }
 
+void PreviewDialog::loadPhotos()
+{
+    // Ta sama ścieżka SQL co zdjęcia dla AI (fetchPhotos). Zdekodowana zostaje tylko miniatura.
+    ui->photosList->clear();
+    for (const QByteArray &blob : fetchPhotos())
+    {
+        QPixmap pixmap;
+        if (!pixmap.loadFromData(blob))
+        {
+            qWarning() << "PreviewDialog: nie można odczytać zdjęcia eksponatu" << m_recordId;
+            continue;
+        }
+        const QPixmap thumbnail = pixmap.scaled(ui->photosList->iconSize(),
+                                                Qt::KeepAspectRatio,
+                                                Qt::SmoothTransformation);
+        auto *item = new QListWidgetItem(QIcon(thumbnail), QString(), ui->photosList);
+        item->setData(Qt::UserRole, blob);
+    }
+    ui->photosList->setVisible(ui->photosList->count() > 0);
+}
+
 QList<QByteArray> PreviewDialog::fetchPhotos(int limit) const
 {
     QList<QByteArray> photos;
     QSqlQuery q(m_db);
-    q.prepare(QStringLiteral("SELECT photo FROM photos WHERE eksponat_id = :id LIMIT %1").arg(limit));
+    q.prepare(QStringLiteral("SELECT photo FROM photos WHERE eksponat_id = :id")
+              + (limit > 0 ? QStringLiteral(" LIMIT %1").arg(limit) : QString()));
     q.bindValue(QStringLiteral(":id"), m_recordId);
     if (!q.exec())
     {
@@ -229,6 +271,7 @@ void PreviewDialog::onEnrichmentReady(const QString &newDescription, qint64 inTo
 
     // Reload preview — descriptionView pokaże nowy markdown
     loadRecord();
+    emit descriptionChanged(m_recordId);
     QMessageBox::information(this, tr("Zapisano"),
                              tr("Nowy opis został zapisany w bazie."));
 }

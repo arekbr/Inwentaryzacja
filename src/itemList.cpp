@@ -304,6 +304,8 @@ itemList::itemList(QWidget *parent)
                 auto *preview = new PreviewDialog(QSqlDatabase::database("default_connection"), recordId, this);
                 preview->setAttribute(Qt::WA_DeleteOnClose);
                 connect(preview, &PreviewDialog::editRequested, this, &itemList::openRecordWindowForEdit);
+                // Nowy opis z „Wzbogać opis AI” — odświeżenie wiersza i panelu opisu na liście.
+                connect(preview, &PreviewDialog::descriptionChanged, this, &itemList::onRecordSaved);
                 preview->show();
             });
 
@@ -574,26 +576,28 @@ void itemList::refreshFilters()
  * Wczytuje zdjęcia powiązane z wybranym eksponatem z tabeli photos i wyświetla ich miniatury
  * w QGraphicsView.
  */
-void itemList::onTableViewSelectionChanged(const QItemSelection &selected, const QItemSelection &)
+void itemList::onTableViewSelectionChanged(const QItemSelection &, const QItemSelection &)
 {
-    if (selected.indexes().isEmpty())
+    // Stan z selectedRows(), nie z delty `selected`: odznaczenie Ctrl-klikiem jednego z dwóch
+    // wierszy przychodzi z pustym `selected`, choć jeden wiersz zostaje zaznaczony.
+    const QModelIndexList rows = ui->itemList_tableView->selectionModel()
+                                     ? ui->itemList_tableView->selectionModel()->selectedRows()
+                                     : QModelIndexList();
+    if (rows.size() != 1)
     {
         replaceScene(ui->itemList_graphicsView, nullptr);
+        ui->itemList_descriptionView->clear();
         m_currentRecordId.clear();
         return;
     }
 
-    if (ui->itemList_tableView->selectionModel()
-        && ui->itemList_tableView->selectionModel()->selectedRows().size() != 1)
-    {
-        replaceScene(ui->itemList_graphicsView, nullptr);
-        m_currentRecordId.clear();
-        return;
-    }
-
-    QModelIndex proxyIndex = selected.indexes().first();
+    QModelIndex proxyIndex = rows.first();
     QModelIndex srcIndex = m_proxyModel->mapToSource(proxyIndex);
     m_currentRecordId = m_sourceModel->data(m_sourceModel->index(srcIndex.row(), 0)).toString();
+
+    // Kolumna 11 = description (pełny tekst jest już w modelu tabeli — bez dodatkowego SELECT).
+    ui->itemList_descriptionView->setMarkdown(
+        m_sourceModel->data(m_sourceModel->index(srcIndex.row(), 11)).toString());
 
     PhotoService photoService(QSqlDatabase::database("default_connection"));
     QString errorMessage;
@@ -1256,6 +1260,12 @@ void itemList::refreshList(const QString &recordId)
     }
     ui->itemList_tableView->resizeColumnsToContents();
     qDebug() << "itemList: Tabela odświeżona, wierszy w źródle:" << m_sourceModel->rowCount();
+
+    // select() resetuje model i po cichu (bez selectionChanged) czyści zaznaczenie — czyścimy
+    // zdjęcia i opis; ponowne zaznaczenie rekordu niżej wypełni je od nowa.
+    replaceScene(ui->itemList_graphicsView, nullptr);
+    ui->itemList_descriptionView->clear();
+    m_currentRecordId.clear();
 
     refreshFilters();
     qDebug() << "itemList: Filtry odświeżone";
