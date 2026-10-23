@@ -174,14 +174,40 @@
    <item>
     <layout class="QGridLayout" name="bottomLayout">
      <item row="0" column="0">
-      <widget class="QGraphicsView" name="itemList_graphicsView">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="galleryLayout" stretch="2,3">
+       <item>
+        <widget class="QGraphicsView" name="itemList_graphicsView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="itemList_descriptionView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+         <property name="openLinks">
+          <bool>false</bool>
+         </property>
+         <property name="placeholderText">
+          <string>Zaznacz eksponat, żeby zobaczyć opis</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QTextBrowser { color: #111; background-color: #ffffff; padding: 8px; }</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item row="0" column="1">
       <layout class="QVBoxLayout" name="buttonsLayout">

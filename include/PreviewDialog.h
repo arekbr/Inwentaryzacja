@@ -23,6 +23,8 @@ public:
 
 signals:
     void editRequested(const QString &recordId);
+    /// Opis zapisany w bazie (np. po „Wzbogać opis AI”) — lista odświeża wiersz i panel opisu.
+    void descriptionChanged(const QString &recordId);
 
 private slots:
     /// v1.5: handler "🪄 Wzbogać opis AI"
@@ -32,7 +34,8 @@ private slots:
 
 private:
     void loadRecord();
-    QList<QByteArray> fetchPhotos(int limit) const;
+    void loadPhotos();
+    QList<QByteArray> fetchPhotos(int limit = 0) const;  // limit <= 0 = wszystkie
 
     Ui::PreviewDialog *ui;
     QSqlDatabase m_db;
