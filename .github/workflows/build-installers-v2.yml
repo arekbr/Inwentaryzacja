@@ -262,7 +262,7 @@ jobs:
         shell: bash
         run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-intel/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
 
-      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      # Stała tożsamość podpisu (sekrety repo) — wymaganie podpisu oparte na certyfikacie (pytanie Pęku kluczy po aktualizacji zostaje, ci/import-macos-codesign.sh).
       - name: Import code signing identity
         shell: bash
         env:
@@ -320,7 +320,7 @@ jobs:
         shell: bash
         run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-arm/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
 
-      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      # Stała tożsamość podpisu (sekrety repo) — wymaganie podpisu oparte na certyfikacie (pytanie Pęku kluczy po aktualizacji zostaje, ci/import-macos-codesign.sh).
       - name: Import code signing identity
         shell: bash
         env:
