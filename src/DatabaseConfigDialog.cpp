@@ -218,6 +218,11 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
         }
     }
 
+    // Rozmiar z .ui (491×373) jest mniejszy niż potrzeba po dodaniu sekcji AI, więc okno
+    // startowało w rozmiarze minimalnym. Minimum nie uwzględnia zawijanej etykiety
+    // (heightForWidth), przez co układ ściskał pola MySQL poniżej wysokości tekstu.
+    adjustSize();
+
     // Pacman easter egg (usuń lub ogranicz do pól tekstowych)
     QTimer *pacmanTimer = new QTimer(this);
     pacmanTimer->setSingleShot(true);
