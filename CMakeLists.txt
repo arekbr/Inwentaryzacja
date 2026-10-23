@@ -127,7 +127,9 @@ qt6_add_executable(${PROJECT_NAME}Tests
     include/photoitem.h
     include/PreviewDialog.h
     include/AiEnrichmentService.h
+    include/DatabaseConfigDialog.h
     include/EnrichPreviewDialog.h
+    include/SecretStore.h
     include/fullscreenphotoviewer.h
     include/PacmanOverlay.h
     include/PacmanAnimationModel.h
@@ -149,7 +151,9 @@ qt6_add_executable(${PROJECT_NAME}Tests
     src/photoitem.cpp
     src/PreviewDialog.cpp
     src/AiEnrichmentService.cpp
+    src/DatabaseConfigDialog.cpp
     src/EnrichPreviewDialog.cpp
+    src/SecretStore.cpp
     src/fullscreenphotoviewer.cpp
     src/PacmanOverlay.cpp
     src/PacmanAnimationModel.cpp
@@ -206,7 +210,9 @@ if(APPLE)
     add_test(NAME keychain_tests COMMAND ${PROJECT_NAME}Tests
         aiApiKey_storesReadsAndDeletesInKeychain
         aiApiKey_migratesLegacyIniKeyToKeychain
-        aiApiKey_storeRemovesLegacyIniKey)
+        aiApiKey_storeRemovesLegacyIniKey
+        mysqlPassword_configDialogMigratesIniPasswordToKeychain
+        mysqlPassword_configDialogStoresChangedPasswordInKeychain)
     # Zablokowany pęk kluczy / brak sesji GUI = czekanie bez końca — niech CTest to przerwie.
     set_tests_properties(keychain_tests PROPERTIES TIMEOUT 60)
 endif()

@@ -1,6 +1,7 @@
 #include <QtTest>
 
 #include "AiEnrichmentService.h"
+#include "DatabaseConfigDialog.h"
 #include "DictionaryRepository.h"
 #include "DatabaseMigration.h"
 #include "DatabaseBackupService.h"
@@ -57,6 +58,37 @@ public:
 private:
     QByteArray m_previous;
 };
+
+// Wpisy sejfu testowego wprost przez QtKeychain, z pominięciem kodu aplikacji — test hasła MySQL
+// ma być czerwony także na wersji, która w ogóle nie zapisuje hasła w sejfie.
+static void runTestKeychainJob(QKeychain::Job &job, const QString &account)
+{
+    job.setAutoDelete(false);
+    job.setKey(account);
+    QEventLoop loop;
+    QObject::connect(&job, &QKeychain::Job::finished, &loop, &QEventLoop::quit);
+    job.start();
+    loop.exec();
+}
+
+static QString readTestKeychain(const QString &account)
+{
+    QKeychain::ReadPasswordJob job(QStringLiteral("Inwentaryzacja-test"));
+    runTestKeychainJob(job, account);
+    return job.error() == QKeychain::NoError ? job.textData() : QString();
+}
+
+static void deleteTestKeychain(const QString &account)
+{
+    QKeychain::DeletePasswordJob job(QStringLiteral("Inwentaryzacja-test"));
+    runTestKeychainJob(job, account);
+}
+
+static QString testIniPath()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+           + QStringLiteral("/inwentaryzacja.ini");
+}
 
 // Zrzut widżetu do przeglądu wizualnego zmian UI: INW_ZRZUTY=<katalog> ./InwentaryzacjaTests
 // (na platformie cocoa — offscreen nie rysuje stylu systemu). Bez zmiennej nic nie robi.
@@ -115,6 +147,12 @@ private slots:
     void previewDialog_enrichButtonInButtonRow();
     void previewDialog_showsPhotosAndFields();
     void itemList_showsDescriptionOfSelectedRow();
+    void mysqlPassword_configDialogMigratesIniPasswordToKeychain();
+    void mysqlPassword_configDialogStoresChangedPasswordInKeychain();
+    void aiResponse_readsBlocksByType();
+    void aiModels_unknownSavedModelFallsBackToDefault();
+    void aiEnrichment_realCallReturnsDescription();
+    void sqlDriver_mysqlPluginLoads();
 
 private:
     QString keychainSkipReason() const;
@@ -1317,6 +1355,189 @@ void RepositoryTests::itemList_showsDescriptionOfSelectedRow()
              remainingName == item.name ? QStringLiteral("Opis widoczny na liście")
                                         : QStringLiteral("Opis drugiego"));
     window.close();
+}
+
+void RepositoryTests::mysqlPassword_configDialogMigratesIniPasswordToKeychain()
+{
+    const QString skipReason = keychainSkipReason();
+    if (!skipReason.isEmpty())
+        QSKIP(qPrintable(skipReason));
+    const auto removeEntry = qScopeGuard([] { deleteTestKeychain(QStringLiteral("mysql_password")); });
+
+    // Wersje ≤ 1.6.1 trzymały hasło jawnym tekstem w ini.
+    {
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        settings.setValue(QStringLiteral("Database/MySQL/Password"), QStringLiteral("haslo-TEST-z-ini"));
+    }
+    {
+        DatabaseConfigDialog dialog;
+        QCOMPARE(dialog.mysqlPassword(), QStringLiteral("haslo-TEST-z-ini"));
+    }
+    {
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        QVERIFY(!settings.contains(QStringLiteral("Database/MySQL/Password")));
+    }
+    QCOMPARE(readTestKeychain(QStringLiteral("mysql_password")), QStringLiteral("haslo-TEST-z-ini"));
+
+    // Ini jest już bez hasła — następne okno bierze je z sejfu.
+    DatabaseConfigDialog dialog;
+    QCOMPARE(dialog.mysqlPassword(), QStringLiteral("haslo-TEST-z-ini"));
+    saveScreenshotIfRequested(dialog, QStringLiteral("konfiguracja-bazy"));
+}
+
+void RepositoryTests::mysqlPassword_configDialogStoresChangedPasswordInKeychain()
+{
+    const QString skipReason = keychainSkipReason();
+    if (!skipReason.isEmpty())
+        QSKIP(qPrintable(skipReason));
+    const auto removeEntry = qScopeGuard([] { deleteTestKeychain(QStringLiteral("mysql_password")); });
+
+    {
+        DatabaseConfigDialog dialog;
+        auto *passwordEdit = dialog.findChild<QLineEdit *>(QStringLiteral("passwordLineEdit"));
+        QVERIFY(passwordEdit);
+        passwordEdit->setText(QStringLiteral("haslo-TEST-nowe"));
+        passwordEdit->setModified(true);  // jak po wpisaniu z klawiatury
+        dialog.accept();
+    }
+    {
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        QVERIFY(!settings.contains(QStringLiteral("Database/MySQL/Password")));
+    }
+    QCOMPARE(readTestKeychain(QStringLiteral("mysql_password")), QStringLiteral("haslo-TEST-nowe"));
+
+    // OK bez zmiany pola nie rusza sejfu (pusty odczyt po odmowie sejfu nie może skasować hasła).
+    {
+        DatabaseConfigDialog dialog;
+        QCOMPARE(dialog.mysqlPassword(), QStringLiteral("haslo-TEST-nowe"));
+        dialog.accept();
+    }
+    QCOMPARE(readTestKeychain(QStringLiteral("mysql_password")), QStringLiteral("haslo-TEST-nowe"));
+}
+
+void RepositoryTests::aiResponse_readsBlocksByType()
+{
+    // Modele 5.5 zawsze myślą: pierwszy blok to `thinking` (1.6.1 brał content[0] i zgłaszał błąd).
+    AiEnrichmentService::ParsedResponse parsed = AiEnrichmentService::parseResponse(200, R"({
+        "model": "claude-opus-5-5", "stop_reason": "end_turn",
+        "content": [{"type": "thinking", "thinking": "", "signature": "x"},
+                    {"type": "text", "text": "Opis **Amigi**"}],
+        "usage": {"input_tokens": 5000, "output_tokens": 1200}})");
+    QVERIFY2(parsed.error.isEmpty(), qPrintable(parsed.error));
+    QCOMPARE(parsed.description, QStringLiteral("Opis **Amigi**"));
+    QCOMPARE(parsed.model, QStringLiteral("claude-opus-5-5"));  // cena wg modelu, który odpowiedział
+    QCOMPARE(parsed.inputTokens, 5000);
+    QCOMPARE(parsed.outputTokens, 1200);
+
+    // Model zastępczy po odmowie: opis to tekst po bloku `fallback`, nie urwany fragment przed nim.
+    parsed = AiEnrichmentService::parseResponse(200, R"({
+        "stop_reason": "end_turn",
+        "content": [{"type": "text", "text": "urwany fragment"},
+                    {"type": "fallback", "from": {"model": "claude-opus-5-5"}, "to": {"model": "claude-opus-4-8"}},
+                    {"type": "text", "text": "Pełny opis"}],
+        "usage": {"input_tokens": 10, "output_tokens": 20}})");
+    QVERIFY2(parsed.error.isEmpty(), qPrintable(parsed.error));
+    QCOMPARE(parsed.description, QStringLiteral("Pełny opis"));
+
+    // Odmowa przychodzi jako HTTP 200.
+    parsed = AiEnrichmentService::parseResponse(200, R"({
+        "stop_reason": "refusal", "stop_details": {"type": "refusal", "category": "cyber"}, "content": []})");
+    QVERIFY(parsed.description.isEmpty());
+    QVERIFY2(parsed.error.contains(QStringLiteral("cyber")), qPrintable(parsed.error));
+
+    // Ucięcie na limicie tokenów = błąd, nie połowa opisu.
+    parsed = AiEnrichmentService::parseResponse(200, R"({
+        "stop_reason": "max_tokens", "content": [{"type": "text", "text": "Pół opisu"}]})");
+    QVERIFY(parsed.description.isEmpty());
+    QVERIFY(!parsed.error.isEmpty());
+
+    parsed = AiEnrichmentService::parseResponse(400, R"({
+        "type": "error", "error": {"type": "invalid_request_error", "message": "zły model"}})");
+    QVERIFY2(parsed.error.contains(QStringLiteral("zły model")), qPrintable(parsed.error));
+}
+
+void RepositoryTests::aiModels_unknownSavedModelFallsBackToDefault()
+{
+    const auto restore = qScopeGuard([] {
+        QSettings(testIniPath(), QSettings::IniFormat).remove(QStringLiteral("ai/model"));
+    });
+    const auto saveModel = [](const QString &id) {
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        settings.setValue(QStringLiteral("ai/model"), id);
+        settings.sync();
+    };
+
+    // 1.6.x zapisywało claude-opus-4-7 — koszt i zapytanie mają dotyczyć modelu z listy.
+    saveModel(QStringLiteral("claude-opus-4-7"));
+    QCOMPARE(QLatin1String(AiEnrichmentService::configuredModel().id), QLatin1String("claude-opus-5-5"));
+    QVERIFY(AiEnrichmentService::configuredModel().serverFallback);
+
+    saveModel(QStringLiteral("claude-haiku-5-5"));
+    QCOMPARE(QLatin1String(AiEnrichmentService::configuredModel().id), QLatin1String("claude-haiku-5-5"));
+    QVERIFY(!AiEnrichmentService::configuredModel().serverFallback);
+
+    for (const AiEnrichmentService::Model &model : AiEnrichmentService::models())
+        QVERIFY(AiEnrichmentService::estimateCostUsd(model, 2) > 0.0);
+}
+
+void RepositoryTests::aiEnrichment_realCallReturnsDescription()
+{
+    // Płatne wywołanie prawdziwego API (każdy model z listy) — tylko na żądanie:
+    // INW_PRAWDZIWE_AI=1 [INW_ZDJECIE=zdjecie.jpg] ./InwentaryzacjaTests aiEnrichment_realCallReturnsDescription
+    if (qEnvironmentVariableIsEmpty("INW_PRAWDZIWE_AI"))
+        QSKIP("Płatne wywołanie API — uruchom z INW_PRAWDZIWE_AI=1.");
+    QVERIFY2(!qEnvironmentVariableIsEmpty("ANTHROPIC_API_KEY"), "Ustaw ANTHROPIC_API_KEY.");
+
+    QByteArray photo = createPhotoBytes();
+    if (const QString path = qEnvironmentVariable("INW_ZDJECIE"); !path.isEmpty())
+    {
+        QFile file(path);
+        QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(path));
+        photo = file.readAll();
+    }
+
+    const auto restore = qScopeGuard([] {
+        QSettings(testIniPath(), QSettings::IniFormat).remove(QStringLiteral("ai/model"));
+    });
+    for (const AiEnrichmentService::Model &model : AiEnrichmentService::models())
+    {
+        {
+            QSettings settings(testIniPath(), QSettings::IniFormat);
+            settings.setValue(QStringLiteral("ai/model"), QString::fromLatin1(model.id));
+        }
+        AiEnrichmentService service;
+        QSignalSpy ready(&service, &AiEnrichmentService::enrichmentReady);
+        QSignalSpy failed(&service, &AiEnrichmentService::enrichmentError);
+        QElapsedTimer timer;
+        timer.start();
+        service.enrichDescription(QString(), {photo}, QStringLiteral("Commodore 64"),
+                                  QStringLiteral("Commodore"), QStringLiteral("C64"));
+        QTRY_VERIFY_WITH_TIMEOUT(ready.count() + failed.count() > 0, 200000);
+        QVERIFY2(failed.isEmpty(), qPrintable(failed.isEmpty() ? QString() : failed.first().first().toString()));
+
+        const qint64 inputTokens = ready.first().at(1).toLongLong();
+        const qint64 outputTokens = ready.first().at(2).toLongLong();
+        qInfo().noquote() << model.id << "czas" << timer.elapsed() << "ms, tokeny" << inputTokens << "/"
+                          << outputTokens << "koszt $" << AiEnrichmentService::costUsd(model, inputTokens, outputTokens)
+                          << "estymata $" << AiEnrichmentService::estimateCostUsd(model, 1) << "opis"
+                          << ready.first().at(0).toString().size() << "znaków";
+        QVERIFY(!ready.first().at(0).toString().trimmed().isEmpty());
+    }
+}
+
+void RepositoryTests::sqlDriver_mysqlPluginLoads()
+{
+    // Paczki Windows do 1.6.1 nie miały pluginu QMYSQL. CI uruchamia ten test z katalogu paczki
+    // (INW_WYMAGAJ_QMYSQL=1) — brak pluginu albo libmariadb.dll obok exe ma być czerwony.
+    if (qEnvironmentVariableIsEmpty("INW_WYMAGAJ_QMYSQL"))
+        QSKIP("Sprawdzenie paczki — uruchom z INW_WYMAGAJ_QMYSQL=1.");
+    QVERIFY2(QSqlDatabase::isDriverAvailable(QStringLiteral("QMYSQL")),
+             qPrintable(QStringLiteral("Dostępne sterowniki: ") + QSqlDatabase::drivers().join(QStringLiteral(", "))));
+    {
+        const QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QMYSQL"), QStringLiteral("sonda_qmysql"));
+        QVERIFY2(db.isValid(), "Plugin QMYSQL się nie załadował (brak biblioteki libmariadb obok programu?)");
+    }
+    QSqlDatabase::removeDatabase(QStringLiteral("sonda_qmysql"));
 }
 
 QTEST_MAIN(RepositoryTests)

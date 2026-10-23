@@ -1,4 +1,5 @@
 #include "EnrichPreviewDialog.h"
+#include "AiEnrichmentService.h"
 
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
@@ -11,6 +12,7 @@ EnrichPreviewDialog::EnrichPreviewDialog(const QString &oldDescription,
                                          const QString &newDescription,
                                          qint64 inputTokens,
                                          qint64 outputTokens,
+                                         const QString &model,
                                          QWidget *parent)
     : QDialog(parent)
     , m_newDescription(newDescription)
@@ -20,14 +22,18 @@ EnrichPreviewDialog::EnrichPreviewDialog(const QString &oldDescription,
 
     auto *root = new QVBoxLayout(this);
 
-    // Header info — token usage + cost estimate
-    // Opus 4.7: $5/1M input, $25/1M output (per AiEnrichmentService::estimateCostUsd)
-    const double cost = (inputTokens / 1'000'000.0) * 5.0
-                      + (outputTokens / 1'000'000.0) * 25.0;
-    auto *header = new QLabel(tr("Tokeny: %1 wejście, %2 wyjście  •  Szacunkowy koszt: $%3")
-                              .arg(inputTokens).arg(outputTokens)
-                              .arg(QString::number(cost, 'f', 4)),
-                              this);
+    // Header info — token usage + koszt wg cennika modelu, który odpowiedział (po odmowie
+    // może to być model zastępczy spoza listy — wtedy ceny nie znamy).
+    const AiEnrichmentService::Model *answered = AiEnrichmentService::findModel(model);
+    const QString tokens = tr("Tokeny: %1 wejście, %2 wyjście").arg(inputTokens).arg(outputTokens);
+    auto *header = new QLabel(
+        answered ? tr("%1  •  Szacunkowy koszt: $%2")
+                       .arg(tokens, QString::number(AiEnrichmentService::costUsd(*answered, inputTokens,
+                                                                                outputTokens),
+                                                    'f', 4))
+                 : tr("%1  •  Odpowiedział model zastępczy %2 — jego cennika aplikacja nie zna")
+                       .arg(tokens, model),
+        this);
     header->setStyleSheet(QStringLiteral("color: #888; padding: 4px 8px; font-size: 11px;"));
     root->addWidget(header);
 

@@ -21,6 +21,7 @@ public:
                                  const QString &newDescription,
                                  qint64 inputTokens,
                                  qint64 outputTokens,
+                                 const QString &model,
                                  QWidget *parent = nullptr);
 
     QString newDescription() const { return m_newDescription; }
