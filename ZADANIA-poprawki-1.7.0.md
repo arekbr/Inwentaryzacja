@@ -24,6 +24,7 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
 
 - **CO:** CI podpisuje `.app` własnym certyfikatem (samopodpisanym, 10 lat), a nie ad hoc — wymaganie
   podpisu (`designated`) przestaje zależeć od skrótu binarki, więc pęk kluczy nie pyta po każdej aktualizacji.
+  **[OBALONE pomiarem 23.10 — patrz WYNIK na końcu sekcji B]**
 - **POMIAR PRZED (23.10, mak, próbny pęk kluczy, `SecKeychainSetUserInteractionAllowed(false)`):**
   ad hoc — druga kompilacja dostaje odmowę (-25293); certyfikat samopodpisany — druga kompilacja czyta
   wpis bez pytania (0), także bez pola OU (`TeamIdentifier=not set`). Mechanizm działa bez Apple Developer ID.
@@ -37,6 +38,18 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
 - **SEKRET:** p12 + hasło w Memory Alpha (`inwentaryzacja-codesign-macos`), w GitHubie sekrety
   `MACOS_CODESIGN_P12_BASE64` / `MACOS_CODESIGN_P12_PASSWORD`. Zmiana certyfikatu = jedno pytanie po aktualizacji.
 - **POZA:** Gatekeeper/kwarantanna (wymaga Developer ID + notaryzacji, płatne) — `xattr` u Łukasza zostaje.
+- 🔴 **WYNIK (23.10 ~16:10, pęk LOGOWANIA, prawdziwa aplikacja) — CEL NIEOSIĄGNIĘTY, zdania „nie pyta po
+  każdej aktualizacji” i „mechanizm działa bez Apple Developer ID” wyżej są OBALONE.** Kopia zainstalowanej
+  1.7.0 ze zmienionym `Info.plist`, podpisana tym samym certyfikatem (CDHash `38e8…` zamiast `7de0…`,
+  `certificate root = H"640b…"` bez zmian) dostała pytanie Pęku kluczy. `security dump-keychain -a`: lista
+  ACL wpisów ma wymaganie oparte na certyfikacie (to działa), ale **lista `partition_id` ma `cdhash:…`** —
+  aplikacja bez Team ID dostaje partycję po skrócie binarki, każda nowa wersja = nowa partycja = pytanie
+  (na liście wpisu klucza API są cdhashe 1.6.0, 1.6.1, 1.7.0 i kopii). Próba „przed” była na pęku z
+  `security create-keychain`, gdzie partycje nie były egzekwowane — fałszywa zieleń, zły obiekt pomiaru.
+  Team ID (partycja `teamid:…`, stała między wersjami) daje tylko certyfikat Apple — Developer ID
+  (99 USD/rok; przy okazji notaryzacja = koniec `xattr`). Skrypty CI zostają: podmiana sekretów
+  na Developer ID wystarczy, bez zmian w kodzie. Korzyść stałego podpisu dziś: stałe wymaganie w ACL
+  i w zgodach prywatności (TCC) — niezmierzone dla tej aplikacji.
 
 ## C. Sterownik MySQL w paczce Windows
 
@@ -117,5 +130,11 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
   nazw to dokładnie błąd, przez który 1.6.0–1.6.1 nie miały `z.dll`; odrzucone: 8 (hasło czytane także przy SQLite — ostrzeżenie
   w oknie wystarcza), 9 (zdublowana ścieżka ini — stan sprzed zmiany, osobny refaktor), 10 (estymata
   2000 tok. wyjścia — zmierzone 1321–2067)
-- [ ] T7 F + wersja 1.7.0, przegląd kodu, PR → dev → main, tag, release, paczki sprawdzone od środka
-- [ ] T8 instalacja na maku (jedno pytanie) + test bez pytania; paczka dla Łukasza 1.7.0
+- [x] T7 F + wersja 1.7.0, przegląd kodu, PR #40 → dev, #41 → main, tag `v1.7.0` = `0c5ac7c`, release
+  7/7 plików, sumy = skróty GitHuba; od środka: dmg arm64 (minos 14) / intel (minos 15) — 1.7.0,
+  `certificate root = H"640b…"`, `verify` OK, QMYSQL → libmariadb w paczce; Windows — `z.dll`,
+  `libmariadb.dll`, `qsqlmysql.dll`, wszystkie importy obecne; deb 1.7.0
+- [x] T8 mak: 1.7.0 arm64 zainstalowana (1.6.1 w `~/backups-claude/inwentaryzacja-app-1.6.1-20261023/`),
+  hasło przeniesione (ini 0 linii, wpis `mysql_password` bez pytania), jedno pytanie o klucz API (wpis
+  z 1.6.1). ❌ **Test „aktualizacja bez pytania” NIEZDANY** — patrz WYNIK w sekcji B. Paczka Łukasza 1.7.0
+  zbudowana i sprawdzona wobec `bw` i skrótu GitHuba.

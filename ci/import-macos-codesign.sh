@@ -1,9 +1,12 @@
 #!/bin/bash
 # Import tożsamości podpisu kodu macOS z sekretów GitHuba do tymczasowego pęku kluczy runnera.
 #
-# Po co: podpis ad hoc opiera wymaganie podpisu na skrócie binarki (cdhash), więc każda nowa
-# wersja jest dla Pęku kluczy „inną aplikacją” i macOS pyta usera o dostęp do sejfu. Podpis stałym
-# (samopodpisanym) certyfikatem daje wymaganie `certificate leaf = H"…"` — to samo w każdej wersji.
+# Po co: podpis ad hoc opiera wymaganie podpisu na skrócie binarki (cdhash). Podpis stałym
+# certyfikatem daje wymaganie `certificate root = H"…"` — to samo w każdej wersji (lista ACL wpisów
+# Pęku kluczy, zgody prywatności TCC).
+# 🔴 To NIE usuwa pytania Pęku kluczy po aktualizacji (pomiar 23.10.2026 na pęku logowania): lista
+# partition_id wpisu dla aplikacji bez Team ID trzyma `cdhash:…`, więc każda nowa binarka = jedno
+# pytanie. Team ID daje tylko certyfikat Apple (Developer ID) — wtedy wystarczy podmienić sekrety.
 #
 # Wejście (env): MACOS_CODESIGN_P12_BASE64, MACOS_CODESIGN_P12_PASSWORD, opcjonalnie REQUIRE_CODESIGN=1.
 # Wyjście: MACOS_CODESIGN_IDENTITY w $GITHUB_ENV (czyta go package-macos.sh).

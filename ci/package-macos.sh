@@ -87,8 +87,9 @@ if [[ "$MARIADB_DEP" != "@executable_path/../Frameworks/"* \
     exit 1
 fi
 
-# Stała tożsamość z CI (ci/import-macos-codesign.sh) — Pęk kluczy nie pyta po każdej aktualizacji.
-# Bez niej podpis ad hoc (budowa lokalna, PR z forka); wydanie (REQUIRE_CODESIGN=1) wymaga tożsamości.
+# Stała tożsamość z CI (ci/import-macos-codesign.sh) — wymaganie podpisu oparte na certyfikacie.
+# Pytanie Pęku kluczy po aktualizacji zostaje (partition_id = cdhash bez Team ID, opis w skrypcie
+# importu). Bez tożsamości podpis ad hoc (budowa lokalna, PR z forka); wydanie (REQUIRE_CODESIGN=1) wymaga tożsamości.
 SIGN_IDENTITY="${MACOS_CODESIGN_IDENTITY:--}"
 if [[ "$SIGN_IDENTITY" == "-" && "${REQUIRE_CODESIGN:-0}" == "1" ]]; then
     echo "❌ Brak tożsamości podpisu (MACOS_CODESIGN_IDENTITY) — wydanie wymaga stałego podpisu."
@@ -99,7 +100,7 @@ codesign --verify --deep --strict "$APP_BUNDLE"
 DESIGNATED="$(codesign -d -r- "$APP_BUNDLE" 2>&1 | grep 'designated' || true)"
 echo "▶ $DESIGNATED"
 if [[ "$SIGN_IDENTITY" != "-" && "$DESIGNATED" != *"certificate "* ]]; then
-    echo "❌ Wymaganie podpisu nie opiera się na certyfikacie — Pęk kluczy pytałby po każdej aktualizacji."
+    echo "❌ Wymaganie podpisu nie opiera się na certyfikacie — podpis tożsamością z CI nie zadziałał."
     exit 1
 fi
 
