@@ -49,23 +49,24 @@ if (Test-Path $QtSqlite) {
     Copy-Item $QtSqlite $SqlDriversDir -Force
 }
 
+# Qt z aqt nie ma pluginu QMYSQL — buduje go krok „Build QMYSQL Qt plugin” w CI. Do 1.6.1 brak
+# pluginu był tu cicho pomijany i paczka Windows nie łączyła się z MySQL wcale.
 $QtMysql = Join-Path $QtPlugins 'sqldrivers\qsqlmysql.dll'
-if (Test-Path $QtMysql) {
-    Copy-Item $QtMysql $SqlDriversDir -Force
+if (-not (Test-Path $QtMysql)) {
+    throw "Brak pluginu QMYSQL: $QtMysql — paczka bez niego nie połączy się z bazą MySQL."
 }
+Copy-Item $QtMysql $SqlDriversDir -Force
 
-$MariadbLibrary = Get-ChildItem -Path $QtPath -Filter 'libmariadb*.dll' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($MariadbLibrary) {
-    Copy-Item $MariadbLibrary.FullName $DeployDir -Force
+# Biblioteki z vcpkg obok exe: zlib1.dll oraz libmariadb.dll z zależnościami — bez libmariadb.dll
+# plugin QMYSQL się nie załaduje (dokumentacja Qt, „SQL Database Drivers”, QMYSQL na Windows).
+if ([string]::IsNullOrWhiteSpace($env:VCPKG_ROOT)) {
+    throw 'Brak VCPKG_ROOT — skąd wziąć libmariadb.dll i zlib1.dll (vcpkg x64-windows)?'
 }
-
-$VcpkgRoot = $env:VCPKG_ROOT
-if (-not [string]::IsNullOrWhiteSpace($VcpkgRoot)) {
-    $ZlibDll = Join-Path $VcpkgRoot 'installed\x64-windows\bin\zlib1.dll'
-    if (Test-Path $ZlibDll) {
-        Copy-Item $ZlibDll $DeployDir -Force
-    }
+$VcpkgBin = Join-Path $env:VCPKG_ROOT 'installed\x64-windows\bin'
+if (-not (Test-Path (Join-Path $VcpkgBin 'libmariadb.dll'))) {
+    throw "Brak libmariadb.dll w $VcpkgBin (vcpkg install libmariadb:x64-windows)."
 }
+Get-ChildItem $VcpkgBin -Filter '*.dll' | Copy-Item -Destination $DeployDir -Force
 
 New-Item -ItemType Directory -Path $AbsoluteOutputDir -Force | Out-Null
 

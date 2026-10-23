@@ -78,7 +78,7 @@ jobs:
           "QT_ROOT=$env:RUNNER_TEMP\Qt\6.8.2\msvc2022_64" >> $env:GITHUB_ENV
           "$env:RUNNER_TEMP\Qt\6.8.2\msvc2022_64\bin" >> $env:GITHUB_PATH
 
-      - name: Install zlib with vcpkg
+      - name: Install zlib and MariaDB Connector/C with vcpkg
         shell: pwsh
         run: |
           $vcpkgRoot = $env:VCPKG_INSTALLATION_ROOT
@@ -88,9 +88,31 @@ jobs:
           if (-not (Test-Path (Join-Path $vcpkgRoot 'vcpkg.exe'))) {
             throw "Nie znaleziono vcpkg.exe w: $vcpkgRoot"
           }
-          & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows
+          & (Join-Path $vcpkgRoot 'vcpkg.exe') install zlib:x64-windows libmariadb:x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install: kod $LASTEXITCODE" }
           "APP_VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
           "VCPKG_ROOT=$vcpkgRoot" >> $env:GITHUB_ENV
+
+      - name: Install Qt sources (qtbase)
+        shell: pwsh
+        run: python -m aqt install-src windows 6.8.2 --archives qtbase --outputdir "$env:RUNNER_TEMP\QtSrc"
+
+      # Binarki Qt nie mają pluginu QMYSQL (dokumentacja Qt „SQL Database Drivers”: z binarkami idzie
+      # SQLite, na Windows także ODBC i PostgreSQL). Budowa wg „How to Build the QMYSQL Plugin on Windows”.
+      - name: Build QMYSQL Qt plugin
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
+          call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64
+          for /f "usebackq delims=" %%i in (`qmake -query QT_INSTALL_PREFIX`) do set QT_PATH=%%i
+          set MARIADB=%APP_VCPKG_ROOT%\installed\x64-windows
+          mkdir "%RUNNER_TEMP%\build_qmysql"
+          cd /d "%RUNNER_TEMP%\build_qmysql"
+          call "%QT_PATH%\bin\qt-cmake.bat" -G Ninja "%RUNNER_TEMP%\QtSrc\6.8.2\Src\qtbase\src\plugins\sqldrivers" -DCMAKE_BUILD_TYPE=Release -DMySQL_INCLUDE_DIR="%MARIADB%\include\mysql" -DMySQL_LIBRARY="%MARIADB%\lib\libmariadb.lib" || exit /b 1
+          cmake --build . --target QMYSQLDriverPlugin || exit /b 1
+          for /r %%f in (qsqlmysql.dll) do if exist "%%f" copy /y "%%f" "%QT_PATH%\plugins\sqldrivers\" || exit /b 1
+          if not exist "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll" (echo Brak qsqlmysql.dll po budowie & exit /b 1)
+          dumpbin /dependents "%QT_PATH%\plugins\sqldrivers\qsqlmysql.dll"
 
       - name: Install Inno Setup
         shell: pwsh
@@ -109,6 +131,20 @@ jobs:
       - name: Package installer
         shell: pwsh
         run: .\ci\package-windows.ps1 -BuildDir build-windows -OutputDir dist\windows
+
+      # Test uruchomiony z KOPII katalogu paczki, z PATH bez Qt i vcpkg — jak u usera. Brak pluginu
+      # QMYSQL albo libmariadb.dll obok exe = czerwony (paczki do 1.6.1 tego nie miały).
+      - name: Check QMYSQL driver in package
+        shell: pwsh
+        run: |
+          $probe = Join-Path $env:RUNNER_TEMP 'sonda-paczki'
+          Copy-Item 'dist\windows\stage\Inwentaryzacja' $probe -Recurse
+          Copy-Item 'build-windows\InwentaryzacjaTests.exe' $probe
+          Copy-Item (Join-Path $env:QT_ROOT 'bin\Qt6Test.dll') $probe
+          $env:PATH = "$env:SystemRoot\system32;$env:SystemRoot"
+          $env:INW_WYMAGAJ_QMYSQL = '1'
+          & (Join-Path $probe 'InwentaryzacjaTests.exe') sqlDriver_mysqlPluginLoads
+          if ($LASTEXITCODE -ne 0) { throw "Paczka bez działającego sterownika QMYSQL (kod $LASTEXITCODE)" }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -149,8 +185,23 @@ jobs:
           cmake -S . -B build-macos-intel -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_PATH"
           cmake --build build-macos-intel -j 4
 
+      - name: Check QMYSQL plugin in Qt install
+        shell: bash
+        run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-intel/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
+
+      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      - name: Import code signing identity
+        shell: bash
+        env:
+          MACOS_CODESIGN_P12_BASE64: ${{ secrets.MACOS_CODESIGN_P12_BASE64 }}
+          MACOS_CODESIGN_P12_PASSWORD: ${{ secrets.MACOS_CODESIGN_P12_PASSWORD }}
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+        run: bash ci/import-macos-codesign.sh
+
       - name: Package installer
         shell: bash
+        env:
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
         run: bash ci/package-macos.sh build-macos-intel dist/macos-intel intel
 
       - name: Upload artifact
@@ -192,8 +243,23 @@ jobs:
           cmake -S . -B build-macos-arm -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_PATH"
           cmake --build build-macos-arm -j 4
 
+      - name: Check QMYSQL plugin in Qt install
+        shell: bash
+        run: INW_WYMAGAJ_QMYSQL=1 QT_QPA_PLATFORM=offscreen ./build-macos-arm/InwentaryzacjaTests sqlDriver_mysqlPluginLoads
+
+      # Stała tożsamość podpisu (sekrety repo) — Pęk kluczy nie pyta po każdej aktualizacji.
+      - name: Import code signing identity
+        shell: bash
+        env:
+          MACOS_CODESIGN_P12_BASE64: ${{ secrets.MACOS_CODESIGN_P12_BASE64 }}
+          MACOS_CODESIGN_P12_PASSWORD: ${{ secrets.MACOS_CODESIGN_P12_PASSWORD }}
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+        run: bash ci/import-macos-codesign.sh
+
       - name: Package installer
         shell: bash
+        env:
+          REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
         run: bash ci/package-macos.sh build-macos-arm dist/macos-arm arm64
 
       - name: Upload artifact

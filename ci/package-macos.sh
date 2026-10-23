@@ -50,9 +50,13 @@ if [[ -f "$QT_PLUGINS/sqldrivers/libqsqlite.dylib" ]]; then
     cp "$QT_PLUGINS/sqldrivers/libqsqlite.dylib" "$APP_SQL_DRIVERS/"
 fi
 
-if [[ -f "$QT_PLUGINS/sqldrivers/libqsqlmysql.dylib" ]]; then
-    cp "$QT_PLUGINS/sqldrivers/libqsqlmysql.dylib" "$APP_SQL_DRIVERS/"
+# Plugin QMYSQL z kroku „Build QMYSQL Qt plugin” — bez niego paczka nie łączy się z MySQL,
+# więc brak to błąd pakowania, nie cichy pominięty plik.
+if [[ ! -f "$QT_PLUGINS/sqldrivers/libqsqlmysql.dylib" ]]; then
+    echo "❌ Brak pluginu QMYSQL: $QT_PLUGINS/sqldrivers/libqsqlmysql.dylib"
+    exit 1
 fi
+cp "$QT_PLUGINS/sqldrivers/libqsqlmysql.dylib" "$APP_SQL_DRIVERS/"
 
 cat > "$APP_CONTENTS/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -73,8 +77,31 @@ EOF
 
 "$MACDEPLOYQT" "$APP_BUNDLE" -verbose=1
 
-codesign --force --deep --sign - --timestamp=none "$APP_BUNDLE"
+# Po macdeployqt plugin QMYSQL ma wskazywać libmariadb W paczce — ścieżka do brew z runnera
+# u usera nie istnieje (sonda w CI sprawdza plugin w Qt, nie w paczce).
+MARIADB_DEP="$(otool -L "$APP_SQL_DRIVERS/libqsqlmysql.dylib" | awk '/libmariadb/ {print $1; exit}')"
+echo "▶ QMYSQL → $MARIADB_DEP"
+if [[ "$MARIADB_DEP" != "@executable_path/../Frameworks/"* \
+      || ! -f "$APP_CONTENTS/Frameworks/${MARIADB_DEP##*/}" ]]; then
+    echo "❌ Plugin QMYSQL w paczce nie ma swojej biblioteki libmariadb w Contents/Frameworks."
+    exit 1
+fi
+
+# Stała tożsamość z CI (ci/import-macos-codesign.sh) — Pęk kluczy nie pyta po każdej aktualizacji.
+# Bez niej podpis ad hoc (budowa lokalna, PR z forka); wydanie (REQUIRE_CODESIGN=1) wymaga tożsamości.
+SIGN_IDENTITY="${MACOS_CODESIGN_IDENTITY:--}"
+if [[ "$SIGN_IDENTITY" == "-" && "${REQUIRE_CODESIGN:-0}" == "1" ]]; then
+    echo "❌ Brak tożsamości podpisu (MACOS_CODESIGN_IDENTITY) — wydanie wymaga stałego podpisu."
+    exit 1
+fi
+codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp=none "$APP_BUNDLE"
 codesign --verify --deep --strict "$APP_BUNDLE"
+DESIGNATED="$(codesign -d -r- "$APP_BUNDLE" 2>&1 | grep 'designated' || true)"
+echo "▶ $DESIGNATED"
+if [[ "$SIGN_IDENTITY" != "-" && "$DESIGNATED" != *"certificate "* ]]; then
+    echo "❌ Wymaganie podpisu nie opiera się na certyfikacie — Pęk kluczy pytałby po każdej aktualizacji."
+    exit 1
+fi
 
 ZIP_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.zip"
 DMG_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.dmg"
