@@ -1,7 +1,7 @@
 #include "AiEnrichmentService.h"
+#include "SecretStore.h"
 
 #include <QCoreApplication>
-#include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -14,74 +14,23 @@
 #include <QStandardPaths>
 #include <QUrl>
 
-#include <qtkeychain/keychain.h>
-
 namespace {
 
 constexpr const char *kAnthropicEndpoint = "https://api.anthropic.com/v1/messages";
 constexpr const char *kAnthropicVersion  = "2023-06-01";
-constexpr const char *kDefaultModel      = "claude-opus-4-7";
+// Po odmowie filtrów bezpieczeństwa API samo ponawia zapytanie na modelu zalecanym dla
+// kategorii odmowy (`fallbacks: "default"`). Haiku 5.5 tego nie obsługuje.
+constexpr const char *kFallbackBeta      = "server-side-fallback-2026-07-01";
 
 QString settingsKey()    { return QStringLiteral("ai/anthropic_api_key"); }  // tylko migracja z ≤ 1.5.0
 QString settingsModel()  { return QStringLiteral("ai/model"); }
 QString keychainKey()    { return QStringLiteral("anthropic_api_key"); }
-
-QString keychainService()
-{
-    // Testy (QStandardPaths w trybie testowym) nie mogą ruszać prawdziwego wpisu usera.
-    return QStandardPaths::isTestModeEnabled() ? QStringLiteral("Inwentaryzacja-test")
-                                               : QStringLiteral("Inwentaryzacja");
-}
 
 QSettings appSettings()
 {
     return QSettings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
                          + QStringLiteral("/inwentaryzacja.ini"),
                      QSettings::IniFormat);
-}
-
-/// QtKeychain działa asynchronicznie, a wołający (okno ustawień, PreviewDialog) potrzebują
-/// wyniku od razu — czekamy na lokalnej pętli zdarzeń. Bez limitu czasu: porzucone zadanie
-/// blokowałoby kolejkę QtKeychain (jedno zadanie naraz), a macOS może czekać na decyzję usera.
-QKeychain::Error runKeychainJob(QKeychain::Job &job, QString *errorMessage)
-{
-    job.setAutoDelete(false);
-    job.setInsecureFallback(false);  // nigdy jawnego tekstu zamiast sejfu
-    job.setKey(keychainKey());
-    QEventLoop loop;
-    QObject::connect(&job, &QKeychain::Job::finished, &loop, &QEventLoop::quit);
-    job.start();  // start() kolejkuje doStart — finished nie przyjdzie przed exec()
-    loop.exec();
-    if (job.error() != QKeychain::NoError && job.error() != QKeychain::EntryNotFound && errorMessage)
-        *errorMessage = job.errorString();
-    return job.error();
-}
-
-QString readKeychain(QString *errorMessage)
-{
-    QKeychain::ReadPasswordJob job(keychainService());
-    return runKeychainJob(job, errorMessage) == QKeychain::NoError ? job.textData() : QString();
-}
-
-bool writeKeychain(const QString &value, QString *errorMessage)
-{
-    QKeychain::WritePasswordJob job(keychainService());
-    job.setTextData(value);
-    return runKeychainJob(job, errorMessage) == QKeychain::NoError;
-}
-
-bool deleteKeychain(QString *errorMessage)
-{
-    QKeychain::DeletePasswordJob job(keychainService());
-    const QKeychain::Error error = runKeychainJob(job, errorMessage);
-    return error == QKeychain::NoError || error == QKeychain::EntryNotFound;
-}
-
-void removeLegacySettingsKey()
-{
-    QSettings s = appSettings();
-    if (s.contains(settingsKey()))  // bez contains() remove() przepisywałby ini przy każdym odczycie
-        s.remove(settingsKey());
 }
 
 /// Jeden odczyt sejfu na proces dla hasApiKey()/readApiKey(): każdy PreviewDialog pytałby
@@ -241,35 +190,16 @@ bool AiEnrichmentService::hasApiKey()
 
 QString AiEnrichmentService::storedApiKey(QString *errorMessage)
 {
-    ApiKeyCache result{true, QString(), QString()};
-
-    // Wersje ≤ 1.5.0 trzymały klucz jawnym tekstem w ini. Kasujemy go z ini dopiero po
-    // zgodnym odczycie zwrotnym z sejfu — awaria sejfu nie może zgubić klucza.
-    QSettings s = appSettings();
-    const QString legacyKey = s.value(settingsKey()).toString();
-    if (!legacyKey.isEmpty())
-    {
-        QString keychainError;
-        if (writeKeychain(legacyKey, &keychainError) && readKeychain(&keychainError) == legacyKey)
-        {
-            removeLegacySettingsKey();
-        }
-        else
-        {
-            result.error = tr("Klucz nadal leży jawnym tekstem w pliku ustawień — systemowy sejf "
-                              "odmówił zapisu: %1")
-                               .arg(keychainError.isEmpty() ? tr("odczyt zwrotny niezgodny") : keychainError);
-        }
-        result.key = legacyKey;  // apka działa dalej jak w 1.5.0, nawet gdy sejf odmówił
-    }
-    else
-    {
-        removeLegacySettingsKey();  // pusty wpis zostawiony przez 1.5.0
-        QString keychainError;
-        result.key = readKeychain(&keychainError);
-        if (!keychainError.isEmpty())
-            result.error = tr("Systemowy sejf niedostępny: %1").arg(keychainError);
-    }
+    // Wersje ≤ 1.5.0 trzymały klucz jawnym tekstem w ini — SecretStore przenosi go do sejfu.
+    const SecretStore::ReadResult stored = SecretStore::read(keychainKey(), settingsKey());
+    ApiKeyCache result{true, stored.value, QString()};
+    if (stored.stillInIni)
+        result.error = tr("Klucz nadal leży jawnym tekstem w pliku ustawień — systemowy sejf "
+                          "odmówił zapisu: %1")
+                           .arg(stored.keychainError.isEmpty() ? tr("odczyt zwrotny niezgodny")
+                                                               : stored.keychainError);
+    else if (!stored.keychainError.isEmpty())
+        result.error = tr("Systemowy sejf niedostępny: %1").arg(stored.keychainError);
 
     // Cache dopiero PO odczycie — pętla zdarzeń w trakcie czekania na sejf może wywołać
     // hasApiKey() z innego okna. Błąd nie nadpisuje wcześniej odczytanego klucza: chwilowa
@@ -286,14 +216,7 @@ QString AiEnrichmentService::storedApiKey(QString *errorMessage)
 bool AiEnrichmentService::storeApiKey(const QString &apiKey, QString *errorMessage)
 {
     QString keychainError;
-    const bool ok = apiKey.isEmpty() ? deleteKeychain(&keychainError)
-                                     : writeKeychain(apiKey, &keychainError);
-
-    // Stary klucz z ini wygrałby przy następnym starcie i nadpisał nowy (migracja) — usuwamy
-    // go po udanym zapisie, a przy usuwaniu klucza zawsze (user chce, żeby klucza nie było).
-    if (ok || apiKey.isEmpty())
-        removeLegacySettingsKey();
-
+    const bool ok = SecretStore::write(keychainKey(), settingsKey(), apiKey, &keychainError);
     if (!ok)
     {
         apiKeyCache().loaded = false;  // następny odczyt sprawdzi sejf od nowa
@@ -315,14 +238,51 @@ bool AiEnrichmentService::storeApiKey(const QString &apiKey, QString *errorMessa
     return true;
 }
 
-double AiEnrichmentService::estimateCostUsd(int photoCount)
+const QList<AiEnrichmentService::Model> &AiEnrichmentService::models()
 {
-    // Opus 4.7: $5/1M input tokens, $25/1M output tokens (cached 2026-04).
-    // Photo ~1500 tokens (Anthropic standard), prompt ~500, output ~800.
-    const int inputTokens  = photoCount * 1500 + 500;
-    const int outputTokens = 800;
-    return (inputTokens / 1'000'000.0) * 5.0
-         + (outputTokens / 1'000'000.0) * 25.0;
+    // Cennik Anthropic (USD za 1M tokenów, stan 2026-10). Pierwszy wpis = domyślny model.
+    static const QList<Model> list{
+        {"claude-opus-5-5", QT_TRANSLATE_NOOP("AiEnrichmentService", "Claude Opus 5.5 — najlepszy"),
+         4.0, 20.0, true},
+        {"claude-sonnet-5-5",
+         QT_TRANSLATE_NOOP("AiEnrichmentService", "Claude Sonnet 5.5 — 2× tańszy, prawie tak dobry"),
+         2.0, 10.0, true},
+        {"claude-haiku-5-5",
+         QT_TRANSLATE_NOOP("AiEnrichmentService", "Claude Haiku 5.5 — najtańszy i najszybszy"),
+         0.10, 0.50, false},
+    };
+    return list;
+}
+
+const AiEnrichmentService::Model &AiEnrichmentService::configuredModel()
+{
+    // Model spoza listy (np. claude-opus-4-7 zapisany przez 1.6.x) = domyślny: koszt pokazany
+    // przed wywołaniem musi dotyczyć modelu, który naprawdę zostanie użyty.
+    const Model *model = findModel(appSettings().value(settingsModel()).toString());
+    return model ? *model : models().first();
+}
+
+const AiEnrichmentService::Model *AiEnrichmentService::findModel(const QString &id)
+{
+    for (const Model &model : models())
+    {
+        if (id == QLatin1String(model.id))
+            return &model;
+    }
+    return nullptr;
+}
+
+double AiEnrichmentService::costUsd(const Model &model, qint64 inputTokens, qint64 outputTokens)
+{
+    return inputTokens / 1'000'000.0 * model.inputUsdPerMTok
+         + outputTokens / 1'000'000.0 * model.outputUsdPerMTok;
+}
+
+double AiEnrichmentService::estimateCostUsd(const Model &model, int photoCount)
+{
+    // Pomiar 23.10.2026 (zdjęcie z bazy 1800×1355, wszystkie trzy modele): wejście 3594 tokeny
+    // = zdjęcie ~3000 + polecenie ~600; wyjście z myśleniem 1321–2067 tokenów.
+    return costUsd(model, photoCount * 3000 + 600, 2000);
 }
 
 QString AiEnrichmentService::readApiKey(QString *errorMessage) const
@@ -348,7 +308,8 @@ QString AiEnrichmentService::readApiKey(QString *errorMessage) const
     return QString();
 }
 
-QByteArray AiEnrichmentService::buildRequestBody(const QString &existingDescription,
+QByteArray AiEnrichmentService::buildRequestBody(const Model &model,
+                                                  const QString &existingDescription,
                                                   const QList<QByteArray> &photoBlobs,
                                                   const QString &itemName,
                                                   const QString &itemVendor,
@@ -384,12 +345,15 @@ QByteArray AiEnrichmentService::buildRequestBody(const QString &existingDescript
     QJsonArray messages;
     messages.append(userMessage);
 
-    QSettings s = appSettings();
-    const QString model = s.value(settingsModel(), QString::fromLatin1(kDefaultModel)).toString();
-
     QJsonObject root;
-    root.insert(QStringLiteral("model"),      model);
-    root.insert(QStringLiteral("max_tokens"), 1500);
+    root.insert(QStringLiteral("model"),      QString::fromLatin1(model.id));
+    // Modele 5.5 zawsze myślą, a myślenie liczy się do max_tokens — 1500 z 1.6.x ucinałoby opis.
+    root.insert(QStringLiteral("max_tokens"), 16000);
+    // Jawnie: domyślny poziom różni się między modelami (Opus/Haiku 5.5 medium, Sonnet 5.5 high).
+    root.insert(QStringLiteral("output_config"),
+                QJsonObject{{QStringLiteral("effort"), QStringLiteral("medium")}});
+    if (model.serverFallback)
+        root.insert(QStringLiteral("fallbacks"), QStringLiteral("default"));
     root.insert(QStringLiteral("messages"),   messages);
 
     return QJsonDocument(root).toJson(QJsonDocument::Compact);
@@ -427,15 +391,18 @@ void AiEnrichmentService::enrichDescription(const QString &existingDescription,
         return;
     }
 
-    const QByteArray body = buildRequestBody(existingDescription, photoBlobs,
+    const Model &model = configuredModel();
+    const QByteArray body = buildRequestBody(model, existingDescription, photoBlobs,
                                              itemName, itemVendor, itemModel);
 
     QNetworkRequest request(QUrl(QString::fromLatin1(kAnthropicEndpoint)));
     request.setRawHeader("x-api-key",         apiKey.toUtf8());
     request.setRawHeader("anthropic-version", kAnthropicVersion);
     request.setRawHeader("content-type",      "application/json");
-    // 60s timeout — Opus z vision często 15-30s
-    request.setTransferTimeout(60'000);
+    if (model.serverFallback)
+        request.setRawHeader("anthropic-beta", kFallbackBeta);
+    // Odpowiedź przychodzi w całości po zakończeniu generowania (z myśleniem) — zapas na wolniejsze odpowiedzi.
+    request.setTransferTimeout(180'000);
 
     m_reply = m_nam->post(request, body);
     connect(m_reply, &QNetworkReply::finished, this, &AiEnrichmentService::onReplyFinished);
@@ -461,11 +428,24 @@ void AiEnrichmentService::onReplyFinished()
         return;
     }
 
-    const QJsonDocument doc = QJsonDocument::fromJson(rawBody);
+    const ParsedResponse parsed = parseResponse(httpStatus, rawBody);
+    if (!parsed.error.isEmpty())
+    {
+        emit enrichmentError(parsed.error);
+        return;
+    }
+    emit enrichmentReady(parsed.description, parsed.inputTokens, parsed.outputTokens, parsed.model);
+}
+
+AiEnrichmentService::ParsedResponse AiEnrichmentService::parseResponse(int httpStatus,
+                                                                       const QByteArray &body)
+{
+    ParsedResponse result;
+    const QJsonDocument doc = QJsonDocument::fromJson(body);
     if (!doc.isObject())
     {
-        emit enrichmentError(tr("AI zwróciło niepoprawną odpowiedź (nie-JSON, HTTP %1).").arg(httpStatus));
-        return;
+        result.error = tr("AI zwróciło niepoprawną odpowiedź (nie-JSON, HTTP %1).").arg(httpStatus);
+        return result;
     }
     const QJsonObject root = doc.object();
 
@@ -473,38 +453,53 @@ void AiEnrichmentService::onReplyFinished()
     {
         // Anthropic API error format: {"type": "error", "error": {"type": ..., "message": ...}}
         const QJsonObject err = root.value(QStringLiteral("error")).toObject();
-        const QString errType    = err.value(QStringLiteral("type")).toString();
-        const QString errMessage = err.value(QStringLiteral("message")).toString();
-        emit enrichmentError(tr("Błąd Anthropic API (HTTP %1, %2): %3")
-                             .arg(httpStatus).arg(errType, errMessage));
-        return;
+        result.error = tr("Błąd Anthropic API (HTTP %1, %2): %3")
+                           .arg(httpStatus)
+                           .arg(err.value(QStringLiteral("type")).toString(),
+                                err.value(QStringLiteral("message")).toString());
+        return result;
     }
 
-    // Success path — parsuj content[0].text
-    const QJsonArray content = root.value(QStringLiteral("content")).toArray();
-    if (content.isEmpty())
+    // Odmowa (filtry bezpieczeństwa albo sam model) przychodzi jako HTTP 200 — przed treścią.
+    const QString stopReason = root.value(QStringLiteral("stop_reason")).toString();
+    if (stopReason == QLatin1String("refusal"))
     {
-        emit enrichmentError(tr("AI zwróciło pustą odpowiedź (brak content blocks)."));
-        return;
+        const QString category = root.value(QStringLiteral("stop_details")).toObject()
+                                     .value(QStringLiteral("category")).toString();
+        result.error = category.isEmpty()
+            ? tr("AI odmówiło opisania eksponatu.")
+            : tr("AI odmówiło opisania eksponatu (kategoria: %1).").arg(category);
+        return result;
     }
-    const QJsonObject firstBlock = content.first().toObject();
-    if (firstBlock.value(QStringLiteral("type")).toString() != QStringLiteral("text"))
+    if (stopReason == QLatin1String("max_tokens"))
     {
-        emit enrichmentError(tr("AI zwróciło nieoczekiwany typ bloku (%1).")
-                             .arg(firstBlock.value(QStringLiteral("type")).toString()));
-        return;
+        result.error = tr("AI przerwało odpowiedź w połowie (limit tokenów) — opis byłby niepełny.");
+        return result;
     }
 
-    const QString newDescription = firstBlock.value(QStringLiteral("text")).toString();
-    if (newDescription.trimmed().isEmpty())
+    // Modele 5.5 zawsze myślą: odpowiedź zaczyna się blokami `thinking` (bez treści), a gdy po
+    // odmowie odpowiadał model zastępczy, przed jego tekstem stoi blok `fallback`. Opis = tekst
+    // po ostatnim bloku `fallback` (fragment odrzuconego modelu przed nim się nie liczy).
+    QString description;
+    for (const QJsonValue &blockValue : root.value(QStringLiteral("content")).toArray())
     {
-        emit enrichmentError(tr("AI zwróciło pusty opis."));
-        return;
+        const QJsonObject block = blockValue.toObject();
+        const QString type = block.value(QStringLiteral("type")).toString();
+        if (type == QLatin1String("fallback"))
+            description.clear();
+        else if (type == QLatin1String("text"))
+            description += block.value(QStringLiteral("text")).toString();
+    }
+    if (description.trimmed().isEmpty())
+    {
+        result.error = tr("AI zwróciło pusty opis.");
+        return result;
     }
 
     const QJsonObject usage = root.value(QStringLiteral("usage")).toObject();
-    const qint64 inputTokens  = usage.value(QStringLiteral("input_tokens")).toVariant().toLongLong();
-    const qint64 outputTokens = usage.value(QStringLiteral("output_tokens")).toVariant().toLongLong();
-
-    emit enrichmentReady(newDescription, inputTokens, outputTokens);
+    result.description  = description;
+    result.model        = root.value(QStringLiteral("model")).toString();
+    result.inputTokens  = usage.value(QStringLiteral("input_tokens")).toVariant().toLongLong();
+    result.outputTokens = usage.value(QStringLiteral("output_tokens")).toVariant().toLongLong();
+    return result;
 }

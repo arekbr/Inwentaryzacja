@@ -149,9 +149,11 @@ void PreviewDialog::loadRecord()
 
 void PreviewDialog::loadPhotos()
 {
-    // Ta sama ścieżka SQL co zdjęcia dla AI (fetchPhotos). Zdekodowana zostaje tylko miniatura.
+    // Zdekodowana zostaje tylko miniatura; bajty w Qt::UserRole bierze pełny ekran. AI dostaje
+    // m_photoBlobs — także zdjęcia, których Qt nie umie pokazać (API może je przyjąć).
     ui->photosList->clear();
-    for (const QByteArray &blob : fetchPhotos())
+    m_photoBlobs = fetchPhotos();
+    for (const QByteArray &blob : std::as_const(m_photoBlobs))
     {
         QPixmap pixmap;
         if (!pixmap.loadFromData(blob))
@@ -168,12 +170,11 @@ void PreviewDialog::loadPhotos()
     ui->photosList->setVisible(ui->photosList->count() > 0);
 }
 
-QList<QByteArray> PreviewDialog::fetchPhotos(int limit) const
+QList<QByteArray> PreviewDialog::fetchPhotos() const
 {
     QList<QByteArray> photos;
     QSqlQuery q(m_db);
-    q.prepare(QStringLiteral("SELECT photo FROM photos WHERE eksponat_id = :id")
-              + (limit > 0 ? QStringLiteral(" LIMIT %1").arg(limit) : QString()));
+    q.prepare(QStringLiteral("SELECT photo FROM photos WHERE eksponat_id = :id"));
     q.bindValue(QStringLiteral(":id"), m_recordId);
     if (!q.exec())
     {
@@ -191,8 +192,9 @@ QList<QByteArray> PreviewDialog::fetchPhotos(int limit) const
 
 void PreviewDialog::onEnrichClicked()
 {
-    // 1) Pobierz zdjęcia (max 5 — Anthropic limit)
-    const QList<QByteArray> photos = fetchPhotos(/*limit*/ 5);
+    // 1) Zdjęcia wczytane już przy otwarciu podglądu (max 5 — limit w AiEnrichmentService). Drugie
+    //    zapytanie ściągało te same bajty ponownie przez sieć (do ~5 MB) i blokowało okno.
+    const QList<QByteArray> photos = m_photoBlobs.mid(0, 5);
     if (photos.isEmpty())
     {
         QMessageBox::warning(this, tr("Brak zdjęć"),
@@ -206,7 +208,8 @@ void PreviewDialog::onEnrichClicked()
                        QSettings::IniFormat);
     if (!settings.value(QStringLiteral("ai/skip_cost_confirm"), false).toBool())
     {
-        const double cost = AiEnrichmentService::estimateCostUsd(photos.size());
+        const double cost = AiEnrichmentService::estimateCostUsd(AiEnrichmentService::configuredModel(),
+                                                                 photos.size());
         const QString costStr = QString::number(cost, 'f', 4);
 
         // Własny dialog (QMessageBox::question nie ma natywnie checkbox "nie pytaj ponownie")
@@ -223,14 +226,16 @@ void PreviewDialog::onEnrichClicked()
             settings.setValue(QStringLiteral("ai/skip_cost_confirm"), true);
     }
 
-    // 3) Busy dialog (modal, nieanullowalny — abort wymaga reply abort)
+    // 3) Busy dialog (modal) z „Anuluj” — odpowiedź z myśleniem może iść do 3 min (limit w serwisie)
     if (m_busyDialog)
         m_busyDialog->deleteLater();
-    m_busyDialog = new QProgressDialog(tr("Pytam AI...\n\n(Claude Opus z vision: 15-30 s)"),
-                                        QString(), 0, 0, this);
+    const AiEnrichmentService::Model &model = AiEnrichmentService::configuredModel();
+    m_busyDialog = new QProgressDialog(tr("Pytam AI...\n\n%1\n(zwykle 10–40 s)")
+                                           .arg(QCoreApplication::translate("AiEnrichmentService",
+                                                                            model.name)),
+                                        tr("Anuluj"), 0, 0, this);
     m_busyDialog->setWindowModality(Qt::WindowModal);
     m_busyDialog->setMinimumDuration(0);
-    m_busyDialog->setCancelButton(nullptr);
     m_busyDialog->show();
 
     // 4) Service — instance-per-call
@@ -241,12 +246,23 @@ void PreviewDialog::onEnrichClicked()
             this, &PreviewDialog::onEnrichmentReady);
     connect(m_enrichService, &AiEnrichmentService::enrichmentError,
             this, &PreviewDialog::onEnrichmentError);
+    // Anuluj: odłączenie przed deleteLater, bo odpowiedź mogłaby jeszcze dojść przed usunięciem;
+    // destruktor serwisu przerywa zapytanie.
+    connect(m_busyDialog, &QProgressDialog::canceled, this, [this]()
+            {
+                if (!m_enrichService)
+                    return;
+                m_enrichService->disconnect(this);
+                m_enrichService->deleteLater();
+                m_enrichService = nullptr;
+            });
 
     m_enrichService->enrichDescription(m_currentDescription, photos,
                                         m_currentName, m_currentVendor, m_currentModel);
 }
 
-void PreviewDialog::onEnrichmentReady(const QString &newDescription, qint64 inTokens, qint64 outTokens)
+void PreviewDialog::onEnrichmentReady(const QString &newDescription, qint64 inTokens, qint64 outTokens,
+                                      const QString &model)
 {
     if (m_busyDialog)
     {
@@ -255,7 +271,7 @@ void PreviewDialog::onEnrichmentReady(const QString &newDescription, qint64 inTo
         m_busyDialog = nullptr;
     }
 
-    EnrichPreviewDialog preview(m_currentDescription, newDescription, inTokens, outTokens, this);
+    EnrichPreviewDialog preview(m_currentDescription, newDescription, inTokens, outTokens, model, this);
     if (preview.exec() != QDialog::Accepted)
         return;
 
