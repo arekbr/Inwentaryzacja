@@ -8,6 +8,7 @@
 #include "ItemFormValidator.h"
 #include "ItemRepository.h"
 #include "PacmanAnimationModel.h"
+#include "PreviewDialog.h"
 #include "itemList.h"
 #include "mainwindow.h"
 #include "PhotoService.h"
@@ -15,7 +16,12 @@
 
 #include <QBuffer>
 #include <QComboBox>
+#include <QHBoxLayout>
 #include <QImage>
+#include <QLabel>
+#include <QListWidget>
+#include <QTableView>
+#include <QTextBrowser>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QScopeGuard>
@@ -30,6 +36,39 @@
 #include <QUuid>
 
 #include <qtkeychain/keychain.h>
+
+// Klucz API ze zmiennej środowiskowej na czas testu: PreviewDialog (hasApiKey) nie sięga wtedy
+// do sejfu — na macOS offscreen zadanie sejfu nigdy się nie kończy, a CI nie ma sejfu wcale.
+class ScopedTestApiKey
+{
+public:
+    ScopedTestApiKey() : m_previous(qgetenv("ANTHROPIC_API_KEY"))
+    {
+        qputenv("ANTHROPIC_API_KEY", "sk-ant-TEST-podglad");
+    }
+    ~ScopedTestApiKey()
+    {
+        if (m_previous.isEmpty())
+            qunsetenv("ANTHROPIC_API_KEY");
+        else
+            qputenv("ANTHROPIC_API_KEY", m_previous);
+    }
+
+private:
+    QByteArray m_previous;
+};
+
+// Zrzut widżetu do przeglądu wizualnego zmian UI: INW_ZRZUTY=<katalog> ./InwentaryzacjaTests
+// (na platformie cocoa — offscreen nie rysuje stylu systemu). Bez zmiennej nic nie robi.
+static void saveScreenshotIfRequested(QWidget &widget, const QString &name)
+{
+    const QString directory = qEnvironmentVariable("INW_ZRZUTY");
+    if (directory.isEmpty())
+        return;
+    widget.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&widget));
+    widget.grab().save(directory + QLatin1Char('/') + name + QStringLiteral(".png"));
+}
 
 class RepositoryTests : public QObject
 {
@@ -73,6 +112,9 @@ private slots:
     void aiApiKey_storesReadsAndDeletesInKeychain();
     void aiApiKey_migratesLegacyIniKeyToKeychain();
     void aiApiKey_storeRemovesLegacyIniKey();
+    void previewDialog_enrichButtonInButtonRow();
+    void previewDialog_showsPhotosAndFields();
+    void itemList_showsDescriptionOfSelectedRow();
 
 private:
     QString keychainSkipReason() const;
@@ -1115,6 +1157,166 @@ void RepositoryTests::aiApiKey_storeRemovesLegacyIniKey()
         QVERIFY(!settings.contains(QStringLiteral("ai/anthropic_api_key")));
     }
     QCOMPARE(AiEnrichmentService::storedApiKey(&error), newKey);
+}
+
+void RepositoryTests::previewDialog_enrichButtonInButtonRow()
+{
+    // Przycisk AI pojawia się tylko z kluczem — podajemy go zmienną środowiskową, bez sejfu.
+    const ScopedTestApiKey apiKey;
+
+    ItemRepository repository(m_db);
+    QString itemId;
+    QString errorMessage;
+    QVERIFY2(repository.saveItem(createSampleItem(), {}, &itemId, &errorMessage), qPrintable(errorMessage));
+
+    PreviewDialog dialog(m_db, itemId);
+    QPushButton *enrichButton = nullptr;
+    for (QPushButton *button : dialog.findChildren<QPushButton *>())
+    {
+        if (button->text().contains(QStringLiteral("Wzbogać")))
+            enrichButton = button;
+    }
+    QVERIFY(enrichButton);
+
+    // Do 1.6.0 przycisk nie trafiał do żadnego układu i wisiał ucięty w lewym górnym rogu okna.
+    auto *buttonRow = dialog.findChild<QHBoxLayout *>(QStringLiteral("buttonLayout"));
+    QVERIFY(buttonRow);
+    QVERIFY(buttonRow->indexOf(enrichButton) >= 0);
+}
+
+void RepositoryTests::previewDialog_showsPhotosAndFields()
+{
+    const ScopedTestApiKey apiKey;
+    ItemRepository repository(m_db);
+    QString itemId;
+    QString errorMessage;
+    QVERIFY2(repository.saveItem(createSampleItem(), {createPhotoBytes(), createPhotoBytes()},
+                                 &itemId, &errorMessage),
+             qPrintable(errorMessage));
+
+    {
+        PreviewDialog dialog(m_db, itemId);
+        auto *photos = dialog.findChild<QListWidget *>(QStringLiteral("photosList"));
+        QVERIFY(photos);
+        QCOMPARE(photos->count(), 2);
+        QVERIFY(!photos->isHidden());
+
+        const auto field = [&dialog](const char *name)
+        {
+            auto *label = dialog.findChild<QLabel *>(QLatin1String(name));
+            return label ? label->text() : QStringLiteral("<brak pola>");
+        };
+        QCOMPARE(field("valueType"), QStringLiteral("Komputer"));
+        QCOMPARE(field("valueVendor"), QStringLiteral("Atari"));
+        QCOMPARE(field("valueModel"), QStringLiteral("Atari 800XL"));
+        QCOMPARE(field("valueSerial"), QStringLiteral("SER-001"));
+        QCOMPARE(field("valuePartNumber"), QStringLiteral("PART-001"));
+        QCOMPARE(field("valueRevision"), QStringLiteral("A"));
+        QCOMPARE(field("valueYear"), QStringLiteral("1988"));
+        QCOMPARE(field("valueStatus"), QStringLiteral("Sprawny"));
+        QCOMPARE(field("valueStorage"), QStringLiteral("Magazyn 1"));
+        QCOMPARE(field("valuePackaging"), QStringLiteral("Tak"));
+        saveScreenshotIfRequested(dialog, QStringLiteral("podglad-ze-zdjeciami"));
+    }
+
+    // Brzeg: bez zdjęć i bez roku — lista miniatur ukryta, puste pole jako „—”.
+    ItemRecordData bare = createSampleItem();
+    bare.productionYear = 0;
+    bare.hasOriginalPackaging = false;
+    QString bareId;
+    QVERIFY2(repository.saveItem(bare, {}, &bareId, &errorMessage), qPrintable(errorMessage));
+    PreviewDialog bareDialog(m_db, bareId);
+    auto *barePhotos = bareDialog.findChild<QListWidget *>(QStringLiteral("photosList"));
+    QVERIFY(barePhotos);
+    QCOMPARE(barePhotos->count(), 0);
+    QVERIFY(barePhotos->isHidden());
+    QCOMPARE(bareDialog.findChild<QLabel *>(QStringLiteral("valueYear"))->text(), QStringLiteral("—"));
+    QCOMPARE(bareDialog.findChild<QLabel *>(QStringLiteral("valuePackaging"))->text(), QStringLiteral("Nie"));
+}
+
+void RepositoryTests::itemList_showsDescriptionOfSelectedRow()
+{
+    QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + QStringLiteral("/inwentaryzacja.ini"),
+                       QSettings::IniFormat);
+    settings.clear();
+    settings.sync();
+
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+    QVERIFY(setupDatabase(QStringLiteral("SQLite3"), tempDir.filePath(QStringLiteral("itemlist-opis.sqlite"))));
+    // Zamknięcie połączenia PRZED sprzątnięciem katalogu (Windows trzyma otwarty plik SQLite);
+    // strażnik stoi przed oknem, więc okno (z modelem na tym połączeniu) znika pierwsze.
+    const auto closeDb = qScopeGuard([] {
+        QSqlDatabase::database(QStringLiteral("default_connection"), false).close();
+        QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+    });
+    QSqlDatabase listDb = QSqlDatabase::database(QStringLiteral("default_connection"));
+    QVERIFY(listDb.isOpen());
+
+    ItemRepository repository(listDb);
+    auto lookupIdInDb = [&listDb](const QString &tableName, const QString &name)
+    {
+        QSqlQuery query(listDb);
+        query.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+        query.bindValue(QStringLiteral(":name"), name);
+        if (!query.exec() || !query.next())
+            return QString();
+        return query.value(0).toString();
+    };
+
+    // Model listy łączy słowniki INNER JOIN-em — rekord bez nich nie trafiłby na listę.
+    ItemRecordData item;
+    item.name = QStringLiteral("Eksponat z opisem");
+    item.statusId = lookupIdInDb(QStringLiteral("statuses"), QStringLiteral("Sprawny"));
+    item.typeId = lookupIdInDb(QStringLiteral("types"), QStringLiteral("Komputer"));
+    item.vendorId = lookupIdInDb(QStringLiteral("vendors"), QStringLiteral("Atari"));
+    item.modelId = lookupIdInDb(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+    item.storagePlaceId = lookupIdInDb(QStringLiteral("storage_places"), QStringLiteral("Magazyn 1"));
+    item.description = QStringLiteral("**Opis widoczny** na liście");
+    QString itemId;
+    QString errorMessage;
+    QVERIFY2(repository.saveItem(item, {createPhotoBytes()}, &itemId, &errorMessage), qPrintable(errorMessage));
+
+    itemList window;
+    auto *table = window.findChild<QTableView *>(QStringLiteral("itemList_tableView"));
+    auto *description = window.findChild<QTextBrowser *>(QStringLiteral("itemList_descriptionView"));
+    QVERIFY(table);
+    QVERIFY(description);
+    QVERIFY(description->toPlainText().isEmpty());
+
+    table->selectRow(0);
+    QCOMPARE(description->toPlainText().trimmed(), QStringLiteral("Opis widoczny na liście"));
+    saveScreenshotIfRequested(window, QStringLiteral("lista-z-opisem"));
+
+    table->clearSelection();
+    QVERIFY(description->toPlainText().isEmpty());
+
+    // Dwa zaznaczone wiersze = brak opisu; odznaczenie jednego (jak Ctrl-klik: pusta delta
+    // `selected`) ma pokazać opis tego, który został zaznaczony.
+    ItemRecordData second = item;
+    second.name = QStringLiteral("Drugi eksponat");
+    second.description = QStringLiteral("Opis drugiego");
+    QString secondId;
+    QVERIFY2(repository.saveItem(second, {}, &secondId, &errorMessage), qPrintable(errorMessage));
+    QVERIFY(QMetaObject::invokeMethod(&window, "refreshList", Q_ARG(QString, QString())));
+    QCOMPARE(table->model()->rowCount(), 2);
+
+    QItemSelectionModel *selection = table->selectionModel();
+    const QModelIndex row0 = table->model()->index(0, 0);
+    const QModelIndex row1 = table->model()->index(1, 0);
+    selection->select(row0, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    selection->select(row1, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    QVERIFY(description->toPlainText().isEmpty());
+
+    selection->select(row1, QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
+    const QString remainingName = table->model()->index(0, 1).data().toString();
+    QCOMPARE(description->toPlainText().trimmed(),
+             remainingName == item.name ? QStringLiteral("Opis widoczny na liście")
+                                        : QStringLiteral("Opis drugiego"));
+    window.close();
 }
 
 QTEST_MAIN(RepositoryTests)
