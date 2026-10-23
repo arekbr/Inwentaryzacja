@@ -78,6 +78,8 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
 ## POZA (świadomie)
 - macOS 12+ dla Intela — decyzja usera „na razie nie” (23.10). Obraz Intel ma `minos 15.0`.
 - Linki w `descriptionView` podglądu bez `openLinks=false` (stary kod, osobne zlecenie).
+- Windows: `Inwentaryzacja.exe` to program KONSOLOWY (`qt6_add_executable` bez `WIN32`) — obok okna
+  aplikacji otwiera się czarne okno konsoli (zrzut z VM 23.10). Stan sprzed 1.7.0, propozycja.
 
 ## Przyrosty
 - [x] T1 karta + gałąź `feature/sejf-hasla-podpis-1.7.0`
@@ -93,11 +95,26 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
   `designated => … certificate root = H"640b…"`, `codesign --verify --deep --strict` OK
 - [x] T6 C: budowa QMYSQL na Windows (vcpkg `libmariadb`, `qt-cmake` wg dokumentacji Qt 6.8) + test
   z kopii katalogu paczki w CI; konta bazy: 12× `mysql_native_password` (wbudowane w libmariadb)
+- [x] T6a Windows w CI i w VM (23.10):
+  - 🔴 pierwsza sonda w CI (`& exe`) wróciła z kodem 0 BEZ wyjścia — fałszywa zieleń; teraz `-o plik`,
+    wymagana linia PASS, kontrola negatywna bez `libmariadb.dll` (dała `FAIL!`, kod 1);
+  - połączenie z MariaDB 11.8.6 w CI: `TLSv1.3` (libmariadb na Schannel: WS2_32/CRYPT32/bcrypt/Secur32);
+  - 🔴 **znalezisko poza listą: paczki Windows 1.6.0 i 1.6.1 nie startowały** — exe importuje `z.dll`
+    (vcpkg przemianował zlib z `zlib1.dll`), a skrypt kopiował tylko `zlib1.dll` „jeśli jest”
+    (1.5.0: import `zlib1.dll`, w zipie jest; 1.6.0/1.6.1: import `z.dll`, w zipie brak). 1.7.0 kopiuje
+    cały `bin` vcpkg + statyczna kontrola importów exe i pluginu (kontrola negatywna bez `z.dll`);
+  - VM „Windows 11” (ARM64, sieć tymczasowo „shared” przez WG maka): paczka z CI startuje, łączy się
+    z bazą muzeum — „Lista przedmiotów (1871 / 1871)”; hasło z ini przeniesione do Menedżera poświadczeń
+    (`mysql_password@Inwentaryzacja`), ini bez hasła. Posprzątane (poświadczenie, ini, pliki), sieć
+    przywrócona na „bridged” (ten sam MAC i adres), VM uśpiona jak zastana;
+  - GitGuardian zgłosił hasła serwera testowego CI (`e593c91`) — skan gałęzi wobec sekretów z `bw`:
+    0 trafień; od `ecc8568` hasła losowane w każdym przebiegu i maskowane.
 - [x] T6b przegląd kodu (/code-review medium, 10 pozycji): przyjęte 1 (nieudany zapis nie zostawia
   starej wartości w ini), 2 (koszt wg modelu, który odpowiedział), 3 (AI dostaje też zdjęcia bez
   miniatury), 4 („Anuluj” w oknie oczekiwania — limit 180 s), 5 (`VCPKG_ROOT`), 7 (`package-macos.sh`
-  sprawdza plugin i libmariadb W PACZCE — zielone na 1.6.1, czerwone bez pluginu); do decyzji po CI:
-  6 (kopiowanie wszystkich DLL z vcpkg); odrzucone: 8 (hasło czytane także przy SQLite — ostrzeżenie
+  sprawdza plugin i libmariadb W PACZCE — zielone na 1.6.1, czerwone bez pluginu); 6 (kopiowanie
+  wszystkich DLL z vcpkg) ODRZUCONE po pomiarze: `bin` ma tylko `z.dll` + `libmariadb.dll`, a lista
+  nazw to dokładnie błąd, przez który 1.6.0–1.6.1 nie miały `z.dll`; odrzucone: 8 (hasło czytane także przy SQLite — ostrzeżenie
   w oknie wystarcza), 9 (zdublowana ścieżka ini — stan sprzed zmiany, osobny refaktor), 10 (estymata
   2000 tok. wyjścia — zmierzone 1321–2067)
 - [ ] T7 F + wersja 1.7.0, przegląd kodu, PR → dev → main, tag, release, paczki sprawdzone od środka
