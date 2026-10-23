@@ -72,5 +72,7 @@ pokazujemy, brak w zleceniu; zmiana kolejności kolumn tabeli; zapamiętywanie p
       jedna ścieżka SQL zdjęć (`fetchPhotos(limit<=0 = wszystkie)`), „—” przy nieudanym odczycie,
       zamknięcie połączenia w teście listy. Odrzucone: podwójne meta (makieta zatwierdzona przez usera).
       Wynik: offscreen bez klucza 35 PASS + 3 SKIP, ctest 2/2, cocoa UI 5/5, sejf testowy czysty.
-- [ ] T5 Wersja 1.6.1, PR → dev → main, tag, release, paczki 4 platform sprawdzone od środka
-- [ ] T6 Instalacja 1.6.1 na maku + nowa paczka dla Łukasza (ZIP 1.6.0 do usunięcia)
+- [x] T5 Wersja 1.6.1, PR → dev → main, tag, release, paczki 4 platform sprawdzone od środka —
+  PR #38 → dev, #39 → main, tag `v1.6.1` = `0b385bc`, 7/7 plików z sumami zgodnymi z GitHubem (23.10.2026)
+- [x] T6 Instalacja 1.6.1 na maku + nowa paczka dla Łukasza (ZIP 1.6.0 do usunięcia) — zainstalowana
+  23.10, ZIP 1.6.1 zbudowany i sprawdzony, ZIP 1.6.0 usunięty (odhaczone dopiero w 1.7.0)
