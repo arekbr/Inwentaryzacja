@@ -26,12 +26,6 @@
    </item>
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>150</height>
-      </size>
-     </property>
      <widget class="QWidget" name="sqlitePage">
       <layout class="QFormLayout" name="formLayoutSQLite">
        <item row="0" column="0">

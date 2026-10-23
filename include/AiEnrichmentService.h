@@ -18,8 +18,11 @@ class QNetworkReply;
 /// brak zewnętrznego backendu). Jeśli RFC zmienia się na C (mobile backend),
 /// ten klass jest jednym refaktorem swap'em.
 ///
-/// **API key:** env var `ANTHROPIC_API_KEY` priority, fallback `QSettings`
-/// klucz `ai/anthropic_api_key` (z ostrzeżeniem o lokalnym storage plaintext).
+/// **API key:** env var `ANTHROPIC_API_KEY` priority, fallback systemowy sejf
+/// (QtKeychain: Pęk kluczy macOS / Menedżer poświadczeń Windows / Secret Service
+/// Linux), usługa `Inwentaryzacja`, klucz `anthropic_api_key`. Wersje ≤ 1.5.0
+/// trzymały klucz jawnym tekstem w ini (`ai/anthropic_api_key`) — przenoszony
+/// do sejfu przy pierwszym odczycie.
 ///
 /// **Model:** Claude Opus 4.7 (`claude-opus-4-7`). Można zmienić w QSettings
 /// `ai/model` (np. `claude-sonnet-4-6` dla 3× tańszej alternatywy).
@@ -48,8 +51,17 @@ public:
                            const QString &itemModel);
 
     /// Synchroniczne sprawdzenie czy klucz API jest dostępny (przed pokazaniem
-    /// guzika w UI). Zwraca true gdy env var lub QSettings ma klucz.
+    /// guzika w UI). Zwraca true gdy env var lub systemowy sejf ma klucz.
     static bool hasApiKey();
+
+    /// Klucz z systemowego sejfu (bez zmiennej środowiskowej) — dla okna ustawień.
+    /// Przy okazji przenosi klucz z ini (wersje ≤ 1.5.0) do sejfu. Pusty wynik
+    /// i pusty errorMessage = klucza nie ma; niepusty errorMessage = problem z sejfem.
+    static QString storedApiKey(QString *errorMessage = nullptr);
+
+    /// Zapisuje klucz w systemowym sejfie, pusty klucz usuwa wpis. Nigdy nie pisze
+    /// klucza do ini. false + errorMessage, gdy sejf odmówił.
+    static bool storeApiKey(const QString &apiKey, QString *errorMessage = nullptr);
 
     /// Estymata kosztu w USD przed call'em (do confirm dialog).
     /// Bardzo zgrubna: Opus 4.7 input ~$5/1M tok, output ~$25/1M tok.

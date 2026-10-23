@@ -37,7 +37,7 @@ Section: utils
 Priority: optional
 Architecture: $ARCH
 Maintainer: Arek Bronowicki <arek@bronowicki.com>
-Depends: libqt6core6, libqt6dbus6, libqt6gui6, libqt6network6, libqt6sql6, libqt6widgets6, libqt6sql6-sqlite | libqt6sql6-mysql, libxcb-cursor0
+Depends: libqt6core6, libqt6dbus6, libqt6gui6, libqt6network6, libqt6sql6, libqt6widgets6, libqt6sql6-sqlite | libqt6sql6-mysql, libxcb-cursor0, libsecret-1-0
 Description: Program do inwentaryzacji zbiorów retro muzeum
  Aplikacja Qt do katalogowania eksponatów, zdjęć i metadanych.
 EOF

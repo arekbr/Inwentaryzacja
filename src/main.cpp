@@ -36,6 +36,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDirIterator>
+#include <QStyleHints>
 #include <QTranslator>
 
 // Nagłówki aplikacji
@@ -70,6 +71,13 @@ int main(int argc, char *argv[])
     // Ustawia styl "Fusion" dla spójnego wyglądu na różnych platformach.
     QApplication a(argc, argv);
     a.setStyle("Fusion");
+
+    // Skórki (QSS) mają stałe kolory projektowane pod jasny schemat. W trybie ciemnym
+    // systemu niestylowane elementy (tytuł QGroupBox, QCheckBox, QSpinBox) dostawały
+    // jasny tekst z ciemnej palety na jasnym tle skórki — wymuszamy jasny schemat.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QGuiApplication::styleHints()->setColorScheme(Qt::ColorScheme::Light);
+#endif
 
     // Ustawienie metadanych aplikacji: nazwa i wersja.
     QCoreApplication::setApplicationName(QStringLiteral("Inwentaryzacja"));
