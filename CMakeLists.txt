@@ -56,6 +56,34 @@ if(APPLE)
 endif()
 
 # ================================
+# QtKeychain — klucz API w systemowym sejfie (Pęk kluczy macOS, Menedżer
+# poświadczeń Windows, Secret Service Linux) zamiast jawnego tekstu w ini.
+# Budowany statycznie: nic dodatkowego do pakowania w .app / instalatorze.
+# ================================
+include(FetchContent)
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+FetchContent_Declare(qtkeychain
+    URL      https://github.com/frankosterfeld/qtkeychain/archive/refs/tags/0.17.0.tar.gz
+    URL_HASH SHA256=3b85c3929034b0a99da777130c34d99f006fcd3a9d56564159399a33fee0e504
+)
+# Funkcja = osobny zasięg zmiennych: ustawienia poniżej nie przeciekają do reszty projektu.
+# AUTOMOC wyłączony, bo QtKeychain sam woła qt_wrap_cpp (podwójny moc = zdublowane symbole).
+function(inwentaryzacja_dodaj_qtkeychain)
+    set(CMAKE_AUTOMOC OFF)
+    set(CMAKE_AUTOUIC OFF)
+    set(CMAKE_AUTORCC OFF)
+    set(BUILD_SHARED_LIBS OFF)
+    set(BUILD_TESTING OFF)
+    set(BUILD_TRANSLATIONS OFF)
+    FetchContent_MakeAvailable(qtkeychain)
+endfunction()
+inwentaryzacja_dodaj_qtkeychain()
+# Biblioteka statyczna: bez tego nagłówek eksportu na Windows deklaruje __declspec(dllimport).
+target_compile_definitions(qt6keychain PUBLIC QT6KEYCHAIN_STATIC_DEFINE)
+
+# ================================
 # Pliki źródłowe
 # ================================
 file(GLOB_RECURSE SOURCES src/*.cpp)
@@ -150,6 +178,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Sql
     Qt6::Network  # v1.5: AiEnrichmentService → Anthropic API
+    qt6keychain   # klucz API w systemowym sejfie
     ZLIB::ZLIB
 )
 
@@ -164,9 +193,20 @@ target_link_libraries(${PROJECT_NAME}Tests PRIVATE
     Qt6::Widgets
     Qt6::Sql
     Qt6::Network  # v1.5: AiEnrichmentService glob-included w testy
+    qt6keychain
     Qt6::Test
     ZLIB::ZLIB
 )
 
 add_test(NAME repository_tests COMMAND ${PROJECT_NAME}Tests)
 set_tests_properties(repository_tests PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+if(APPLE)
+    # Sejf macOS oddaje wynik przez główną kolejkę GCD, której offscreen nie opróżnia —
+    # testy sejfu idą osobno na platformie cocoa (w offscreen same się pomijają).
+    add_test(NAME keychain_tests COMMAND ${PROJECT_NAME}Tests
+        aiApiKey_storesReadsAndDeletesInKeychain
+        aiApiKey_migratesLegacyIniKeyToKeychain
+        aiApiKey_storeRemovesLegacyIniKey)
+    # Zablokowany pęk kluczy / brak sesji GUI = czekanie bez końca — niech CTest to przerwie.
+    set_tests_properties(keychain_tests PROPERTIES TIMEOUT 60)
+endif()

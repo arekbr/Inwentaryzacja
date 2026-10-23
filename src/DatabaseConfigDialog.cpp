@@ -29,6 +29,7 @@
  */
 
 #include "DatabaseConfigDialog.h"
+#include "AiEnrichmentService.h"
 #include "PacmanOverlay.h"
 #include <QApplication>
 #include <QCheckBox>
@@ -41,6 +42,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
 #include <QStandardPaths>
@@ -179,7 +181,8 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
         apiKeyEdit->setObjectName(QStringLiteral("aiApiKeyEdit"));
         apiKeyEdit->setEchoMode(QLineEdit::Password);
         apiKeyEdit->setPlaceholderText(tr("sk-ant-api03-... (zostaw puste = wyłączone)"));
-        apiKeyEdit->setText(settings.value(QStringLiteral("ai/anthropic_api_key")).toString());
+        QString keyError;
+        apiKeyEdit->setText(AiEnrichmentService::storedApiKey(&keyError));
         aiLayout->addRow(tr("Klucz API:"), apiKeyEdit);
 
         auto *modelCombo = new QComboBox(aiGroup);
@@ -201,12 +204,15 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
         aiLayout->addRow(QString(), skipCostCheckbox);
 
         auto *warningLabel = new QLabel(
-            tr("⚠ Klucz przechowywany lokalnie w %1 (plaintext). "
-               "Zalecane: zmienna środowiskowa ANTHROPIC_API_KEY (priorytet, nie zapisuje się tutaj).")
-                .arg(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
-                     + QStringLiteral("/inwentaryzacja.ini")),
+            keyError.isEmpty()
+                ? tr("🔒 Klucz trzymany w systemowym sejfie (Pęk kluczy / Menedżer poświadczeń / "
+                     "Secret Service), nie w pliku ustawień. Zmienna środowiskowa "
+                     "ANTHROPIC_API_KEY ma pierwszeństwo.")
+                : QStringLiteral("⚠ ") + keyError,
             aiGroup);
-        warningLabel->setStyleSheet(QStringLiteral("color: #888; font-size: 11px; padding: 4px;"));
+        warningLabel->setStyleSheet(keyError.isEmpty()
+                                        ? QStringLiteral("color: #888; font-size: 11px; padding: 4px;")
+                                        : QStringLiteral("color: #b00020; font-size: 11px; padding: 4px;"));
         warningLabel->setWordWrap(true);
         aiLayout->addRow(QString(), warningLabel);
 
@@ -217,6 +223,11 @@ DatabaseConfigDialog::DatabaseConfigDialog(QWidget *parent)
             mainLayout->insertWidget(insertIdx, aiGroup);
         }
     }
+
+    // Rozmiar z .ui (491×373) jest mniejszy niż potrzeba po dodaniu sekcji AI, więc okno
+    // startowało w rozmiarze minimalnym. Minimum nie uwzględnia zawijanej etykiety
+    // (heightForWidth), przez co układ ściskał pola MySQL poniżej wysokości tekstu.
+    adjustSize();
 
     // Pacman easter egg (usuń lub ogranicz do pól tekstowych)
     QTimer *pacmanTimer = new QTimer(this);
@@ -274,8 +285,18 @@ void DatabaseConfigDialog::accept()
     settings.setValue("skin", ui->filterSelectSkin->currentText());
 
     // v1.5: zapis ustawień AI (widgety dodane dynamicznie, lookup przez findChild)
-    if (auto *apiKey = findChild<QLineEdit *>(QStringLiteral("aiApiKeyEdit")))
-        settings.setValue(QStringLiteral("ai/anthropic_api_key"), apiKey->text());
+    // Klucz idzie do systemowego sejfu i tylko po zmianie pola — puste pole po nieudanym
+    // odczycie sejfu nie może skasować klucza przy zwykłym OK na starcie.
+    if (auto *apiKey = findChild<QLineEdit *>(QStringLiteral("aiApiKeyEdit")); apiKey && apiKey->isModified())
+    {
+        // Czekanie na sejf kręci pętlę zdarzeń — bez blokady drugi klik OK wszedłby tu ponownie.
+        setEnabled(false);
+        QString error;
+        const bool stored = AiEnrichmentService::storeApiKey(apiKey->text(), &error);
+        setEnabled(true);
+        if (!stored)
+            QMessageBox::warning(this, tr("Klucz API"), error);
+    }
     if (auto *modelCombo = findChild<QComboBox *>(QStringLiteral("aiModelCombo")))
         settings.setValue(QStringLiteral("ai/model"), modelCombo->currentData().toString());
     if (auto *skipCost = findChild<QCheckBox *>(QStringLiteral("aiSkipCostCheckbox")))

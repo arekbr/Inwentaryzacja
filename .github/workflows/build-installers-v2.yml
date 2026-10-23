@@ -38,7 +38,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y \
             cmake ninja-build build-essential pkg-config dpkg-dev \
             qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools linguist-qt6 \
-            libqt6sql6-sqlite libqt6sql6-mysql libmariadb-dev-compat
+            libqt6sql6-sqlite libqt6sql6-mysql libmariadb-dev-compat \
+            libsecret-1-dev
 
       - name: Configure and build
         shell: bash
