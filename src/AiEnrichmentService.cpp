@@ -1,6 +1,7 @@
 #include "AiEnrichmentService.h"
 
 #include <QCoreApplication>
+#include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -13,20 +14,99 @@
 #include <QStandardPaths>
 #include <QUrl>
 
+#include <qtkeychain/keychain.h>
+
 namespace {
 
 constexpr const char *kAnthropicEndpoint = "https://api.anthropic.com/v1/messages";
 constexpr const char *kAnthropicVersion  = "2023-06-01";
 constexpr const char *kDefaultModel      = "claude-opus-4-7";
 
-QString settingsKey()    { return QStringLiteral("ai/anthropic_api_key"); }
+QString settingsKey()    { return QStringLiteral("ai/anthropic_api_key"); }  // tylko migracja z ≤ 1.5.0
 QString settingsModel()  { return QStringLiteral("ai/model"); }
+QString keychainKey()    { return QStringLiteral("anthropic_api_key"); }
+
+QString keychainService()
+{
+    // Testy (QStandardPaths w trybie testowym) nie mogą ruszać prawdziwego wpisu usera.
+    return QStandardPaths::isTestModeEnabled() ? QStringLiteral("Inwentaryzacja-test")
+                                               : QStringLiteral("Inwentaryzacja");
+}
 
 QSettings appSettings()
 {
     return QSettings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
                          + QStringLiteral("/inwentaryzacja.ini"),
                      QSettings::IniFormat);
+}
+
+/// QtKeychain działa asynchronicznie, a wołający (okno ustawień, PreviewDialog) potrzebują
+/// wyniku od razu — czekamy na lokalnej pętli zdarzeń. Bez limitu czasu: porzucone zadanie
+/// blokowałoby kolejkę QtKeychain (jedno zadanie naraz), a macOS może czekać na decyzję usera.
+QKeychain::Error runKeychainJob(QKeychain::Job &job, QString *errorMessage)
+{
+    job.setAutoDelete(false);
+    job.setInsecureFallback(false);  // nigdy jawnego tekstu zamiast sejfu
+    job.setKey(keychainKey());
+    QEventLoop loop;
+    QObject::connect(&job, &QKeychain::Job::finished, &loop, &QEventLoop::quit);
+    job.start();  // start() kolejkuje doStart — finished nie przyjdzie przed exec()
+    loop.exec();
+    if (job.error() != QKeychain::NoError && job.error() != QKeychain::EntryNotFound && errorMessage)
+        *errorMessage = job.errorString();
+    return job.error();
+}
+
+QString readKeychain(QString *errorMessage)
+{
+    QKeychain::ReadPasswordJob job(keychainService());
+    return runKeychainJob(job, errorMessage) == QKeychain::NoError ? job.textData() : QString();
+}
+
+bool writeKeychain(const QString &value, QString *errorMessage)
+{
+    QKeychain::WritePasswordJob job(keychainService());
+    job.setTextData(value);
+    return runKeychainJob(job, errorMessage) == QKeychain::NoError;
+}
+
+bool deleteKeychain(QString *errorMessage)
+{
+    QKeychain::DeletePasswordJob job(keychainService());
+    const QKeychain::Error error = runKeychainJob(job, errorMessage);
+    return error == QKeychain::NoError || error == QKeychain::EntryNotFound;
+}
+
+void removeLegacySettingsKey()
+{
+    QSettings s = appSettings();
+    if (s.contains(settingsKey()))  // bez contains() remove() przepisywałby ini przy każdym odczycie
+        s.remove(settingsKey());
+}
+
+/// Jeden odczyt sejfu na proces dla hasApiKey()/readApiKey(): każdy PreviewDialog pytałby
+/// sejf od nowa, a przy aplikacji podpisanej ad hoc macOS może przy tym pytać usera.
+struct ApiKeyCache
+{
+    bool loaded = false;
+    QString key;
+    QString error;
+};
+
+ApiKeyCache &apiKeyCache()
+{
+    static ApiKeyCache cache;
+    return cache;
+}
+
+QString cachedApiKey(QString *errorMessage)
+{
+    ApiKeyCache &cache = apiKeyCache();
+    if (!cache.loaded)
+        AiEnrichmentService::storedApiKey();  // wypełnia cache
+    if (errorMessage)
+        *errorMessage = cache.error;
+    return cache.key;
 }
 
 /// v1.5 #4: Polecenie AI generowane wg języka apki (QLocale).
@@ -156,8 +236,83 @@ bool AiEnrichmentService::hasApiKey()
     if (!envKey.isEmpty())
         return true;
 
+    return !cachedApiKey(nullptr).isEmpty();
+}
+
+QString AiEnrichmentService::storedApiKey(QString *errorMessage)
+{
+    ApiKeyCache result{true, QString(), QString()};
+
+    // Wersje ≤ 1.5.0 trzymały klucz jawnym tekstem w ini. Kasujemy go z ini dopiero po
+    // zgodnym odczycie zwrotnym z sejfu — awaria sejfu nie może zgubić klucza.
     QSettings s = appSettings();
-    return !s.value(settingsKey()).toString().isEmpty();
+    const QString legacyKey = s.value(settingsKey()).toString();
+    if (!legacyKey.isEmpty())
+    {
+        QString keychainError;
+        if (writeKeychain(legacyKey, &keychainError) && readKeychain(&keychainError) == legacyKey)
+        {
+            removeLegacySettingsKey();
+        }
+        else
+        {
+            result.error = tr("Klucz nadal leży jawnym tekstem w pliku ustawień — systemowy sejf "
+                              "odmówił zapisu: %1")
+                               .arg(keychainError.isEmpty() ? tr("odczyt zwrotny niezgodny") : keychainError);
+        }
+        result.key = legacyKey;  // apka działa dalej jak w 1.5.0, nawet gdy sejf odmówił
+    }
+    else
+    {
+        removeLegacySettingsKey();  // pusty wpis zostawiony przez 1.5.0
+        QString keychainError;
+        result.key = readKeychain(&keychainError);
+        if (!keychainError.isEmpty())
+            result.error = tr("Systemowy sejf niedostępny: %1").arg(keychainError);
+    }
+
+    // Cache dopiero PO odczycie — pętla zdarzeń w trakcie czekania na sejf może wywołać
+    // hasApiKey() z innego okna. Błąd nie nadpisuje wcześniej odczytanego klucza: chwilowa
+    // odmowa sejfu przy otwarciu ustawień nie wyłącza AI do końca sesji.
+    ApiKeyCache &cache = apiKeyCache();
+    if (result.error.isEmpty() || !cache.loaded)
+        cache = result;
+
+    if (errorMessage)
+        *errorMessage = result.error;
+    return result.key;
+}
+
+bool AiEnrichmentService::storeApiKey(const QString &apiKey, QString *errorMessage)
+{
+    QString keychainError;
+    const bool ok = apiKey.isEmpty() ? deleteKeychain(&keychainError)
+                                     : writeKeychain(apiKey, &keychainError);
+
+    // Stary klucz z ini wygrałby przy następnym starcie i nadpisał nowy (migracja) — usuwamy
+    // go po udanym zapisie, a przy usuwaniu klucza zawsze (user chce, żeby klucza nie było).
+    if (ok || apiKey.isEmpty())
+        removeLegacySettingsKey();
+
+    if (!ok)
+    {
+        apiKeyCache().loaded = false;  // następny odczyt sprawdzi sejf od nowa
+        if (errorMessage)
+        {
+            *errorMessage = apiKey.isEmpty()
+                ? tr("Nie udało się usunąć klucza z systemowego sejfu: %1. "
+                     "Klucz nadal tam jest i AI dalej z niego korzysta.")
+                      .arg(keychainError)
+                : tr("Nie udało się zapisać klucza w systemowym sejfie: %1. "
+                     "Klucz nie został zapisany — możesz ustawić zmienną "
+                     "środowiskową ANTHROPIC_API_KEY.")
+                      .arg(keychainError);
+        }
+        return false;
+    }
+
+    apiKeyCache() = ApiKeyCache{true, apiKey, QString()};
+    return true;
 }
 
 double AiEnrichmentService::estimateCostUsd(int photoCount)
@@ -177,16 +332,18 @@ QString AiEnrichmentService::readApiKey(QString *errorMessage) const
     if (!envKey.isEmpty())
         return envKey;
 
-    QSettings s = appSettings();
-    const QString settingsApiKey = s.value(settingsKey()).toString();
-    if (!settingsApiKey.isEmpty())
-        return settingsApiKey;
+    QString keychainError;
+    const QString storedKey = cachedApiKey(&keychainError);
+    if (!storedKey.isEmpty())
+        return storedKey;
 
     if (errorMessage)
     {
         *errorMessage = AiEnrichmentService::tr(
             "Brak klucza API Anthropic. Ustaw zmienną środowiskową "
             "ANTHROPIC_API_KEY albo wpisz klucz w Ustawieniach (sekcja AI).");
+        if (!keychainError.isEmpty())
+            *errorMessage += QStringLiteral("\n") + keychainError;
     }
     return QString();
 }

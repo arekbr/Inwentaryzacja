@@ -1,5 +1,6 @@
 #include <QtTest>
 
+#include "AiEnrichmentService.h"
 #include "DictionaryRepository.h"
 #include "DatabaseMigration.h"
 #include "DatabaseBackupService.h"
@@ -17,6 +18,7 @@
 #include <QImage>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QScopeGuard>
 #include <QStandardItemModel>
 #include <QStandardPaths>
 #include <QSqlDatabase>
@@ -26,6 +28,8 @@
 #include <QFileInfo>
 #include <QTemporaryDir>
 #include <QUuid>
+
+#include <qtkeychain/keychain.h>
 
 class RepositoryTests : public QObject
 {
@@ -66,8 +70,12 @@ private slots:
     void pacmanAnimationModel_activatesAfterConfiguredDelay();
     void pacmanAnimationModel_requestsEatingInTime();
     void pacmanAnimationModel_reachesCollisionAndFinish();
+    void aiApiKey_storesReadsAndDeletesInKeychain();
+    void aiApiKey_migratesLegacyIniKeyToKeychain();
+    void aiApiKey_storeRemovesLegacyIniKey();
 
 private:
+    QString keychainSkipReason() const;
     QString lookupId(const QString &tableName, const QString &name) const;
     QByteArray createPhotoBytes() const;
     ItemRecordData createSampleItem() const;
@@ -1016,6 +1024,97 @@ void RepositoryTests::pacmanAnimationModel_reachesCollisionAndFinish()
 
     QVERIFY(model.state() == PacmanAnimationModel::State::Finished);
     QVERIFY(!model.showGhost());
+}
+
+// Testy sejfu piszą do usługi "Inwentaryzacja-test" (tryb testowy QStandardPaths),
+// nigdy do prawdziwego wpisu "Inwentaryzacja".
+QString RepositoryTests::keychainSkipReason() const
+{
+#ifdef Q_OS_MACOS
+    // Backend macOS oddaje wynik przez główną kolejkę GCD, której dyspozytor zdarzeń
+    // platformy offscreen nie opróżnia — test wisiałby. CTest ma osobny wpis keychain_tests.
+    if (QGuiApplication::platformName() == QLatin1String("offscreen"))
+        return QStringLiteral("Sejf macOS wymaga platformy cocoa (wpis CTest keychain_tests).");
+#endif
+    if (!QKeychain::isAvailable())
+        return QStringLiteral("Brak systemowego sejfu na tej maszynie.");
+    return QString();
+}
+
+void RepositoryTests::aiApiKey_storesReadsAndDeletesInKeychain()
+{
+    const QString skipReason = keychainSkipReason();
+    if (!skipReason.isEmpty())
+        QSKIP(qPrintable(skipReason));
+    const auto removeKey = qScopeGuard([] { AiEnrichmentService::storeApiKey(QString()); });
+
+    const QString key = QStringLiteral("sk-ant-TEST-zapis-odczyt");
+    QString error;
+    QVERIFY2(AiEnrichmentService::storeApiKey(key, &error), qPrintable(error));
+    QCOMPARE(AiEnrichmentService::storedApiKey(&error), key);
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                           + QStringLiteral("/inwentaryzacja.ini"),
+                       QSettings::IniFormat);
+    QVERIFY(!settings.contains(QStringLiteral("ai/anthropic_api_key")));
+
+    QVERIFY2(AiEnrichmentService::storeApiKey(QString(), &error), qPrintable(error));
+    QVERIFY(AiEnrichmentService::storedApiKey(&error).isEmpty());
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+}
+
+void RepositoryTests::aiApiKey_migratesLegacyIniKeyToKeychain()
+{
+    const QString skipReason = keychainSkipReason();
+    if (!skipReason.isEmpty())
+        QSKIP(qPrintable(skipReason));
+    const auto removeKey = qScopeGuard([] { AiEnrichmentService::storeApiKey(QString()); });
+
+    const QString iniPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                            + QStringLiteral("/inwentaryzacja.ini");
+    const QString legacyKey = QStringLiteral("sk-ant-TEST-z-ini-1-5-0");
+    {
+        QSettings settings(iniPath, QSettings::IniFormat);
+        settings.setValue(QStringLiteral("ai/anthropic_api_key"), legacyKey);
+    }
+
+    QString error;
+    QCOMPARE(AiEnrichmentService::storedApiKey(&error), legacyKey);
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+    {
+        QSettings settings(iniPath, QSettings::IniFormat);
+        QVERIFY(!settings.contains(QStringLiteral("ai/anthropic_api_key")));
+    }
+
+    // Ini jest już puste — drugi odczyt idzie z sejfu.
+    QCOMPARE(AiEnrichmentService::storedApiKey(&error), legacyKey);
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+}
+
+void RepositoryTests::aiApiKey_storeRemovesLegacyIniKey()
+{
+    const QString skipReason = keychainSkipReason();
+    if (!skipReason.isEmpty())
+        QSKIP(qPrintable(skipReason));
+    const auto removeKey = qScopeGuard([] { AiEnrichmentService::storeApiKey(QString()); });
+
+    // Stary klucz w ini (migracja się nie udała) nie może nadpisać nowego klucza z okna.
+    const QString iniPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)
+                            + QStringLiteral("/inwentaryzacja.ini");
+    {
+        QSettings settings(iniPath, QSettings::IniFormat);
+        settings.setValue(QStringLiteral("ai/anthropic_api_key"), QStringLiteral("sk-ant-TEST-stary"));
+    }
+
+    const QString newKey = QStringLiteral("sk-ant-TEST-nowy");
+    QString error;
+    QVERIFY2(AiEnrichmentService::storeApiKey(newKey, &error), qPrintable(error));
+    {
+        QSettings settings(iniPath, QSettings::IniFormat);
+        QVERIFY(!settings.contains(QStringLiteral("ai/anthropic_api_key")));
+    }
+    QCOMPARE(AiEnrichmentService::storedApiKey(&error), newKey);
 }
 
 QTEST_MAIN(RepositoryTests)

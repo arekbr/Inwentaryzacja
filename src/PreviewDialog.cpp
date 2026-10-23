@@ -29,7 +29,7 @@ PreviewDialog::PreviewDialog(QSqlDatabase db, const QString &recordId, QWidget *
             });
 
     // v1.5: dynamicznie dodany guzik "Wzbogać opis AI" (nie ruszamy .ui).
-    // Pojawia się tylko gdy klucz API dostępny (env var lub QSettings).
+    // Pojawia się tylko gdy klucz API dostępny (env var lub systemowy sejf).
     if (AiEnrichmentService::hasApiKey())
     {
         auto *enrichBtn = new QPushButton(tr("🪄 Wzbogać opis AI"), this);
