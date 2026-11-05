@@ -87,21 +87,76 @@ if [[ "$MARIADB_DEP" != "@executable_path/../Frameworks/"* \
     exit 1
 fi
 
-# Stała tożsamość z CI (ci/import-macos-codesign.sh) — wymaganie podpisu oparte na certyfikacie.
-# Pytanie Pęku kluczy po aktualizacji zostaje (partition_id = cdhash bez Team ID, opis w skrypcie
-# importu). Bez tożsamości podpis ad hoc (budowa lokalna, PR z forka); wydanie (REQUIRE_CODESIGN=1) wymaga tożsamości.
+# Tożsamość Developer ID z CI (ci/import-macos-codesign.sh). Bez niej podpis ad hoc (budowa lokalna,
+# PR z forka); wydanie (REQUIRE_CODESIGN=1) wymaga tożsamości.
 SIGN_IDENTITY="${MACOS_CODESIGN_IDENTITY:--}"
 if [[ "$SIGN_IDENTITY" == "-" && "${REQUIRE_CODESIGN:-0}" == "1" ]]; then
     echo "❌ Brak tożsamości podpisu (MACOS_CODESIGN_IDENTITY) — wydanie wymaga stałego podpisu."
     exit 1
 fi
-codesign --force --deep --sign "$SIGN_IDENTITY" --timestamp=none "$APP_BUNDLE"
+
+# Notaryzację włącza workflow (NOTARIZE=1 przy tagu i ręcznym starcie). Bez kompletu danych to błąd,
+# a nie paczka, która po cichu nie przeszła notaryzacji.
+NOTARIZE="${NOTARIZE:-0}"
+if [[ "$NOTARIZE" == "1" ]]; then
+    if [[ "$SIGN_IDENTITY" == "-" || -z "${APPLE_NOTARY_KEY_P8_BASE64:-}" \
+          || -z "${APPLE_NOTARY_KEY_ID:-}" || -z "${APPLE_NOTARY_ISSUER_ID:-}" ]]; then
+        echo "❌ Notaryzacja wymaga tożsamości podpisu i sekretów APPLE_NOTARY_*."
+        exit 1
+    fi
+    NOTARY_KEY="$TEMP_ROOT/notary-key.p8"
+    (umask 077 && printf '%s' "$APPLE_NOTARY_KEY_P8_BASE64" | base64 --decode > "$NOTARY_KEY")
+fi
+
+notarize_file() {
+    local file="$1" result status submission
+    result="$(xcrun notarytool submit "$file" --key "$NOTARY_KEY" --key-id "$APPLE_NOTARY_KEY_ID" \
+        --issuer "$APPLE_NOTARY_ISSUER_ID" --wait --timeout 30m --output-format json)"
+    status="$(printf '%s' "$result" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("status",""))')"
+    submission="$(printf '%s' "$result" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("id",""))')"
+    echo "▶ Notaryzacja ${file##*/}: $status ($submission)"
+    if [[ "$status" != "Accepted" ]]; then
+        xcrun notarytool log "$submission" --key "$NOTARY_KEY" --key-id "$APPLE_NOTARY_KEY_ID" \
+            --issuer "$APPLE_NOTARY_ISSUER_ID" || true
+        echo "❌ Apple nie przyjęło ${file##*/} do notaryzacji."
+        exit 1
+    fi
+}
+
+if [[ "$SIGN_IDENTITY" == "-" ]]; then
+    codesign --force --deep --sign - --timestamp=none "$APP_BUNDLE"
+else
+    # Od środka na zewnątrz: notaryzacja wymaga wzmocnionego uruchamiania i znacznika czasu na każdym
+    # składniku, a --deep nie gwarantuje tego dla frameworków.
+    sign_for_release() {
+        codesign --force --sign "$SIGN_IDENTITY" --options runtime --timestamp "$1"
+    }
+    while IFS= read -r -d '' library; do
+        sign_for_release "$library"
+    done < <(find "$APP_CONTENTS" -type f -name '*.dylib' -print0)
+    if [[ -d "$APP_CONTENTS/Frameworks" ]]; then
+        while IFS= read -r -d '' framework; do
+            sign_for_release "$framework"
+        done < <(find "$APP_CONTENTS/Frameworks" -type d -name '*.framework' -prune -print0)
+    fi
+    sign_for_release "$APP_BUNDLE"
+fi
 codesign --verify --deep --strict "$APP_BUNDLE"
 DESIGNATED="$(codesign -d -r- "$APP_BUNDLE" 2>&1 | grep 'designated' || true)"
 echo "▶ $DESIGNATED"
 if [[ "$SIGN_IDENTITY" != "-" && "$DESIGNATED" != *"certificate "* ]]; then
     echo "❌ Wymaganie podpisu nie opiera się na certyfikacie — podpis tożsamością z CI nie zadziałał."
     exit 1
+fi
+
+# Zatwierdzenie dołączamy do aplikacji przed spakowaniem, żeby ZIP i DMG zawierały je bez sieci.
+if [[ "$NOTARIZE" == "1" ]]; then
+    NOTARY_ZIP="$TEMP_ROOT/notary-app.zip"
+    ditto -c -k --keepParent "$APP_BUNDLE" "$NOTARY_ZIP"
+    notarize_file "$NOTARY_ZIP"
+    xcrun stapler staple "$APP_BUNDLE"
+    xcrun stapler validate "$APP_BUNDLE"
+    spctl --assess --type execute --verbose=4 "$APP_BUNDLE"
 fi
 
 ZIP_NAME="$ROOT_DIR/$OUTPUT_DIR/${APP_NAME}_${VERSION}_macOS_${ARCH_LABEL}.zip"
@@ -121,6 +176,14 @@ hdiutil create -volname "$DMG_VOLUME_NAME" -srcfolder "$DMG_STAGE_DIR" -ov -form
 hdiutil verify "$TEMP_DMG_NAME"
 mv "$TEMP_DMG_NAME" "$DMG_NAME"
 hdiutil verify "$DMG_NAME"
+
+if [[ "$NOTARIZE" == "1" ]]; then
+    codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_NAME"
+    notarize_file "$DMG_NAME"
+    xcrun stapler staple "$DMG_NAME"
+    xcrun stapler validate "$DMG_NAME"
+    spctl --assess --type open --context context:primary-signature --verbose=4 "$DMG_NAME"
+fi
 
 echo "✅ Gotowe pakiety:"
 echo "   $ZIP_NAME"

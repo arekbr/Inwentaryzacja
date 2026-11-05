@@ -1,12 +1,11 @@
 #!/bin/bash
 # Import tożsamości podpisu kodu macOS z sekretów GitHuba do tymczasowego pęku kluczy runnera.
 #
-# Po co: podpis ad hoc opiera wymaganie podpisu na skrócie binarki (cdhash). Podpis stałym
-# certyfikatem daje wymaganie `certificate root = H"…"` — to samo w każdej wersji (lista ACL wpisów
-# Pęku kluczy, zgody prywatności TCC).
-# 🔴 To NIE usuwa pytania Pęku kluczy po aktualizacji (pomiar 23.10.2026 na pęku logowania): lista
-# partition_id wpisu dla aplikacji bez Team ID trzyma `cdhash:…`, więc każda nowa binarka = jedno
-# pytanie. Team ID daje tylko certyfikat Apple (Developer ID) — wtedy wystarczy podmienić sekrety.
+# Po co: podpis ad hoc opiera wymaganie podpisu na skrócie binarki (cdhash). Od 5.11.2026 sekrety
+# zawierają Developer ID Application z pośrednikiem G2, co daje Team ID i wymaganie stałe między
+# wersjami. Do 5.11.2026 była tu tożsamość własna, przy której pytanie Pęku kluczy po aktualizacji
+# zostawało (pomiar 23.10.2026: partition_id bez Team ID trzyma `cdhash:…`).
+# „Zero pytań z Team ID” to nadal hipoteza do zmierzenia na dwóch kolejnych wydaniach.
 #
 # Wejście (env): MACOS_CODESIGN_P12_BASE64, MACOS_CODESIGN_P12_PASSWORD, opcjonalnie REQUIRE_CODESIGN=1.
 # Wyjście: MACOS_CODESIGN_IDENTITY w $GITHUB_ENV (czyta go package-macos.sh).
@@ -44,7 +43,6 @@ while IFS= read -r entry; do
 done < <(security list-keychains -d user)
 security list-keychains -d user -s "$KEYCHAIN" "${SEARCH_LIST[@]}"
 
-# Certyfikat samopodpisany nie jest „zaufany” (CSSMERR_TP_NOT_TRUSTED), ale codesign go używa.
 IDENTITY="$(security find-identity -p codesigning "$KEYCHAIN" | awk '$1 == "1)" {print $2; exit}')"
 if [[ -z "$IDENTITY" ]]; then
     echo "❌ Plik p12 zaimportowany, ale pęk nie ma tożsamości do podpisu kodu."
