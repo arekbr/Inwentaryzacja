@@ -168,6 +168,10 @@ itemList::itemList(QWidget *parent)
 
     QSettings settings = createItemListSettings();
     restoreGeometry(settings.value("itemList/geometry").toByteArray());
+    // Bez zapisanego położenia granicy (albo z nieczytelnym): 3/5 tabela, 2/5 zdjęcie i opis.
+    // Liczby działają jak proporcja, bo okno nie ma tu jeszcze ostatecznego rozmiaru.
+    if (!ui->itemList_splitter->restoreState(settings.value("itemList/splitter").toByteArray()))
+        ui->itemList_splitter->setSizes({3000, 2000});
 
     // Inicjalizacja pól QComboBox i QLineEdit
     filterTypeComboBox = ui->filterTypeComboBox;
@@ -290,6 +294,14 @@ itemList::itemList(QWidget *parent)
             &QItemSelectionModel::selectionChanged,
             this,
             &itemList::onTableViewSelectionChanged);
+
+    // Panel zdjęć zmienia rozmiar przy przesuwaniu granicy i przy zmianie rozmiaru okna. Miniatury
+    // przeliczamy raz, po ustaniu ruchu, a nie na każdy krok myszy.
+    m_photoLayoutTimer = new QTimer(this);
+    m_photoLayoutTimer->setSingleShot(true);
+    m_photoLayoutTimer->setInterval(100);
+    connect(m_photoLayoutTimer, &QTimer::timeout, this, &itemList::relayoutPhotos);
+    ui->itemList_graphicsView->viewport()->installEventFilter(this);
 
     // Podgląd eksponatu pod dwukrotnym kliknięciem
     connect(ui->itemList_tableView, &QAbstractItemView::doubleClicked, this,
@@ -427,6 +439,7 @@ void itemList::closeEvent(QCloseEvent *event)
 {
     QSettings settings = createItemListSettings();
     settings.setValue("itemList/geometry", saveGeometry());
+    settings.setValue("itemList/splitter", ui->itemList_splitter->saveState());
     saveCurrentFilters();
     QWidget::closeEvent(event);
 }
@@ -665,6 +678,24 @@ void itemList::showStoredPhotos(const QList<StoredPhoto> &photos)
     scene->setSceneRect(0, 0, totalWidth, totalHeight);
     replaceScene(ui->itemList_graphicsView, scene);
     ui->itemList_graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void itemList::relayoutPhotos()
+{
+    const QGraphicsScene *scene = ui->itemList_graphicsView->scene();
+    if (!scene)
+        return;
+
+    // Oryginały są już w scenie, więc bez czytania z bazy. Tylko najwyższy poziom: PhotoItem ma
+    // jeszcze potomną ramkę.
+    QList<StoredPhoto> photos;
+    const QList<QGraphicsItem *> items = scene->items(Qt::AscendingOrder);
+    for (const QGraphicsItem *item : items)
+    {
+        if (!item->parentItem())
+            photos.append({QString(), item->data(0).value<QPixmap>()});
+    }
+    showStoredPhotos(photos);
 }
 
 QString itemList::selectedRecordIdOrWarn(const QString &message) const
@@ -1193,6 +1224,12 @@ void itemList::onPhotoUnhovered(PhotoItem *item)
  */
 bool itemList::eventFilter(QObject *watched, QEvent *event)
 {
+    if (event && event->type() == QEvent::Resize && watched == ui->itemList_graphicsView->viewport())
+    {
+        m_photoLayoutTimer->start();
+        return QWidget::eventFilter(watched, event);
+    }
+
     if (!watched || !event || !m_previewWindow)
         return QWidget::eventFilter(watched, event);
 
