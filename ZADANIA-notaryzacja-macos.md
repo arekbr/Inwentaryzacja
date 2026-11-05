@@ -32,6 +32,13 @@ Wydania macOS są podpisane Developer ID i przechodzą notaryzację Apple, więc
 - Program instalacyjny `.pkg`.
 - Pomiar „zero pytań Pęku kluczy” wymaga dwóch kolejnych wydań z Team ID, zostaje na następne wydanie.
 
+## Wynik (5.11.2026, przebieg 42032804878, wersja testowa 1.7.0)
+
+- Punkt 1: spełniony dla obu architektur na pobranych paczkach z flagą kwarantanny, 26/26 składników z Team ID i wzmocnionym uruchamianiem.
+- Punkt 2: spełniony na ARM, użytkownik połączył się z bazą produkcyjną (1871 eksponatów). Paczka Intel sprawdzona bez uruchomienia.
+- Punkt 3: ścieżka błędu nie była wymuszana.
+- Punkt 4: warunek w workflow; do potwierdzenia po wypchnięciu na `dev`.
+
 ## ZAŁOŻENIA
 
 - Sekrety repo: `MACOS_CODESIGN_P12_*` zawierają Developer ID Application, `APPLE_NOTARY_*` to klucz App Store Connect z rolą Developer.
