@@ -49,7 +49,9 @@ Uzasadnienie warstwy: `QSplitter` | przesuwana granica z wyboru usera | prostsze
 - [x] T04 Próba na prawdziwej bazie (`xdotool`, kopia ini) i uchwyt widoczny w 6 skórkach
       SPRAWDZENIE: zrzuty przed i po przeciągnięciu, wiersze policzone; uchwyt widać na każdej skórce.
       WYNIK: 1203×820: 5 wierszy na starcie, 7 maksymalnie; 1920×1048: 15 maksymalnie. `Koniec` zapisuje stan, po restarcie okno i granica bez zmian (różnica 0 px). Kropki uchwytu w 6 skórkach, zdjęcie w całości w 3 położeniach.
-- [ ] T05 Wydanie 1.7.2: `version.txt`, PR do `dev`, PR do `main`, tag
+- [x] T05 Wydanie 1.7.2: `version.txt`, PR do `dev`, PR do `main`, tag
       SPRAWDZENIE: CI zielone na 4 platformach, paczki w wydaniu, skrót zgodny z GitHubem.
-- [ ] T06 Instalacja na Linuksie
+      WYNIK: PR #47, #49, #48, tag `v1.7.2`, 7 plików, skrót paczki Debian zgodny. Po drodze: GitHub wycofał obrazy macOS 14, więc paczka ARM buduje się na `macos-15`, a jej minimalny system wzrósł z 14.0 na 15.0. Budowanie tagu wymagało powtórki zadania Intel (`stapler` stracił połączenie z serwerem Apple).
+- [x] T06 Instalacja na Linuksie
       SPRAWDZENIE: `dpkg -s` 1.7.2, aplikacja z ustawieniami usera otwiera listę, granica działa.
+      WYNIK: `dpkg -V` czysto; kopia ustawień z oknem 1203×844: 6 wierszy na starcie, 8 maksymalnie, po restarcie różnica 0 px; lista 1871 / 1871. Paczki macOS i Windows zbudowane w CI, nieuruchamiane.
