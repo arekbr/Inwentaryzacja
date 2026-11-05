@@ -48,7 +48,8 @@ Zlecenie usera 23.10.2026 (odpowiedź na listę propozycji po 1.6.1):
   `security create-keychain`, gdzie partycje nie były egzekwowane — fałszywa zieleń, zły obiekt pomiaru.
   Team ID (partycja `teamid:…`, stała między wersjami) daje tylko certyfikat Apple — Developer ID
   (99 USD/rok; przy okazji notaryzacja = koniec `xattr`). Skrypty CI zostają: podmiana sekretów
-  na Developer ID wystarczy, bez zmian w kodzie. Korzyść stałego podpisu dziś: stałe wymaganie w ACL
+  na Developer ID wystarczy, bez zmian w kodzie (stan do 5.11.2026; notaryzacja wymagała jednak zmian
+  w CI, patrz `ZADANIA-notaryzacja-macos.md`). Korzyść stałego podpisu dziś: stałe wymaganie w ACL
   i w zgodach prywatności (TCC) — niezmierzone dla tej aplikacji.
 
 ## C. Sterownik MySQL w paczce Windows

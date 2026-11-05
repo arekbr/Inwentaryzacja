@@ -275,6 +275,10 @@ jobs:
         shell: bash
         env:
           REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+          NOTARIZE: ${{ (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && '1' || '0' }}
+          APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: bash ci/package-macos.sh build-macos-intel dist/macos-intel intel
 
       - name: Upload artifact
@@ -333,6 +337,10 @@ jobs:
         shell: bash
         env:
           REQUIRE_CODESIGN: ${{ startsWith(github.ref, 'refs/tags/v') && '1' || '0' }}
+          NOTARIZE: ${{ (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch') && '1' || '0' }}
+          APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
+          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: bash ci/package-macos.sh build-macos-arm dist/macos-arm arm64
 
       - name: Upload artifact
