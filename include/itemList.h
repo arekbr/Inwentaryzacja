@@ -270,6 +270,9 @@ private:
     void openRecordWindowForEdit(const QString &recordId);
     void openRecordWindowForClone(const QString &recordId);
     void showStoredPhotos(const QList<StoredPhoto> &photos);
+
+    /// Przelicza miniatury z oryginałów trzymanych w scenie, pod bieżący rozmiar panelu.
+    void relayoutPhotos();
     void updateHeaderSummary();
     void restoreSavedFilters();
     void saveCurrentFilters() const;
@@ -332,6 +335,9 @@ private:
 
     /// Timer do filtrowania.
     QTimer *m_nameFilterTimer; // Nowy timer dla opóźnienia filtrowania
+
+    /// Timer opóźniający przeliczenie miniatur do końca zmiany rozmiaru panelu zdjęć.
+    QTimer *m_photoLayoutTimer = nullptr;
 
     /// Flaga chroniąca przed zapisem filtrów podczas inicjalizacji widoku.
     bool m_filtersInitialized = false;

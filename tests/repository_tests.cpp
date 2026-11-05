@@ -15,12 +15,22 @@
 #include "PhotoService.h"
 #include "utils.h"
 
+#include <QApplication>
 #include <QBuffer>
 #include <QComboBox>
+#include <QFontDatabase>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QImage>
 #include <QLabel>
 #include <QListWidget>
+#include <QMouseEvent>
+#include <QScrollBar>
+#include <QSplitter>
+#include <QStyle>
 #include <QTableView>
 #include <QTextBrowser>
 #include <QLineEdit>
@@ -102,6 +112,108 @@ static void saveScreenshotIfRequested(QWidget &widget, const QString &name)
     widget.grab().save(directory + QLatin1Char('/') + name + QStringLiteral(".png"));
 }
 
+// Warunki okna listy jak w aplikacji: styl Fusion (main.cpp), skórka Standard z czcionką 12 pt
+// (DatabaseConfigDialog::loadFont), czysta baza SQLite i czyste ustawienia. Skórka jest konieczna:
+// bez niej przyciski są niższe i test wierszy był zielony także na starym układzie. Plik ze źródeł,
+// bo zasoby .qrc są tylko w aplikacji. Połączenie zamykane w destruktorze (Windows trzyma otwarty
+// plik); obiekt ma stać przed oknem, żeby okno z modelem na tym połączeniu znikło pierwsze.
+class ScopedListWindowSetup
+{
+public:
+    explicit ScopedListWindowSetup(const QString &skinPath)
+        : m_previousStyle(QApplication::style()->name())
+        , m_previousStyleSheet(qApp->styleSheet())
+        , m_previousFont(QApplication::font())
+    {
+        QApplication::setStyle(QStringLiteral("Fusion"));
+        QFile skin(skinPath);
+        const bool skinLoaded = skin.open(QIODevice::ReadOnly);
+        if (skinLoaded)
+            qApp->setStyleSheet(QString::fromUtf8(skin.readAll()));
+        QFont font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+        font.setPointSize(12);
+        QApplication::setFont(font);
+
+        QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        settings.clear();
+        settings.sync();
+        m_ready = skinLoaded && m_dir.isValid()
+                  && setupDatabase(QStringLiteral("SQLite3"), m_dir.filePath(QStringLiteral("lista.sqlite")));
+    }
+    ~ScopedListWindowSetup()
+    {
+        QSqlDatabase::database(QStringLiteral("default_connection"), false).close();
+        QSqlDatabase::removeDatabase(QStringLiteral("default_connection"));
+        qApp->setStyleSheet(m_previousStyleSheet);
+        QApplication::setFont(m_previousFont);
+        QApplication::setStyle(m_previousStyle);
+    }
+    bool isReady() const { return m_ready; }
+
+    // Model listy łączy słowniki INNER JOIN-em: rekord bez nich nie trafiłby na listę.
+    bool addItem(const QString &name, const QList<QByteArray> &photos)
+    {
+        QSqlDatabase db = QSqlDatabase::database(QStringLiteral("default_connection"));
+        auto idOf = [&db](const QString &tableName, const QString &value)
+        {
+            QSqlQuery query(db);
+            query.prepare(QStringLiteral("SELECT id FROM %1 WHERE name = :name").arg(tableName));
+            query.bindValue(QStringLiteral(":name"), value);
+            return query.exec() && query.next() ? query.value(0).toString() : QString();
+        };
+        ItemRecordData item;
+        item.name = name;
+        item.statusId = idOf(QStringLiteral("statuses"), QStringLiteral("Sprawny"));
+        item.typeId = idOf(QStringLiteral("types"), QStringLiteral("Komputer"));
+        item.vendorId = idOf(QStringLiteral("vendors"), QStringLiteral("Atari"));
+        item.modelId = idOf(QStringLiteral("models"), QStringLiteral("Atari 800XL"));
+        item.storagePlaceId = idOf(QStringLiteral("storage_places"), QStringLiteral("Magazyn 1"));
+        ItemRepository repository(db);
+        QString itemId;
+        QString errorMessage;
+        return repository.saveItem(item, photos, &itemId, &errorMessage);
+    }
+
+private:
+    QString m_previousStyle;
+    QString m_previousStyleSheet;
+    QFont m_previousFont;
+    QTemporaryDir m_dir;
+    bool m_ready = false;
+};
+
+// Pusty rozmiar = wysokość wynikająca z układu, jak nowe okno startowe bez zapisanej geometrii.
+static bool showListWindow(itemList &window, const QSize &size = QSize())
+{
+    if (size.isValid())
+        window.resize(size);
+    window.show();
+    return QTest::qWaitForWindowExposed(&window);
+}
+
+static QSplitter *listSplitter(itemList &window)
+{
+    return window.findChild<QSplitter *>(QStringLiteral("itemList_splitter"));
+}
+
+// Przeciągnięcie uchwytu prawdziwymi zdarzeniami myszy, tą samą drogą co u użytkownika:
+// setSizes() nie wysyła sygnału splitterMoved i nie sprawdziłby, czy granicę da się chwycić.
+static void dragSplitterHandle(QSplitter *splitter, int deltaY)
+{
+    QSplitterHandle *handle = splitter->handle(1);
+    const QPoint from = handle->rect().center();
+    const QPoint to = from + QPoint(0, deltaY);
+    const QPoint globalFrom = handle->mapToGlobal(from);
+    const QPoint globalTo = handle->mapToGlobal(to);
+    QMouseEvent press(QEvent::MouseButtonPress, from, globalFrom, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(handle, &press);
+    QMouseEvent move(QEvent::MouseMove, to, globalTo, Qt::NoButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(handle, &move);
+    QMouseEvent release(QEvent::MouseButtonRelease, to, globalTo, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+    QApplication::sendEvent(handle, &release);
+}
+
 class RepositoryTests : public QObject
 {
     Q_OBJECT
@@ -147,6 +259,11 @@ private slots:
     void previewDialog_enrichButtonInButtonRow();
     void previewDialog_showsPhotosAndFields();
     void itemList_showsDescriptionOfSelectedRow();
+    void itemList_splitter_showsRowsOnStartAndTallerWindow();
+    void itemList_splitter_dragsWithMouseBothWays();
+    void itemList_splitter_remembersPositionAfterClose();
+    void itemList_splitter_keepsProportionOnWindowResize();
+    void itemList_splitter_fitsPhotosToPanelAfterResize();
     void mysqlPassword_configDialogMigratesIniPasswordToKeychain();
     void mysqlPassword_configDialogStoresChangedPasswordInKeychain();
     void aiResponse_readsBlocksByType();
@@ -1354,6 +1471,238 @@ void RepositoryTests::itemList_showsDescriptionOfSelectedRow()
     QCOMPARE(description->toPlainText().trimmed(),
              remainingName == item.name ? QStringLiteral("Opis widoczny na liście")
                                         : QStringLiteral("Opis drugiego"));
+    window.close();
+}
+
+void RepositoryTests::itemList_splitter_showsRowsOnStartAndTallerWindow()
+{
+    ScopedListWindowSetup setup(QFINDTESTDATA("../styles/default.qss"));
+    QVERIFY(setup.isReady());
+    // Długa nazwa daje poziomy pasek przewijania jak na prawdziwych danych: zabiera wysokość wierszom.
+    QVERIFY(setup.addItem(QString(400, QLatin1Char('x')), {}));
+
+    itemList window;
+    QVERIFY(showListWindow(window));
+    auto *table = window.findChild<QTableView *>(QStringLiteral("itemList_tableView"));
+    QVERIFY(table);
+    QVERIFY(table->horizontalScrollBar()->isVisible());
+    auto fullRows = [table] { return table->viewport()->height() / table->rowHeight(0); };
+
+    // Nowe okno startowe: wysokość wynika z układu, bez zapisanej geometrii.
+    QVERIFY2(fullRows() >= 5,
+             qPrintable(QStringLiteral("okno %1 px, pełnych wierszy: %2").arg(window.height()).arg(fullRows())));
+
+    // 1203×896 = okno, które przed zmianą dawało 0 pełnych wierszy.
+    window.resize(1203, 896);
+    QTRY_VERIFY2(fullRows() >= 6, qPrintable(QStringLiteral("pełnych wierszy: %1").arg(fullRows())));
+    window.close();
+}
+
+void RepositoryTests::itemList_splitter_dragsWithMouseBothWays()
+{
+    ScopedListWindowSetup setup(QFINDTESTDATA("../styles/default.qss"));
+    QVERIFY(setup.isReady());
+
+    itemList window;
+    QVERIFY(showListWindow(window, QSize(1203, 896)));
+    QSplitter *splitter = listSplitter(window);
+    QVERIFY(splitter);
+
+    dragSplitterHandle(splitter, 2000);
+    QList<int> sizes = splitter->sizes();
+    const int area = sizes.at(0) + sizes.at(1);
+    QVERIFY2(sizes.at(0) * 100 >= area * 75,
+             qPrintable(QStringLiteral("tabela %1 z %2").arg(sizes.at(0)).arg(area)));
+    QVERIFY(sizes.at(1) > 0);
+
+    dragSplitterHandle(splitter, -2000);
+    sizes = splitter->sizes();
+    QVERIFY2(sizes.at(1) * 100 >= area * 60,
+             qPrintable(QStringLiteral("panel %1 z %2").arg(sizes.at(1)).arg(area)));
+    QVERIFY(sizes.at(0) > 0);
+
+    // Przyciski kolejno pod sobą, w pełnej wysokości i w całości w oknie, także gdy tabela ma maksimum.
+    dragSplitterHandle(splitter, 2000);
+    int previousBottom = -1;
+    for (const char *name : {"new", "edit", "clone", "delete", "bulkStatus", "bulkStorage", "end", "backup", "about"})
+    {
+        auto *button = window.findChild<QPushButton *>(QStringLiteral("itemList_pushButton_") + QLatin1String(name));
+        QVERIFY2(button, name);
+        QVERIFY2(button->isVisible(), name);
+        QVERIFY2(button->height() >= button->sizeHint().height(), name);
+        const QRect inWindow(button->mapTo(&window, QPoint(0, 0)), button->size());
+        QVERIFY2(inWindow.top() >= previousBottom, name);
+        QVERIFY2(window.rect().contains(inWindow), name);
+        previousBottom = inWindow.bottom();
+    }
+    window.close();
+}
+
+void RepositoryTests::itemList_splitter_remembersPositionAfterClose()
+{
+    ScopedListWindowSetup setup(QFINDTESTDATA("../styles/default.qss"));
+    QVERIFY(setup.isReady());
+
+    int savedTableHeight = 0;
+    {
+        itemList window;
+        QVERIFY(showListWindow(window, QSize(1203, 896)));
+        QSplitter *splitter = listSplitter(window);
+        QVERIFY(splitter);
+        const int before = splitter->sizes().at(0);
+        dragSplitterHandle(splitter, -60);
+        savedTableHeight = splitter->sizes().at(0);
+        QVERIFY(savedTableHeight < before);
+        window.close();
+    }
+
+    // Rozmiar jawnie: ekran offscreen ma 800 px wysokości (zmierzone), a restoreGeometry przycina
+    // do ekranu. Przywrócenie geometrii na ekranie 1920×1080 sprawdzone osobno, próbą na Xvfb.
+    {
+        itemList window;
+        QVERIFY(showListWindow(window, QSize(1203, 896)));
+        QSplitter *splitter = listSplitter(window);
+        QVERIFY(splitter);
+        QVERIFY2(qAbs(splitter->sizes().at(0) - savedTableHeight) <= 2,
+                 qPrintable(QStringLiteral("zapisane %1, po starcie %2")
+                                .arg(savedTableHeight)
+                                .arg(splitter->sizes().at(0))));
+        window.close();
+    }
+
+    // Uszkodzone dane położenia: proporcja domyślna na korzyść tabeli, bez błędu.
+    {
+        QSettings settings(testIniPath(), QSettings::IniFormat);
+        settings.setValue(QStringLiteral("itemList/splitter"), QByteArray("to nie jest stan granicy"));
+        settings.sync();
+    }
+    {
+        itemList window;
+        QVERIFY(showListWindow(window, QSize(1203, 896)));
+        QSplitter *splitter = listSplitter(window);
+        QVERIFY(splitter);
+        const QList<int> sizes = splitter->sizes();
+        QVERIFY2(sizes.at(0) > sizes.at(1),
+                 qPrintable(QStringLiteral("tabela %1, panel %2").arg(sizes.at(0)).arg(sizes.at(1))));
+        window.close();
+    }
+}
+
+void RepositoryTests::itemList_splitter_keepsProportionOnWindowResize()
+{
+    ScopedListWindowSetup setup(QFINDTESTDATA("../styles/default.qss"));
+    QVERIFY(setup.isReady());
+
+    itemList window;
+    QVERIFY(showListWindow(window, QSize(1203, 896)));
+    QSplitter *splitter = listSplitter(window);
+    QVERIFY(splitter);
+
+    const QList<int> before = splitter->sizes();
+    window.resize(1203, 1048);
+    QTRY_VERIFY(splitter->sizes().at(0) > before.at(0));
+
+    // Proporcja wyrażona w procentach wysokości, tolerancja na zaokrąglenia układu.
+    const QList<int> after = splitter->sizes();
+    const int percentBefore = before.at(0) * 100 / (before.at(0) + before.at(1));
+    const int percentAfter = after.at(0) * 100 / (after.at(0) + after.at(1));
+    QVERIFY2(qAbs(percentBefore - percentAfter) <= 2,
+             qPrintable(QStringLiteral("przed %1%, po %2%").arg(percentBefore).arg(percentAfter)));
+    window.close();
+}
+
+void RepositoryTests::itemList_splitter_fitsPhotosToPanelAfterResize()
+{
+    ScopedListWindowSetup setup(QFINDTESTDATA("../styles/default.qss"));
+    QVERIFY(setup.isReady());
+    QVERIFY(setup.addItem(QStringLiteral("Eksponat ze zdjęciami"), {createPhotoBytes(), createPhotoBytes()}));
+
+    itemList window;
+    QVERIFY(showListWindow(window, QSize(1203, 896)));
+    QSplitter *splitter = listSplitter(window);
+    auto *table = window.findChild<QTableView *>(QStringLiteral("itemList_tableView"));
+    auto *view = window.findChild<QGraphicsView *>(QStringLiteral("itemList_graphicsView"));
+    QVERIFY(splitter);
+    QVERIFY(table);
+    QVERIFY(view);
+
+    // Tylko najwyższy poziom: PhotoItem ma jeszcze potomną ramkę.
+    auto scenePhotos = [view]
+    {
+        QList<QGraphicsItem *> photos;
+        if (view->scene())
+        {
+            const QList<QGraphicsItem *> items = view->scene()->items(Qt::AscendingOrder);
+            for (QGraphicsItem *item : items)
+            {
+                if (!item->parentItem())
+                    photos.append(item);
+            }
+        }
+        return photos;
+    };
+    auto thumbnailHeight = [&scenePhotos]
+    {
+        const QList<QGraphicsItem *> photos = scenePhotos();
+        auto *pixmapItem = photos.isEmpty() ? nullptr : qgraphicsitem_cast<QGraphicsPixmapItem *>(photos.first());
+        return pixmapItem ? pixmapItem->pixmap().height() : 0;
+    };
+    auto originalKeys = [&scenePhotos]
+    {
+        QList<qint64> keys;
+        const QList<QGraphicsItem *> photos = scenePhotos();
+        for (const QGraphicsItem *photo : photos)
+            keys.append(photo->data(0).value<QPixmap>().cacheKey());
+        return keys;
+    };
+    auto fitsInPanel = [view]
+    {
+        if (!view->scene())
+            return false;
+        const QRect mapped = view->mapFromScene(view->scene()->sceneRect()).boundingRect();
+        return mapped.width() <= view->viewport()->width() + 1 && mapped.height() <= view->viewport()->height() + 1;
+    };
+
+    // Miniatury policzone pod mały panel.
+    dragSplitterHandle(splitter, 2000);
+    table->selectRow(0);
+    QVERIFY(fitsInPanel());
+    const int smallThumbnail = thumbnailHeight();
+    QVERIFY(smallThumbnail > 0);
+    const QList<qint64> keys = originalKeys();
+    QCOMPARE(keys.size(), 2);
+
+    // Panel powiększony: miniatury mają być przeliczone, a nie rozciągnięte.
+    dragSplitterHandle(splitter, -2000);
+    QTRY_VERIFY2(thumbnailHeight() > smallThumbnail * 3 / 2,
+                 qPrintable(QStringLiteral("miniatura %1, była %2").arg(thumbnailHeight()).arg(smallThumbnail)));
+    QVERIFY(fitsInPanel());
+    // Skala bliska 1:1 (fitInView zostawia margines): podgląd zdjęcia liczy pozycję z położenia w scenie.
+    QVERIFY2(view->transform().m11() > 0.9 && view->transform().m11() <= 1.0,
+             qPrintable(QString::number(view->transform().m11())));
+    // Te same oryginały w tej samej kolejności = bez ponownego czytania zdjęć z bazy.
+    QCOMPARE(originalKeys(), keys);
+    QVERIFY(!view->horizontalScrollBar()->isVisible());
+    QVERIFY(!view->verticalScrollBar()->isVisible());
+
+    // Panel zmniejszony przeciągnięciem i zmianą rozmiaru okna: zdjęcia dalej w całości.
+    const int largeThumbnail = thumbnailHeight();
+    dragSplitterHandle(splitter, 2000);
+    QTRY_VERIFY(thumbnailHeight() < largeThumbnail);
+    QTRY_VERIFY(fitsInPanel());
+    window.resize(1203, 1048);
+    const int beforeWindowResize = thumbnailHeight();
+    QTRY_VERIFY(thumbnailHeight() > beforeWindowResize);
+    window.resize(1203, 896);
+    QTRY_VERIFY(thumbnailHeight() <= beforeWindowResize);
+    QTRY_VERIFY(fitsInPanel());
+
+    // Brak zaznaczenia: przeliczanie nie ma się na czym wywrócić.
+    table->clearSelection();
+    QVERIFY(!view->scene());
+    dragSplitterHandle(splitter, -50);
+    QTest::qWait(200);
+    QVERIFY(!view->scene());
     window.close();
 }
 
